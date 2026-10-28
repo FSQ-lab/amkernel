@@ -1,0 +1,95 @@
+name: Work item
+description: Plan a decision, implementation, verification, governance, or experiment item.
+title: "[Work] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        GitHub Issues and the organization Project are the canonical project-status system. Complete every required field before moving this item to Ready.
+  - type: dropdown
+    id: work_type
+    attributes:
+      label: Work type
+      options:
+        - Decision
+        - Implementation
+        - Verification
+        - Governance
+        - Experiment
+    validations:
+      required: true
+  - type: dropdown
+    id: stage
+    attributes:
+      label: Delivery stage
+      options:
+        - Stage 1 — execution correctness
+        - Stage 2 — Agent-quality output
+        - Stage 3 — Mobile/Appium experiment
+        - Stage 4 — cross-client evidence
+        - Governance
+    validations:
+      required: true
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: State the user- or system-visible outcome, not files to create.
+    validations:
+      required: true
+  - type: textarea
+    id: contract
+    attributes:
+      label: Observable contract
+      description: Inputs, outputs, state transitions, and failure behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: non_goals
+    attributes:
+      label: Non-goals
+      description: Explicitly exclude adjacent stages and speculative behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: constraints
+    attributes:
+      label: Architecture and ADR constraints
+      description: Link the governing architecture sections and accepted ADRs.
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies and blockers
+      description: Link prerequisite issues and record any external blocker and owner.
+    validations:
+      required: true
+  - type: textarea
+    id: risks
+    attributes:
+      label: Risks affected
+      description: Link risk issues this work reduces, increases, or creates.
+    validations:
+      required: true
+  - type: textarea
+    id: ownership
+    attributes:
+      label: Write ownership and consumers
+      description: Exact paths or conceptual module, sole writer, read-only consumers, and independent reviewer.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance scenarios
+      description: Black-box behavior that distinguishes success from plausible bugs.
+    validations:
+      required: true
+  - type: textarea
+    id: verification
+    attributes:
+      label: Verification and required evidence
+      description: Focused checks, integrated gates, real-surface scenario, and evidence to attach.
+    validations:
+      required: true

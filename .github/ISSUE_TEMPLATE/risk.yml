@@ -1,0 +1,68 @@
+name: Risk
+description: Register a correctness, lifecycle, protocol, security, dependency, platform, or governance risk.
+title: "[Risk] "
+labels:
+  - type:risk
+body:
+  - type: dropdown
+    id: likelihood
+    attributes:
+      label: Likelihood
+      options:
+        - High
+        - Medium
+        - Low
+    validations:
+      required: true
+  - type: dropdown
+    id: impact
+    attributes:
+      label: Impact
+      options:
+        - High
+        - Medium
+        - Low
+    validations:
+      required: true
+  - type: input
+    id: owner
+    attributes:
+      label: Owner role
+      placeholder: Runtime and Supervision Owner
+    validations:
+      required: true
+  - type: textarea
+    id: risk
+    attributes:
+      label: Risk statement
+      description: State the condition and resulting harm.
+    validations:
+      required: true
+  - type: textarea
+    id: trigger
+    attributes:
+      label: Trigger or failure signal
+      description: Observable evidence that moves the risk to Open or escalates it.
+    validations:
+      required: true
+  - type: textarea
+    id: mitigation
+    attributes:
+      label: Mitigation
+      description: Concrete controls, not intent.
+    validations:
+      required: true
+  - type: textarea
+    id: closure
+    attributes:
+      label: Required closure evidence
+      description: Evidence that must be observed before closing this issue.
+    validations:
+      required: true
+  - type: textarea
+    id: related
+    attributes:
+      label: Related work and decisions
+      description: Link affected work items, ADRs, incidents, and architecture sections.
+    validations:
+      required: true
