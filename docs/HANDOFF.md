@@ -26,7 +26,7 @@ The formal repository was intentionally created design-only. A sibling spike exi
 
 ## Relevant files
 
-- `README.md` — product identity, principles, current design-first status, and canonical document links.
+- `README.md` — product identity, principles, current Stage 1 status, and canonical document links.
 - `docs/architecture.md` — accepted generic AMKernel architecture, core interface, invariants, execution result, runner protocol, output system, security posture, and delivery stages.
 - `docs/development.md` — required agent roles, ownership rules, development workflow, quality gates, and definition of done.
 - `docs/project-management.md` — milestones, Kanban states, work-item contracts, decision management, risk management, and repository-governance rollout.
@@ -42,7 +42,8 @@ The formal repository was intentionally created design-only. A sibling spike exi
 - Public GitHub repository: `https://github.com/FSQ-lab/amkernel` with local `origin` configured.
 - Public organization Project: `https://github.com/orgs/FSQ-lab/projects/2`; GitHub Issues and Project fields are the sole live project-status source.
 - ADR-0001 selects a single Python implementation, the official MCP Python SDK, and a uv-managed packaged toolchain. ADR-0003 through ADR-0005 and `docs/stage-1-implementation-plan.md` freeze the complete Stage 1 public contract, private protocol, lifecycle, ownership, test matrix, and evidence plan.
-- No implementation manifest, dependencies, or source files have been created yet; S1-010 is the next unblocked work item.
+- S1-010 establishes `pyproject.toml`, `.python-version`, a committed `uv.lock`, the `src/amkernel/` package, typed console/module entry points, and package behavior tests. The lock uses the Tsinghua PyPI mirror because the development network restricts direct PyPI access. Runner/Supervisor/Runtime/MCP execution behavior is intentionally not part of this bootstrap.
+- The next dependency step is GOV-002 CI definitions followed by GOV-003 observed hosted CI and branch protection; S1-020 and S1-030 remain blocked on GOV-003.
 - Global OMP memory is disabled; this project uses local project-scoped memory.
 - The sibling `/Users/qunmi/Documents/FSQ_LAB/omp` remains untouched as historical discussion/prototype material.
 

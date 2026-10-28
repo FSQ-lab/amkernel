@@ -52,7 +52,7 @@ Future experiments may apply the same kernel to Playwright, Selenium, pywinauto,
 
 ## Current phase
 
-This repository begins design-first. The earlier runtime spike remains outside this project and is not treated as production scaffolding.
+Stage 1 execution correctness is active. The reproducible Python package/toolchain and installable `amkernel` entry point are established; Runner, Supervisor, Runtime, and MCP execution behavior follow the accepted Stage 1 plan. The earlier runtime spike remains outside this project and is not production scaffolding.
 
 Canonical documents:
 
@@ -65,4 +65,4 @@ Canonical documents:
 - [`docs/decisions/`](docs/decisions/) — accepted architecture and implementation decisions.
 - [`docs/experiments/mobile-appium.md`](docs/experiments/mobile-appium.md) — first Appium/mobile experiment and success criteria.
 
-Implementation starts only from interfaces and invariants accepted in these documents.
+Implementation follows the interfaces, invariants, and delivery order accepted in these documents.
