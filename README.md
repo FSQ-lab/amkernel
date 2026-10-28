@@ -52,7 +52,7 @@ Future experiments may apply the same kernel to Playwright, Selenium, pywinauto,
 
 ## Current phase
 
-Stage 1 execution correctness is active. The reproducible Python package/toolchain and installable `amkernel` entry point are established; Runner, Supervisor, Runtime, and MCP execution behavior follow the accepted Stage 1 plan. The earlier runtime spike remains outside this project and is not production scaffolding.
+Stage 1 execution correctness is active. The reproducible package/toolchain, protected CI, versioned private protocol, and persistent Python Runner are implemented and focused-tested; Supervisor, Runtime, and public MCP execution wiring follow the accepted Stage 1 plan. No Python execution behavior is public until those later seams are integrated. The earlier runtime spike remains outside this project and is not production scaffolding.
 
 Canonical documents:
 
