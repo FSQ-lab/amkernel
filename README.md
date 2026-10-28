@@ -1,10 +1,22 @@
 # AMKernel
 
-**Automation MCP Kernel**
+**AMKernel — Automation MCP Kernel**
 
 > Persistent Python execution for agentic automation.
+>
+> 面向 Agent 自动化的持久 Python Execution MCP。
 
-AMKernel is an exploration project that gives Coding Agents a persistent local Python execution environment through MCP. Agents can use ordinary Python automation libraries while keeping live objects, imports, and state across tool calls.
+AMKernel is a persistent Python execution MCP for agentic automation. Mobile automation through Appium is its first experimental vertical.
+
+AMKernel 是一个面向 Agent 自动化的持久 Python Execution MCP。基于 Appium 的移动自动化是它的第一个实验方向。
+
+Agents use ordinary Python automation libraries while retaining live objects, imports, and state across tool calls.
+
+## Why the name
+
+- **Automation** — Appium, Playwright, Windows, macOS, and other automation environments. / Appium、Playwright、Windows、macOS 等自动化场景。
+- **MCP** — the standard interface that attaches AMKernel to different Coding Agents. / 挂载到不同 Coding Agent 的标准接口。
+- **Kernel** — a persistent Python namespace with object reuse, incremental execution, and interrupt recovery. / 持久 Python namespace、对象复用、增量执行和中断恢复。
 
 ```text
 Coding Agent
