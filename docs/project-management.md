@@ -169,13 +169,11 @@ The linked Issue and GitHub Project fields are updated in the same change that m
 
 ## 11. Repository governance rollout
 
-Repository controls are activated when their prerequisites exist:
+Repository controls are activated only when their prerequisites exist:
 
-1. **Active now**: public repository, organization Project, Stage 1 milestone, work/risk Issue forms, labels, pull-request template, and ADRs.
-2. **Toolchain bootstrap**: `pyproject.toml`, lockfile, canonical format/lint/type/test/build commands, and CI workflow definitions.
-3. **After CI jobs pass with stable names**: require those checks and independent review through branch protection.
-4. **After additional recurring issue categories exist**: add specialized Issue forms beyond the generic work and risk forms.
-5. **After real GitHub users or teams own stable paths**: add `CODEOWNERS`; dynamic Agent ownership remains task-scoped and cannot be represented by CODEOWNERS.
-6. **After an installable package and end-to-end evidence exist**: define detailed versioning, changelog, and release procedure.
+1. **Active now**: public repository; organization Project; Stage 1 milestone; work/risk Issue forms and labels; pull-request evidence template; accepted ADRs; reproducible uv toolchain; pinned-action CI; strict required `quality` and `package-smoke` checks; and protected `main` with required pull requests, conversation resolution, no force-push/deletion, and no per-task human approval. Independent Agent review remains a process gate recorded in the work item/PR evidence.
+2. **After additional recurring issue categories exist**: add specialized Issue forms beyond the generic work and risk forms.
+3. **After real GitHub users or teams own stable paths**: add `CODEOWNERS`; dynamic Agent ownership remains task-scoped and cannot be represented by CODEOWNERS.
+4. **After installed stdio end-to-end evidence exists**: define detailed versioning, changelog, and release procedure.
 
 No empty CI, fictitious CODEOWNERS entry, or release promise is created merely to make the repository look mature.
