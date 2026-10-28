@@ -31,6 +31,8 @@ Before changing architecture or implementation, read:
 
 Before starting work, inspect the active item in https://github.com/orgs/FSQ-lab/projects/2 and its linked repository Issue. GitHub is the sole source for live status, dependencies, blockers, risks, and queue order.
 
+Ready and unblocked work advances continuously in GitHub Project order without per-task owner approval. Pause only for an unreachable external prerequisite or an unresolved decision with materially different product, architecture, security, or support tradeoffs; required quality gates and independent review still apply.
+
 Keep the core automation-neutral. Platform-specific procedures begin in skills, experiments, and integration tests until evidence from multiple verticals justifies moving behavior into the kernel.
 
 The repository is design-first. Do not treat code from the earlier sibling `omp` spike as production scaffolding; reuse only mechanisms that are justified by the accepted architecture and covered by focused tests.
