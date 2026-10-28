@@ -30,8 +30,9 @@ The formal repository was intentionally created design-only. A sibling spike exi
 - `docs/architecture.md` — accepted generic AMKernel architecture, core interface, invariants, execution result, runner protocol, output system, security posture, and delivery stages.
 - `docs/development.md` — required agent roles, ownership rules, development workflow, quality gates, and definition of done.
 - `docs/project-management.md` — milestones, Kanban states, work-item contracts, decision management, risk management, and repository-governance rollout.
+- `docs/stage-1-implementation-plan.md` — accepted Stage 1 cross-module contracts, dependency/toolchain policy, path ownership, black-box scenarios, and risk traceability.
 - [GitHub Project #2](https://github.com/orgs/FSQ-lab/projects/2) and [repository Issues](https://github.com/FSQ-lab/amkernel/issues) — sole live project status, queue, work contracts, blockers, risks, and verification evidence.
-- `docs/decisions/` — accepted durable decisions, including the implementation stack and GitHub project-management cutover.
+- `docs/decisions/` — accepted durable decisions for the implementation stack, GitHub project management, public execution contract, private Runner protocol, and Runtime lifecycle.
 - `.omp/AGENTS.md` — project context; imports the architecture, development process, project-management policy, accepted decisions, and mobile experiment, and requires agents to inspect the active GitHub work item before changing code.
 - `.omp/config.yml` — project-local memory (`memory.backend: local`).
 - `../omp/` — discarded prototype/evidence only. It contains a TypeScript MCP demo, Python runner, persistence/reset/timeout smoke tests, and an Appium connectivity smoke. Read narrowly if an experiment needs evidence; do not copy wholesale.
@@ -40,8 +41,8 @@ The formal repository was intentionally created design-only. A sibling spike exi
 
 - Public GitHub repository: `https://github.com/FSQ-lab/amkernel` with local `origin` configured.
 - Public organization Project: `https://github.com/orgs/FSQ-lab/projects/2`; GitHub Issues and Project fields are the sole live project-status source.
-- ADR-0001 selects a single Python implementation, the official MCP Python SDK, and a uv-managed packaged toolchain; no implementation manifest, dependencies, or source files have been created yet.
-- Repository contents remain design/governance documents, GitHub templates, project context/config, and ignore rules only.
+- ADR-0001 selects a single Python implementation, the official MCP Python SDK, and a uv-managed packaged toolchain. ADR-0003 through ADR-0005 and `docs/stage-1-implementation-plan.md` freeze the complete Stage 1 public contract, private protocol, lifecycle, ownership, test matrix, and evidence plan.
+- No implementation manifest, dependencies, or source files have been created yet; S1-010 is the next unblocked work item.
 - Global OMP memory is disabled; this project uses local project-scoped memory.
 - The sibling `/Users/qunmi/Documents/FSQ_LAB/omp` remains untouched as historical discussion/prototype material.
 

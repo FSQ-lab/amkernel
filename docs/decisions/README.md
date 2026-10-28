@@ -83,3 +83,6 @@ How implementation will prove the decision works.
 | --- | --- | --- |
 | [ADR-0001](0001-stage-1-implementation-stack.md) | Accepted | Use a single Python implementation with the official MCP Python SDK and a uv-managed packaged toolchain |
 | [ADR-0002](0002-github-project-management.md) | Accepted | Use GitHub Issues, Milestones, and organization Project #2 as the sole project-status system |
+| [ADR-0003](0003-stage-1-execution-contract.md) | Accepted | Freeze the Stage 1 `python_exec` input, result, MCP mapping, bounds, and completion-time output contract |
+| [ADR-0004](0004-stage-1-runner-protocol.md) | Accepted | Use a versioned, correlated, bounded private protocol isolated from user streams |
+| [ADR-0005](0005-stage-1-runtime-lifecycle.md) | Accepted | Serialize one Runner with explicit reset, timeout, cancellation, cleanup, environment, and platform semantics |

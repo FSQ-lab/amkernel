@@ -22,6 +22,10 @@ Before changing architecture or implementation, read:
 @../docs/decisions/README.md
 @../docs/decisions/0001-stage-1-implementation-stack.md
 @../docs/decisions/0002-github-project-management.md
+@../docs/decisions/0003-stage-1-execution-contract.md
+@../docs/decisions/0004-stage-1-runner-protocol.md
+@../docs/decisions/0005-stage-1-runtime-lifecycle.md
+@../docs/stage-1-implementation-plan.md
 
 @../docs/experiments/mobile-appium.md
 
