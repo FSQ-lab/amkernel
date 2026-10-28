@@ -161,9 +161,7 @@ Report the exact command or scenario and the observed result. Never convert an u
 
 ## 5. Quality gates
 
-The repository currently has no implementation, dependency manifest, test runner, formatter, linter, type checker, build, or CI configuration. Therefore no executable gate exists yet. The first implementation change must establish one reproducible project toolchain and commit its canonical commands; until then, design review is the only applicable gate.
-
-Once implementation begins, every applicable gate below is blocking.
+The repository has a reproducible uv-managed package toolchain and hosted GitHub Actions CI. The stable `quality` and `package-smoke` jobs have passed on `main` and are strict required checks. Branch protection requires the pull-request path and conversation resolution without per-task human approval; independent Agent review and every applicable gate below remain blocking.
 
 ### Gate 0: Scope and contract
 
