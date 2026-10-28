@@ -47,7 +47,7 @@ Canonical documents:
 - [`docs/architecture.md`](docs/architecture.md) — generic AMKernel core architecture.
 - [`docs/development.md`](docs/development.md) — agent roles, change ownership, development workflow, and quality gates.
 - [`docs/project-management.md`](docs/project-management.md) — GitHub-backed workflow, Kanban semantics, task contracts, ADR, and risk governance.
-- [GitHub Project](https://github.com/orgs/FSQ-lab/projects/2) — canonical milestone, workflow state, stage, type, priority, and queue.
+- [GitHub Project](https://github.com/orgs/FSQ-lab/projects/2) — canonical milestone, status, stage, type, priority, and queue.
 - [GitHub Issues](https://github.com/FSQ-lab/amkernel/issues) — canonical work-item, dependency, blocker, risk, and verification records.
 - [`docs/decisions/`](docs/decisions/) — accepted architecture and implementation decisions.
 - [`docs/experiments/mobile-appium.md`](docs/experiments/mobile-appium.md) — first Appium/mobile experiment and success criteria.

@@ -10,7 +10,7 @@ Development mechanics and quality gates remain in [`development.md`](development
 
 - [`architecture.md`](architecture.md): product invariants, conceptual modules, and delivery stages.
 - [`development.md`](development.md): agent roles, ownership, implementation workflow, quality gates, and definition of done.
-- [GitHub Project #2](https://github.com/orgs/FSQ-lab/projects/2): canonical workflow state, stage, work type, priority, and queue order.
+- [GitHub Project #2](https://github.com/orgs/FSQ-lab/projects/2): canonical status, stage, work type, priority, and queue order.
 - [GitHub Issues](https://github.com/FSQ-lab/amkernel/issues): work-item contracts, dependencies, blockers, owners, risks, and verification evidence.
 - [GitHub Milestones](https://github.com/FSQ-lab/amkernel/milestones): delivery grouping and exit tracking.
 - [`decisions/`](decisions/): accepted architecture and implementation decisions.

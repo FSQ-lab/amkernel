@@ -41,7 +41,7 @@ ADRs remain versioned in the repository because they explain durable technical d
 
 The Project uses these canonical fields:
 
-- `Workflow State`: Backlog, Planning, Ready, In Progress, Review, Verification, Blocked, Done, Dropped;
+- `Status`: Backlog, Planning, Ready, In Progress, Review, Verification, Blocked, Done, Dropped;
 - `Stage`: Stage 1, Stage 2, Stage 3, Stage 4, Governance;
 - `Work Type`: Decision, Implementation, Verification, Risk, Governance, Experiment;
 - `Priority`: Critical, High, Medium, Low.
