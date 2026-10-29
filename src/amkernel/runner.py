@@ -738,6 +738,7 @@ def _block_sigint_for_finalization(
         _PTHREAD_SIGMASK(_SIG_BLOCK, {_SIGINT})
     return cell_result
 
+
 def _unblock_sigint_for_execution(baseline_mask: set[int]) -> None:
     # Darwin can leave an interrupt sent after Started pending across unmask.
     # Consume a signal already known to be pending, then map it synchronously.
