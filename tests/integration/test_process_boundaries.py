@@ -214,11 +214,19 @@ def spawn_descendant_code() -> str:
     )
 
 
-def managed_descendant_code(identity_file: Path, *, catch_interrupt: bool) -> str:
+def managed_descendant_code(
+    identity_file: Path,
+    *,
+    catch_interrupt: bool,
+    ready_file: Path | None = None,
+) -> str:
+    ready_statement = "" if ready_file is None else f"Path({str(ready_file)!r}).touch()\n"
     blocking = (
-        "while True:\n    try:\n        time.sleep(1)\n    except KeyboardInterrupt:\n        pass"
+        "while True:\n    try:\n"
+        f"        {ready_statement}"
+        "        time.sleep(1)\n    except KeyboardInterrupt:\n        pass"
         if catch_interrupt
-        else "time.sleep(30)"
+        else f"{ready_statement}time.sleep(30)"
     )
     return (
         "import json, os, subprocess, sys, time\n"
@@ -292,6 +300,7 @@ async def test_active_cancellation_tracks_and_cleans_managed_descendant(
 ) -> None:
     runtime = KernelRuntime(tmp_path)
     identity_file = tmp_path / f"cancel-{catch_interrupt}.json"
+    ready_file = tmp_path / f"cancel-ready-{catch_interrupt}"
     child_pid: int | None = None
     runner_group: int | None = None
     try:
@@ -304,12 +313,14 @@ async def test_active_cancellation_tracks_and_cleans_managed_descendant(
                         "code": managed_descendant_code(
                             identity_file,
                             catch_interrupt=catch_interrupt,
+                            ready_file=ready_file,
                         ),
                         "timeout": 30.0,
                     },
                 )
             )
             await wait_for_path(identity_file)
+            await wait_for_path(ready_file)
             identities = json.loads(identity_file.read_text())
             child_pid = identities["child"]
             runner_group = identities["group"]
