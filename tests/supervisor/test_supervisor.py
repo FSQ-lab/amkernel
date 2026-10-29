@@ -407,18 +407,33 @@ async def test_idle_runner_death_is_observed_and_descendants_are_cleaned(
 
 async def test_shutdown_cancellation_waits_for_kill_cleanup(
     supervisor: KernelSupervisor,
+    tmp_path: Path,
 ) -> None:
+    ready = tmp_path / "term-handler-ready"
+    child_code = (
+        "import signal, time\n"
+        "from pathlib import Path\n"
+        "signal.signal(signal.SIGTERM, signal.SIG_IGN)\n"
+        f"Path({str(ready)!r}).touch()\n"
+        "time.sleep(30)"
+    )
     child = await supervisor.execute(
         "import subprocess, sys\n"
-        "child = subprocess.Popen([sys.executable, '-c', "
-        "'import signal,time; signal.signal(signal.SIGTERM, signal.SIG_IGN); time.sleep(30)'])\n"
+        f"child = subprocess.Popen([sys.executable, '-c', {child_code!r}])\n"
         "child.pid",
         timeout=1.0,
     )
     assert type(child.result) is int
     child_pid = child.result
+    deadline = time.monotonic() + 2.0
+    while not ready.exists() and time.monotonic() < deadline:
+        await asyncio.sleep(0.01)
+    assert ready.exists()
+
     shutdown = asyncio.create_task(supervisor.shutdown())
-    await asyncio.sleep(0.05)
+    while supervisor.state != "closing" and not shutdown.done():
+        await asyncio.sleep(0)
+    assert not shutdown.done()
     shutdown.cancel()
 
     with pytest.raises(asyncio.CancelledError):

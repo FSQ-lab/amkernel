@@ -189,7 +189,7 @@ class RunnerProcess:
             else:
                 try:
                     os.killpg(self.process.pid, signal.SIGKILL)
-                except ProcessLookupError:
+                except (ProcessLookupError, PermissionError):
                     pass
         finally:
             for stream in (
