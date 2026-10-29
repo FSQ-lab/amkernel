@@ -196,15 +196,24 @@ async def test_active_cancellation_stabilizes_live_runner(
 
 async def test_idle_background_output_is_not_attributed_later(
     supervisor: KernelSupervisor,
+    tmp_path: Path,
 ) -> None:
+    marker = tmp_path / "orphan-written"
     first = await supervisor.execute(
         "import threading, time\n"
-        "threading.Thread("
-        "target=lambda: (time.sleep(0.05), print('orphan', flush=True)), "
-        "daemon=True).start()",
+        "from pathlib import Path\n"
+        f"orphan_marker = Path({str(marker)!r})\n"
+        "def emit_orphan():\n"
+        "    time.sleep(0.05)\n"
+        "    print('orphan', flush=True)\n"
+        "    orphan_marker.touch()\n"
+        "threading.Thread(target=emit_orphan, daemon=True).start()",
         timeout=1.0,
     )
-    await asyncio.sleep(0.1)
+    deadline = time.monotonic() + 2.0
+    while not marker.exists() and time.monotonic() < deadline:
+        await asyncio.sleep(0.01)
+    assert marker.exists()
     second = await supervisor.execute("42", timeout=1.0)
 
     assert first.stdout == ""
