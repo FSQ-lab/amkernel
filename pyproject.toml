@@ -5,6 +5,7 @@ description = "Persistent Python execution for agentic automation."
 readme = "README.md"
 dependencies = [
     "mcp>=2.3,<3",
+    "pydantic>=2.14,<3",
 ]
 
 [project.scripts]

@@ -1,9 +1,11 @@
 """AMKernel command-line entry point."""
 
 import argparse
+import asyncio
 from collections.abc import Sequence
 
 from amkernel import __version__
+from amkernel.server import serve_stdio
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -21,8 +23,10 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    """Run the current package entry point."""
+    """Run the official MCP stdio server."""
     parser = build_parser()
     parser.parse_args(argv)
-    parser.print_help()
-    return 0
+    try:
+        return asyncio.run(serve_stdio())
+    except KeyboardInterrupt:
+        return 130
