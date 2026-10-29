@@ -14,9 +14,9 @@ Stage 1 does not deliver live output, recoverable artifacts, images, `display`/f
 
 ### Candidate matrix
 
-The initial evidence matrix is CPython 3.11, 3.12, 3.13, and 3.14. Python 3.11 runs format, lint, strict type, package, and full behavior gates. Each other candidate runs the full test suite and installed stdio scenario. Native lifecycle jobs run on current GitHub-hosted Ubuntu and macOS images where the candidate interpreter is available.
+The evidence matrix evaluated CPython 3.11, 3.12, 3.13, and 3.14. Python 3.11 ran format, lint, strict type, package, and full behavior gates. Each other candidate ran the full test suite and installed stdio scenario on current GitHub-hosted Ubuntu and macOS.
 
-This is a test matrix, not package compatibility metadata. `requires-python` and Python/OS classifiers remain absent until S1-080 records a contiguous passing range and S1-085 applies exactly that approved claim. Python 3.15 is excluded initially because the locked MCP 2.3 release metadata does not claim it; it can enter S1-080 as an explicit candidate after the SDK release line supports it.
+S1-080 approved the bounded contiguous CPython 3.11–3.13 range on those hosted Ubuntu and macOS environments. macOS 3.14 failed the native lifecycle matrix, so Python 3.14 and every untested operating system remain unsupported. S1-085 applies that exact Python range to package metadata; operating-system support stays qualified in documentation because package classifiers cannot express the tested hosted environments precisely.
 
 ### Constraints
 
@@ -42,7 +42,7 @@ uv command runner:
 
 No platform automation package enters Stage 1. A package imported directly by production or tests must be a direct dependency in the corresponding group; transitive availability is not an interface. Dependency updates require a regenerated lock, focused changelog review, and the same package/stdio evidence as the current lock.
 
-`.python-version` selects CPython 3.11 for the canonical local environment. `[tool.uv].environments` constrains lock resolution to CPython 3.11 through 3.14 without publishing compatibility metadata. The project uses the plain `mcp` distribution, not `mcp[cli]`.
+`.python-version` selects CPython 3.11 for the canonical local environment. `requires-python` and `[tool.uv].environments` constrain package and lock resolution to the approved CPython 3.11–3.13 range. The project uses the plain `mcp` distribution, not `mcp[cli]`.
 
 ## 3. Canonical commands
 

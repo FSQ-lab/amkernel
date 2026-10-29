@@ -3,13 +3,25 @@
 import shutil
 import subprocess
 import sys
-from importlib.metadata import version
+from importlib.metadata import metadata, version
 
 import amkernel
 
 
 def test_package_version_matches_distribution_metadata() -> None:
     assert amkernel.__version__ == version("amkernel")
+
+
+def test_distribution_declares_verified_python_range() -> None:
+    package_metadata = metadata("amkernel")
+
+    assert package_metadata["Requires-Python"] == ">=3.11, <3.14"
+    assert package_metadata.get_all("Classifier") == [
+        "Programming Language :: Python :: 3 :: Only",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
+    ]
 
 
 def test_module_version_entry_point() -> None:
