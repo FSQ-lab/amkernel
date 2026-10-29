@@ -199,6 +199,7 @@ async def test_idle_background_output_is_not_attributed_later(
     tmp_path: Path,
 ) -> None:
     marker = tmp_path / "orphan-written"
+    orphan_bytes = supervisor._orphan_stdout.total_bytes
     first = await supervisor.execute(
         "import threading, time\n"
         "from pathlib import Path\n"
@@ -214,6 +215,13 @@ async def test_idle_background_output_is_not_attributed_later(
     while not marker.exists() and time.monotonic() < deadline:
         await asyncio.sleep(0.01)
     assert marker.exists()
+    deadline = time.monotonic() + 2.0
+    while (
+        supervisor._orphan_stdout.total_bytes < orphan_bytes + len(b"orphan\n")
+        and time.monotonic() < deadline
+    ):
+        await asyncio.sleep(0.01)
+    assert supervisor._orphan_stdout.total_bytes == orphan_bytes + len(b"orphan\n")
     second = await supervisor.execute("42", timeout=1.0)
 
     assert first.stdout == ""
@@ -674,23 +682,26 @@ async def test_partial_pipe_acquisition_closes_prior_descriptors(
 
 
 class FailFirstVerificationOperations:
-    """Fail one group verification, then report real state."""
+    """Fail one group verification, then model successful retry cleanup."""
 
     def __init__(self) -> None:
         self.failed = False
+        self.signaled = False
 
     def signal_group(self, process_group: int, signal_number: int) -> None:
-        os.killpg(process_group, signal_number)
+        try:
+            os.killpg(process_group, signal_number)
+        except ProcessLookupError:
+            self.signaled = True
+            raise
+        else:
+            self.signaled = True
 
-    def group_exists(self, process_group: int) -> bool:
+    def group_exists(self, _process_group: int) -> bool:
         if not self.failed:
             self.failed = True
             raise PermissionError("verification denied once")
-        try:
-            os.killpg(process_group, 0)
-        except ProcessLookupError:
-            return False
-        return True
+        return not self.signaled
 
 
 async def test_initialization_cleanup_failure_remains_retryable(

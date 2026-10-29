@@ -222,7 +222,38 @@ Appium, simulators, emulators, Xcode, and Android SDK jobs are Stage 3 experimen
 
 Coverage reports may reveal missing state-machine paths, but no percentage threshold is adopted without a code baseline and evidence that the threshold protects meaningful behavior.
 
-## 6. Blocking conditions
+## 6. Pre-1.0 release procedure
+
+Stage 1 completion makes AMKernel releasable; it does not itself publish a release. A release uses one reviewed `main` commit, the wheel exercised by that commit's hosted `package-smoke` job, and the support evidence attached to the same code. Rebuilding locally and substituting the result is not an equivalent artifact.
+
+### 6.1 Version and changelog
+
+- Public versions use `0.MINOR.PATCH` under PEP 440 and matching immutable `v0.MINOR.PATCH` Git tags. `0.0.0` is a development placeholder and is never published.
+- Increment `MINOR` for a public contract, behavior, support-policy, or dependency-baseline change, including a breaking pre-1.0 change. Increment `PATCH` only for a backward-compatible correction. Versions increase monotonically and are never reused.
+- One release pull request updates `project.version` in `pyproject.toml`, regenerates `uv.lock`, and adds or updates `CHANGELOG.md`. Its changelog entry names the version and date; groups user-visible Added, Changed, Fixed, and Security items as applicable; calls out breaking changes first; records Python/OS support changes; and links the governing Issues, ADRs, and compatibility runs. Generated GitHub notes may supplement but never replace this entry.
+- Documentation-only changes do not require a package release. If they correct a materially false published support or security statement, use a patch release so package consumers receive the correction.
+
+### 6.2 Release gates and provenance
+
+The Integration Lead may create a release only when all of these facts hold for one commit:
+
+1. The release pull request has independent architecture/security review and is merged through protected `main` with every required check passing.
+2. The commit's `quality`, `package-smoke`, and every claimed compatibility job pass without retrying or excluding a failure. A support claim may list only Python versions, operating systems, stages, and external integrations exercised by those jobs or by separately accepted evidence.
+3. The `package-smoke` job has uploaded `distribution-<commit SHA>`. Download that artifact; do not rebuild or replace it. Confirm that the wheel filename and embedded metadata carry the proposed version. The source archive built by the quality gates is not retained or published because `package-smoke` does not install it; releasing an sdist requires adding the same clean-environment official-client scenario from that sdist first.
+4. Compute and record the wheel's SHA-256. The release record names the exact commit, workflow run, artifact name, checksum, build Python/OS, verified Python/OS range, delivery stage, and any explicit exclusion.
+5. Create the annotated `v<version>` tag at that exact `main` commit, then create the GitHub Release from the retained wheel and changelog entry. Tags and attached files are immutable after publication.
+
+PyPI publication, when enabled, uses a repository-scoped trusted publisher and a protected GitHub environment—never a long-lived local token. Trusted publishing is not configured yet, so PyPI publication remains blocked until that repository control exists. The first publishing change must upload the exact retained wheel, not another build.
+
+### 6.3 Abort, rollback, and yank
+
+- Before publication, any failed gate discards the candidate. Do not create or move a release tag to rescue it.
+- After publication, never overwrite a version, move its tag, or silently replace an artifact. Correct ordinary regressions with a new patch version.
+- For a materially broken package, yank that version from the package index with a reason and corrective-Issue link, mark the GitHub Release prominently, and publish a corrected version through the full gates. Existing evidence and checksums remain available.
+- For a security or provenance incident, yank immediately, revoke the affected publisher or credential, preserve the incident record, and remove hosted files only when containment or the distribution service's policy requires it. Publish a clean new version; never reuse the compromised version number.
+- A yank narrows availability; it does not prove user environments rolled back. Release communication must state impact, affected versions, and the safe replacement explicitly.
+
+## 7. Blocking conditions
 
 A change cannot be accepted with any of the following:
 
@@ -238,7 +269,7 @@ A change cannot be accepted with any of the following:
 - wholesale copying from `../omp` without mechanism-level justification and focused tests;
 - placeholders, stubs, compatibility shims, or deferred work inside the claimed deliverable.
 
-## 7. Definition of done
+## 8. Definition of done
 
 A change is done only when:
 
@@ -250,7 +281,7 @@ A change is done only when:
 - verification evidence names what was exercised and observed;
 - documentation is updated where, and only where, the verified behavior changes project truth.
 
-## 8. Decisions required before Stage 1 coding
+## 9. Decisions required before Stage 1 coding
 
 ADR-0001 settles the Python implementation, official MCP SDK, package-layout direction, and canonical toolchain. The first implementation planning task must consume that decision and settle the remaining coupled contracts because downstream ownership and tests depend on them:
 
