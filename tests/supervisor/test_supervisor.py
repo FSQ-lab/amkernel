@@ -18,6 +18,7 @@ import amkernel.supervisor as supervisor_module
 from amkernel.protocol import DoneResponse
 from amkernel.supervisor import (
     STREAM_TAIL_BYTES,
+    KernelStartError,
     KernelSupervisor,
 )
 
@@ -266,6 +267,27 @@ async def test_cleanup_failure_is_reported(tmp_path: Path) -> None:
     assert result.error is not None
     assert "remains after SIGKILL" in result.error
     assert current.state == "dead"
+
+
+async def test_fatal_cleanup_details_remain_host_only(tmp_path: Path) -> None:
+    current = await KernelSupervisor.start(tmp_path, operations=StuckGroupOperations())
+
+    result = await current.execute(
+        "import time\n"
+        "while True:\n"
+        "    try:\n"
+        "        time.sleep(1)\n"
+        "    except KeyboardInterrupt:\n"
+        "        pass",
+        timeout=0.05,
+    )
+
+    assert result.status == "kernel_killed"
+    assert result.error is not None
+    assert result.error.type == "CleanupError"
+    assert result.error.message == "managed kernel cleanup failed"
+    assert "SIGKILL" not in result.error.message
+    assert "SIGKILL" in current.diagnostic_tail
 
 
 async def test_runner_environment_is_allowlist_only(
@@ -537,6 +559,42 @@ async def test_concurrent_shutdown_calls_share_one_cleanup(
     assert supervisor.state == "closed"
 
 
+async def test_shutdown_request_write_is_bounded(
+    monkeypatch: pytest.MonkeyPatch,
+    supervisor: KernelSupervisor,
+) -> None:
+    blocked = asyncio.Event()
+
+    async def block_write(_frame: bytes) -> None:
+        await blocked.wait()
+
+    monkeypatch.setattr(supervisor, "_write_request", block_write)
+    started = time.monotonic()
+
+    result = await supervisor.shutdown()
+
+    assert result.cleaned
+    assert supervisor.state == "closed"
+    assert time.monotonic() - started < 4.0
+
+
+async def test_unsupported_platform_fails_before_pipe_creation(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    def unsupported() -> None:
+        raise RuntimeError("UnsupportedPlatformError: missing primitives")
+
+    def forbidden_pipes() -> tuple[int, int, int, int, int, int]:
+        raise AssertionError("pipes must not be created")
+
+    monkeypatch.setattr(KernelSupervisor, "_require_supported_platform", staticmethod(unsupported))
+    monkeypatch.setattr(supervisor_module, "_create_protocol_pipes", forbidden_pipes)
+
+    with pytest.raises(KernelStartError, match="UnsupportedPlatformError"):
+        await KernelSupervisor.start(tmp_path)
+
+
 async def test_graceful_shutdown_requires_zero_runner_exit(
     supervisor: KernelSupervisor,
 ) -> None:
@@ -601,6 +659,75 @@ class FailFirstVerificationOperations:
         except ProcessLookupError:
             return False
         return True
+
+
+async def test_initialization_cleanup_failure_remains_retryable(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    async def fail_initialize(_supervisor: KernelSupervisor) -> None:
+        raise RuntimeError("injected initialize failure")
+
+    monkeypatch.setattr(KernelSupervisor, "_initialize", fail_initialize)
+    before = {process.pid for process in psutil.Process().children(recursive=True)}
+
+    with pytest.raises(KernelStartError) as captured:
+        await KernelSupervisor.start(tmp_path, operations=FailFirstVerificationOperations())
+
+    assert captured.value.cleanup_pending
+    assert "cleanup failed" in str(captured.value)
+    cleanup = await captured.value.retry_cleanup()
+    assert cleanup.cleaned
+    assert not captured.value.cleanup_pending
+
+    deadline = time.monotonic() + 3.0
+    while time.monotonic() < deadline:
+        after = {process.pid for process in psutil.Process().children(recursive=True)}
+        if after <= before:
+            break
+        await asyncio.sleep(0.02)
+    assert {process.pid for process in psutil.Process().children(recursive=True)} <= before
+
+
+async def test_cancelled_start_cleanup_failure_remains_retryable(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    original = supervisor_module._stream_reader_from_fd
+    release = asyncio.Event()
+    calls = 0
+
+    async def delayed_reader(fd: int) -> tuple[asyncio.StreamReader, asyncio.ReadTransport]:
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            await release.wait()
+        return await original(fd)
+
+    monkeypatch.setattr(supervisor_module, "_stream_reader_from_fd", delayed_reader)
+    before = {process.pid for process in psutil.Process().children(recursive=True)}
+    starting = asyncio.create_task(
+        KernelSupervisor.start(tmp_path, operations=FailFirstVerificationOperations())
+    )
+    await asyncio.sleep(0.05)
+    starting.cancel()
+    release.set()
+
+    with pytest.raises(KernelStartError) as captured:
+        await starting
+
+    assert captured.value.cleanup_pending
+    cleanup = await captured.value.retry_cleanup()
+    assert cleanup.cleaned
+    assert not captured.value.cleanup_pending
+
+    deadline = time.monotonic() + 3.0
+    while time.monotonic() < deadline:
+        after = {process.pid for process in psutil.Process().children(recursive=True)}
+        if after <= before:
+            break
+        await asyncio.sleep(0.02)
+    assert {process.pid for process in psutil.Process().children(recursive=True)} <= before
 
 
 async def test_failed_shutdown_can_retry_cleanup(tmp_path: Path) -> None:
