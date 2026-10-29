@@ -8,8 +8,9 @@ from pathlib import Path
 
 import pytest
 
+from amkernel.artifact_store import ArtifactStore
 from amkernel.protocol import DoneResponse, Response
-from amkernel.supervisor import KernelSupervisor
+from amkernel.supervisor import KernelSupervisor, SupervisedExecution
 
 pytestmark = [
     pytest.mark.anyio,
@@ -27,6 +28,15 @@ async def test_deadline_wins_real_terminal_races_and_runner_reuses_immediately(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     supervisor = await KernelSupervisor.start(tmp_path)
+    store = ArtifactStore(temporary_parent=tmp_path)
+
+    async def execute(code: str, timeout: float) -> SupervisedExecution:
+        return await supervisor.execute(
+            code,
+            timeout,
+            output_bundle=await store.begin_bundle(),
+        )
+
     original_next_response = supervisor._next_response
     real_sleep = asyncio.sleep
     deadline = asyncio.Event()
@@ -50,16 +60,14 @@ async def test_deadline_wins_real_terminal_races_and_runner_reuses_immediately(
     monkeypatch.setattr(supervisor, "_next_response", gated_response)
     terminal_release.set()
     try:
-        initialized = await supervisor.execute("values = []", timeout=1.0)
+        initialized = await execute("values = []", 1.0)
         assert initialized.status == "completed"
 
         for index in range(20):
             deadline = asyncio.Event()
             terminal_ready = asyncio.Event()
             terminal_release = asyncio.Event()
-            execution = asyncio.create_task(
-                supervisor.execute(f"values.append({index})\n{index}", timeout=123.456)
-            )
+            execution = asyncio.create_task(execute(f"values.append({index})\n{index}", 123.456))
             await asyncio.wait_for(terminal_ready.wait(), timeout=2.0)
             deadline.set()
             terminal_release.set()
@@ -72,9 +80,10 @@ async def test_deadline_wins_real_terminal_races_and_runner_reuses_immediately(
             assert result.error.type == "TimeoutError"
             assert result.execution_count == index + 2
 
-        observed = await supervisor.execute("values", timeout=1.0)
+        observed = await execute("values", 1.0)
         assert observed.status == "completed"
         assert observed.result == list(range(20))
         assert observed.kernel_state == "alive"
     finally:
         assert (await asyncio.wait_for(supervisor.shutdown(), timeout=5.0)).cleaned
+        await store.cleanup()

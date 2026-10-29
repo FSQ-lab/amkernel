@@ -12,8 +12,10 @@ import uuid
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Final, Literal, Protocol
+from typing import Final, Literal, Protocol, cast
 
+from amkernel.artifact_store import ArtifactBundle, ArtifactStoreError
+from amkernel.output import OutputObserver, OutputPipeline, OutputResult
 from amkernel.protocol import (
     DIAGNOSTIC_FD_ARGUMENT,
     MAX_CONTROL_FRAME_BYTES,
@@ -22,6 +24,7 @@ from amkernel.protocol import (
     DoneResponse,
     ErrorInfo,
     ExecuteRequest,
+    ExecutionResponseState,
     InitializeRequest,
     JsonValue,
     ProtocolErrorResponse,
@@ -40,8 +43,8 @@ INTERRUPT_GRACE: Final = 1.0
 TERMINATE_GRACE: Final = 1.0
 KILL_GRACE: Final = 1.0
 SHUTDOWN_GRACE: Final = 1.0
-STREAM_TAIL_BYTES: Final = 262_144
 DIAGNOSTIC_TAIL_BYTES: Final = 65_536
+
 _READ_CHUNK: Final = 65_536
 _ENVIRONMENT_ALLOWLIST: Final = frozenset(
     {
@@ -118,13 +121,6 @@ class ExecutionAbandoned(RuntimeError):
 
 
 @dataclass(frozen=True, slots=True)
-class OutputMetadata:
-    total_bytes: int
-    total_lines: int
-    truncated: bool
-
-
-@dataclass(frozen=True, slots=True)
 class SupervisedExecution:
     status: ExecutionStatus
     stdout: str
@@ -136,7 +132,7 @@ class SupervisedExecution:
     duration_ms: int
     kernel_state: KernelState
     runtime: RuntimeDiagnostics
-    output: OutputMetadata
+    output: OutputResult
 
 
 @dataclass(frozen=True, slots=True)
@@ -182,17 +178,6 @@ class _StreamTail:
 
 
 @dataclass(slots=True)
-class _ExecutionCapture:
-    stdout: _StreamTail = field(default_factory=lambda: _StreamTail(STREAM_TAIL_BYTES))
-    stderr: _StreamTail = field(default_factory=lambda: _StreamTail(STREAM_TAIL_BYTES))
-    revision: int = 0
-
-    def feed(self, channel: Literal["stdout", "stderr"], chunk: bytes) -> None:
-        getattr(self, channel).feed(chunk)
-        self.revision += 1
-
-
-@dataclass(slots=True)
 class _ActiveExecution:
     correlation_id: str
     cancel_event: asyncio.Event = field(default_factory=asyncio.Event)
@@ -201,6 +186,18 @@ class _ActiveExecution:
     interrupt_sent: bool = False
     committed: bool = False
     write_complete: bool = False
+    cancellation_time: float | None = None
+
+    def cancel(self) -> None:
+        if self.cancellation_time is None:
+            self.cancellation_time = time.monotonic()
+        self.cancel_event.set()
+
+
+@dataclass(frozen=True, slots=True)
+class _TerminalObservation:
+    response: Response
+    completed_at: float
 
 
 @dataclass(frozen=True, slots=True)
@@ -273,7 +270,7 @@ class KernelSupervisor:
             environment_kind=environment_kind,
         )
         self._execution_count = 0
-        self._capture: _ExecutionCapture | None = None
+        self._capture: OutputPipeline | None = None
         self._active: _ActiveExecution | None = None
         self._orphan_stdout = _StreamTail(DIAGNOSTIC_TAIL_BYTES)
         self._orphan_stderr = _StreamTail(DIAGNOSTIC_TAIL_BYTES)
@@ -283,6 +280,9 @@ class KernelSupervisor:
         self._process_exit_event = asyncio.Event()
         self._cleanup_error: str | None = None
         self._shutdown_task: asyncio.Task[ShutdownResult] | None = None
+        self._idle_response_task: asyncio.Task[None] | None = None
+        self._idle_response_read_task: asyncio.Task[Response] | None = None
+        self._idle_response_fatal = False
         self._shutdown_result: ShutdownResult | None = None
         self._process_wait_task = asyncio.create_task(process.wait())
         assert process.stdout is not None
@@ -493,7 +493,15 @@ class KernelSupervisor:
         self._execution_count = 0
         self._state = "alive"
 
-    async def execute(self, code: str, timeout: float) -> SupervisedExecution:
+    async def execute(
+        self,
+        code: str,
+        timeout: float,
+        packages: tuple[str, ...] = (),
+        *,
+        output_bundle: ArtifactBundle,
+        observer: OutputObserver | None = None,
+    ) -> SupervisedExecution:
         """Execute one cell or return a truthful terminal dead-kernel outcome."""
         if self._state != "alive":
             raise KernelUnavailableError(f"Runner is {self._state}")
@@ -501,6 +509,7 @@ class KernelSupervisor:
             raise ConcurrentExecutionError("Runner already has an active execution")
         if not (0 < timeout <= 3_600):
             raise ValueError("timeout must be greater than 0 and at most 3600 seconds")
+        await self._cancel_idle_response_watch()
         await self._settle_stream_readers()
         if self._state != "alive":
             raise KernelUnavailableError(f"Runner is {self._state}")
@@ -508,10 +517,27 @@ class KernelSupervisor:
             raise ConcurrentExecutionError("Runner already has an active execution")
 
         active = _ActiveExecution(uuid.uuid4().hex)
-        capture = _ExecutionCapture()
+        try:
+            capture = OutputPipeline(output_bundle)
+            if observer is not None:
+                capture.attach_observer(observer)
+        except (ArtifactStoreError, OSError) as error:
+            try:
+                await output_bundle.abort()
+            except ArtifactStoreError:
+                pass
+            core = await self._fatal_outcome(
+                "ArtifactStoreError",
+                str(error),
+                duration_ms=0,
+            )
+            self._close_channels()
+            return _compose_execution(core, OutputResult.empty())
         self._active = active
         self._capture = capture
-        operation = asyncio.create_task(self._execute_active(active, code, timeout))
+        operation = asyncio.create_task(
+            self._execute_active(active, capture, code, timeout, packages)
+        )
         caller_cancelled = False
         try:
             while True:
@@ -520,39 +546,54 @@ class KernelSupervisor:
                     break
                 except asyncio.CancelledError:
                     caller_cancelled = True
-                    active.cancel_event.set()
+                    active.cancel()
         finally:
             finalize_task = asyncio.create_task(self._finalize_execution(active, capture))
             while True:
                 try:
-                    await asyncio.shield(finalize_task)
+                    output, output_error = await asyncio.shield(finalize_task)
                     break
                 except asyncio.CancelledError:
                     caller_cancelled = True
-                    active.cancel_event.set()
+                    active.cancel()
+        if output_error is not None:
+            core = await self._fatal_outcome(
+                "ArtifactStoreError",
+                str(output_error),
+                duration_ms=core.duration_ms,
+            )
         if core.kernel_state == "dead":
             self._close_channels()
         if caller_cancelled:
             raise asyncio.CancelledError
-        return _compose_execution(core, capture)
+        return _compose_execution(core, output)
 
     async def _finalize_execution(
         self,
         active: _ActiveExecution,
-        capture: _ExecutionCapture,
-    ) -> None:
+        capture: OutputPipeline,
+    ) -> tuple[OutputResult, ArtifactStoreError | None]:
         await self._settle_stream_readers()
+        try:
+            output = await capture.finish()
+            output_error = None
+        except ArtifactStoreError as error:
+            output = capture.snapshot_result()
+            output_error = error
         self._capture = None
         self._active = None
         active.done_event.set()
+        return output, output_error
 
     async def _execute_active(
         self,
         active: _ActiveExecution,
+        capture: OutputPipeline,
         code: str,
         timeout: float,
+        packages: tuple[str, ...],
     ) -> _CoreOutcome:
-        delivery_task = asyncio.create_task(self._deliver_execute(active, code))
+        delivery_task = asyncio.create_task(self._deliver_execute(active, code, packages))
         delivery_cancel_task = asyncio.create_task(active.cancel_event.wait())
         try:
             async with asyncio.timeout(COMMAND_ACK_TIMEOUT):
@@ -581,10 +622,24 @@ class KernelSupervisor:
                             duration_ms=0,
                         )
                 response = await delivery_task
-        except (TimeoutError, OSError, ProtocolViolation) as error:
+        except TimeoutError as error:
             await _cancel_tasks(delivery_task, delivery_cancel_task)
             return await self._fatal_outcome(
                 "RunnerProtocolTimeout",
+                f"execute delivery/ack failed: {error}",
+                duration_ms=0,
+            )
+        except ProtocolViolation as error:
+            await _cancel_tasks(delivery_task, delivery_cancel_task)
+            return await self._fatal_outcome(
+                "RunnerProtocolError",
+                f"execute delivery/ack failed: {error}",
+                duration_ms=0,
+            )
+        except OSError as error:
+            await _cancel_tasks(delivery_task, delivery_cancel_task)
+            return await self._fatal_outcome(
+                "KernelExited",
                 f"execute delivery/ack failed: {error}",
                 duration_ms=0,
             )
@@ -611,35 +666,107 @@ class KernelSupervisor:
         self._execution_count = response.execution_count
         active.started_event.set()
         started = time.monotonic()
-        response_task = asyncio.create_task(self._next_response())
-        timeout_task = asyncio.create_task(asyncio.sleep(timeout))
+        response_task = asyncio.create_task(self._await_terminal(active))
         cancel_task = asyncio.create_task(active.cancel_event.wait())
+        timeout_task = asyncio.create_task(_deadline_after(timeout))
+        output_limit_task = asyncio.create_task(capture.limit_event.wait())
+        output_failure_task = asyncio.create_task(capture.failure_event.wait())
+        intervention_tasks = (
+            timeout_task,
+            cancel_task,
+            output_limit_task,
+            output_failure_task,
+        )
+        current_batch: set[asyncio.Task[object]] = set()
+        committed_batch: frozenset[asyncio.Task[object]] = frozenset()
+        commit_handle: asyncio.Handle | None = None
+
+        def commit_batch() -> None:
+            nonlocal committed_batch, commit_handle
+            committed_batch = frozenset(current_batch)
+            current_batch.clear()
+            commit_handle = None
+
+        def record_ready(task: asyncio.Task[object]) -> None:
+            nonlocal commit_handle
+            current_batch.add(task)
+            if commit_handle is None:
+                commit_handle = asyncio.get_running_loop().call_soon(commit_batch)
+
+        for intervention_task in intervention_tasks:
+            intervention_task.add_done_callback(record_ready)
         await asyncio.wait(
-            {response_task, timeout_task, cancel_task},
+            {response_task, *intervention_tasks},
             return_when=asyncio.FIRST_COMPLETED,
         )
-        if timeout_task.done() or cancel_task.done():
+        if any(task.done() for task in intervention_tasks):
+            observation: _TerminalObservation | None = None
             terminal: Response | None = None
             if response_task.done():
                 try:
-                    terminal = response_task.result()
-                except (OSError, ProtocolViolation) as error:
-                    await _cancel_tasks(response_task, timeout_task, cancel_task)
+                    observation = response_task.result()
+                    terminal = observation.response
+                except ProtocolViolation as error:
+                    await _cancel_tasks(response_task, *intervention_tasks)
+                    return await self._fatal_outcome(
+                        "RunnerProtocolError",
+                        f"response channel failed: {error}",
+                        duration_ms=_duration_ms(started),
+                        started=started,
+                    )
+                except OSError as error:
+                    await _cancel_tasks(response_task, *intervention_tasks)
                     return await self._fatal_outcome(
                         "KernelExited",
                         f"response channel failed: {error}",
                         duration_ms=_duration_ms(started),
                         started=started,
                     )
-            await _cancel_tasks(response_task, timeout_task, cancel_task)
-            active.interrupt_sent = True
-            reason = "cancellation" if cancel_task.done() else "deadline"
-            return await self._interrupt_or_escalate(active, started, reason, terminal)
+            readiness_batch = committed_batch or frozenset(current_batch)
+            intervention_time, reason = _select_intervention(
+                deadline=timeout_task.result() if timeout_task.done() else None,
+                output_limit=capture.limit_time if output_limit_task.done() else None,
+                cancellation=active.cancellation_time if cancel_task.done() else None,
+                output_failure=(capture.failure_time if output_failure_task.done() else None),
+                deadline_and_limit_same_turn=(
+                    timeout_task in readiness_batch and output_limit_task in readiness_batch
+                ),
+            )
+            for intervention_task in intervention_tasks:
+                intervention_task.remove_done_callback(record_ready)
+            await _cancel_tasks(*intervention_tasks)
+            if observation is not None and observation.completed_at <= intervention_time:
+                return await self._normal_terminal(active, observation.response, started)
+            if reason == "output failure":
+                await _cancel_tasks(response_task)
+                failure = capture.failure
+                return await self._fatal_outcome(
+                    "ArtifactStoreError",
+                    str(failure or "execution output storage failed"),
+                    duration_ms=_duration_ms(started),
+                    started=started,
+                )
+            return await self._interrupt_or_escalate(
+                active,
+                started,
+                reason,
+                terminal,
+                terminal_task=response_task if terminal is None else None,
+            )
 
-        await _cancel_tasks(timeout_task, cancel_task)
+        for intervention_task in intervention_tasks:
+            intervention_task.remove_done_callback(record_ready)
+        await _cancel_tasks(*intervention_tasks)
         try:
-            terminal = response_task.result()
-        except (OSError, ProtocolViolation) as error:
+            terminal = response_task.result().response
+        except ProtocolViolation as error:
+            return await self._fatal_outcome(
+                "RunnerProtocolError",
+                f"response channel failed: {error}",
+                duration_ms=_duration_ms(started),
+                started=started,
+            )
+        except OSError as error:
             return await self._fatal_outcome(
                 "KernelExited",
                 f"response channel failed: {error}",
@@ -648,12 +775,28 @@ class KernelSupervisor:
             )
         return await self._normal_terminal(active, terminal, started)
 
-    async def _deliver_execute(self, active: _ActiveExecution, code: str) -> Response:
+    async def _deliver_execute(
+        self, active: _ActiveExecution, code: str, packages: tuple[str, ...]
+    ) -> Response:
         await self._write_request(
-            encode_request(ExecuteRequest(active.correlation_id, code)),
+            encode_request(ExecuteRequest(active.correlation_id, code, packages)),
             active=active,
         )
         return await self._next_response()
+
+    async def _await_terminal(self, active: _ActiveExecution) -> _TerminalObservation:
+        state = ExecutionResponseState(active.correlation_id, self._execution_count)
+        while True:
+            response = await self._next_response()
+            state.accept(response)
+            if isinstance(response, (DoneResponse, ProtocolErrorResponse)):
+                await _settle_ready_stream_readers()
+                self._capture = None
+                return _TerminalObservation(response, time.monotonic())
+            capture = self._capture
+            if capture is None:
+                raise ProtocolViolation("output event observed without active capture")
+            capture.accept_response(response)
 
     async def _normal_terminal(
         self,
@@ -682,6 +825,7 @@ class KernelSupervisor:
                 started=started,
             )
         self._runtime = response.runtime
+        self._ensure_idle_response_watch()
         if response.outcome == "completed":
             return _CoreOutcome(
                 "completed",
@@ -711,10 +855,14 @@ class KernelSupervisor:
         started: float,
         reason: str,
         terminal: Response | None = None,
+        *,
+        terminal_task: asyncio.Task[_TerminalObservation] | None = None,
     ) -> _CoreOutcome:
         try:
             self._operations.signal_group(self._process_group, signal.SIGINT)
         except ProcessLookupError:
+            if terminal_task is not None:
+                await _cancel_tasks(terminal_task)
             return await self._fatal_outcome(
                 "KernelExited",
                 f"Runner exited before {reason} interrupt",
@@ -722,6 +870,8 @@ class KernelSupervisor:
                 started=started,
             )
         except Exception as error:
+            if terminal_task is not None:
+                await _cancel_tasks(terminal_task)
             return await self._fatal_outcome(
                 "CleanupError",
                 f"failed to signal Runner for {reason}: {type(error).__name__}: {error}",
@@ -732,8 +882,18 @@ class KernelSupervisor:
         if terminal is None:
             try:
                 async with asyncio.timeout(INTERRUPT_GRACE):
-                    response = await self._next_response()
-            except (TimeoutError, OSError, ProtocolViolation):
+                    if terminal_task is not None:
+                        response = (await terminal_task).response
+                    else:
+                        response = (await self._await_terminal(active)).response
+            except ProtocolViolation as error:
+                return await self._fatal_outcome(
+                    "RunnerProtocolError",
+                    f"invalid response after {reason} interrupt: {error}",
+                    duration_ms=_duration_ms(started),
+                    started=started,
+                )
+            except (TimeoutError, OSError):
                 return await self._fatal_outcome(
                     "KernelKilled",
                     f"Runner did not settle after {reason} interrupt",
@@ -745,11 +905,17 @@ class KernelSupervisor:
 
         if isinstance(response, DoneResponse) and self._valid_done(active, response):
             self._runtime = response.runtime
+            self._ensure_idle_response_watch()
+            output_limited = reason == "output limit"
             return _CoreOutcome(
-                "timed_out",
+                "failed" if output_limited else "timed_out",
                 False,
                 None,
-                ErrorInfo("TimeoutError", f"cell interrupted by {reason}", ()),
+                ErrorInfo(
+                    "OutputLimitExceeded" if output_limited else "TimeoutError",
+                    "output limit exceeded" if output_limited else f"cell interrupted by {reason}",
+                    (),
+                ),
                 response.execution_count,
                 _duration_ms(started),
                 "alive",
@@ -788,7 +954,7 @@ class KernelSupervisor:
         await _cancel_tasks(started_task, done_task)
         if active.done_event.is_set():
             return "alive" if self._state == "alive" else "dead"
-        active.cancel_event.set()
+        active.cancel()
         await active.done_event.wait()
         return "alive" if self._state == "alive" else "dead"
 
@@ -817,10 +983,11 @@ class KernelSupervisor:
     async def _shutdown_impl(self) -> ShutdownResult:
         if self._state == "closed":
             return ShutdownResult(True)
+        await self._cancel_idle_response_watch()
         self._state = "closing"
         active = self._active
         if active is not None:
-            active.cancel_event.set()
+            active.cancel()
             await active.done_event.wait()
         graceful_error: str | None = None
         if self._process.returncode is None and not self._channels_closed:
@@ -964,6 +1131,51 @@ class KernelSupervisor:
         if active is not None:
             active.write_complete = True
 
+    def _ensure_idle_response_watch(self) -> None:
+        task = self._idle_response_task
+        if task is not None and not task.done():
+            return
+        read_task = asyncio.create_task(self._read_response())
+        self._idle_response_read_task = read_task
+        self._idle_response_fatal = False
+        self._idle_response_task = asyncio.create_task(
+            self._watch_post_terminal_response(read_task)
+        )
+
+    async def _watch_post_terminal_response(self, read_task: asyncio.Task[Response]) -> None:
+        try:
+            response = await read_task
+        except asyncio.CancelledError:
+            raise
+        except OSError:
+            return
+        except ProtocolViolation as error:
+            message = str(error)
+        else:
+            message = f"response after terminal frame: {type(response).__name__}"
+        self._idle_response_fatal = True
+        self._diagnostic.feed(f"RunnerProtocolError: {message}\n".encode())
+        await self._destructive_cleanup()
+
+    async def _cancel_idle_response_watch(self) -> None:
+        watcher = self._idle_response_task
+        read_task = self._idle_response_read_task
+        if watcher is None:
+            return
+        if self._idle_response_fatal or (read_task is not None and read_task.done()):
+            await asyncio.shield(watcher)
+        else:
+            if read_task is not None:
+                read_task.cancel()
+            watcher.cancel()
+            await asyncio.gather(
+                *(task for task in (read_task, watcher) if task is not None),
+                return_exceptions=True,
+            )
+        self._idle_response_task = None
+        self._idle_response_read_task = None
+        self._idle_response_fatal = False
+
     async def _next_response(self) -> Response:
         response_task = asyncio.create_task(self._read_response())
         exit_task = asyncio.create_task(self._process_exit_event.wait())
@@ -1015,15 +1227,7 @@ class KernelSupervisor:
 
     @staticmethod
     async def _settle_stream_readers() -> None:
-        # A zero-delay timer runs after already-ready pipe callbacks. Their
-        # awakened reader tasks then run before this task resumes.
-        loop = asyncio.get_running_loop()
-        settled = loop.create_future()
-        handle = loop.call_later(0, settled.set_result, None)
-        try:
-            await settled
-        finally:
-            handle.cancel()
+        await _settle_ready_stream_readers()
 
     def _close_channels(self) -> None:
         if self._channels_closed:
@@ -1106,6 +1310,7 @@ async def _run_cleanup_operation(
 def _public_infrastructure_message(error_type: str) -> str:
     messages = {
         "CleanupError": "managed kernel cleanup failed",
+        "ArtifactStoreError": "execution output storage failed",
         "KernelExited": "kernel process exited unexpectedly",
         "RunnerProtocolError": "kernel protocol failed",
         "RunnerProtocolTimeout": "kernel protocol timed out",
@@ -1127,16 +1332,57 @@ def _protocol_error_type(response: ProtocolErrorResponse) -> str:
     return "RunnerProtocolError"
 
 
-def _compose_execution(core: _CoreOutcome, capture: _ExecutionCapture) -> SupervisedExecution:
-    output = OutputMetadata(
-        total_bytes=capture.stdout.total_bytes + capture.stderr.total_bytes,
-        total_lines=capture.stdout.total_lines + capture.stderr.total_lines,
-        truncated=capture.stdout.truncated or capture.stderr.truncated,
+async def _settle_ready_stream_readers() -> None:
+    # A zero-delay timer runs after already-ready pipe callbacks. Their
+    # awakened reader tasks then run before this task resumes.
+    loop = asyncio.get_running_loop()
+    settled = loop.create_future()
+    handle = loop.call_later(0, settled.set_result, None)
+    try:
+        await settled
+    finally:
+        handle.cancel()
+
+
+async def _deadline_after(delay: float) -> float:
+    await asyncio.sleep(delay)
+    return time.monotonic()
+
+
+def _select_intervention(
+    *,
+    deadline: float | None,
+    output_limit: float | None,
+    cancellation: float | None,
+    output_failure: float | None,
+    deadline_and_limit_same_turn: bool,
+) -> tuple[float, Literal["deadline", "output limit", "cancellation", "output failure"]]:
+    if output_failure is not None:
+        return output_failure, "output failure"
+    simultaneous_deadline_limit = (
+        deadline is not None and output_limit is not None and deadline_and_limit_same_turn
     )
+    candidates = [
+        (when, priority, reason)
+        for when, priority, reason in (
+            (deadline, 0, "deadline"),
+            (None if simultaneous_deadline_limit else output_limit, 1, "output limit"),
+            (cancellation, 2, "cancellation"),
+        )
+        if when is not None
+    ]
+    when, _, reason = min(candidates)
+    return when, cast(
+        Literal["deadline", "output limit", "cancellation", "output failure"],
+        reason,
+    )
+
+
+def _compose_execution(core: _CoreOutcome, output: OutputResult) -> SupervisedExecution:
     return SupervisedExecution(
         status=core.status,
-        stdout=capture.stdout.text(),
-        stderr=capture.stderr.text(),
+        stdout=output.stdout,
+        stderr=output.stderr,
         has_result=core.has_result,
         result=core.result,
         error=core.error,
@@ -1165,6 +1411,8 @@ def configured_runtime(working_directory: Path | None = None) -> RuntimeDiagnost
         python_version=platform.python_version(),
         working_directory=str(launch_directory),
         environment_kind=_classify_environment(launch_directory),
+        implementation=platform.python_implementation(),
+        platform=platform.platform(),
     )
 
 

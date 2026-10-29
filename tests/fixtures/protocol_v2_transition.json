@@ -1,0 +1,73 @@
+{
+  "responses": [
+    {
+      "protocolVersion": 2,
+      "type": "display_json",
+      "correlationId": "00000000000040008000000000000001",
+      "payload": {
+        "executionCount": 1,
+        "sequence": 1,
+        "value": {
+          "answer": 42
+        }
+      }
+    },
+    {
+      "protocolVersion": 2,
+      "type": "artifact_begin",
+      "correlationId": "00000000000040008000000000000001",
+      "payload": {
+        "executionCount": 1,
+        "sequence": 2,
+        "transactionId": "00000000000040008000000000000002",
+        "kind": "artifact",
+        "name": "answer.json",
+        "declaredMimeType": "application/json",
+        "size": 3
+      }
+    },
+    {
+      "protocolVersion": 2,
+      "type": "artifact_chunk",
+      "correlationId": "00000000000040008000000000000001",
+      "payload": {
+        "executionCount": 1,
+        "sequence": 2,
+        "transactionId": "00000000000040008000000000000002",
+        "chunkIndex": 0,
+        "data": "YWJj"
+      }
+    },
+    {
+      "protocolVersion": 2,
+      "type": "artifact_end",
+      "correlationId": "00000000000040008000000000000001",
+      "payload": {
+        "executionCount": 1,
+        "sequence": 2,
+        "transactionId": "00000000000040008000000000000002",
+        "chunkCount": 1,
+        "sha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+      }
+    },
+    {
+      "protocolVersion": 2,
+      "type": "done",
+      "correlationId": "00000000000040008000000000000001",
+      "payload": {
+        "outcome": "completed",
+        "executionCount": 1,
+        "runtime": {
+          "executable": "/usr/bin/python3",
+          "pythonVersion": "3.13.9",
+          "workingDirectory": "/workspace",
+          "environmentKind": "system",
+          "implementation": "CPython",
+          "platform": "macOS-26.1-arm64",
+          "packages": []
+        },
+        "hasResult": false
+      }
+    }
+  ]
+}

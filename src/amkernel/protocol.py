@@ -2,16 +2,22 @@
 
 from __future__ import annotations
 
+import base64
+import binascii
+import hashlib
 import json
 import math
 import posixpath
 import re
 import struct
+import unicodedata
 from collections.abc import Callable, Mapping
-from dataclasses import dataclass
-from typing import BinaryIO, Final, Literal, TypeAlias, cast
+from dataclasses import dataclass, field
+from typing import Any, BinaryIO, Final, Literal, TypeAlias, cast
 
-PROTOCOL_VERSION: Final = 1
+PROTOCOL_VERSION: Final = 2
+
+# Shared byte, count, frame, result, resource, and image bounds from ADR-0006.
 MAX_CONTROL_FRAME_BYTES: Final = 8_388_608
 MAX_CODE_BYTES: Final = 1_048_576
 MAX_RESULT_BYTES: Final = 1_048_576
@@ -21,12 +27,65 @@ MAX_PATH_BYTES: Final = 16_384
 MAX_PYTHON_VERSION_BYTES: Final = 128
 MAX_ERROR_TYPE_BYTES: Final = 256
 MAX_ERROR_MESSAGE_BYTES: Final = 16_384
+MAX_IMPLEMENTATION_BYTES: Final = 256
+MAX_PLATFORM_BYTES: Final = 256
+MAX_PACKAGE_COUNT: Final = 64
+MAX_PACKAGE_NAME_BYTES: Final = 128
+MAX_PACKAGE_VERSION_BYTES: Final = 1_024
+MAX_LOGICAL_NAME_CODEPOINTS: Final = 255
+MAX_MIME_BYTES: Final = 255
+MAX_OUTPUT_SEQUENCE: Final = 128
+MAX_OUTPUT_FRAMES: Final = 4_288
+MAX_ARTIFACT_TRANSACTIONS: Final = 64
+MAX_JSON_DISPLAYS: Final = 64
+MAX_IMAGE_TRANSACTIONS: Final = 16
+MAX_ARTIFACT_CHUNKS: Final = 4_096
+MAX_ARTIFACT_BYTES: Final = 268_435_456
+MAX_JSON_DISPLAY_ITEM_BYTES: Final = 1_048_576
+MAX_JSON_DISPLAY_BYTES: Final = 4_194_304
+MAX_ARTIFACT_CHUNK_BYTES: Final = 65_536
+MAX_ARTIFACT_CHUNK_ENCODED_BYTES: Final = 87_384
+STREAM_TAIL_BYTES: Final = 262_144
+MAX_STREAM_BYTES: Final = 268_435_456
+MAX_STORED_EXPLICIT_ITEMS: Final = 64
+MAX_STORED_STREAM_ITEMS: Final = 2
+MAX_STORED_ITEMS: Final = 66
+MAX_STRUCTURED_RESULT_BYTES: Final = 4_194_304
+EXECUTION_BUNDLE_RESERVATION_BYTES: Final = 570_425_344
+ARTIFACT_STORE_QUOTA_BYTES: Final = 2_147_483_648
+ARTIFACT_RESOURCE_PART_BYTES: Final = 8_388_608
+MAX_ARTIFACT_PARTS: Final = 32
+MAX_EXECUTION_PARTS: Final = 128
+MAX_RESOURCE_READS: Final = 1
+MAX_INLINE_IMAGE_ITEM_BYTES: Final = 4_194_304
+MAX_INLINE_IMAGE_BYTES: Final = 8_388_608
+MAX_IMAGE_DIMENSION: Final = 32_768
+MAX_IMAGE_FRAMES: Final = 256
+MAX_IMAGE_PIXEL_FRAMES: Final = 40_000_000
+MAX_LIVE_MESSAGE_BYTES: Final = 8_192
+MAX_LIVE_UPDATES_PER_SECOND: Final = 10
 
 REQUEST_FD_ARGUMENT: Final = "--request-fd"
 RESPONSE_FD_ARGUMENT: Final = "--response-fd"
 DIAGNOSTIC_FD_ARGUMENT: Final = "--diagnostic-fd"
 
-_CORRELATION_ID = re.compile(r"^[0-9a-f]{12}4[0-9a-f]{3}[89ab][0-9a-f]{15}$")
+SAFE_MIME_TYPES: Final = frozenset(
+    {
+        "text/plain; charset=utf-8",
+        "application/json",
+        "image/png",
+        "image/jpeg",
+        "image/gif",
+        "image/webp",
+    }
+)
+IMAGE_MIME_TYPES: Final = frozenset({"image/png", "image/jpeg", "image/gif", "image/webp"})
+_CORRELATION_ID = re.compile(r"^[0-9a-f]{32}$")
+
+_UUID_HEX = re.compile(r"^[0-9a-f]{12}4[0-9a-f]{3}[89ab][0-9a-f]{15}$")
+_SHA256 = re.compile(r"^[0-9a-f]{64}$")
+_PACKAGE_NAME = re.compile(r"^[A-Za-z0-9]+(?:[._-]+[A-Za-z0-9]+)*$")
+_MIME_TOKEN = re.compile(r"^[!#$%&'*+.^_`|~0-9A-Za-z-]+$")
 _LENGTH = struct.Struct(">I")
 _JSON_DUMPS = json.dumps
 _JSON_LOADS = json.loads
@@ -35,6 +94,8 @@ _NORMPATH = posixpath.normpath
 
 EnvironmentKind: TypeAlias = Literal["project_venv", "active_venv", "system"]
 DoneOutcome: TypeAlias = Literal["completed", "failed", "interrupted"]
+ArtifactKind: TypeAlias = Literal["artifact", "image"]
+PackageError: TypeAlias = Literal["not installed", "metadata unavailable", "invalid metadata"]
 ProtocolErrorCode: TypeAlias = Literal[
     "version_mismatch",
     "invalid_sequence",
@@ -61,6 +122,15 @@ class ProtocolViolation(ValueError):
 
 
 @dataclass(frozen=True, slots=True)
+class RuntimePackage:
+    """One requested distribution diagnostic."""
+
+    name: str
+    version: str | None = None
+    error: PackageError | None = None
+
+
+@dataclass(frozen=True, slots=True)
 class RuntimeDiagnostics:
     """Interpreter facts reported by the Runner."""
 
@@ -68,6 +138,9 @@ class RuntimeDiagnostics:
     python_version: str
     working_directory: str
     environment_kind: EnvironmentKind
+    implementation: str = "CPython"
+    platform: str = "unknown"
+    packages: tuple[RuntimePackage, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -94,6 +167,7 @@ class ExecuteRequest:
 
     correlation_id: str
     code: str
+    packages: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -137,6 +211,54 @@ class DoneResponse:
 
 
 @dataclass(frozen=True, slots=True)
+class DisplayJsonResponse:
+    """One ordered strict-JSON display event."""
+
+    correlation_id: str
+    execution_count: int
+    sequence: int
+    value: JsonValue
+
+
+@dataclass(frozen=True, slots=True)
+class ArtifactBeginResponse:
+    """Begin one noninterleaved artifact transaction."""
+
+    correlation_id: str
+    execution_count: int
+    sequence: int
+    transaction_id: str
+    kind: ArtifactKind
+    name: str
+    declared_mime_type: str
+    size: int
+
+
+@dataclass(frozen=True, slots=True)
+class ArtifactChunkResponse:
+    """Carry one canonical-base64 artifact chunk as decoded bytes."""
+
+    correlation_id: str
+    execution_count: int
+    sequence: int
+    transaction_id: str
+    chunk_index: int
+    data: bytes
+
+
+@dataclass(frozen=True, slots=True)
+class ArtifactEndResponse:
+    """Commit one complete artifact transaction."""
+
+    correlation_id: str
+    execution_count: int
+    sequence: int
+    transaction_id: str
+    chunk_count: int
+    sha256: str
+
+
+@dataclass(frozen=True, slots=True)
 class ProtocolErrorResponse:
     """A fatal correlated protocol error emitted before Runner exit."""
 
@@ -145,7 +267,160 @@ class ProtocolErrorResponse:
     message: str
 
 
-Response: TypeAlias = ReadyResponse | StartedResponse | DoneResponse | ProtocolErrorResponse
+Response: TypeAlias = (
+    ReadyResponse
+    | StartedResponse
+    | DisplayJsonResponse
+    | ArtifactBeginResponse
+    | ArtifactChunkResponse
+    | ArtifactEndResponse
+    | DoneResponse
+    | ProtocolErrorResponse
+)
+
+
+@dataclass(slots=True)
+class _ArtifactTransaction:
+    transaction_id: str
+    sequence: int
+    size: int
+    chunk_count: int = 0
+    received_bytes: int = 0
+    digest: object = field(default_factory=hashlib.sha256)
+
+
+@dataclass(slots=True)
+class ExecutionResponseState:
+    """Validate one started execution's correlation, sequence, and transactions."""
+
+    correlation_id: str
+    execution_count: int
+    next_sequence: int = 1
+    output_frames: int = 0
+    artifact_transactions: int = 0
+    image_transactions: int = 0
+    json_displays: int = 0
+    artifact_chunks: int = 0
+    artifact_bytes: int = 0
+    json_bytes: int = 0
+    transaction_ids: set[str] = field(default_factory=set)
+    active_transaction: _ArtifactTransaction | None = None
+    terminal: bool = False
+
+    def accept(self, response: Response) -> None:
+        """Accept one decoded response or raise on any v2 transition violation."""
+        if self.terminal:
+            raise ProtocolViolation("response after terminal frame")
+        if response.correlation_id != self.correlation_id:
+            raise ProtocolViolation("uncorrelated execution response")
+        if isinstance(response, ProtocolErrorResponse):
+            self.terminal = True
+            return
+        if isinstance(response, DoneResponse):
+            self._require_execution_count(response.execution_count)
+            if self.active_transaction is not None:
+                raise ProtocolViolation("done during incomplete artifact transaction")
+            self.terminal = True
+            return
+        if not isinstance(
+            response,
+            (
+                DisplayJsonResponse,
+                ArtifactBeginResponse,
+                ArtifactChunkResponse,
+                ArtifactEndResponse,
+            ),
+        ):
+            raise ProtocolViolation("invalid response after started")
+
+        self.output_frames += 1
+        if self.output_frames > MAX_OUTPUT_FRAMES:
+            raise ProtocolViolation("output frame count exceeds maximum")
+        self._require_execution_count(response.execution_count)
+
+        if isinstance(response, DisplayJsonResponse):
+            self._accept_display(response)
+        elif isinstance(response, ArtifactBeginResponse):
+            self._accept_begin(response)
+        elif isinstance(response, ArtifactChunkResponse):
+            self._accept_chunk(response)
+        else:
+            self._accept_end(response)
+
+    def _accept_display(self, response: DisplayJsonResponse) -> None:
+        if self.active_transaction is not None:
+            raise ProtocolViolation("display interleaves artifact transaction")
+        self._require_sequence(response.sequence)
+        self.json_displays += 1
+        if self.json_displays > MAX_JSON_DISPLAYS:
+            raise ProtocolViolation("JSON display count exceeds maximum")
+        self.json_bytes += json_size(response.value, MAX_JSON_DISPLAY_BYTES)
+        if self.json_bytes > MAX_JSON_DISPLAY_BYTES:
+            raise ProtocolViolation("JSON display bytes exceed maximum")
+        self.next_sequence += 1
+
+    def _accept_begin(self, response: ArtifactBeginResponse) -> None:
+        if self.active_transaction is not None:
+            raise ProtocolViolation("artifact transactions cannot interleave")
+        self._require_sequence(response.sequence)
+        if response.transaction_id in self.transaction_ids:
+            raise ProtocolViolation("duplicate artifact transactionId")
+        self.transaction_ids.add(response.transaction_id)
+        self.artifact_transactions += 1
+        if self.artifact_transactions > MAX_ARTIFACT_TRANSACTIONS:
+            raise ProtocolViolation("artifact transaction count exceeds maximum")
+        if response.kind == "image":
+            self.image_transactions += 1
+            if self.image_transactions > MAX_IMAGE_TRANSACTIONS:
+                raise ProtocolViolation("image transaction count exceeds maximum")
+        self.artifact_bytes += response.size
+        if self.artifact_bytes > MAX_ARTIFACT_BYTES:
+            raise ProtocolViolation("artifact bytes exceed maximum")
+        self.active_transaction = _ArtifactTransaction(
+            response.transaction_id, response.sequence, response.size
+        )
+
+    def _accept_chunk(self, response: ArtifactChunkResponse) -> None:
+        transaction = self.active_transaction
+        if transaction is None or response.transaction_id != transaction.transaction_id:
+            raise ProtocolViolation("artifact chunk has no matching transaction")
+        if response.sequence != transaction.sequence:
+            raise ProtocolViolation("artifact chunk sequence mismatch")
+        if response.chunk_index != transaction.chunk_count:
+            raise ProtocolViolation("artifact chunkIndex is not contiguous")
+        self.artifact_chunks += 1
+        if self.artifact_chunks > MAX_ARTIFACT_CHUNKS:
+            raise ProtocolViolation("artifact chunk count exceeds maximum")
+        transaction.chunk_count += 1
+        transaction.received_bytes += len(response.data)
+        if transaction.received_bytes > transaction.size:
+            raise ProtocolViolation("artifact chunks exceed declared size")
+        digest = cast(Any, transaction.digest)
+        digest.update(response.data)
+
+    def _accept_end(self, response: ArtifactEndResponse) -> None:
+        transaction = self.active_transaction
+        if transaction is None or response.transaction_id != transaction.transaction_id:
+            raise ProtocolViolation("artifact end has no matching transaction")
+        if response.sequence != transaction.sequence:
+            raise ProtocolViolation("artifact end sequence mismatch")
+        if response.chunk_count != transaction.chunk_count:
+            raise ProtocolViolation("artifact chunkCount mismatch")
+        if transaction.received_bytes != transaction.size:
+            raise ProtocolViolation("artifact size mismatch")
+        digest = cast(Any, transaction.digest)
+        if response.sha256 != digest.hexdigest():
+            raise ProtocolViolation("artifact sha256 mismatch")
+        self.active_transaction = None
+        self.next_sequence += 1
+
+    def _require_execution_count(self, execution_count: int) -> None:
+        if execution_count != self.execution_count:
+            raise ProtocolViolation("output executionCount mismatch")
+
+    def _require_sequence(self, sequence: int) -> None:
+        if sequence != self.next_sequence or sequence > MAX_OUTPUT_SEQUENCE:
+            raise ProtocolViolation("output sequence gap or duplicate")
 
 
 def encode_request(request: Request) -> bytes:
@@ -182,10 +457,11 @@ def _parse_request_payload_inner(payload: bytes) -> Request:
             environment_kind=_require_environment_kind(body, "environmentKind"),
         )
     if message_type == "execute":
-        _require_exact_keys(body, {"code"})
+        _require_exact_keys(body, {"code", "packages"})
         return ExecuteRequest(
             correlation_id=correlation_id,
             code=_require_string(body, "code", maximum_bytes=MAX_CODE_BYTES),
+            packages=_parse_package_names(body, "packages"),
         )
     if message_type == "shutdown":
         _require_exact_keys(body, set())
@@ -223,6 +499,64 @@ def _parse_response_payload_inner(payload: bytes) -> Response:
         return StartedResponse(
             correlation_id=correlation_id,
             execution_count=_require_integer(body, "executionCount", minimum=1),
+        )
+    if message_type == "display_json":
+        _require_exact_keys(body, {"executionCount", "sequence", "value"})
+        value = cast(JsonValue, body["value"])
+        if json_size(value, MAX_JSON_DISPLAY_ITEM_BYTES) > MAX_JSON_DISPLAY_ITEM_BYTES:
+            raise ProtocolViolation("display_json value exceeds maximum size")
+        return DisplayJsonResponse(
+            correlation_id=correlation_id,
+            execution_count=_require_integer(body, "executionCount", minimum=1),
+            sequence=_require_bounded_integer(body, "sequence", 1, MAX_OUTPUT_SEQUENCE),
+            value=snapshot_json(value, MAX_JSON_DISPLAY_ITEM_BYTES),
+        )
+    if message_type == "artifact_begin":
+        _require_exact_keys(
+            body,
+            {
+                "executionCount",
+                "sequence",
+                "transactionId",
+                "kind",
+                "name",
+                "declaredMimeType",
+                "size",
+            },
+        )
+        return ArtifactBeginResponse(
+            correlation_id=correlation_id,
+            execution_count=_require_integer(body, "executionCount", minimum=1),
+            sequence=_require_bounded_integer(body, "sequence", 1, MAX_OUTPUT_SEQUENCE),
+            transaction_id=_require_uuid(body, "transactionId"),
+            kind=_require_artifact_kind(body, "kind"),
+            name=_require_logical_name(body, "name"),
+            declared_mime_type=_require_mime(body, "declaredMimeType"),
+            size=_require_bounded_integer(body, "size", 0, MAX_ARTIFACT_BYTES),
+        )
+    if message_type == "artifact_chunk":
+        _require_exact_keys(
+            body, {"executionCount", "sequence", "transactionId", "chunkIndex", "data"}
+        )
+        return ArtifactChunkResponse(
+            correlation_id=correlation_id,
+            execution_count=_require_integer(body, "executionCount", minimum=1),
+            sequence=_require_bounded_integer(body, "sequence", 1, MAX_OUTPUT_SEQUENCE),
+            transaction_id=_require_uuid(body, "transactionId"),
+            chunk_index=_require_bounded_integer(body, "chunkIndex", 0, MAX_ARTIFACT_CHUNKS - 1),
+            data=_require_canonical_base64(body, "data"),
+        )
+    if message_type == "artifact_end":
+        _require_exact_keys(
+            body, {"executionCount", "sequence", "transactionId", "chunkCount", "sha256"}
+        )
+        return ArtifactEndResponse(
+            correlation_id=correlation_id,
+            execution_count=_require_integer(body, "executionCount", minimum=1),
+            sequence=_require_bounded_integer(body, "sequence", 1, MAX_OUTPUT_SEQUENCE),
+            transaction_id=_require_uuid(body, "transactionId"),
+            chunk_count=_require_bounded_integer(body, "chunkCount", 0, MAX_ARTIFACT_CHUNKS),
+            sha256=_require_sha256(body, "sha256"),
         )
     if message_type == "done":
         return _parse_done(body, correlation_id)
@@ -440,7 +774,7 @@ def _request_parts(request: Request) -> tuple[str, Mapping[str, object]]:
             },
         )
     if isinstance(request, ExecuteRequest):
-        return "execute", {"code": request.code}
+        return "execute", {"code": request.code, "packages": list(request.packages)}
     return "shutdown", {}
 
 
@@ -455,6 +789,38 @@ def _response_parts(response: Response) -> tuple[str, Mapping[str, object]]:
         )
     if isinstance(response, StartedResponse):
         return "started", {"executionCount": response.execution_count}
+    if isinstance(response, DisplayJsonResponse):
+        return "display_json", {
+            "executionCount": response.execution_count,
+            "sequence": response.sequence,
+            "value": response.value,
+        }
+    if isinstance(response, ArtifactBeginResponse):
+        return "artifact_begin", {
+            "executionCount": response.execution_count,
+            "sequence": response.sequence,
+            "transactionId": response.transaction_id,
+            "kind": response.kind,
+            "name": response.name,
+            "declaredMimeType": response.declared_mime_type,
+            "size": response.size,
+        }
+    if isinstance(response, ArtifactChunkResponse):
+        return "artifact_chunk", {
+            "executionCount": response.execution_count,
+            "sequence": response.sequence,
+            "transactionId": response.transaction_id,
+            "chunkIndex": response.chunk_index,
+            "data": base64.b64encode(response.data).decode("ascii"),
+        }
+    if isinstance(response, ArtifactEndResponse):
+        return "artifact_end", {
+            "executionCount": response.execution_count,
+            "sequence": response.sequence,
+            "transactionId": response.transaction_id,
+            "chunkCount": response.chunk_count,
+            "sha256": response.sha256,
+        }
     if isinstance(response, DoneResponse):
         if not response.has_result and response.result is not None:
             raise ProtocolViolation("hasResult=false requires result=None")
@@ -578,7 +944,15 @@ def _parse_done(body: dict[str, object], correlation_id: str) -> DoneResponse:
 def _parse_runtime(body: dict[str, object], correlation_id: str) -> RuntimeDiagnostics:
     _require_exact_keys(
         body,
-        {"executable", "pythonVersion", "workingDirectory", "environmentKind"},
+        {
+            "executable",
+            "pythonVersion",
+            "workingDirectory",
+            "environmentKind",
+            "implementation",
+            "platform",
+            "packages",
+        },
     )
     return RuntimeDiagnostics(
         executable=_require_path(body, "executable", canonical=False),
@@ -587,6 +961,11 @@ def _parse_runtime(body: dict[str, object], correlation_id: str) -> RuntimeDiagn
         ),
         working_directory=_require_path(body, "workingDirectory", canonical=True),
         environment_kind=_require_environment_kind(body, "environmentKind"),
+        implementation=_require_control_free_string(
+            body, "implementation", maximum_bytes=MAX_IMPLEMENTATION_BYTES
+        ),
+        platform=_require_control_free_string(body, "platform", maximum_bytes=MAX_PLATFORM_BYTES),
+        packages=_parse_runtime_packages(body, correlation_id),
     )
 
 
@@ -613,6 +992,9 @@ def _runtime_to_wire(runtime: RuntimeDiagnostics) -> dict[str, object]:
         "pythonVersion": runtime.python_version,
         "workingDirectory": runtime.working_directory,
         "environmentKind": runtime.environment_kind,
+        "implementation": runtime.implementation,
+        "platform": runtime.platform,
+        "packages": [_runtime_package_to_wire(package) for package in runtime.packages],
     }
 
 
@@ -779,6 +1161,233 @@ def _require_string(
     if size > maximum_bytes:
         raise ProtocolViolation(f"{key} exceeds {maximum_bytes} UTF-8 bytes")
     return value
+
+
+def normalize_package_name(value: str) -> str:
+    """Return one validated PEP 503 normalized distribution name."""
+    if not (1 <= len(value) <= MAX_PACKAGE_NAME_BYTES) or _PACKAGE_NAME.fullmatch(value) is None:
+        raise ValueError("invalid Python distribution name")
+    return re.sub(r"[-_.]+", "-", value).lower()
+
+
+def validate_package_names(values: list[str] | tuple[str, ...]) -> tuple[str, ...]:
+    """Validate the bounded package request and reject normalized duplicates."""
+    if len(values) > MAX_PACKAGE_COUNT:
+        raise ValueError(f"packages exceeds {MAX_PACKAGE_COUNT} items")
+    normalized: set[str] = set()
+    result: list[str] = []
+    for value in values:
+        if type(value) is not str:
+            raise ValueError("package names must be exact strings")
+        key = normalize_package_name(value)
+        if key in normalized:
+            raise ValueError("duplicate normalized package name")
+        normalized.add(key)
+        result.append(value)
+    return tuple(result)
+
+
+def validate_logical_name(value: str) -> str:
+    """Validate one public artifact logical name."""
+    if not (1 <= len(value) <= MAX_LOGICAL_NAME_CODEPOINTS):
+        raise ValueError("invalid artifact name length")
+    if "/" in value or "\\" in value:
+        raise ValueError("artifact name contains a path separator")
+    if any(unicodedata.category(character) in {"Cc", "Cf"} for character in value):
+        raise ValueError("artifact name contains a control or format character")
+    return value
+
+
+def validate_mime_type(value: str) -> str:
+    """Validate one printable-ASCII media type with optional parameters."""
+    if not (1 <= len(value) <= MAX_MIME_BYTES) or any(
+        ord(character) < 0x20 or ord(character) > 0x7E for character in value
+    ):
+        raise ValueError("invalid MIME length or character")
+    parts = _split_mime_parts(value)
+    media_type = parts[0].strip()
+    if media_type.count("/") != 1:
+        raise ValueError("invalid MIME media type")
+    major, minor = media_type.split("/", 1)
+    if _MIME_TOKEN.fullmatch(major) is None or _MIME_TOKEN.fullmatch(minor) is None:
+        raise ValueError("invalid MIME media type")
+    for parameter in parts[1:]:
+        item = parameter.strip()
+        if "=" not in item:
+            raise ValueError("invalid MIME parameter")
+        name, raw_value = item.split("=", 1)
+        if _MIME_TOKEN.fullmatch(name.strip()) is None or not _valid_mime_parameter_value(
+            raw_value.strip()
+        ):
+            raise ValueError("invalid MIME parameter")
+    return value
+
+
+def _split_mime_parts(value: str) -> list[str]:
+    parts: list[str] = []
+    start = 0
+    quoted = False
+    escaped = False
+    for index, character in enumerate(value):
+        if escaped:
+            escaped = False
+        elif quoted and character == "\\":
+            escaped = True
+        elif character == '"':
+            quoted = not quoted
+        elif character == ";" and not quoted:
+            parts.append(value[start:index])
+            start = index + 1
+    if quoted or escaped:
+        raise ValueError("unterminated MIME quoted string")
+    parts.append(value[start:])
+    return parts
+
+
+def _valid_mime_parameter_value(value: str) -> bool:
+    if _MIME_TOKEN.fullmatch(value) is not None:
+        return True
+    if len(value) < 2 or value[0] != '"' or value[-1] != '"':
+        return False
+    escaped = False
+    for character in value[1:-1]:
+        if escaped:
+            escaped = False
+        elif character == "\\":
+            escaped = True
+        elif character == '"':
+            return False
+    return not escaped
+
+
+def _parse_package_names(body: Mapping[str, object], key: str) -> tuple[str, ...]:
+    value = body.get(key)
+    if not isinstance(value, list):
+        raise ProtocolViolation(f"{key} must be an array")
+    try:
+        return validate_package_names(cast(list[str], value))
+    except ValueError as error:
+        raise ProtocolViolation(str(error)) from error
+
+
+def _parse_runtime_packages(
+    body: Mapping[str, object], correlation_id: str
+) -> tuple[RuntimePackage, ...]:
+    raw = body.get("packages")
+    if not isinstance(raw, list) or len(raw) > MAX_PACKAGE_COUNT:
+        raise ProtocolViolation("runtime packages must be a bounded array")
+    result: list[RuntimePackage] = []
+    names: list[str] = []
+    for item in raw:
+        if not isinstance(item, dict):
+            raise ProtocolViolation("runtime package must be an object")
+        package = cast(dict[str, object], item)
+        _require_allowed_keys(package, {"name", "version", "error"})
+        if set(package) not in ({"name", "version"}, {"name", "error"}):
+            raise ProtocolViolation("runtime package requires exactly one of version or error")
+        name = _require_string(package, "name", maximum_bytes=MAX_PACKAGE_NAME_BYTES, nonempty=True)
+        names.append(name)
+        if "version" in package:
+            version = _require_control_free_string(
+                package, "version", maximum_bytes=MAX_PACKAGE_VERSION_BYTES
+            )
+            result.append(RuntimePackage(name=name, version=version))
+        else:
+            result.append(RuntimePackage(name=name, error=_require_package_error(package, "error")))
+    try:
+        validate_package_names(names)
+    except ValueError as error:
+        raise ProtocolViolation(str(error), correlation_id=correlation_id) from error
+    return tuple(result)
+
+
+def _runtime_package_to_wire(package: RuntimePackage) -> dict[str, object]:
+    result: dict[str, object] = {"name": package.name}
+    if (package.version is None) == (package.error is None):
+        raise ProtocolViolation("runtime package requires exactly one of version or error")
+    if package.version is not None:
+        result["version"] = package.version
+    else:
+        result["error"] = package.error
+    return result
+
+
+def _require_control_free_string(
+    body: Mapping[str, object], key: str, *, maximum_bytes: int
+) -> str:
+    value = _require_string(body, key, maximum_bytes=maximum_bytes, nonempty=True)
+    if any(unicodedata.category(character) in {"Cc", "Cf"} for character in value):
+        raise ProtocolViolation(f"{key} contains a control or format character")
+    return value
+
+
+def _require_bounded_integer(
+    body: Mapping[str, object], key: str, minimum: int, maximum: int
+) -> int:
+    value = _require_integer(body, key, minimum=minimum)
+    if value > maximum:
+        raise ProtocolViolation(f"{key} must be at most {maximum}")
+    return value
+
+
+def _require_uuid(body: Mapping[str, object], key: str) -> str:
+    value = _require_string(body, key, maximum_bytes=32)
+    if _UUID_HEX.fullmatch(value) is None:
+        raise ProtocolViolation(f"invalid {key}")
+    return value
+
+
+def _require_sha256(body: Mapping[str, object], key: str) -> str:
+    value = _require_string(body, key, maximum_bytes=64)
+    if _SHA256.fullmatch(value) is None:
+        raise ProtocolViolation(f"invalid {key}")
+    return value
+
+
+def _require_artifact_kind(body: Mapping[str, object], key: str) -> ArtifactKind:
+    value = _require_string(body, key, maximum_bytes=8)
+    if value not in {"artifact", "image"}:
+        raise ProtocolViolation(f"invalid {key}")
+    return cast(ArtifactKind, value)
+
+
+def _require_package_error(body: Mapping[str, object], key: str) -> PackageError:
+    value = _require_string(body, key, maximum_bytes=32)
+    if value not in {"not installed", "metadata unavailable", "invalid metadata"}:
+        raise ProtocolViolation(f"invalid {key}")
+    return cast(PackageError, value)
+
+
+def _require_logical_name(body: Mapping[str, object], key: str) -> str:
+    value = _require_string(body, key, maximum_bytes=MAX_CONTROL_FRAME_BYTES, nonempty=True)
+    try:
+        return validate_logical_name(value)
+    except ValueError as error:
+        raise ProtocolViolation(str(error)) from error
+
+
+def _require_mime(body: Mapping[str, object], key: str) -> str:
+    value = _require_string(body, key, maximum_bytes=MAX_MIME_BYTES, nonempty=True)
+    try:
+        return validate_mime_type(value)
+    except ValueError as error:
+        raise ProtocolViolation(str(error)) from error
+
+
+def _require_canonical_base64(body: Mapping[str, object], key: str) -> bytes:
+    value = _require_string(body, key, maximum_bytes=MAX_ARTIFACT_CHUNK_ENCODED_BYTES)
+    try:
+        encoded = value.encode("ascii")
+        decoded = base64.b64decode(encoded, validate=True)
+    except (UnicodeEncodeError, binascii.Error) as error:
+        raise ProtocolViolation(f"{key} must be canonical base64") from error
+    if (
+        not decoded
+        or len(decoded) > MAX_ARTIFACT_CHUNK_BYTES
+        or base64.b64encode(decoded) != encoded
+    ):
+        raise ProtocolViolation(f"{key} must be canonical bounded base64")
+    return decoded
 
 
 def _require_path(body: Mapping[str, object], key: str, *, canonical: bool) -> str:

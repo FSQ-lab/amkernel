@@ -399,7 +399,7 @@ def test_version_mismatch_returns_correlated_error_then_exits(tmp_path: Path) ->
 
     incompatible = json.dumps(
         {
-            "protocolVersion": 2,
+            "protocolVersion": 3,
             "type": "initialize",
             "correlationId": correlation_id,
             "payload": {
@@ -492,12 +492,14 @@ def test_syntax_error_increments_count_and_runner_survives(runner: RunnerProcess
     assert runner.execute("42").execution_count == 2
 
 
-def test_stage_one_namespace_has_no_prelude_helpers(runner: RunnerProcess) -> None:
+def test_stage_two_namespace_exposes_only_owned_prelude_helpers(
+    runner: RunnerProcess,
+) -> None:
     observed = runner.execute(
         "[name for name in ('display', 'artifact', 'read', 'write', 'env') if name in globals()]"
     )
 
-    assert observed.result == []
+    assert observed.result == ["display", "artifact", "read", "write", "env"]
 
 
 def test_runner_restores_sigint_handler_after_user_mutation(runner: RunnerProcess) -> None:

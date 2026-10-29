@@ -146,10 +146,10 @@ async def test_real_runner_rejects_bad_typed_request_and_exits(tmp_path: Path) -
         correlation_id = uuid.uuid4().hex
         payload = json.dumps(
             {
-                "protocolVersion": 1,
+                "protocolVersion": 2,
                 "type": "execute",
                 "correlationId": correlation_id,
-                "payload": {"code": 42},
+                "payload": {"code": 42, "packages": []},
             },
             separators=(",", ":"),
         ).encode()

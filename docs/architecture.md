@@ -323,7 +323,7 @@ Artifacts support:
 - reports;
 - arbitrary files explicitly exported by the cell.
 
-Artifact storage is scoped to the project/MCP process and has a documented retention policy. Model-facing results contain previews and references rather than silently truncating critical evidence.
+Artifact storage is scoped to one MCP process. Model-facing results contain bounded previews and resource references rather than silently losing omitted bytes. Resource URIs remain valid only while their whole bundle is retained; capacity pressure, eviction, tamper detection, or server shutdown can revoke them. Artifacts above one resource part use a manifest whose bounded parts must all be read, hash-verified, and concatenated before another large-output call. Random resource identifiers do not protect Store files from unrestricted same-user code, and every read revalidates the stored bytes.
 
 ## 9. Python environment
 
@@ -447,40 +447,29 @@ Platform experiments and skills consume these modules but do not modify their re
 
 ## 14. Current implementation stance
 
-The formal AMKernel repository begins with design documents only. The earlier spike proved several mechanics but is not copied as production scaffolding. Useful evidence from that spike:
+The repository implements the Stage 2 automation-neutral core through one packaged stdio MCP server. The public surface remains one `python_exec` tool; private Runner frames, Runtime lifecycle authority, output aggregation, Artifact Store retention, resource reads, and MCP content mapping stay isolated behind their module interfaces.
 
-- MCP v2 stdio can host the runtime;
-- Python state survives separate tool calls;
-- a private runner channel avoids obvious stdout protocol corruption;
-- ordinary exceptions need not kill the kernel;
-- SIGINT can preserve a kernel after timeout;
-- an Appium Python Client can reach a live Appium server from the runtime environment.
-
-Implementation may reuse ideas, not files by default. Each retained mechanism should be justified and tested against this architecture.
+The earlier spike proved selected mechanics but was not copied as production scaffolding. Implemented behavior is defended through focused module tests, real Runner/Supervisor/Runtime integration tests, and an installed-wheel scenario that launches the installed entry point through the official MCP client.
 
 ## 15. Delivery stages
 
-### Stage 1: execution correctness
+### Stage 1: execution correctness — delivered
 
 - one-tool MCP surface;
-- stable execution-result shape, including truthful Stage 1 `output` metadata and an empty `artifacts` collection when no artifacts exist;
-- persistent namespace;
-- trailing expressions;
-- typed errors;
-- completion-time stdout/stderr capture through an isolated runner protocol;
-- reset and shutdown;
-- timeout and kernel survival reporting;
-- explicit interpreter and working-directory identity;
-- lifecycle tests.
+- stable execution-result shape and truthful kernel survival;
+- persistent namespace, trailing expressions, and typed errors;
+- isolated completion-time stream capture;
+- reset, shutdown, timeout escalation, and managed-process cleanup;
+- explicit interpreter and working-directory identity.
 
-### Stage 2: Agent-quality output
+### Stage 2: Agent-quality output — delivered
 
-- live stdout/stderr;
-- structured display;
-- image content;
-- artifact spill;
-- bounded previews;
-- extended environment and package diagnostics.
+- bounded live stdout/stderr progress with authoritative terminal results;
+- strict structured JSON and fully decoded PNG/JPEG/GIF/WebP displays;
+- recoverable stream spill and explicit artifacts through ephemeral MCP resources;
+- bounded previews, item/result/store quotas, whole-bundle eviction, and tamper detection;
+- descriptor-rooted workspace helpers and requested-package diagnostics;
+- explicit output-limit, Store, cleanup, and result-construction failure semantics.
 
 ### Stage 3: mobile/Appium experiment
 

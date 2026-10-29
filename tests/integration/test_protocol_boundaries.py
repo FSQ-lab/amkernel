@@ -17,7 +17,14 @@ import pytest
 from mcp.client import Client
 from mcp.types import CallToolResult
 
-from amkernel.protocol import MAX_CODE_BYTES, ProtocolViolation, Response, StartedResponse
+from amkernel.artifact_store import ArtifactStore
+from amkernel.protocol import (
+    MAX_CODE_BYTES,
+    DisplayJsonResponse,
+    ProtocolViolation,
+    Response,
+    StartedResponse,
+)
 from amkernel.runtime import KernelRuntime
 from amkernel.server import create_server
 from amkernel.supervisor import KernelSupervisor
@@ -92,15 +99,20 @@ async def test_real_runner_rejects_missing_duplicate_and_extra_bootstrap_descrip
     assert expected in stderr.decode(errors="replace")
 
 
-FaultMode = Literal["send", "wrong_started", "mangled"]
+FaultMode = Literal["send", "wrong_started", "mangled", "output_frame"]
 
 
 async def test_blocked_maximum_frame_times_out_from_first_byte(tmp_path: Path) -> None:
     supervisor = await KernelSupervisor.start(tmp_path)
+    store = ArtifactStore(temporary_parent=tmp_path)
     os.killpg(supervisor._process_group, signal.SIGSTOP)
     started = time.monotonic()
     try:
-        result = await supervisor.execute("\0" * MAX_CODE_BYTES, timeout=30.0)
+        result = await supervisor.execute(
+            "\0" * MAX_CODE_BYTES,
+            timeout=30.0,
+            output_bundle=await store.begin_bundle(),
+        )
 
         assert result.status == "kernel_killed"
         assert result.kernel_state == "dead"
@@ -111,14 +123,18 @@ async def test_blocked_maximum_frame_times_out_from_first_byte(tmp_path: Path) -
         assert 5.0 <= time.monotonic() - started < 9.0
     finally:
         assert (await asyncio.wait_for(supervisor.shutdown(), timeout=5.0)).cleaned
+        await store.cleanup()
 
 
 async def test_cancellation_after_full_delivery_before_started_is_fatal(
     tmp_path: Path,
 ) -> None:
     supervisor = await KernelSupervisor.start(tmp_path)
+    store = ArtifactStore(temporary_parent=tmp_path)
     os.killpg(supervisor._process_group, signal.SIGSTOP)
-    execution = asyncio.create_task(supervisor.execute("42", timeout=30.0))
+    execution = asyncio.create_task(
+        supervisor.execute("42", timeout=30.0, output_bundle=await store.begin_bundle())
+    )
     try:
         deadline = time.monotonic() + 2.0
         while time.monotonic() < deadline:
@@ -140,6 +156,7 @@ async def test_cancellation_after_full_delivery_before_started_is_fatal(
             execution.cancel()
             await asyncio.gather(execution, return_exceptions=True)
         assert (await asyncio.wait_for(supervisor.shutdown(), timeout=5.0)).cleaned
+        await store.cleanup()
 
 
 class FaultingSupervisorFactory:
@@ -168,6 +185,20 @@ class FaultingSupervisorFactory:
                 return response
 
             self.monkeypatch.setattr(supervisor, "_next_response", wrong_started)
+        elif self.mode == "output_frame":
+            original = supervisor._next_response
+            started_correlation: str | None = None
+
+            async def output_frame() -> Response:
+                nonlocal started_correlation
+                if started_correlation is not None:
+                    return DisplayJsonResponse(started_correlation, 1, 1, None)
+                response = await original()
+                if isinstance(response, StartedResponse):
+                    started_correlation = response.correlation_id
+                return response
+
+            self.monkeypatch.setattr(supervisor, "_next_response", output_frame)
         else:
 
             async def malformed_response() -> Response:
@@ -180,9 +211,10 @@ class FaultingSupervisorFactory:
 @pytest.mark.parametrize(
     ("mode", "error_type", "diagnostic"),
     [
-        ("send", "RunnerProtocolTimeout", "injected execute send failure"),
+        ("send", "KernelExited", "injected execute send failure"),
         ("wrong_started", "RunnerProtocolError", "invalid or uncorrelated started response"),
-        ("mangled", "RunnerProtocolTimeout", "injected malformed response frame"),
+        ("mangled", "RunnerProtocolError", "injected malformed response frame"),
+        ("output_frame", "RunnerProtocolError", "output sequence gap or duplicate"),
     ],
 )
 async def test_fatal_execute_protocol_faults_preserve_count_and_never_auto_replace(
@@ -206,8 +238,10 @@ async def test_fatal_execute_protocol_faults_preserve_count_and_never_auto_repla
         killed_result = structured(killed)
         assert killed_result["status"] == "kernel_killed"
         assert killed_result["kernelState"] == "dead"
-        assert killed_result["executionCount"] == 0
-        assert killed_result["durationMs"] == 0
+        assert killed_result["executionCount"] == (1 if mode == "output_frame" else 0)
+        assert killed_result["durationMs"] >= 0
+        if mode != "output_frame":
+            assert killed_result["durationMs"] == 0
         assert killed_result["stdout"] == ""
         assert killed_result["stderr"] == ""
         assert killed_result["error"]["type"] == error_type

@@ -119,7 +119,7 @@ def test_duplicate_nested_key_is_rejected() -> None:
 def test_version_mismatch_retains_valid_correlation() -> None:
     incompatible = json.dumps(
         {
-            "protocolVersion": 2,
+            "protocolVersion": 3,
             "type": "shutdown",
             "correlationId": CORRELATION_ID,
             "payload": {},
@@ -137,7 +137,7 @@ def test_version_mismatch_retains_valid_correlation() -> None:
 def test_unknown_fields_are_rejected() -> None:
     invalid = json.dumps(
         {
-            "protocolVersion": 1,
+            "protocolVersion": 2,
             "type": "shutdown",
             "correlationId": CORRELATION_ID,
             "payload": {"unexpected": True},

@@ -8,19 +8,23 @@ import signal
 import sys
 import time
 import uuid
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Awaitable, Callable
 from pathlib import Path
+from typing import cast
 
 import psutil
 import pytest
 
 import amkernel.supervisor as supervisor_module
-from amkernel.protocol import DoneResponse
-from amkernel.supervisor import (
-    STREAM_TAIL_BYTES,
-    KernelStartError,
-    KernelSupervisor,
+from amkernel.artifact_store import (
+    ArtifactBundle,
+    ArtifactStore,
+    ArtifactStoreError,
+    ArtifactWriter,
 )
+from amkernel.output import OutputObserver
+from amkernel.protocol import STREAM_TAIL_BYTES, DisplayJsonResponse, DoneResponse, Response
+from amkernel.supervisor import KernelStartError, KernelSupervisor, SupervisedExecution
 
 pytestmark = [
     pytest.mark.anyio,
@@ -36,10 +40,49 @@ def anyio_backend() -> str:
 @pytest.fixture
 async def supervisor(tmp_path: Path) -> AsyncIterator[KernelSupervisor]:
     current = await KernelSupervisor.start(tmp_path)
+    store = ArtifactStore(temporary_parent=tmp_path)
+    execute = current.execute
+
+    async def execute_with_store(
+        code: str,
+        timeout: float,
+        packages: tuple[str, ...] = (),
+        *,
+        output_bundle: ArtifactBundle | None = None,
+        observer: OutputObserver | None = None,
+    ) -> SupervisedExecution:
+        bundle = output_bundle or await store.begin_bundle()
+        return await execute(code, timeout, packages, output_bundle=bundle, observer=observer)
+
+    current.execute = execute_with_store  # type: ignore[method-assign]
     try:
         yield current
     finally:
         await current.shutdown()
+        await store.cleanup()
+
+
+async def run(supervisor: KernelSupervisor, code: str, *, timeout: float) -> SupervisedExecution:
+    execute = cast(Callable[[str, float], Awaitable[SupervisedExecution]], supervisor.execute)
+    return await execute(code, timeout)
+
+
+async def execute_once(
+    supervisor: KernelSupervisor,
+    temporary_parent: Path,
+    code: str,
+    *,
+    timeout: float,
+) -> SupervisedExecution:
+    store = ArtifactStore(temporary_parent=temporary_parent)
+    try:
+        return await supervisor.execute(
+            code,
+            timeout,
+            output_bundle=await store.begin_bundle(),
+        )
+    finally:
+        await store.cleanup()
 
 
 async def wait_pid_gone(pid: int, timeout: float = 3.0) -> bool:
@@ -52,8 +95,8 @@ async def wait_pid_gone(pid: int, timeout: float = 3.0) -> bool:
 
 
 async def test_start_and_persistent_execution(supervisor: KernelSupervisor) -> None:
-    first = await supervisor.execute("values = []", timeout=1.0)
-    second = await supervisor.execute("values.append(1)\nvalues", timeout=1.0)
+    first = await run(supervisor, "values = []", timeout=1.0)
+    second = await run(supervisor, "values.append(1)\nvalues", timeout=1.0)
 
     assert supervisor.runtime.executable == os.path.abspath(sys.executable)
     assert supervisor.runtime.working_directory == str(supervisor._launch_working_directory)
@@ -67,12 +110,13 @@ async def test_start_and_persistent_execution(supervisor: KernelSupervisor) -> N
 
 
 async def test_ordinary_failure_preserves_mutation(supervisor: KernelSupervisor) -> None:
-    await supervisor.execute("values = []", timeout=1.0)
-    failed = await supervisor.execute(
+    await run(supervisor, "values = []", timeout=1.0)
+    failed = await run(
+        supervisor,
         "values.append('kept')\nraise ValueError('bad')",
         timeout=1.0,
     )
-    observed = await supervisor.execute("values", timeout=1.0)
+    observed = await run(supervisor, "values", timeout=1.0)
 
     assert failed.status == "failed"
     assert failed.error is not None
@@ -87,7 +131,7 @@ async def test_user_streams_are_captured_without_protocol_confusion(
     stderr = b"problem\npartial"
     code = f"import os\nos.write(1, {stdout!r})\nos.write(2, {stderr!r})\n42"
 
-    result = await supervisor.execute(code, timeout=1.0)
+    result = await run(supervisor, code, timeout=1.0)
 
     assert result.status == "completed"
     assert result.result == 42
@@ -98,9 +142,45 @@ async def test_user_streams_are_captured_without_protocol_confusion(
     assert not result.output.truncated
 
 
+async def test_completed_post_terminal_read_finishes_fatal_cleanup(
+    supervisor: KernelSupervisor, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    await run(supervisor, "42", timeout=1.0)
+    await supervisor._cancel_idle_response_watch()
+
+    async def completed_read() -> Response:
+        return DisplayJsonResponse(uuid.uuid4().hex, 1, 1, None)
+
+    read_task = asyncio.create_task(completed_read())
+    await read_task
+    cleanup_started = asyncio.Event()
+    cleanup_release = asyncio.Event()
+
+    async def controlled_cleanup() -> None:
+        cleanup_started.set()
+        await cleanup_release.wait()
+
+    monkeypatch.setattr(supervisor, "_destructive_cleanup", controlled_cleanup)
+    supervisor._idle_response_read_task = read_task
+    supervisor._idle_response_task = asyncio.create_task(
+        supervisor._watch_post_terminal_response(read_task)
+    )
+
+    await cleanup_started.wait()
+    handoff = asyncio.create_task(supervisor._cancel_idle_response_watch())
+    await asyncio.sleep(0)
+    assert not handoff.done()
+    cleanup_release.set()
+    await handoff
+
+    assert supervisor._idle_response_task is None
+    assert "response after terminal frame" in supervisor.diagnostic_tail
+
+
 async def test_large_streams_keep_bounded_tails(supervisor: KernelSupervisor) -> None:
     size = STREAM_TAIL_BYTES + 100_000
-    result = await supervisor.execute(
+    result = await run(
+        supervisor,
         f"import os\nos.write(1, b'a' * {size})\nos.write(2, b'b' * {size})",
         timeout=2.0,
     )
@@ -114,8 +194,8 @@ async def test_large_streams_keep_bounded_tails(supervisor: KernelSupervisor) ->
 
 
 async def test_interruptible_timeout_preserves_kernel(supervisor: KernelSupervisor) -> None:
-    timed_out = await supervisor.execute("import time\ntime.sleep(30)", timeout=0.05)
-    next_result = await supervisor.execute("6 * 7", timeout=1.0)
+    timed_out = await run(supervisor, "import time\ntime.sleep(30)", timeout=0.05)
+    next_result = await run(supervisor, "6 * 7", timeout=1.0)
 
     assert timed_out.status == "timed_out"
     assert timed_out.kernel_state == "alive"
@@ -127,7 +207,8 @@ async def test_interruptible_timeout_preserves_kernel(supervisor: KernelSupervis
 
 async def test_nonsettling_timeout_kills_kernel(supervisor: KernelSupervisor) -> None:
     started = time.monotonic()
-    killed = await supervisor.execute(
+    killed = await run(
+        supervisor,
         "import time\n"
         "while True:\n"
         "    try:\n"
@@ -144,7 +225,7 @@ async def test_nonsettling_timeout_kills_kernel(supervisor: KernelSupervisor) ->
 
 
 async def test_runner_crash_is_observed_as_dead(supervisor: KernelSupervisor) -> None:
-    killed = await supervisor.execute("import os\nos._exit(17)", timeout=1.0)
+    killed = await run(supervisor, "import os\nos._exit(17)", timeout=1.0)
 
     assert killed.status == "kernel_killed"
     assert killed.kernel_state == "dead"
@@ -155,7 +236,8 @@ async def test_blocking_native_call_escalates_to_kernel_killed(
     supervisor: KernelSupervisor,
 ) -> None:
     started = time.monotonic()
-    killed = await supervisor.execute(
+    killed = await run(
+        supervisor,
         "import hashlib\nhashlib.pbkdf2_hmac('sha256', b'password', b'salt', 2_000_000_000)",
         timeout=0.05,
     )
@@ -171,7 +253,7 @@ async def test_withheld_started_hits_command_ack_deadline(
     os.killpg(supervisor._process_group, signal.SIGSTOP)
     started = time.monotonic()
 
-    killed = await supervisor.execute("42", timeout=1.0)
+    killed = await run(supervisor, "42", timeout=1.0)
 
     assert killed.status == "kernel_killed"
     assert killed.execution_count == 0
@@ -180,10 +262,49 @@ async def test_withheld_started_hits_command_ack_deadline(
     assert supervisor.state == "dead"
 
 
+def test_intervention_precedence_is_deterministic() -> None:
+    assert supervisor_module._select_intervention(
+        deadline=20.0,
+        output_limit=10.0,
+        cancellation=None,
+        output_failure=None,
+        deadline_and_limit_same_turn=True,
+    ) == (20.0, "deadline")
+    assert supervisor_module._select_intervention(
+        deadline=20.0,
+        output_limit=10.0,
+        cancellation=5.0,
+        output_failure=None,
+        deadline_and_limit_same_turn=True,
+    ) == (5.0, "cancellation")
+    assert supervisor_module._select_intervention(
+        deadline=None,
+        output_limit=10.0,
+        cancellation=5.0,
+        output_failure=None,
+        deadline_and_limit_same_turn=False,
+    ) == (5.0, "cancellation")
+    assert supervisor_module._select_intervention(
+        deadline=20.0,
+        output_limit=10.0,
+        cancellation=5.0,
+        output_failure=30.0,
+        deadline_and_limit_same_turn=False,
+    ) == (30.0, "output failure")
+
+    assert supervisor_module._select_intervention(
+        deadline=20.0,
+        output_limit=10.0,
+        cancellation=None,
+        output_failure=None,
+        deadline_and_limit_same_turn=False,
+    ) == (10.0, "output limit")
+
+
 async def test_active_cancellation_stabilizes_live_runner(
     supervisor: KernelSupervisor,
 ) -> None:
-    execution = asyncio.create_task(supervisor.execute("import time\ntime.sleep(30)", timeout=30.0))
+    execution = asyncio.create_task(run(supervisor, "import time\ntime.sleep(30)", timeout=30.0))
     await asyncio.sleep(0.05)
 
     state = await supervisor.cancel_active()
@@ -191,16 +312,31 @@ async def test_active_cancellation_stabilizes_live_runner(
 
     assert state == "alive"
     assert result.status == "timed_out"
-    assert (await supervisor.execute("'alive'", timeout=1.0)).result == "alive"
+    assert (await run(supervisor, "'alive'", timeout=1.0)).result == "alive"
 
 
 async def test_idle_background_output_is_not_attributed_later(
     supervisor: KernelSupervisor,
     tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     marker = tmp_path / "orphan-written"
     orphan_bytes = supervisor._orphan_stdout.total_bytes
-    first = await supervisor.execute(
+    original_settle = supervisor._settle_stream_readers
+    settle_calls = 0
+
+    async def hold_post_terminal_settle() -> None:
+        nonlocal settle_calls
+        settle_calls += 1
+        if settle_calls == 2:
+            deadline = time.monotonic() + 2.0
+            while not marker.exists() and time.monotonic() < deadline:
+                await asyncio.sleep(0.01)
+        await original_settle()
+
+    monkeypatch.setattr(supervisor, "_settle_stream_readers", hold_post_terminal_settle)
+    first = await run(
+        supervisor,
         "import threading, time\n"
         "from pathlib import Path\n"
         f"orphan_marker = Path({str(marker)!r})\n"
@@ -222,7 +358,7 @@ async def test_idle_background_output_is_not_attributed_later(
     ):
         await asyncio.sleep(0.01)
     assert supervisor._orphan_stdout.total_bytes == orphan_bytes + len(b"orphan\n")
-    second = await supervisor.execute("42", timeout=1.0)
+    second = await run(supervisor, "42", timeout=1.0)
 
     assert first.stdout == ""
     assert second.stdout == ""
@@ -231,14 +367,15 @@ async def test_idle_background_output_is_not_attributed_later(
 async def test_sigint_ignoring_descendant_remains_managed_until_shutdown(
     supervisor: KernelSupervisor,
 ) -> None:
-    timed_out = await supervisor.execute(
+    timed_out = await run(
+        supervisor,
         "import subprocess, sys, time\n"
         "child = subprocess.Popen([sys.executable, '-c', "
         "'import signal,time; signal.signal(signal.SIGINT, signal.SIG_IGN); time.sleep(30)'])\n"
         "time.sleep(30)",
         timeout=0.05,
     )
-    child_result = await supervisor.execute("child.pid", timeout=1.0)
+    child_result = await run(supervisor, "child.pid", timeout=1.0)
     assert type(child_result.result) is int
     child_pid = child_result.result
 
@@ -251,7 +388,8 @@ async def test_sigint_ignoring_descendant_remains_managed_until_shutdown(
 
 
 async def test_shutdown_removes_managed_descendant(supervisor: KernelSupervisor) -> None:
-    child_result = await supervisor.execute(
+    child_result = await run(
+        supervisor,
         "import subprocess, sys\n"
         "child = subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(30)'])\n"
         "child.pid",
@@ -291,7 +429,9 @@ async def test_cleanup_failure_is_reported(tmp_path: Path) -> None:
 async def test_fatal_cleanup_details_remain_host_only(tmp_path: Path) -> None:
     current = await KernelSupervisor.start(tmp_path, operations=StuckGroupOperations())
 
-    result = await current.execute(
+    result = await execute_once(
+        current,
+        tmp_path,
         "import time\n"
         "while True:\n"
         "    try:\n"
@@ -319,7 +459,7 @@ async def test_runner_environment_is_allowlist_only(
     monkeypatch.setenv("AMKERNEL_RANDOM_SECRET", "secret")
     current = await KernelSupervisor.start(tmp_path)
     try:
-        observed = await current.execute("import os\ndict(os.environ)", timeout=1.0)
+        observed = await execute_once(current, tmp_path, "import os\ndict(os.environ)", timeout=1.0)
         assert isinstance(observed.result, dict)
         environment = observed.result
         assert "OPENAI_API_KEY" not in environment
@@ -351,7 +491,7 @@ async def test_runner_environment_is_allowlist_only(
 async def test_direct_execute_task_cancellation_stabilizes_runner(
     supervisor: KernelSupervisor,
 ) -> None:
-    execution = asyncio.create_task(supervisor.execute("import time\ntime.sleep(30)", timeout=30.0))
+    execution = asyncio.create_task(run(supervisor, "import time\ntime.sleep(30)", timeout=30.0))
     await asyncio.sleep(0.05)
     execution.cancel()
 
@@ -359,7 +499,7 @@ async def test_direct_execute_task_cancellation_stabilizes_runner(
         await execution
 
     assert supervisor.state == "alive"
-    assert (await supervisor.execute("'alive'", timeout=1.0)).result == "alive"
+    assert (await run(supervisor, "'alive'", timeout=1.0)).result == "alive"
 
 
 class FailingInterruptOperations:
@@ -381,7 +521,7 @@ class FailingInterruptOperations:
 async def test_sigint_primitive_failure_returns_cleanup_error(tmp_path: Path) -> None:
     current = await KernelSupervisor.start(tmp_path, operations=FailingInterruptOperations())
     try:
-        result = await current.execute("import time\ntime.sleep(30)", timeout=0.05)
+        result = await execute_once(current, tmp_path, "import time\ntime.sleep(30)", timeout=0.05)
 
         assert result.status == "kernel_killed"
         assert result.error is not None
@@ -394,7 +534,8 @@ async def test_sigint_primitive_failure_returns_cleanup_error(tmp_path: Path) ->
 async def test_idle_runner_death_is_observed_and_descendants_are_cleaned(
     supervisor: KernelSupervisor,
 ) -> None:
-    result = await supervisor.execute(
+    result = await run(
+        supervisor,
         "import os, subprocess, sys, threading, time\n"
         "child = subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(30)'])\n"
         "def die():\n"
@@ -434,7 +575,8 @@ async def test_shutdown_cancellation_waits_for_kill_cleanup(
         f"Path({str(ready)!r}).touch()\n"
         "time.sleep(30)"
     )
-    child = await supervisor.execute(
+    child = await run(
+        supervisor,
         "import subprocess, sys\n"
         f"child = subprocess.Popen([sys.executable, '-c', {child_code!r}])\n"
         "child.pid",
@@ -464,7 +606,7 @@ async def test_partial_write_cancellation_kills_uncertain_runner(
     supervisor: KernelSupervisor,
 ) -> None:
     os.killpg(supervisor._process_group, signal.SIGSTOP)
-    execution = asyncio.create_task(supervisor.execute("\0" * 1_048_576, timeout=30.0))
+    execution = asyncio.create_task(run(supervisor, "\0" * 1_048_576, timeout=30.0))
     await asyncio.sleep(0.05)
     execution.cancel()
 
@@ -477,7 +619,7 @@ async def test_partial_write_cancellation_kills_uncertain_runner(
 async def test_simultaneous_terminal_and_deadline_maps_timed_out(
     supervisor: KernelSupervisor,
 ) -> None:
-    completed = await supervisor.execute("42", timeout=1.0)
+    completed = await run(supervisor, "42", timeout=1.0)
     active = supervisor_module._ActiveExecution(uuid.uuid4().hex)
     terminal = DoneResponse(
         correlation_id=active.correlation_id,
@@ -497,7 +639,7 @@ async def test_simultaneous_terminal_and_deadline_maps_timed_out(
 
     assert outcome.status == "timed_out"
     assert outcome.kernel_state == "alive"
-    assert (await supervisor.execute("'alive'", timeout=1.0)).result == "alive"
+    assert (await run(supervisor, "'alive'", timeout=1.0)).result == "alive"
 
 
 async def test_cancelled_start_cleans_spawned_runner(
@@ -563,7 +705,9 @@ async def test_idle_death_cleanup_failure_is_retained_and_reported(
 ) -> None:
     operations = FailOnceTerminateOperations()
     current = await KernelSupervisor.start(tmp_path, operations=operations)
-    result = await current.execute(
+    result = await execute_once(
+        current,
+        tmp_path,
         "import os, subprocess, sys, threading, time\n"
         "child = subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(30)'])\n"
         "threading.Thread(target=lambda: (time.sleep(0.05), os._exit(23)), daemon=True).start()\n"
@@ -638,7 +782,8 @@ async def test_unsupported_platform_fails_before_pipe_creation(
 async def test_graceful_shutdown_requires_zero_runner_exit(
     supervisor: KernelSupervisor,
 ) -> None:
-    await supervisor.execute(
+    await run(
+        supervisor,
         "import atexit, os\natexit.register(lambda: os._exit(17))",
         timeout=1.0,
     )
@@ -790,3 +935,22 @@ async def test_failed_shutdown_can_retry_cleanup(tmp_path: Path) -> None:
     assert second_peer == second
     assert second.error is None
     assert current.state == "closed"
+
+
+async def test_output_store_failure_kills_runner_and_reports_stable_error(
+    supervisor: KernelSupervisor, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    def fail_write(self: ArtifactWriter, data: bytes) -> None:
+        del self, data
+        raise ArtifactStoreError("injected output write failure")
+
+    monkeypatch.setattr(ArtifactWriter, "write", fail_write)
+    result = await run(supervisor, "print('unpublished')", timeout=1.0)
+
+    assert result.status == "kernel_killed"
+    assert result.kernel_state == "dead"
+    assert result.error is not None
+    assert result.error.type == "ArtifactStoreError"
+    assert result.error.message == "execution output storage failed"
+    assert result.output.discarded_bytes == 0
+    assert result.output.discarded_lines == 0

@@ -9,16 +9,25 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Literal, Protocol
 
+from amkernel.artifact_store import (
+    ArtifactBundle,
+    ArtifactIntegrityError,
+    ArtifactResource,
+    ArtifactStore,
+    ArtifactStoreError,
+)
+from amkernel.output import OutputObserver, OutputResult
 from amkernel.protocol import ErrorInfo, RuntimeDiagnostics
 from amkernel.supervisor import (
     KernelStartError,
     KernelSupervisor,
     KernelUnavailableError,
-    OutputMetadata,
     ShutdownResult,
     SupervisedExecution,
     configured_runtime,
 )
+
+ResultFinalizer = Callable[[SupervisedExecution], Awaitable[None]]
 
 RuntimeState = Literal["new", "alive", "dead", "closed"]
 _HOST_DIAGNOSTIC_BYTES = 65_536
@@ -41,8 +50,15 @@ class _Supervisor(Protocol):
     @property
     def diagnostic_tail(self) -> str: ...
 
-    async def execute(self, code: str, timeout: float) -> SupervisedExecution: ...
-
+    async def execute(
+        self,
+        code: str,
+        timeout: float,
+        packages: tuple[str, ...] = (),
+        *,
+        output_bundle: ArtifactBundle,
+        observer: OutputObserver | None = None,
+    ) -> SupervisedExecution: ...
     async def shutdown(self) -> ShutdownResult: ...
 
 
@@ -55,7 +71,10 @@ class _Command:
     timeout: float
     reset: bool
     result: asyncio.Future[SupervisedExecution]
+    packages: tuple[str, ...]
     cancelled: asyncio.Event = field(default_factory=asyncio.Event)
+    observer: OutputObserver | None = None
+    result_finalizer: ResultFinalizer | None = None
 
 
 async def _start_supervisor(working_directory: Path) -> _Supervisor:
@@ -70,10 +89,12 @@ class KernelRuntime:
         working_directory: Path | None = None,
         *,
         supervisor_factory: SupervisorFactory = _start_supervisor,
+        artifact_store: ArtifactStore | None = None,
     ) -> None:
         initial_runtime = configured_runtime(working_directory)
         self._working_directory = Path(initial_runtime.working_directory)
         self._supervisor_factory = supervisor_factory
+        self._artifact_store = artifact_store or ArtifactStore()
         self._state: RuntimeState = "new"
         self._supervisor: _Supervisor | None = None
         self._last_runtime = initial_runtime
@@ -88,6 +109,7 @@ class KernelRuntime:
         self._worker_cleanup_result: ShutdownResult | None = None
         self._startup_failure: KernelStartError | None = None
         self._diagnostic_tail = ""
+        self._pending_output_bundles: list[ArtifactBundle] = []
         self._last_supervisor_diagnostic = ""
 
     @property
@@ -112,13 +134,24 @@ class KernelRuntime:
         *,
         timeout: float = 30.0,
         reset: bool = False,
+        packages: tuple[str, ...] = (),
+        observer: OutputObserver | None = None,
+        result_finalizer: ResultFinalizer | None = None,
     ) -> SupervisedExecution:
         """Queue one cell; caller cancellation abandons or interrupts only that call."""
         if self._state == "closed":
             raise RuntimeClosedError("Runtime is closed")
 
         loop = asyncio.get_running_loop()
-        command = _Command(code, timeout, reset, loop.create_future())
+        command = _Command(
+            code,
+            timeout,
+            reset,
+            loop.create_future(),
+            packages=packages,
+            observer=observer,
+            result_finalizer=result_finalizer,
+        )
         self._commands.append(command)
         self._ensure_worker()
         self._wake_worker.set()
@@ -128,6 +161,20 @@ class KernelRuntime:
             command.cancelled.set()
             command.result.cancel()
             self._wake_worker.set()
+            raise
+
+    async def begin_artifact_bundle(self) -> ArtifactBundle:
+        """Reserve one synthetic-producer bundle behind the Runtime seam."""
+        if self._state == "closed":
+            raise RuntimeClosedError("Runtime is closed")
+        return await self._artifact_store.begin_bundle()
+
+    async def read_resource(self, uri: str) -> ArtifactResource:
+        """Read one retained artifact without exposing Store mechanics."""
+        try:
+            return await self._artifact_store.read(uri)
+        except ArtifactIntegrityError:
+            self._record_host_diagnostic("Artifact Store resource integrity failure")
             raise
 
     async def shutdown(self) -> ShutdownResult:
@@ -146,7 +193,10 @@ class KernelRuntime:
                 break
             except asyncio.CancelledError:
                 caller_cancelled = True
-        self._shutdown_result = result
+        if result.cleaned:
+            self._shutdown_result = result
+        elif self._shutdown_task is operation:
+            self._shutdown_task = None
         if caller_cancelled:
             raise asyncio.CancelledError
         return result
@@ -197,6 +247,13 @@ class KernelRuntime:
 
     async def _process(self, command: _Command) -> SupervisedExecution | None:
         if command.reset:
+            if not await self._retry_pending_output_bundles():
+                if not self._is_closed():
+                    self._state = "dead"
+                return self._dead_execution(
+                    "ResetCleanupError",
+                    "managed output cleanup failed during reset",
+                )
             reset_failure = await self._replace_supervisor()
             if reset_failure is not None:
                 return reset_failure
@@ -217,7 +274,34 @@ class KernelRuntime:
         if supervisor is None or self._state != "alive":
             return self._dead_execution("KernelUnavailable", "kernel is not available")
 
-        execution = asyncio.create_task(supervisor.execute(command.code, command.timeout))
+        try:
+            output_bundle = await self._artifact_store.begin_bundle()
+        except ArtifactStoreError as error:
+            self._record_host_diagnostic(str(error))
+            cleanup = await supervisor.shutdown()
+            self._observe_supervisor(supervisor)
+            if not cleanup.cleaned:
+                return self._dead_execution("CleanupError", "managed kernel cleanup failed")
+            return self._dead_execution("ArtifactStoreError", "execution output storage failed")
+        if command.observer is None:
+            execution = asyncio.create_task(
+                supervisor.execute(
+                    command.code,
+                    command.timeout,
+                    command.packages,
+                    output_bundle=output_bundle,
+                )
+            )
+        else:
+            execution = asyncio.create_task(
+                supervisor.execute(
+                    command.code,
+                    command.timeout,
+                    command.packages,
+                    output_bundle=output_bundle,
+                    observer=command.observer,
+                )
+            )
         cancellation = asyncio.create_task(command.cancelled.wait())
         try:
             done, _ = await asyncio.wait(
@@ -227,21 +311,82 @@ class KernelRuntime:
             if cancellation in done:
                 execution.cancel()
                 await asyncio.gather(execution, return_exceptions=True)
+                await self._abort_unsettled_bundle(output_bundle)
                 self._observe_supervisor(supervisor)
                 return None
             outcome = await execution
+            self._record_execution(supervisor, outcome)
+            await self._abort_unsettled_bundle(output_bundle)
+            if command.result_finalizer is not None:
+                try:
+                    await command.result_finalizer(outcome)
+                except Exception as error:
+                    self._record_host_diagnostic(
+                        f"terminal result construction failed: {type(error).__name__}: {error}"
+                    )
+                    try:
+                        await output_bundle.discard()
+                    except ArtifactStoreError as discard_error:
+                        self._record_host_diagnostic(str(discard_error))
+                        self._pending_output_bundles.append(output_bundle)
+                    cleanup = await supervisor.shutdown()
+                    self._observe_supervisor(supervisor)
+                    error_type = "ArtifactStoreError" if cleanup.cleaned else "CleanupError"
+                    message = (
+                        "execution output storage failed"
+                        if cleanup.cleaned
+                        else "managed kernel cleanup failed"
+                    )
+                    fatal = self._dead_execution(
+                        error_type,
+                        message,
+                        duration_ms=outcome.duration_ms,
+                        output=self._bounded_failed_output(outcome.output),
+                    )
+                    try:
+                        await command.result_finalizer(fatal)
+                    except Exception as fatal_error:
+                        self._record_host_diagnostic(
+                            "fatal terminal result construction failed: "
+                            f"{type(fatal_error).__name__}: {fatal_error}"
+                        )
+                    return fatal
         except KernelUnavailableError:
+            await self._abort_unsettled_bundle(output_bundle)
             if not self._is_closed():
                 self._state = "dead"
             self._observe_supervisor(supervisor)
             return self._dead_execution("KernelUnavailable", "kernel is not available")
+        except BaseException:
+            await self._abort_unsettled_bundle(output_bundle)
+            raise
         finally:
             if not cancellation.done():
                 cancellation.cancel()
             await asyncio.gather(cancellation, return_exceptions=True)
 
-        self._record_execution(supervisor, outcome)
         return outcome
+
+    async def _abort_unsettled_bundle(self, bundle: ArtifactBundle) -> None:
+        if bundle.settled:
+            return
+        try:
+            await bundle.abort()
+        except (ArtifactStoreError, OSError) as error:
+            self._record_host_diagnostic(str(error))
+            if bundle not in self._pending_output_bundles:
+                self._pending_output_bundles.append(bundle)
+
+    async def _retry_pending_output_bundles(self) -> bool:
+        pending = tuple(self._pending_output_bundles)
+        self._pending_output_bundles.clear()
+        for bundle in pending:
+            try:
+                await bundle.discard()
+            except (ArtifactStoreError, OSError) as error:
+                self._record_host_diagnostic(str(error))
+                self._pending_output_bundles.append(bundle)
+        return not self._pending_output_bundles
 
     async def _replace_supervisor(self) -> SupervisedExecution | None:
 
@@ -271,7 +416,6 @@ class KernelRuntime:
 
         self._supervisor = None
         self._last_execution_count = 0
-        self._last_runtime = self._configured_runtime
         if self._state == "closed":
             return None
         self._state = "dead"
@@ -322,19 +466,40 @@ class KernelRuntime:
         if self._state != "closed":
             self._state = "alive" if supervisor.state == "alive" else "dead"
 
-    def _dead_execution(self, error_type: str, message: str) -> SupervisedExecution:
+    def _dead_execution(
+        self,
+        error_type: str,
+        message: str,
+        duration_ms: int = 0,
+        *,
+        output: OutputResult | None = None,
+    ) -> SupervisedExecution:
         return SupervisedExecution(
             status="kernel_killed",
-            stdout="",
-            stderr="",
+            stdout=output.stdout if output is not None else "",
+            stderr=output.stderr if output is not None else "",
             has_result=False,
             result=None,
             error=ErrorInfo(error_type, message, ()),
             execution_count=self._last_execution_count,
-            duration_ms=0,
+            duration_ms=duration_ms,
             kernel_state="dead",
             runtime=self._last_runtime,
-            output=OutputMetadata(0, 0, False),
+            output=output or OutputResult.empty(),
+        )
+
+    @staticmethod
+    def _bounded_failed_output(output: OutputResult) -> OutputResult:
+        return OutputResult(
+            stdout=output.stdout,
+            stderr=output.stderr,
+            total_bytes=output.total_bytes,
+            total_lines=output.total_lines,
+            discarded_bytes=output.discarded_bytes,
+            discarded_lines=output.discarded_lines,
+            truncated=output.truncated,
+            limit_bytes=output.limit_bytes,
+            limit_exceeded=output.limit_exceeded,
         )
 
     async def _shutdown_impl(self) -> ShutdownResult:
@@ -350,11 +515,21 @@ class KernelRuntime:
         if worker is not None and worker is not asyncio.current_task():
             await worker
         worker_result = self._worker_cleanup_result
-        if direct_result.cleaned and (worker_result is None or worker_result.cleaned):
+        await self._retry_pending_output_bundles()
+        try:
+            await self._artifact_store.cleanup()
+        except ArtifactStoreError as error:
+            self._record_host_diagnostic(str(error))
+            store_result = ShutdownResult(False, "Artifact Store cleanup failed")
+        else:
+            self._pending_output_bundles.clear()
+            store_result = ShutdownResult(True)
+        results = (direct_result, worker_result, store_result)
+        if all(result is None or result.cleaned for result in results):
             return ShutdownResult(True)
         errors = [
             result.error
-            for result in (direct_result, worker_result)
+            for result in results
             if result is not None and not result.cleaned and result.error is not None
         ]
         return ShutdownResult(False, "; ".join(dict.fromkeys(errors)) or "cleanup failed")

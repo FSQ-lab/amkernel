@@ -1,0 +1,511 @@
+{
+  "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+      "code": {
+        "description": "One Python cell; empty cells are valid.",
+        "maxLength": 1048576,
+        "title": "Code",
+        "type": "string"
+      },
+      "packages": {
+        "items": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9]+(?:[._-]+[A-Za-z0-9]+)*$",
+          "type": "string"
+        },
+        "maxItems": 64,
+        "title": "Packages",
+        "type": "array"
+      },
+      "reset": {
+        "default": false,
+        "title": "Reset",
+        "type": "boolean"
+      },
+      "timeout": {
+        "default": 30.0,
+        "description": "Active-cell seconds.",
+        "exclusiveMinimum": 0,
+        "maximum": 3600,
+        "title": "Timeout",
+        "type": "number"
+      },
+      "title": {
+        "default": "",
+        "description": "Presentation metadata only.",
+        "maxLength": 200,
+        "title": "Title",
+        "type": "string"
+      }
+    },
+    "required": [
+      "code"
+    ],
+    "title": "PythonExecInput",
+    "type": "object"
+  },
+  "outputSchema": {
+    "$defs": {
+      "ArtifactDisplay": {
+        "additionalProperties": false,
+        "properties": {
+          "artifact": {
+            "$ref": "#/$defs/ArtifactRef"
+          },
+          "kind": {
+            "const": "artifact",
+            "title": "Kind",
+            "type": "string"
+          },
+          "sequence": {
+            "maximum": 128,
+            "minimum": 1,
+            "title": "Sequence",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "sequence",
+          "kind",
+          "artifact"
+        ],
+        "title": "ArtifactDisplay",
+        "type": "object"
+      },
+      "ArtifactRef": {
+        "additionalProperties": false,
+        "properties": {
+          "declaredMimeType": {
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Declaredmimetype",
+            "type": "string"
+          },
+          "mimeType": {
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Mimetype",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "representation": {
+            "enum": [
+              "raw",
+              "manifest"
+            ],
+            "title": "Representation",
+            "type": "string"
+          },
+          "sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Sha256",
+            "type": "string"
+          },
+          "size": {
+            "maximum": 268435456,
+            "minimum": 0,
+            "title": "Size",
+            "type": "integer"
+          },
+          "uri": {
+            "title": "Uri",
+            "type": "string"
+          }
+        },
+        "required": [
+          "uri",
+          "name",
+          "declaredMimeType",
+          "mimeType",
+          "representation",
+          "size",
+          "sha256"
+        ],
+        "title": "ArtifactRef",
+        "type": "object"
+      },
+      "ExecutionError": {
+        "additionalProperties": false,
+        "properties": {
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "traceback": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Traceback",
+            "type": "array"
+          },
+          "type": {
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "message",
+          "traceback"
+        ],
+        "title": "ExecutionError",
+        "type": "object"
+      },
+      "ImageDisplay": {
+        "additionalProperties": false,
+        "properties": {
+          "artifact": {
+            "$ref": "#/$defs/ArtifactRef"
+          },
+          "height": {
+            "maximum": 32768,
+            "minimum": 1,
+            "title": "Height",
+            "type": "integer"
+          },
+          "inline": {
+            "title": "Inline",
+            "type": "boolean"
+          },
+          "kind": {
+            "const": "image",
+            "title": "Kind",
+            "type": "string"
+          },
+          "mimeType": {
+            "enum": [
+              "image/png",
+              "image/jpeg",
+              "image/gif",
+              "image/webp"
+            ],
+            "title": "Mimetype",
+            "type": "string"
+          },
+          "sequence": {
+            "maximum": 128,
+            "minimum": 1,
+            "title": "Sequence",
+            "type": "integer"
+          },
+          "sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Sha256",
+            "type": "string"
+          },
+          "size": {
+            "maximum": 268435456,
+            "minimum": 0,
+            "title": "Size",
+            "type": "integer"
+          },
+          "width": {
+            "maximum": 32768,
+            "minimum": 1,
+            "title": "Width",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "sequence",
+          "kind",
+          "mimeType",
+          "size",
+          "sha256",
+          "width",
+          "height",
+          "inline",
+          "artifact"
+        ],
+        "title": "ImageDisplay",
+        "type": "object"
+      },
+      "JsonDisplay": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "const": "json",
+            "title": "Kind",
+            "type": "string"
+          },
+          "sequence": {
+            "maximum": 128,
+            "minimum": 1,
+            "title": "Sequence",
+            "type": "integer"
+          },
+          "value": {
+            "title": "Value"
+          }
+        },
+        "required": [
+          "sequence",
+          "kind",
+          "value"
+        ],
+        "title": "JsonDisplay",
+        "type": "object"
+      },
+      "OutputInfo": {
+        "additionalProperties": false,
+        "properties": {
+          "discardedBytes": {
+            "minimum": 0,
+            "title": "Discardedbytes",
+            "type": "integer"
+          },
+          "discardedLines": {
+            "minimum": 0,
+            "title": "Discardedlines",
+            "type": "integer"
+          },
+          "limitBytes": {
+            "minimum": 1,
+            "title": "Limitbytes",
+            "type": "integer"
+          },
+          "limitExceeded": {
+            "title": "Limitexceeded",
+            "type": "boolean"
+          },
+          "live": {
+            "enum": [
+              "progress",
+              "failed",
+              "unavailable"
+            ],
+            "title": "Live",
+            "type": "string"
+          },
+          "stderrArtifact": {
+            "$ref": "#/$defs/ArtifactRef",
+            "default": null
+          },
+          "stdoutArtifact": {
+            "$ref": "#/$defs/ArtifactRef",
+            "default": null
+          },
+          "totalBytes": {
+            "minimum": 0,
+            "title": "Totalbytes",
+            "type": "integer"
+          },
+          "totalLines": {
+            "minimum": 0,
+            "title": "Totallines",
+            "type": "integer"
+          },
+          "truncated": {
+            "title": "Truncated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "totalBytes",
+          "totalLines",
+          "discardedBytes",
+          "discardedLines",
+          "truncated",
+          "limitBytes",
+          "limitExceeded",
+          "live"
+        ],
+        "title": "OutputInfo",
+        "type": "object"
+      },
+      "PackageInfo": {
+        "additionalProperties": false,
+        "properties": {
+          "error": {
+            "default": null,
+            "enum": [
+              "not installed",
+              "metadata unavailable",
+              "invalid metadata"
+            ],
+            "title": "Error",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9]+(?:[._-]+[A-Za-z0-9]+)*$",
+            "title": "Name",
+            "type": "string"
+          },
+          "version": {
+            "default": null,
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "PackageInfo",
+        "type": "object"
+      },
+      "RuntimeInfo": {
+        "additionalProperties": false,
+        "properties": {
+          "environmentKind": {
+            "enum": [
+              "project_venv",
+              "active_venv",
+              "system"
+            ],
+            "title": "Environmentkind",
+            "type": "string"
+          },
+          "executable": {
+            "title": "Executable",
+            "type": "string"
+          },
+          "implementation": {
+            "title": "Implementation",
+            "type": "string"
+          },
+          "packages": {
+            "items": {
+              "$ref": "#/$defs/PackageInfo"
+            },
+            "maxItems": 64,
+            "title": "Packages",
+            "type": "array"
+          },
+          "platform": {
+            "title": "Platform",
+            "type": "string"
+          },
+          "pythonVersion": {
+            "title": "Pythonversion",
+            "type": "string"
+          },
+          "workingDirectory": {
+            "title": "Workingdirectory",
+            "type": "string"
+          }
+        },
+        "required": [
+          "executable",
+          "pythonVersion",
+          "workingDirectory",
+          "environmentKind",
+          "implementation",
+          "platform",
+          "packages"
+        ],
+        "title": "RuntimeInfo",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "artifacts": {
+        "items": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "maxItems": 66,
+        "title": "Artifacts",
+        "type": "array"
+      },
+      "displays": {
+        "items": {
+          "discriminator": {
+            "mapping": {
+              "artifact": "#/$defs/ArtifactDisplay",
+              "image": "#/$defs/ImageDisplay",
+              "json": "#/$defs/JsonDisplay"
+            },
+            "propertyName": "kind"
+          },
+          "oneOf": [
+            {
+              "$ref": "#/$defs/JsonDisplay"
+            },
+            {
+              "$ref": "#/$defs/ImageDisplay"
+            },
+            {
+              "$ref": "#/$defs/ArtifactDisplay"
+            }
+          ]
+        },
+        "maxItems": 128,
+        "title": "Displays",
+        "type": "array"
+      },
+      "durationMs": {
+        "minimum": 0,
+        "title": "Durationms",
+        "type": "integer"
+      },
+      "error": {
+        "$ref": "#/$defs/ExecutionError",
+        "default": null
+      },
+      "executionCount": {
+        "minimum": 0,
+        "title": "Executioncount",
+        "type": "integer"
+      },
+      "kernelState": {
+        "enum": [
+          "alive",
+          "dead"
+        ],
+        "title": "Kernelstate",
+        "type": "string"
+      },
+      "output": {
+        "$ref": "#/$defs/OutputInfo"
+      },
+      "result": {
+        "default": null,
+        "title": "Result"
+      },
+      "runtime": {
+        "$ref": "#/$defs/RuntimeInfo"
+      },
+      "status": {
+        "enum": [
+          "completed",
+          "failed",
+          "timed_out",
+          "kernel_killed"
+        ],
+        "title": "Status",
+        "type": "string"
+      },
+      "stderr": {
+        "title": "Stderr",
+        "type": "string"
+      },
+      "stdout": {
+        "title": "Stdout",
+        "type": "string"
+      }
+    },
+    "required": [
+      "status",
+      "stdout",
+      "stderr",
+      "executionCount",
+      "durationMs",
+      "kernelState",
+      "runtime",
+      "output",
+      "displays",
+      "artifacts"
+    ],
+    "title": "PythonExecResult",
+    "type": "object"
+  }
+}
