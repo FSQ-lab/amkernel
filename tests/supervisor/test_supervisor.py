@@ -199,7 +199,9 @@ async def test_idle_background_output_is_not_attributed_later(
 ) -> None:
     first = await supervisor.execute(
         "import threading, time\n"
-        "threading.Thread(target=lambda: (time.sleep(0.05), print('orphan')), daemon=True).start()",
+        "threading.Thread("
+        "target=lambda: (time.sleep(0.05), print('orphan', flush=True)), "
+        "daemon=True).start()",
         timeout=1.0,
     )
     await asyncio.sleep(0.1)

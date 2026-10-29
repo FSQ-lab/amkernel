@@ -501,6 +501,11 @@ class KernelSupervisor:
             raise ConcurrentExecutionError("Runner already has an active execution")
         if not (0 < timeout <= 3_600):
             raise ValueError("timeout must be greater than 0 and at most 3600 seconds")
+        await self._settle_stream_readers()
+        if self._state != "alive":
+            raise KernelUnavailableError(f"Runner is {self._state}")
+        if self._active is not None:
+            raise ConcurrentExecutionError("Runner already has an active execution")
 
         active = _ActiveExecution(uuid.uuid4().hex)
         capture = _ExecutionCapture()
@@ -536,7 +541,7 @@ class KernelSupervisor:
         active: _ActiveExecution,
         capture: _ExecutionCapture,
     ) -> None:
-        await self._settle_capture(capture)
+        await self._settle_stream_readers()
         self._capture = None
         self._active = None
         active.done_event.set()
@@ -1008,11 +1013,17 @@ class KernelSupervisor:
         while chunk := await self._diagnostic_reader.read(_READ_CHUNK):
             self._diagnostic.feed(chunk)
 
-    async def _settle_capture(self, _capture: _ExecutionCapture) -> None:
-        # Runner flushes before its terminal frame; two loop turns drain pipe callbacks
-        # already queued without extending attribution into a time-based quiet window.
-        await asyncio.sleep(0)
-        await asyncio.sleep(0)
+    @staticmethod
+    async def _settle_stream_readers() -> None:
+        # A zero-delay timer runs after already-ready pipe callbacks. Their
+        # awakened reader tasks then run before this task resumes.
+        loop = asyncio.get_running_loop()
+        settled = loop.create_future()
+        handle = loop.call_later(0, settled.set_result, None)
+        try:
+            await settled
+        finally:
+            handle.cancel()
 
     def _close_channels(self) -> None:
         if self._channels_closed:
