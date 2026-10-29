@@ -4,10 +4,12 @@ from __future__ import annotations
 
 import asyncio
 import os
+import platform
 import signal
 import sys
 import time
 import uuid
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Final, Literal, Protocol
@@ -63,7 +65,44 @@ SupervisorState = Literal["starting", "alive", "dead", "closing", "closed"]
 
 
 class KernelStartError(RuntimeError):
-    """The Runner could not reach a validated ready state."""
+    """The Runner failed startup; retained cleanup remains retryable."""
+
+    def __init__(
+        self,
+        message: str,
+        *,
+        cleanup: Callable[[], Awaitable[ShutdownResult]] | None = None,
+    ) -> None:
+        super().__init__(message)
+        self._cleanup = cleanup
+        self._cleanup_task: asyncio.Task[ShutdownResult] | None = None
+
+    @property
+    def cleanup_pending(self) -> bool:
+        return self._cleanup is not None
+
+    async def retry_cleanup(self) -> ShutdownResult:
+        """Retry retained startup cleanup without cancellation orphaning it."""
+        cleanup = self._cleanup
+        if cleanup is None:
+            return ShutdownResult(True)
+        if self._cleanup_task is None:
+            self._cleanup_task = asyncio.create_task(_run_cleanup_operation(cleanup))
+        operation = self._cleanup_task
+        caller_cancelled = False
+        while True:
+            try:
+                result = await asyncio.shield(operation)
+                break
+            except asyncio.CancelledError:
+                caller_cancelled = True
+        if result.cleaned:
+            self._cleanup = None
+        elif self._cleanup_task is operation:
+            self._cleanup_task = None
+        if caller_cancelled:
+            raise asyncio.CancelledError
+        return result
 
 
 class KernelUnavailableError(RuntimeError):
@@ -276,7 +315,13 @@ class KernelSupervisor:
             except Exception as error:
                 raise KernelStartError(str(error)) from error
         if caller_cancelled:
-            await supervisor.shutdown()
+            cleanup = await supervisor.shutdown()
+            if not cleanup.cleaned:
+                message = cleanup.error or "managed process cleanup failed"
+                raise KernelStartError(
+                    f"startup cancellation cleanup failed: {message}",
+                    cleanup=supervisor.shutdown,
+                )
             raise asyncio.CancelledError
         return supervisor
 
@@ -287,10 +332,10 @@ class KernelSupervisor:
         *,
         operations: _ProcessOperations = _POSIX_OPERATIONS,
     ) -> KernelSupervisor:
-        """Spawn and initialize one Runner using the current package interpreter."""
         cls._require_supported_platform()
-        launch_directory = (working_directory or Path.cwd()).resolve(strict=True)
-        environment_kind = _classify_environment(launch_directory)
+        configured = configured_runtime(working_directory)
+        launch_directory = Path(configured.working_directory)
+        environment_kind = configured.environment_kind
         environment = _runner_environment()
 
         (
@@ -359,9 +404,12 @@ class KernelSupervisor:
             return supervisor
         except BaseException as error:
             cleanup_error: str | None
+            cleanup_operation: Callable[[], Awaitable[ShutdownResult]] | None = None
             if supervisor is not None:
                 cleanup_error = await supervisor._destructive_cleanup()
                 supervisor._close_channels()
+                if cleanup_error is not None:
+                    cleanup_operation = supervisor.shutdown
             else:
                 _close_fd(request_write)
                 if response_transport is not None:
@@ -373,10 +421,12 @@ class KernelSupervisor:
                 else:
                     _close_fd(diagnostic_read)
                 cleanup_error = await _cleanup_spawned_process(process, operations)
+                if cleanup_error is not None:
+                    cleanup_operation = _spawned_process_cleanup(process, operations)
             message = str(error)
             if cleanup_error is not None:
                 message = f"{message}; cleanup failed: {cleanup_error}"
-            raise KernelStartError(message) from error
+            raise KernelStartError(message, cleanup=cleanup_operation) from error
 
     @staticmethod
     def _require_supported_platform() -> None:
@@ -428,6 +478,11 @@ class KernelSupervisor:
             raise ProtocolViolation("Runner working-directory diagnostic mismatch")
         if response.runtime.environment_kind != self._environment_kind:
             raise ProtocolViolation("Runner environment-kind diagnostic mismatch")
+        if (
+            response.runtime.python_version
+            != configured_runtime(self._launch_working_directory).python_version
+        ):
+            raise ProtocolViolation("Runner Python-version diagnostic mismatch")
         if (
             self._runner_exit_observed
             or self._process.returncode is not None
@@ -766,8 +821,8 @@ class KernelSupervisor:
         if self._process.returncode is None and not self._channels_closed:
             try:
                 correlation_id = uuid.uuid4().hex
-                await self._write_request(encode_request(ShutdownRequest(correlation_id)))
                 async with asyncio.timeout(SHUTDOWN_GRACE):
+                    await self._write_request(encode_request(ShutdownRequest(correlation_id)))
                     return_code = await asyncio.shield(self._process_wait_task)
                 if return_code != 0:
                     graceful_error = f"Runner graceful shutdown exited with status {return_code}"
@@ -787,17 +842,17 @@ class KernelSupervisor:
         duration_ms: int,
         started: float | None = None,
     ) -> _CoreOutcome:
+        self._diagnostic.feed(f"{error_type}: {message}\n".encode("utf-8", errors="replace"))
         cleanup_error = await self._destructive_cleanup()
         if started is not None:
             duration_ms = _duration_ms(started)
         if cleanup_error is not None:
-            message = f"{message}; cleanup failed: {cleanup_error}"
             error_type = "CleanupError"
         return _CoreOutcome(
             "kernel_killed",
             False,
             None,
-            ErrorInfo(error_type, message, ()),
+            ErrorInfo(error_type, _public_infrastructure_message(error_type), ()),
             self._execution_count,
             duration_ms,
             "dead",
@@ -809,6 +864,7 @@ class KernelSupervisor:
         cleanup_error = await self._escalate_group()
         if cleanup_error is not None:
             self._cleanup_error = cleanup_error
+            self._diagnostic.feed(f"cleanup failed: {cleanup_error}\n".encode())
         return cleanup_error
 
     async def _escalate_group(self) -> str | None:
@@ -1016,6 +1072,37 @@ async def _cleanup_spawned_process(
     return "; ".join(errors) or None
 
 
+def _spawned_process_cleanup(
+    process: asyncio.subprocess.Process,
+    operations: _ProcessOperations,
+) -> Callable[[], Awaitable[ShutdownResult]]:
+    async def cleanup() -> ShutdownResult:
+        error = await _cleanup_spawned_process(process, operations)
+        return ShutdownResult(error is None, error)
+
+    return cleanup
+
+
+async def _run_cleanup_operation(
+    cleanup: Callable[[], Awaitable[ShutdownResult]],
+) -> ShutdownResult:
+    try:
+        return await cleanup()
+    except Exception as error:
+        return ShutdownResult(False, f"startup cleanup failed: {type(error).__name__}: {error}")
+
+
+def _public_infrastructure_message(error_type: str) -> str:
+    messages = {
+        "CleanupError": "managed kernel cleanup failed",
+        "KernelExited": "kernel process exited unexpectedly",
+        "RunnerProtocolError": "kernel protocol failed",
+        "RunnerProtocolTimeout": "kernel protocol timed out",
+        "RuntimeDiagnosticsError": "kernel runtime diagnostics failed",
+    }
+    return messages.get(error_type, "kernel infrastructure failed")
+
+
 def _close_fd(descriptor: int) -> None:
     try:
         os.close(descriptor)
@@ -1057,6 +1144,17 @@ async def _stream_reader_from_fd(fd: int) -> tuple[asyncio.StreamReader, asyncio
     protocol = asyncio.StreamReaderProtocol(reader)
     transport, _ = await loop.connect_read_pipe(lambda: protocol, stream)
     return reader, transport
+
+
+def configured_runtime(working_directory: Path | None = None) -> RuntimeDiagnostics:
+    """Return host-known Runner diagnostics before or after process loss."""
+    launch_directory = (working_directory or Path.cwd()).resolve(strict=True)
+    return RuntimeDiagnostics(
+        executable=os.path.abspath(sys.executable),
+        python_version=platform.python_version(),
+        working_directory=str(launch_directory),
+        environment_kind=_classify_environment(launch_directory),
+    )
 
 
 def _runner_environment() -> dict[str, str]:
