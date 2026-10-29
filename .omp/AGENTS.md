@@ -1,38 +1,30 @@
 # AMKernel — Automation MCP Kernel
 
 > Persistent Python execution for agentic automation.
->
-> 面向 Agent 自动化的持久 Python Execution MCP。
 
-AMKernel is a persistent Python execution MCP for agentic automation. Mobile automation through Appium is its first experimental vertical.
+AMKernel exposes one persistent local Python kernel to Coding Agents through a stdio MCP server. Stage 1 execution correctness is the completed implementation baseline; the core remains automation-neutral.
 
-AMKernel 是一个面向 Agent 自动化的持久 Python Execution MCP。基于 Appium 的移动自动化是它的第一个实验方向。
+## Non-negotiable invariants
 
-The name encodes the product boundary:
+- Report kernel survival truthfully; never recreate a dead kernel implicitly.
+- Keep MCP transport, private Runner control, diagnostics, and user output isolated.
+- Serialize one persistent namespace; reset is destructive process replacement.
+- Clean only managed process-group resources and never overclaim external cleanup.
+- Treat AMKernel as unrestricted local same-user execution, not a sandbox.
+- Do not add Stage 2 output/artifact behavior or platform-specific wrappers unless the active Project item explicitly owns that scope.
 
-- **Automation** — Appium, Playwright, Windows, macOS, and other automation environments.
-- **MCP** — the standard interface that attaches AMKernel to different Coding Agents.
-- **Kernel** — a persistent Python namespace with object reuse, incremental execution, and interrupt recovery.
+## Sources of truth
 
-Before changing architecture or implementation, read:
+Durable contracts live in `docs/architecture.md`, `docs/development.md`, accepted records under `docs/decisions/`, and `docs/stage-1-implementation-plan.md`. GitHub Project #2 and linked Issues are the sole live sources for status, dependencies, blockers, risks, and queue order. `docs/HANDOFF.md` records current implementation state.
 
-@../docs/architecture.md
-@../docs/development.md
-@../docs/project-management.md
-@../docs/decisions/README.md
-@../docs/decisions/0001-stage-1-implementation-stack.md
-@../docs/decisions/0002-github-project-management.md
-@../docs/decisions/0003-stage-1-execution-contract.md
-@../docs/decisions/0004-stage-1-runner-protocol.md
-@../docs/decisions/0005-stage-1-runtime-lifecycle.md
-@../docs/stage-1-implementation-plan.md
+Before architecture, implementation, verification, or project-status changes:
 
-@../docs/experiments/mobile-appium.md
+1. inspect the active GitHub Project item and linked Issue;
+2. read `docs/HANDOFF.md` and only the architecture, development, plan, and accepted ADR sections relevant to that item;
+3. run the focused behavioral check for the changed contract and obtain independent review for load-bearing behavior.
 
-Before starting work, inspect the active item in https://github.com/orgs/FSQ-lab/projects/2 and its linked repository Issue. GitHub is the sole source for live status, dependencies, blockers, risks, and queue order.
+For configuration advice and other questions that do not change repository behavior or project status, do not fetch GitHub state or load implementation contracts unless the answer requires them.
 
-Ready and unblocked work advances continuously in GitHub Project order without per-task owner approval. Pause only for an unreachable external prerequisite or an unresolved decision with materially different product, architecture, security, or support tradeoffs; required quality gates and independent review still apply.
+Ready and unblocked work advances continuously in GitHub Project order without per-task owner approval. Pause only for an unreachable external prerequisite or an unresolved decision with materially different product, architecture, security, or support tradeoffs.
 
-Keep the core automation-neutral. Platform-specific procedures begin in skills, experiments, and integration tests until evidence from multiple verticals justifies moving behavior into the kernel.
-
-The repository is design-first. Do not treat code from the earlier sibling `omp` spike as production scaffolding; reuse only mechanisms that are justified by the accepted architecture and covered by focused tests.
+Keep platform procedures in skills, experiments, and integration tests until evidence from multiple verticals justifies core behavior. Do not use the earlier sibling `omp` spike as production scaffolding; reuse only justified mechanisms covered by focused tests.
