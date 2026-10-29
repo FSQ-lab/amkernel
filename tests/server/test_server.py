@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
+import os
+import signal
 from collections import deque
 from io import StringIO
 
@@ -313,3 +316,72 @@ async def test_serve_stdio_cleans_runtime_when_transport_raises(
         await serve_stdio(runtime_factory=lambda _working_directory: runtime)
 
     assert runtime.shutdown_calls == 1
+
+
+async def test_serve_stdio_defers_sigterm_through_cleanup(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    class BlockingShutdownRuntime(FakeRuntime):
+        def __init__(self) -> None:
+            super().__init__(outcome())
+            self.shutdown_entered = asyncio.Event()
+            self.shutdown_release = asyncio.Event()
+
+        async def shutdown(self) -> ShutdownResult:
+            self.shutdown_calls += 1
+            self.shutdown_entered.set()
+            await self.shutdown_release.wait()
+            return self.shutdown_result
+
+    runtime = BlockingShutdownRuntime()
+    observed: list[int] = []
+
+    async def return_immediately(_server: Server[dict[str, object]]) -> None:
+        return None
+
+    def prior_handler(signal_number: int, _frame: object) -> None:
+        observed.append(signal_number)
+
+    monkeypatch.setattr(server_module, "_run_server_stdio", return_immediately)
+    original = signal.signal(signal.SIGTERM, prior_handler)
+    try:
+        operation = asyncio.create_task(
+            serve_stdio(runtime_factory=lambda _working_directory: runtime)
+        )
+        await runtime.shutdown_entered.wait()
+        os.kill(os.getpid(), signal.SIGTERM)
+        await asyncio.sleep(0)
+
+        assert observed == []
+        assert not operation.done()
+        runtime.shutdown_release.set()
+        assert await operation == 0
+
+        assert runtime.shutdown_calls == 1
+        assert observed == [signal.SIGTERM]
+        assert signal.getsignal(signal.SIGTERM) is prior_handler
+    finally:
+        signal.signal(signal.SIGTERM, original)
+
+
+async def test_serve_stdio_restores_sigterm_handler_when_shutdown_raises(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    class FailingShutdownRuntime(FakeRuntime):
+        async def shutdown(self) -> ShutdownResult:
+            self.shutdown_calls += 1
+            raise RuntimeError("shutdown failed")
+
+    runtime = FailingShutdownRuntime(outcome())
+
+    async def return_immediately(_server: Server[dict[str, object]]) -> None:
+        return None
+
+    monkeypatch.setattr(server_module, "_run_server_stdio", return_immediately)
+    original = signal.getsignal(signal.SIGTERM)
+
+    with pytest.raises(RuntimeError, match="shutdown failed"):
+        await serve_stdio(runtime_factory=lambda _working_directory: runtime)
+
+    assert runtime.shutdown_calls == 1
+    assert signal.getsignal(signal.SIGTERM) is original
