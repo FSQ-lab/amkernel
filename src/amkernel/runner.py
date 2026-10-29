@@ -67,6 +67,8 @@ _INITIAL_PREFIX = sys.prefix
 _INITIAL_BASE_PREFIX = sys.base_prefix
 _PTHREAD_SIGMASK = signal.pthread_sigmask
 _INSTALL_SIGNAL_HANDLER = signal.signal
+_PENDING_SIGNALS = signal.sigpending
+_WAIT_FOR_SIGNAL = signal.sigwait
 _SIGINT = signal.SIGINT
 _SIG_BLOCK = signal.SIG_BLOCK
 _SIG_SETMASK = signal.SIG_SETMASK
@@ -736,6 +738,15 @@ def _block_sigint_for_finalization(
         _PTHREAD_SIGMASK(_SIG_BLOCK, {_SIGINT})
     return cell_result
 
+def _unblock_sigint_for_execution(baseline_mask: set[int]) -> None:
+    # Darwin can leave an interrupt sent after Started pending across unmask.
+    # Consume a signal already known to be pending, then map it synchronously.
+    if _SIGINT in _PENDING_SIGNALS():
+        _WAIT_FOR_SIGNAL({_SIGINT})
+        _PTHREAD_SIGMASK(_SIG_SETMASK, baseline_mask)
+        raise KeyboardInterrupt
+    _PTHREAD_SIGMASK(_SIG_SETMASK, baseline_mask)
+
 
 def _execute_request(
     request: ExecuteRequest,
@@ -756,7 +767,7 @@ def _execute_request(
     execution_count = next_count
 
     try:
-        _PTHREAD_SIGMASK(_SIG_SETMASK, baseline_mask)
+        _unblock_sigint_for_execution(baseline_mask)
         cell_result = _execute_cell(request.code, execution_count, namespace)
         cell_result = _block_sigint_for_finalization(signal_state, cell_result)
     except KeyboardInterrupt as error:
