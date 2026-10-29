@@ -681,8 +681,13 @@ class FailFirstVerificationOperations:
         self.signaled = False
 
     def signal_group(self, process_group: int, signal_number: int) -> None:
-        os.killpg(process_group, signal_number)
-        self.signaled = True
+        try:
+            os.killpg(process_group, signal_number)
+        except ProcessLookupError:
+            self.signaled = True
+            raise
+        else:
+            self.signaled = True
 
     def group_exists(self, _process_group: int) -> bool:
         if not self.failed:
