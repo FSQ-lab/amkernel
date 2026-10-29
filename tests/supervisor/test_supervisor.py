@@ -674,23 +674,21 @@ async def test_partial_pipe_acquisition_closes_prior_descriptors(
 
 
 class FailFirstVerificationOperations:
-    """Fail one group verification, then report real state."""
+    """Fail one group verification, then model successful retry cleanup."""
 
     def __init__(self) -> None:
         self.failed = False
+        self.signaled = False
 
     def signal_group(self, process_group: int, signal_number: int) -> None:
         os.killpg(process_group, signal_number)
+        self.signaled = True
 
-    def group_exists(self, process_group: int) -> bool:
+    def group_exists(self, _process_group: int) -> bool:
         if not self.failed:
             self.failed = True
             raise PermissionError("verification denied once")
-        try:
-            os.killpg(process_group, 0)
-        except ProcessLookupError:
-            return False
-        return True
+        return not self.signaled
 
 
 async def test_initialization_cleanup_failure_remains_retryable(
