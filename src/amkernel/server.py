@@ -2,10 +2,16 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
+import os
+import signal
 import sys
-from collections.abc import Callable
+import threading
+from collections.abc import Callable, Iterator
+from contextlib import contextmanager
 from pathlib import Path
+from types import FrameType
 from typing import Annotated, Any, Literal, Protocol, TextIO, cast
 
 import mcp.types as types
@@ -278,6 +284,42 @@ def _create_server(
     )
 
 
+@contextmanager
+def _defer_sigterm_until_cleanup() -> Iterator[Callable[[asyncio.Task[None]], None]]:
+    if os.name != "posix" or threading.current_thread() is not threading.main_thread():
+        yield lambda _task: None
+        return
+
+    task: asyncio.Task[None] | None = None
+    received = False
+    received_frame: FrameType | None = None
+
+    def handle_sigterm(_signal_number: int, frame: FrameType | None) -> None:
+        nonlocal received, received_frame
+        received = True
+        received_frame = frame
+        if task is not None and not task.done():
+            task.cancel()
+
+    def attach(current: asyncio.Task[None]) -> None:
+        nonlocal task
+        task = current
+        if received and not current.done():
+            current.cancel()
+
+    previous = signal.signal(signal.SIGTERM, handle_sigterm)
+    try:
+        yield attach
+    finally:
+        if signal.getsignal(signal.SIGTERM) is handle_sigterm:
+            signal.signal(signal.SIGTERM, previous)
+        if received:
+            if previous == signal.SIG_DFL:
+                os.kill(os.getpid(), signal.SIGTERM)
+            elif previous != signal.SIG_IGN and callable(previous):
+                previous(signal.SIGTERM, received_frame)
+
+
 async def _run_server_stdio(server: Server[dict[str, Any]]) -> None:
     async with stdio_server() as (read_stream, write_stream):
         await server.run(
@@ -297,10 +339,13 @@ async def serve_stdio(
     diagnostics = _DiagnosticEmitter(diagnostic_stream or sys.stderr)
     runtime = runtime_factory(working_directory)
     server = _create_server(runtime, diagnostics)
-    try:
-        await _run_server_stdio(server)
-    finally:
-        shutdown = await runtime.shutdown()
-        diagnostics.emit(runtime.diagnostic_tail)
-        diagnostics.emit_cleanup_failure(shutdown)
+    with _defer_sigterm_until_cleanup() as attach:
+        serving = asyncio.create_task(_run_server_stdio(server))
+        attach(serving)
+        try:
+            await serving
+        finally:
+            shutdown = await runtime.shutdown()
+            diagnostics.emit(runtime.diagnostic_tail)
+            diagnostics.emit_cleanup_failure(shutdown)
     return 0 if shutdown.cleaned else 1

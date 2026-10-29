@@ -111,7 +111,14 @@ def _build_argument_parser() -> argparse.ArgumentParser:
 
 
 def _bootstrap(argv: list[str] | None) -> _Bootstrap:
-    arguments = _build_argument_parser().parse_args(argv)
+    raw_arguments = list(sys.argv[1:] if argv is None else argv)
+    for option in (REQUEST_FD_ARGUMENT, RESPONSE_FD_ARGUMENT, DIAGNOSTIC_FD_ARGUMENT):
+        occurrences = sum(
+            argument == option or argument.startswith(f"{option}=") for argument in raw_arguments
+        )
+        if occurrences != 1:
+            raise ValueError(f"{option} must appear exactly once")
+    arguments = _build_argument_parser().parse_args(raw_arguments)
     descriptors = (
         cast(int, arguments.request_fd),
         cast(int, arguments.response_fd),
