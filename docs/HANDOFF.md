@@ -92,7 +92,7 @@ The formal repository was intentionally created design-only. A sibling spike exi
 
 ## Recommended next implementation slice
 
-Finish S2-090 closure only: retain and review the final-commit hosted evidence, then close the issue and Stage 2 milestone state. The GitHub Project had no later Ready item on 2026-10-29; do not start Stage 3 or a platform vertical until a new ordered item is ready.
+Stage 2 closed through S2-090 and PR #66 on 2026-10-29. The GitHub Project has no later Ready item; do not start Stage 3 or a platform vertical until a new ordered item is ready.
 
 Observable contracts:
 
@@ -106,7 +106,7 @@ Observable contracts:
 - [x] Local clean-wheel official-client scenario passes with bounded server/resource measurements and exact recovery evidence.
 - [x] Full 254-scenario suite, Ruff format/check, and mypy pass after the final source change.
 - [x] Independent release-evidence review accepts seam-local 66-item/128-part and read-lease race coverage and finds no remaining design gap after external server measurement was added.
-- [ ] Final hosted quality, package-smoke, and six compatibility jobs pass and retain their evidence on the reviewed commit.
+- [x] Final hosted quality, package-smoke, and six compatibility jobs passed and retained their evidence on the reviewed commit.
 
 ## Constraints
 
