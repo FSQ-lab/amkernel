@@ -480,7 +480,10 @@ def _parse_envelope(payload: bytes) -> tuple[str, str, dict[str, object]]:
         if isinstance(correlation_id, str) and _valid_correlation_id(correlation_id)
         else None
     )
-    _validate_json_value(cast(JsonValue, raw))
+    try:
+        _validate_json_value(cast(JsonValue, raw))
+    except RecursionError as error:
+        raise ProtocolViolation(f"invalid JSON payload: {error}") from error
     _require_exact_keys(raw, {"protocolVersion", "type", "correlationId", "payload"})
 
     version = _require_integer(raw, "protocolVersion", minimum=0)
