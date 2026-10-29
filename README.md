@@ -52,7 +52,7 @@ Future experiments may apply the same kernel to Playwright, Selenium, pywinauto,
 
 ## Current phase
 
-Stage 1 execution correctness is active. The reproducible package/toolchain, protected CI, private protocol, persistent Runner, POSIX Kernel Supervisor, and serialized Runtime Manager are implemented and native-tested; public MCP execution wiring follows the accepted plan. No Python execution behavior is public until the MCP Adapter is integrated. The earlier runtime spike remains outside this project and is not production scaffolding.
+Stage 1 execution correctness is active. The reproducible package/toolchain, protected CI, private protocol, persistent Runner, POSIX Kernel Supervisor, serialized Runtime Manager, and official MCP stdio Adapter are implemented and behavior-tested. The public `python_exec` tool now exposes the frozen structured execution contract; cross-module stress evidence, installed-wheel end-to-end coverage, and native compatibility evidence follow the accepted plan. The earlier runtime spike remains outside this project and is not production scaffolding.
 
 Canonical documents:
 
