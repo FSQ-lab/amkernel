@@ -199,6 +199,7 @@ async def test_idle_background_output_is_not_attributed_later(
     tmp_path: Path,
 ) -> None:
     marker = tmp_path / "orphan-written"
+    orphan_bytes = supervisor._orphan_stdout.total_bytes
     first = await supervisor.execute(
         "import threading, time\n"
         "from pathlib import Path\n"
@@ -214,6 +215,13 @@ async def test_idle_background_output_is_not_attributed_later(
     while not marker.exists() and time.monotonic() < deadline:
         await asyncio.sleep(0.01)
     assert marker.exists()
+    deadline = time.monotonic() + 2.0
+    while (
+        supervisor._orphan_stdout.total_bytes < orphan_bytes + len(b"orphan\n")
+        and time.monotonic() < deadline
+    ):
+        await asyncio.sleep(0.01)
+    assert supervisor._orphan_stdout.total_bytes == orphan_bytes + len(b"orphan\n")
     second = await supervisor.execute("42", timeout=1.0)
 
     assert first.stdout == ""
