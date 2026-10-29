@@ -1,2 +1,12 @@
 memory:
-  backend: local
+  backend: off
+
+compaction:
+  thresholdTokens: 120000
+  keepRecentTokens: 16000
+  methodOrder:
+    - shake
+    - snapcompact
+    - remote
+    - soft
+  asyncEnabled: false
