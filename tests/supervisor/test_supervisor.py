@@ -527,29 +527,34 @@ async def test_cancelled_start_cleans_spawned_runner(
 
 
 class FailOnceTerminateOperations:
-    """Fail the idle-death TERM once, then allow shutdown cleanup."""
+    """Model one denied TERM, then deterministic descendant cleanup."""
 
     def __init__(self) -> None:
         self.failed = False
+        self.child_pid: int | None = None
 
     def signal_group(self, process_group: int, signal_number: int) -> None:
+        del process_group
         if signal_number == signal.SIGTERM and not self.failed:
             self.failed = True
             raise PermissionError("TERM denied once")
-        os.killpg(process_group, signal_number)
+        if self.child_pid is None:
+            return
+        try:
+            os.kill(self.child_pid, signal_number)
+        except ProcessLookupError:
+            pass
 
     def group_exists(self, process_group: int) -> bool:
-        try:
-            os.killpg(process_group, 0)
-        except ProcessLookupError:
-            return False
-        return True
+        del process_group
+        return self.child_pid is not None and psutil.pid_exists(self.child_pid)
 
 
 async def test_idle_death_cleanup_failure_is_retained_and_reported(
     tmp_path: Path,
 ) -> None:
-    current = await KernelSupervisor.start(tmp_path, operations=FailOnceTerminateOperations())
+    operations = FailOnceTerminateOperations()
+    current = await KernelSupervisor.start(tmp_path, operations=operations)
     result = await current.execute(
         "import os, subprocess, sys, threading, time\n"
         "child = subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(30)'])\n"
@@ -559,6 +564,7 @@ async def test_idle_death_cleanup_failure_is_retained_and_reported(
     )
     assert type(result.result) is int
     child_pid = result.result
+    operations.child_pid = child_pid
 
     deadline = time.monotonic() + 3.0
     while current.state != "dead" and time.monotonic() < deadline:
