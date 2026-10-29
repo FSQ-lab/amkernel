@@ -86,3 +86,4 @@ How implementation will prove the decision works.
 | [ADR-0003](0003-stage-1-execution-contract.md) | Accepted | Freeze the Stage 1 `python_exec` input, result, MCP mapping, bounds, and completion-time output contract |
 | [ADR-0004](0004-stage-1-runner-protocol.md) | Accepted | Use a versioned, correlated, bounded private protocol isolated from user streams |
 | [ADR-0005](0005-stage-1-runtime-lifecycle.md) | Accepted | Serialize one Runner with explicit reset, timeout, cancellation, cleanup, environment, and platform semantics |
+| [ADR-0006](0006-stage-2-output-and-artifact-contract.md) | Accepted | Add bounded live progress, typed displays, recoverable artifacts, resource reads, prelude helpers, and requested package diagnostics |

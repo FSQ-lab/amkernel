@@ -54,6 +54,7 @@ The formal repository was intentionally created design-only. A sibling spike exi
 - S1-080 approves the bounded contiguous CPython 3.11–3.13 range on GitHub-hosted Ubuntu and macOS. Candidate run `40830237588` passed every Ubuntu/macOS 3.11–3.13 lifecycle, build, and installed-stdio job plus Ubuntu 3.14; macOS 3.14 timed out in the lifecycle suite, and a local macOS 3.14.7 reproduction blocked in CPython's asyncio child reaper after a stopped Runner, so 3.14 remains unclaimed. After restricting the permanent matrix to the approved range, run `40833053864` passed all six compatibility jobs plus quality and package smoke. Independent review found no remaining Blocker or Major issue.
 - S1-085 publishes the approved `>=3.11,<3.14` package requirement and exact Python classifiers, constrains lock resolution to the same range, and documents only the qualified hosted Ubuntu/macOS support claim. Local closure gates passed 172 scenarios and installed wheel SHA-256 `e1b6e97aefedbae3fb5b34467f450c98b6b53a1e2ff6822f47d437621bee21c2`; hosted run `40834514852` passed quality, package smoke, and all six compatibility jobs. R-001 through R-014 have resolved or explicitly accepted final Stage 1 states, and independent closure review found no remaining finding.
 - REL-001 defines the pre-1.0 version/changelog, immutable tag, evidence-qualified support, retained-artifact provenance, trusted-publishing, rollback, and yank procedure. CI retains only the exact wheel exercised by `package-smoke`; the untested sdist is explicitly excluded from release. Hosted run `40840708426` passed quality, package smoke, and all six compatibility jobs and retained `distribution-ed34c39483b3b9e45becd38c4bed1e1ecfa2f8e1` (35,222 bytes). Independent review found no remaining issue after requiring wheel-only retention and synchronizing the cleanup/output test seams.
+- S2-001 accepts ADR-0006 and `docs/stage-2-implementation-plan.md`, establishing the Stage 2 milestone contract, module ownership, bounds, dependency graph, cross-cutting evidence matrix, and risks R-015 through R-020. GitHub Milestone `M2 - Stage 2 agent-quality output` and Project #2 now contain ordered S2-010 through S2-090 work; S2-010 is the only Ready production item, and all descendants remain Backlog until their named dependencies close. Independent architecture review found no remaining Blocker or Major issue.
 - Global OMP memory is disabled; this project uses local project-scoped memory.
 - The sibling `/Users/qunmi/Documents/FSQ_LAB/omp` remains untouched as historical discussion/prototype material.
 
@@ -86,36 +87,26 @@ The formal repository was intentionally created design-only. A sibling spike exi
 - **Security:** local stdio, same-user Python code execution; not a sandbox.
 - **Memory:** project-scoped only; no global memory.
 
-## Recommended first implementation slice
+## Recommended next implementation slice
 
-Implement execution correctness only. Do not add image/artifact/Appium behavior until the execution contract is defended.
+Implement S2-010 only: freeze the accepted Stage 2 public schema and exact private protocol-v2 models before adding Artifact Store, output-pipeline, display, helper, or progress behavior.
 
-Suggested observable contracts:
+Observable contracts:
 
-1. MCP exposes one execution tool with `code`, optional `title`, optional `timeout`, and optional `reset`.
-2. Separate calls share one Python namespace.
-3. A trailing JSON-compatible expression is returned structurally.
-4. A normal Python exception returns a typed traceback and leaves the kernel alive.
-5. State changes before an exception remain observable.
-6. Calls are serialized.
-7. `reset` replaces the kernel and clears prior state.
-8. An interruptible timeout reports `timed_out` with a live kernel.
-9. A non-settling timeout escalates and reports `kernel_killed` with a dead kernel.
-10. Closing the MCP process cleans up the kernel and managed descendants.
-11. User stdout/stderr cannot corrupt runner frames or MCP JSON-RPC.
-12. The selected interpreter and working directory are explicit in diagnostics.
+1. `python_exec` publishes the ADR-0006 input/output schema literally, including requested package names and plural artifacts.
+2. Private protocol-v2 frames use exact strict models, correlation, sequence/transaction state, canonical base64, hashes, declared sizes, and centralized bounds.
+3. Unknown, extra, missing, malformed, duplicate, reordered, over-count, and over-bound fields fail according to the accepted contract.
+4. Stage 1 behavior remains unchanged until later Stage 2 increments consume the new protocol surface.
 
-Use the smallest module structure that keeps MCP transport, kernel supervision, and Python cell execution separate. Do not pre-create packages or platform modules that the slice does not need.
+Use the existing `protocol.py`, `runner.py`, and `server.py` ownership seams. Do not add compatibility aliases for protocol v1 or singular `output.artifact`.
 
 ## Acceptance criteria
 
-- [ ] Implementation matches the interface and invariants in `docs/architecture.md`.
-- [ ] Focused behavioral tests cover persistence, errors, reset, timeout survival/escalation, stream/protocol isolation, serialization, and shutdown.
-- [ ] The actual stdio MCP server is exercised end to end by a client; unit tests alone are insufficient.
-- [ ] No Appium/mobile/browser/desktop semantics appear in the core implementation.
-- [ ] No code is copied wholesale from `../omp`; any reused mechanism is justified and adapted deliberately.
-- [ ] No long-term platform abstraction, workflow language, multiple-runtime registry, or remote transport is introduced.
-- [ ] Documentation is updated only where implementation evidence changes an accepted claim.
+- [ ] Literal public and private schema fixtures match ADR-0006.
+- [ ] Official-client discovery reports the exact accepted public schema.
+- [ ] Focused malformed-frame tests cover every new v2 boundary and transition.
+- [ ] No S2-020-or-later storage, spooling, display, helper, progress, or resource behavior is introduced.
+- [ ] Canonical focused checks pass and independent architecture/correctness review has no remaining Blocker or Major finding.
 
 ## Constraints
 
