@@ -502,7 +502,12 @@ def test_stage_one_namespace_has_no_prelude_helpers(runner: RunnerProcess) -> No
 
 def test_runner_restores_sigint_handler_after_user_mutation(runner: RunnerProcess) -> None:
     runner.execute("import signal\nsignal.signal(signal.SIGINT, signal.SIG_IGN)")
-    correlation_id, _ = runner.start_execute("import time\ntime.sleep(30)")
+    correlation_id, _ = runner.start_execute(
+        "import time\nprint('entered', flush=True)\ntime.sleep(30)"
+    )
+    readable, _, _ = select.select([runner.stdout], [], [], 2.0)
+    assert readable
+    assert runner.stdout.readline() == b"entered\n"
     os.killpg(runner.process.pid, signal.SIGINT)
     interrupted = runner.finish_execute(correlation_id)
 

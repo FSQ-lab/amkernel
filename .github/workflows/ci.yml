@@ -90,7 +90,7 @@ jobs:
           version: 0.12.5
           enable-cache: true
       - name: Sync locked environment
-        run: uv sync --frozen --all-groups
+        run: uv sync --frozen --all-groups --python "${{ matrix.python }}"
       - name: Run full behavior and lifecycle suite
         run: uv run pytest
       - name: Build distributions

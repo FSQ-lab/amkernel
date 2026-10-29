@@ -7,6 +7,7 @@ import asyncio
 import json
 import os
 import platform
+import sys
 import time
 from pathlib import Path
 from typing import Any, cast
@@ -287,6 +288,7 @@ async def exercise(entry_point: Path, python: Path, workspace: Path) -> dict[str
     assert entry_point.is_file()
     assert python.is_file()
     assert python.is_symlink(), "clean venv launcher must exercise the symlink contract"
+    assert os.path.samefile(python, sys.executable)
 
     parameters = StdioServerParameters(command=str(entry_point), cwd=workspace)
     death_child_pid: int | None = None
@@ -367,7 +369,7 @@ async def exercise(entry_point: Path, python: Path, workspace: Path) -> dict[str
         assert pid_exists(shutdown_child_pid)
 
         expected_runtime = {
-            "executable": str(python.absolute()),
+            "executable": os.path.abspath(sys.executable),
             "pythonVersion": platform.python_version(),
             "workingDirectory": str(workspace.resolve()),
             "environmentKind": "project_venv",
