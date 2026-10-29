@@ -17,7 +17,7 @@ Use these sources in this order:
 7. This document defines team ownership, implementation workflow, and quality gates.
 8. [`HANDOFF.md`](HANDOFF.md) and the repository README provide durable context; any drift must be resolved explicitly rather than interpreted silently.
 
-Stage 1 execution correctness is the completed implementation baseline. Image output, artifact spill, and Appium behavior remain outside that baseline unless the architecture and an active work item deliberately advance the delivery stage.
+Stage 2 agent-quality output is the completed implementation baseline. Stage 3 Appium behavior remains experimental unless the architecture and an active work item deliberately advance that delivery stage.
 
 ## 2. Agent team
 
@@ -71,9 +71,9 @@ Must not read MCP transport directly, decide process death, persist artifacts, o
 
 ### Output and Artifact Owner
 
-Owns Stage 2 output aggregation, bounded previews, UTF-8-safe streaming, artifact storage, hashes, MIME metadata, and structured/image display semantics.
+Owns output aggregation, bounded previews and progress, UTF-8-safe streaming, artifact storage, hashes, MIME metadata, structured/image display semantics, and resource recovery.
 
-This role is inactive for Stage 1 except where captured stdout/stderr and protocol isolation are required by the execution contract. It must not normalize platform trees or change kernel state semantics.
+It must not normalize platform trees or change kernel state semantics.
 
 ### Behavior and Evidence Reviewer
 
@@ -184,7 +184,7 @@ These commands must run in CI. Local hooks may provide fast feedback, but hooks 
 
 ### Gate 2: Focused behavior
 
-Every change runs the smallest tests that fail for its plausible regressions. Stage 1 coverage must include, as applicable:
+Every change runs the smallest tests that fail for its plausible regressions. Core coverage must include, as applicable:
 
 - namespace and live-object persistence;
 - structured trailing expression values;
@@ -224,7 +224,7 @@ Coverage reports may reveal missing state-machine paths, but no percentage thres
 
 ## 6. Pre-1.0 release procedure
 
-Stage 1 completion makes AMKernel releasable; it does not itself publish a release. A release uses one reviewed `main` commit, the wheel exercised by that commit's hosted `package-smoke` job, and the support evidence attached to the same code. Rebuilding locally and substituting the result is not an equivalent artifact.
+A completed delivery stage makes AMKernel releasable; it does not itself publish a release. A release uses one reviewed `main` commit, the wheel exercised by that commit's hosted `package-smoke` and compatibility jobs, and the support evidence attached to the same code. Rebuilding locally and substituting the result is not an equivalent artifact.
 
 ### 6.1 Version and changelog
 

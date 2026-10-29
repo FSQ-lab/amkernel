@@ -35,6 +35,8 @@ jobs:
           enable-cache: true
       - name: Sync locked environment
         run: uv sync --frozen --all-groups
+      - name: Verify dependency lock
+        run: uv lock --check
       - name: Check formatting
         run: uv run ruff format --check .
       - name: Lint
@@ -66,13 +68,15 @@ jobs:
       - name: Build distributions
         run: uv build
       - name: Install wheel in a clean environment
-        run: uv run python tests/package_smoke.py
+        run: uv run python tests/package_smoke.py | tee package-smoke.json
       - name: Retain tested distributions
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: distribution-${{ github.sha }}
           path: |
             dist/*.whl
+            package-smoke.json
+            uv.lock
           if-no-files-found: error
           compression-level: 0
           retention-days: 14
@@ -107,4 +111,15 @@ jobs:
       - name: Build distributions
         run: uv build
       - name: Exercise installed stdio server
-        run: uv run python tests/package_smoke.py
+        run: uv run python tests/package_smoke.py | tee package-smoke.json
+      - name: Retain compatibility evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: compatibility-${{ matrix.os }}-python-${{ matrix.python }}-${{ github.sha }}
+          path: |
+            dist/*.whl
+            package-smoke.json
+            uv.lock
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 14

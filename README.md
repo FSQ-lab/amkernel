@@ -52,12 +52,14 @@ Future experiments may apply the same kernel to Playwright, Selenium, pywinauto,
 
 ## Current phase
 
-Stage 1 execution correctness is complete. The packaged stdio server, persistent Runner, POSIX lifecycle supervision, serialized Runtime Manager, official MCP Adapter, installed-wheel official-client scenario, and native compatibility matrix implement and verify the frozen `python_exec` contract.
+Stage 2 agent-quality output is implemented through the packaged stdio server and the single `python_exec` tool. One persistent Runtime now provides bounded live progress, recoverable stream artifacts, strict JSON and raster displays, explicit artifacts, requested-package diagnostics, descriptor-rooted workspace helpers, hard output-limit intervention, and truthful lifecycle/cleanup results.
+
+Artifact resource URIs are ephemeral. Read and verify every manifest part before another large-output call or server shutdown. AMKernel detects Store tampering when a resource is read, but unrestricted same-user Python can access host-visible files; AMKernel is not a sandbox.
 
 ### Supported environments
 
 - CPython 3.11, 3.12, and 3.13.
-- Current GitHub-hosted Ubuntu and macOS environments, where the full lifecycle suite and installed-wheel scenario pass natively.
+- Current GitHub-hosted Ubuntu and macOS environments, where the native lifecycle and installed-wheel official-client matrices are required release evidence.
 
 CPython 3.14, Windows, and other operating systems remain unsupported. The support claim is intentionally narrower than generic Linux or macOS package classifiers.
 
@@ -66,6 +68,7 @@ Canonical documents:
 - [`docs/architecture.md`](docs/architecture.md) — generic AMKernel core architecture.
 - [`docs/development.md`](docs/development.md) — agent roles, change ownership, development workflow, and quality gates.
 - [`docs/stage-1-implementation-plan.md`](docs/stage-1-implementation-plan.md) — accepted Stage 1 contracts, dependency order, ownership, behavior scenarios, and risk traceability.
+- [`docs/stage-2-implementation-plan.md`](docs/stage-2-implementation-plan.md) — accepted Stage 2 output, artifact, lifecycle, evidence, and support contracts.
 - [`docs/project-management.md`](docs/project-management.md) — GitHub-backed workflow, Kanban semantics, task contracts, ADR, and risk governance.
 - [GitHub Project](https://github.com/orgs/FSQ-lab/projects/2) — canonical milestone, status, stage, type, priority, and queue.
 - [GitHub Issues](https://github.com/FSQ-lab/amkernel/issues) — canonical work-item, dependency, blocker, risk, and verification records.

@@ -6,24 +6,43 @@ import __future__
 import argparse
 import ast
 import builtins
+import hashlib
+import json
 import os
 import platform
 import signal
 import sys
 import traceback
+import unicodedata
+import uuid
 from collections.abc import Sized
 from dataclasses import dataclass
+from importlib import metadata as importlib_metadata
 from types import CodeType, FrameType, TracebackType
 from typing import BinaryIO, cast
 
 from amkernel.protocol import (
     DIAGNOSTIC_FD_ARGUMENT,
+    MAX_ARTIFACT_BYTES,
+    MAX_ARTIFACT_CHUNK_BYTES,
+    MAX_ARTIFACT_TRANSACTIONS,
     MAX_ERROR_BYTES,
     MAX_ERROR_TYPE_BYTES,
+    MAX_IMAGE_TRANSACTIONS,
+    MAX_JSON_DISPLAY_BYTES,
+    MAX_JSON_DISPLAY_ITEM_BYTES,
+    MAX_JSON_DISPLAYS,
+    MAX_PACKAGE_VERSION_BYTES,
     MAX_PROTOCOL_ERROR_MESSAGE_BYTES,
     MAX_RESULT_BYTES,
+    MAX_STRUCTURED_RESULT_BYTES,
     REQUEST_FD_ARGUMENT,
     RESPONSE_FD_ARGUMENT,
+    ArtifactBeginResponse,
+    ArtifactChunkResponse,
+    ArtifactEndResponse,
+    ArtifactKind,
+    DisplayJsonResponse,
     DoneOutcome,
     DoneResponse,
     EnvironmentKind,
@@ -37,14 +56,27 @@ from amkernel.protocol import (
     ReadyResponse,
     Response,
     RuntimeDiagnostics,
+    RuntimePackage,
     ShutdownRequest,
     StartedResponse,
     encode_response,
     json_size,
     read_request,
     snapshot_json,
+    validate_logical_name,
+    validate_mime_type,
     write_frame,
 )
+from amkernel.structured_output import (
+    ArtifactError,
+    DisplayError,
+    StructuredOutputError,
+    bytes_like,
+    strict_json,
+    validate_image,
+    validate_safe_artifact,
+)
+from amkernel.workspace import Workspace, WorkspaceError
 
 _REPR_BYTES = 4_096
 _REPR_OBJECT_BYTES = 8_192
@@ -63,6 +95,8 @@ _JOIN = os.path.join
 _SAMEFILE = os.path.samefile
 _INITIAL_EXECUTABLE = _ABSPATH(sys.executable)
 _INITIAL_PYTHON_VERSION = platform.python_version()
+_INITIAL_IMPLEMENTATION = platform.python_implementation()
+_INITIAL_PLATFORM = platform.platform()
 _INITIAL_PREFIX = sys.prefix
 _INITIAL_BASE_PREFIX = sys.base_prefix
 _PTHREAD_SIGMASK = signal.pthread_sigmask
@@ -73,6 +107,8 @@ _SIGINT = signal.SIGINT
 _SIG_BLOCK = signal.SIG_BLOCK
 _SIG_SETMASK = signal.SIG_SETMASK
 _TRACEBACK_EXCEPTION = traceback.TracebackException
+_DISTRIBUTION_VERSION = importlib_metadata.version
+_PACKAGE_NOT_FOUND_ERROR = importlib_metadata.PackageNotFoundError
 
 
 @dataclass(slots=True)
@@ -91,6 +127,10 @@ class _CellResult:
     has_result: bool
     result: JsonValue
     error: ErrorInfo | None
+
+
+_STRUCTURED_RESULT_HEADROOM = 2_097_152
+_MAX_JSON_WIRE_BYTES = MAX_STRUCTURED_RESULT_BYTES - MAX_RESULT_BYTES - _STRUCTURED_RESULT_HEADROOM
 
 
 @dataclass(frozen=True, slots=True)
@@ -204,15 +244,60 @@ def _initial_runtime_diagnostics(launch_working_directory: str) -> RuntimeDiagno
         python_version=_INITIAL_PYTHON_VERSION,
         working_directory=_current_working_directory(),
         environment_kind=_classify_environment(launch_working_directory),
+        implementation=_INITIAL_IMPLEMENTATION,
+        platform=_INITIAL_PLATFORM,
     )
 
 
-def _current_runtime_diagnostics(identity: RuntimeDiagnostics) -> RuntimeDiagnostics:
+def _current_runtime_diagnostics(
+    identity: RuntimeDiagnostics,
+    package_names: tuple[str, ...],
+    diagnostic: BinaryIO,
+) -> RuntimeDiagnostics:
     return RuntimeDiagnostics(
         executable=identity.executable,
         python_version=identity.python_version,
         working_directory=_current_working_directory(),
         environment_kind=identity.environment_kind,
+        implementation=identity.implementation,
+        platform=identity.platform,
+        packages=_inspect_packages(package_names, diagnostic),
+    )
+
+
+def _inspect_packages(
+    package_names: tuple[str, ...], diagnostic: BinaryIO
+) -> tuple[RuntimePackage, ...]:
+    packages: list[RuntimePackage] = []
+    for name in package_names:
+        try:
+            version = _DISTRIBUTION_VERSION(name)
+        except _PACKAGE_NOT_FOUND_ERROR:
+            packages.append(RuntimePackage(name=name, error="not installed"))
+            continue
+        except Exception as error:
+            _write_diagnostic(
+                diagnostic,
+                f"package metadata unavailable for {name}: {type(error).__name__}: {error}",
+            )
+            packages.append(RuntimePackage(name=name, error="metadata unavailable"))
+            continue
+        if not _valid_package_version(version):
+            packages.append(RuntimePackage(name=name, error="invalid metadata"))
+            continue
+        packages.append(RuntimePackage(name=name, version=version))
+    return tuple(packages)
+
+
+def _valid_package_version(value: object) -> bool:
+    if type(value) is not str or not value:
+        return False
+    try:
+        size = len(value.encode("utf-8"))
+    except UnicodeEncodeError:
+        return False
+    return size <= MAX_PACKAGE_VERSION_BYTES and not any(
+        unicodedata.category(character) in {"Cc", "Cf"} for character in value
     )
 
 
@@ -229,11 +314,181 @@ def _validate_initialization(request: InitializeRequest, diagnostics: RuntimeDia
         )
 
 
-def _namespace() -> dict[str, object]:
+class _RunnerOutputFailure(BaseException):
+    """An internal output-frame failure that user code must not catch as data validation."""
+
+
+class _StructuredEmitter:
+    """Own execution-scoped helper bounds and ordered private-frame emission."""
+
+    def __init__(self, response: BinaryIO) -> None:
+        self._response = response
+        self._correlation_id: str | None = None
+        self._execution_count = 0
+        self._sequence = 1
+        self._json_count = 0
+        self._json_bytes = 0
+        self._artifact_count = 0
+        self._image_count = 0
+        self._artifact_bytes = 0
+
+    def begin(self, correlation_id: str, execution_count: int) -> None:
+        self._correlation_id = correlation_id
+        self._execution_count = execution_count
+        self._sequence = 1
+        self._json_count = 0
+        self._json_bytes = 0
+        self._artifact_count = 0
+        self._image_count = 0
+        self._artifact_bytes = 0
+
+    def end(self) -> None:
+        self._correlation_id = None
+
+    def display(self, value: object, *, mime_type: str | None = None) -> None:
+        """Emit one strict JSON value or one fully validated raster image."""
+        try:
+            if mime_type is None:
+                self._display_json(value)
+                return
+            declared = validate_mime_type(mime_type)
+            data = bytes_like(value)
+            validate_image(data, declared)
+            self._emit_artifact("image", "image", declared, data)
+        except (StructuredOutputError, ValueError, ProtocolViolation) as error:
+            raise DisplayError(str(error)) from error
+
+    def artifact(self, name: str, content: object, *, mime_type: str | None = None) -> None:
+        """Emit one bounded text, bytes, or strict-JSON explicit artifact."""
+        try:
+            logical_name = validate_logical_name(name)
+            inferred_mime = mime_type is None
+            if isinstance(content, str):
+                data = content.encode("utf-8", errors="strict")
+                declared = mime_type or "text/plain; charset=utf-8"
+            elif isinstance(content, (bytes, bytearray, memoryview)):
+                data = bytes_like(content)
+                declared = mime_type or "application/octet-stream"
+            else:
+                value = strict_json(content, MAX_ARTIFACT_BYTES)
+                data = json.dumps(
+                    value,
+                    ensure_ascii=False,
+                    allow_nan=False,
+                    separators=(",", ":"),
+                ).encode("utf-8")
+                declared = mime_type or "application/json"
+            declared = validate_mime_type(declared)
+            if inferred_mime:
+                validate_safe_artifact(data, declared)
+            self._emit_artifact("artifact", logical_name, declared, data)
+        except (StructuredOutputError, UnicodeError, ValueError, ProtocolViolation) as error:
+            raise ArtifactError(str(error)) from error
+
+    def _display_json(self, value: object) -> None:
+        snapshot = strict_json(value, MAX_JSON_DISPLAY_ITEM_BYTES)
+        size = json_size(snapshot)
+        if self._json_count >= MAX_JSON_DISPLAYS:
+            raise StructuredOutputError("JSON display count exceeds maximum")
+        if self._json_bytes + size > min(MAX_JSON_DISPLAY_BYTES, _MAX_JSON_WIRE_BYTES):
+            raise StructuredOutputError("JSON display bytes exceed terminal result capacity")
+        correlation_id = self._require_active()
+        previous_mask = _PTHREAD_SIGMASK(signal.SIG_BLOCK, {_SIGINT})
+        try:
+            self._send(
+                DisplayJsonResponse(
+                    correlation_id,
+                    self._execution_count,
+                    self._sequence,
+                    snapshot,
+                )
+            )
+            self._json_count += 1
+            self._json_bytes += size
+            self._sequence += 1
+        finally:
+            _PTHREAD_SIGMASK(signal.SIG_SETMASK, previous_mask)
+
+    def _emit_artifact(self, kind: str, name: str, declared_mime_type: str, data: bytes) -> None:
+        if self._artifact_count >= MAX_ARTIFACT_TRANSACTIONS:
+            raise StructuredOutputError("artifact item count exceeds maximum")
+        if kind == "image" and self._image_count >= MAX_IMAGE_TRANSACTIONS:
+            raise StructuredOutputError("image item count exceeds maximum")
+        if len(data) > MAX_ARTIFACT_BYTES or self._artifact_bytes + len(data) > MAX_ARTIFACT_BYTES:
+            raise StructuredOutputError("artifact bytes exceed maximum")
+        correlation_id = self._require_active()
+        transaction_id = uuid.uuid4().hex
+        sequence = self._sequence
+        previous_mask = _PTHREAD_SIGMASK(signal.SIG_BLOCK, {_SIGINT})
+        try:
+            self._send(
+                ArtifactBeginResponse(
+                    correlation_id,
+                    self._execution_count,
+                    sequence,
+                    transaction_id,
+                    cast(ArtifactKind, kind),
+                    name,
+                    declared_mime_type,
+                    len(data),
+                )
+            )
+            digest = hashlib.sha256()
+            chunk_count = 0
+            for offset in range(0, len(data), MAX_ARTIFACT_CHUNK_BYTES):
+                chunk = data[offset : offset + MAX_ARTIFACT_CHUNK_BYTES]
+                digest.update(chunk)
+                self._send(
+                    ArtifactChunkResponse(
+                        correlation_id,
+                        self._execution_count,
+                        sequence,
+                        transaction_id,
+                        chunk_count,
+                        chunk,
+                    )
+                )
+                chunk_count += 1
+            self._send(
+                ArtifactEndResponse(
+                    correlation_id,
+                    self._execution_count,
+                    sequence,
+                    transaction_id,
+                    chunk_count,
+                    digest.hexdigest(),
+                )
+            )
+            self._artifact_count += 1
+            self._image_count += kind == "image"
+            self._artifact_bytes += len(data)
+            self._sequence += 1
+        finally:
+            _PTHREAD_SIGMASK(signal.SIG_SETMASK, previous_mask)
+
+    def _require_active(self) -> str:
+        if self._correlation_id is None:
+            raise StructuredOutputError("structured output helper is not executing")
+        return self._correlation_id
+
+    def _send(self, response: Response) -> None:
+        try:
+            _write_response(self._response, response)
+        except BaseException as error:
+            raise _RunnerOutputFailure from error
+
+
+def _namespace(emitter: _StructuredEmitter, workspace: Workspace) -> dict[str, object]:
+    read_helper, write_helper, env_helper = workspace.helpers()
     return {
         "__name__": "__main__",
         "__package__": None,
         "__builtins__": builtins,
+        "display": emitter.display,
+        "artifact": emitter.artifact,
+        "read": read_helper,
+        "write": write_helper,
+        "env": env_helper,
     }
 
 
@@ -286,6 +541,8 @@ def _execute_cell(code: str, execution_count: int, namespace: dict[str, object])
         if value is _NO_RESULT:
             return _CellResult("completed", False, None, None)
         return _CellResult("completed", True, _normalize_result(value), None)
+    except _RunnerOutputFailure:
+        raise
     except KeyboardInterrupt as error:
         return _CellResult("interrupted", False, None, _error_info(error))
     except BaseException as error:
@@ -757,6 +1014,7 @@ def _execute_request(
     signal_state: _SignalState,
     baseline_mask: set[int],
     namespace: dict[str, object],
+    emitter: _StructuredEmitter,
     execution_count: int,
     runtime_identity: RuntimeDiagnostics,
 ) -> tuple[int, bool]:
@@ -766,20 +1024,22 @@ def _execute_request(
     signal_state.executing = True
     _write_response(response, StartedResponse(request.correlation_id, next_count))
     execution_count = next_count
+    emitter.begin(request.correlation_id, execution_count)
 
     try:
-        _unblock_sigint_for_execution(baseline_mask)
-        cell_result = _execute_cell(request.code, execution_count, namespace)
-        cell_result = _block_sigint_for_finalization(signal_state, cell_result)
-    except KeyboardInterrupt as error:
-        cell_result = _CellResult("interrupted", False, None, _error_info(error))
-        cell_result = _block_sigint_for_finalization(signal_state, cell_result)
+        try:
+            _unblock_sigint_for_execution(baseline_mask)
+            cell_result = _execute_cell(request.code, execution_count, namespace)
+            cell_result = _block_sigint_for_finalization(signal_state, cell_result)
+        except KeyboardInterrupt as error:
+            cell_result = _CellResult("interrupted", False, None, _error_info(error))
+            cell_result = _block_sigint_for_finalization(signal_state, cell_result)
     finally:
+        emitter.end()
         signal_state.executing = False
         _INSTALL_SIGNAL_HANDLER(_SIGINT, signal_state.handle_sigint)
-
     try:
-        runtime = _current_runtime_diagnostics(runtime_identity)
+        runtime = _current_runtime_diagnostics(runtime_identity, request.packages, diagnostic)
     except _RuntimeDiagnosticsFailure as error:
         _flush_user_streams(diagnostic)
         _send_protocol_error(
@@ -863,12 +1123,24 @@ def run_runner(bootstrap: _Bootstrap) -> int:
         )
         return 2
 
+    try:
+        workspace = Workspace(launch_working_directory)
+    except WorkspaceError as error:
+        _send_protocol_error(
+            bootstrap.response,
+            first_request.correlation_id,
+            "internal_protocol_error",
+            str(error),
+        )
+        return 2
+
     _write_response(
         bootstrap.response,
         ReadyResponse(first_request.correlation_id, runtime_identity),
     )
 
-    namespace = _namespace()
+    emitter = _StructuredEmitter(bootstrap.response)
+    namespace = _namespace(emitter, workspace)
     execution_count = 0
     while True:
         try:
@@ -907,6 +1179,7 @@ def run_runner(bootstrap: _Bootstrap) -> int:
                 baseline_mask=baseline_mask,
                 namespace=namespace,
                 execution_count=execution_count,
+                emitter=emitter,
                 runtime_identity=runtime_identity,
             )
         except BaseException as error:

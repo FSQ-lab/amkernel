@@ -14,6 +14,7 @@ from mcp.server.lowlevel import Server
 from mcp.types import CallToolResult
 
 import amkernel.server as server_module
+from amkernel.artifact_store import ArtifactBundle, ArtifactStoreError
 from amkernel.runtime import KernelRuntime
 from amkernel.server import create_server, serve_stdio
 from amkernel.supervisor import KernelSupervisor
@@ -115,6 +116,126 @@ async def test_cleanup_failure_is_generic_public_host_diagnostic_and_blocks_rese
     finally:
         operations.stuck = False
         assert (await asyncio.wait_for(runtime.shutdown(), timeout=5.0)).cleaned
+
+
+async def test_terminal_result_failure_kills_discards_and_requires_reset(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    runtime = KernelRuntime(tmp_path)
+    diagnostics = StringIO()
+    real_tool_content = server_module._tool_content
+    injected = False
+    discard = ArtifactBundle.discard
+    discard_attempts = 0
+
+    async def fail_discard_once(bundle: ArtifactBundle) -> None:
+        nonlocal discard_attempts
+        discard_attempts += 1
+        if discard_attempts == 1:
+            raise ArtifactStoreError("private discard failure")
+        await discard(bundle)
+
+    async def fail_once(
+        adapter: object,
+        outcome: object,
+        structured_content: dict[str, Any],
+        text: str,
+    ) -> list[object]:
+        nonlocal injected
+        if not injected:
+            injected = True
+            raise ArtifactStoreError("private terminal construction detail")
+        return await real_tool_content(adapter, outcome, structured_content, text)  # type: ignore[arg-type,return-value]
+
+    monkeypatch.setattr(server_module, "_tool_content", fail_once)
+    monkeypatch.setattr(ArtifactBundle, "discard", fail_discard_once)
+    try:
+        async with Client(create_server(runtime, diagnostic_stream=diagnostics)) as client:
+            failed = structured(
+                await client.call_tool(
+                    "python_exec",
+                    {"code": "print('kept')\nartifact('secret.txt', 'hidden')"},
+                )
+            )
+            unavailable = structured(await client.call_tool("python_exec", {"code": "42"}))
+            recovered = structured(
+                await client.call_tool("python_exec", {"code": "42", "reset": True})
+            )
+
+        assert failed["status"] == "kernel_killed"
+        assert failed["kernelState"] == "dead"
+        assert failed["error"] == {
+            "type": "ArtifactStoreError",
+            "message": "execution output storage failed",
+            "traceback": [],
+        }
+        assert failed["stdout"] == "kept\n"
+        assert failed["displays"] == []
+        assert failed["artifacts"] == []
+        assert unavailable["error"]["type"] == "KernelUnavailable"
+        assert recovered["status"] == "completed"
+        assert recovered["result"] == 42
+        assert discard_attempts == 2
+        assert "private terminal construction detail" not in str(failed)
+        assert "private terminal construction detail" in diagnostics.getvalue()
+    finally:
+        assert (await runtime.shutdown()).cleaned
+
+
+async def test_supervisor_abort_failure_blocks_reset_until_store_cleanup_retries(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    runtime = KernelRuntime(tmp_path)
+    diagnostics = StringIO()
+    store = runtime._artifact_store
+    begin_bundle = store.begin_bundle
+    seeded = False
+
+    async def begin_seeded_bundle() -> ArtifactBundle:
+        nonlocal seeded
+        bundle = await begin_bundle()
+        if not seeded:
+            seeded = True
+            for name in ("first.bin", "second.bin"):
+                writer = bundle.open_artifact(name, "application/octet-stream")
+                writer.write(name.encode())
+                writer.finish()
+        return bundle
+
+    unlink = os.unlink
+    unlink_calls = 0
+
+    def fail_cleanup_retries(path: str, *, dir_fd: int | None = None) -> None:
+        nonlocal unlink_calls
+        unlink_calls += 1
+        if 2 <= unlink_calls <= 5:
+            raise OSError("private staged cleanup failure")
+        unlink(path, dir_fd=dir_fd)
+
+    monkeypatch.setattr(store, "begin_bundle", begin_seeded_bundle)
+    monkeypatch.setattr(os, "unlink", fail_cleanup_retries)
+    try:
+        async with Client(create_server(runtime, diagnostic_stream=diagnostics)) as client:
+            failed = structured(await client.call_tool("python_exec", {"code": "42"}))
+            blocked = structured(
+                await client.call_tool("python_exec", {"code": "42", "reset": True})
+            )
+            recovered = structured(
+                await client.call_tool("python_exec", {"code": "42", "reset": True})
+            )
+
+        assert failed["status"] == "kernel_killed"
+        assert failed["error"]["type"] == "ArtifactStoreError"
+        assert blocked["status"] == "kernel_killed"
+        assert blocked["error"]["type"] == "ResetCleanupError"
+        assert recovered["status"] == "completed"
+        assert recovered["result"] == 42
+        assert unlink_calls >= 6
+        assert "private staged cleanup failure" in diagnostics.getvalue()
+    finally:
+        assert (await runtime.shutdown()).cleaned
 
 
 async def test_real_shutdown_failure_reaches_host_and_nonzero_stdio_exit(

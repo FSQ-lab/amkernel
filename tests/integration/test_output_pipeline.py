@@ -8,14 +8,16 @@ import os
 from pathlib import Path
 from typing import Any, cast
 
+import mcp.types as types
 import psutil
 import pytest
 from mcp.client import Client
+from mcp.shared.dispatcher import ProgressFnT
 from mcp.types import CallToolResult
 
+from amkernel.protocol import STREAM_TAIL_BYTES
 from amkernel.runtime import KernelRuntime
 from amkernel.server import create_server
-from amkernel.supervisor import STREAM_TAIL_BYTES
 
 pytestmark = [
     pytest.mark.anyio,
@@ -104,18 +106,102 @@ async def test_large_output_counts_stay_exact_while_memory_plateaus(tmp_path: Pa
             (256 * 1024 * 1024, large),
         ):
             assert result["status"] == "completed"
+            stdout_artifact = result["output"].pop("stdoutArtifact")
+            stderr_artifact = result["output"].pop("stderrArtifact")
             assert result["output"] == {
                 "totalBytes": expected,
                 "totalLines": 2,
+                "discardedBytes": 0,
+                "discardedLines": 0,
                 "truncated": True,
+                "limitBytes": 268_435_456,
+                "limitExceeded": False,
+                "live": "unavailable",
             }
             assert len(result["stdout"].encode()) <= STREAM_TAIL_BYTES
             assert len(result["stderr"].encode()) <= STREAM_TAIL_BYTES
-            assert result["artifacts"] == []
+            assert result["artifacts"] == [stdout_artifact, stderr_artifact]
+            assert stdout_artifact["name"] == "stdout"
+            assert stderr_artifact["name"] == "stderr"
 
+        medium_stdout = await runtime.read_resource(medium["artifacts"][0]["uri"])
+        medium_stderr = await runtime.read_resource(medium["artifacts"][1]["uri"])
+        assert medium_stdout.data == b"x" * (8 * 1024 * 1024)
+        assert medium_stderr.data == b"x" * (8 * 1024 * 1024)
         maximum_growth = 16 * 1024 * 1024
         assert host_large - host_medium < maximum_growth
         assert runner_large - runner_medium < maximum_growth
+    finally:
+        assert (await asyncio.wait_for(runtime.shutdown(), timeout=5.0)).cleaned
+
+
+async def test_slow_progress_cannot_backpressure_sixteen_megabyte_output(
+    tmp_path: Path,
+) -> None:
+    runtime = KernelRuntime(tmp_path)
+    callback_started = asyncio.Event()
+
+    async def blocked_progress(
+        _progress: float, _total: float | None, _message: str | None
+    ) -> None:
+        callback_started.set()
+        await asyncio.sleep(30)
+
+    code = "import os\nchunk = b'x' * 65536\nfor _ in range(256): os.write(1, chunk)"
+    try:
+        async with asyncio.timeout(15), Client(create_server(runtime)) as client:
+            result = structured(
+                await client.call_tool(
+                    "python_exec",
+                    {"code": code, "timeout": 10.0},
+                    progress_callback=cast(ProgressFnT, blocked_progress),
+                    meta=cast(
+                        types.RequestParamsMeta,
+                        {"progressToken": "blocked-progress"},
+                    ),
+                )
+            )
+
+        assert callback_started.is_set()
+        assert result["status"] == "completed"
+        assert result["output"]["totalBytes"] == 16 * 1024 * 1024
+        assert result["output"]["live"] == "progress"
+    finally:
+        assert (await asyncio.wait_for(runtime.shutdown(), timeout=5.0)).cleaned
+
+
+async def test_first_byte_beyond_output_limit_interrupts_and_drains(tmp_path: Path) -> None:
+    runtime = KernelRuntime(tmp_path)
+    try:
+        async with asyncio.timeout(30), Client(create_server(runtime)) as client:
+            result = structured(
+                await client.call_tool(
+                    "python_exec",
+                    {
+                        "code": (
+                            "import os\n"
+                            "chunk = b'x' * 65536\n"
+                            "for _ in range(4096): os.write(1, chunk)\n"
+                            "os.write(1, b'tail\\n')"
+                        ),
+                        "timeout": 20.0,
+                    },
+                )
+            )
+            reused = structured(await client.call_tool("python_exec", {"code": "42"}))
+
+        assert result["status"] == "failed"
+        assert result["kernelState"] == "alive"
+        assert result["error"]["type"] == "OutputLimitExceeded"
+        assert result["output"]["totalBytes"] == 268_435_461
+        assert result["output"]["totalLines"] == 1
+        assert result["output"]["discardedBytes"] == 5
+        assert result["output"]["discardedLines"] == 1
+        assert result["output"]["limitExceeded"] is True
+        assert result["output"]["stdoutArtifact"] == result["artifacts"][0]
+        assert "stderrArtifact" not in result["output"]
+        assert reused["status"] == "completed"
+        assert reused["result"] == 42
     finally:
         assert (await asyncio.wait_for(runtime.shutdown(), timeout=5.0)).cleaned
 
@@ -222,7 +308,15 @@ async def test_first_instruction_fragmented_exec_and_fork_output_remains_user_da
         assert public["result"] == "complete"
         assert public["stdout"] == expected_stdout.decode(errors="replace")
         assert public["stderr"] == expected_stderr.decode(errors="replace")
-        assert public["output"]["totalBytes"] == len(expected_stdout) + len(expected_stderr)
-        assert public["output"]["totalLines"] == 2
+        assert public["output"] == {
+            "totalBytes": len(expected_stdout) + len(expected_stderr),
+            "totalLines": 2,
+            "discardedBytes": 0,
+            "discardedLines": 0,
+            "truncated": False,
+            "limitBytes": 268_435_456,
+            "limitExceeded": False,
+            "live": "unavailable",
+        }
     finally:
         assert (await asyncio.wait_for(runtime.shutdown(), timeout=5.0)).cleaned

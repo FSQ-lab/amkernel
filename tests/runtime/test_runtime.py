@@ -9,13 +9,19 @@ from pathlib import Path
 
 import pytest
 
-from amkernel.protocol import JsonValue, RuntimeDiagnostics
+from amkernel.artifact_store import ArtifactBundle, ArtifactStore, ArtifactStoreError
+from amkernel.output import OutputObserver, OutputResult
+from amkernel.protocol import (
+    ARTIFACT_RESOURCE_PART_BYTES,
+    JsonValue,
+    RuntimeDiagnostics,
+    RuntimePackage,
+)
 from amkernel.runtime import KernelRuntime, RuntimeClosedError
 from amkernel.supervisor import (
     ExecutionStatus,
     KernelStartError,
     KernelState,
-    OutputMetadata,
     ShutdownResult,
     SupervisedExecution,
     configured_runtime,
@@ -55,8 +61,17 @@ class FakeSupervisor:
         self.shutdown_calls = 0
         self.diagnostic_tail = ""
 
-    async def execute(self, code: str, timeout: float) -> SupervisedExecution:
-        del timeout
+    async def execute(
+        self,
+        code: str,
+        timeout: float,
+        packages: tuple[str, ...] = (),
+        *,
+        output_bundle: ArtifactBundle,
+        observer: OutputObserver | None = None,
+    ) -> SupervisedExecution:
+        del timeout, packages, observer
+        await output_bundle.abort()
         self.calls.append(code)
         self.execution_count += 1
         self.started.set()
@@ -113,7 +128,7 @@ def execution(
         duration_ms=1,
         kernel_state=kernel_state,
         runtime=runtime,
-        output=OutputMetadata(0, 0, False),
+        output=OutputResult.empty(),
     )
 
 
@@ -225,6 +240,64 @@ async def test_active_caller_cancellation_stabilizes_before_next_call(tmp_path: 
         await runtime.shutdown()
 
 
+async def test_terminal_finalizer_holds_fifo_before_next_execution(tmp_path: Path) -> None:
+    supervisor = FakeSupervisor(configured_runtime(tmp_path))
+    runtime = KernelRuntime(tmp_path, supervisor_factory=FakeFactory(supervisor))
+    finalizer_started = asyncio.Event()
+    release_finalizer = asyncio.Event()
+
+    async def finalize(_outcome: SupervisedExecution) -> None:
+        finalizer_started.set()
+        await release_finalizer.wait()
+
+    try:
+        first = asyncio.create_task(runtime.execute("first", result_finalizer=finalize))
+        await finalizer_started.wait()
+        second = asyncio.create_task(runtime.execute("second"))
+        await asyncio.sleep(0)
+
+        assert supervisor.calls == ["first"]
+
+        release_finalizer.set()
+        first_result, second_result = await asyncio.gather(first, second)
+        assert first_result.result == "kernel:first"
+        assert second_result.result == "kernel:second"
+        assert supervisor.calls == ["first", "second"]
+    finally:
+        await runtime.shutdown()
+
+
+async def test_shutdown_reports_persistent_staged_cleanup_and_retries(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    runtime = KernelRuntime(tmp_path)
+    bundle = await runtime.begin_artifact_bundle()
+    writer = bundle.open_artifact("parts.bin", "application/octet-stream")
+    writer.write(b"a" * (ARTIFACT_RESOURCE_PART_BYTES * 2))
+    unlink = os.unlink
+    unlink_calls = 0
+    faulted = True
+
+    def fail_after_first_unlink(path: str, *, dir_fd: int | None = None) -> None:
+        nonlocal unlink_calls
+        unlink_calls += 1
+        if faulted and unlink_calls >= 2:
+            raise OSError("persistent staged cleanup failure")
+        unlink(path, dir_fd=dir_fd)
+
+    monkeypatch.setattr(os, "unlink", fail_after_first_unlink)
+
+    first = await runtime.shutdown()
+    assert not first.cleaned
+    assert first.error == "Artifact Store cleanup failed"
+
+    faulted = False
+    second = await runtime.shutdown()
+    assert second.cleaned
+    assert unlink_calls >= 3
+    assert not list(tmp_path.glob("amkernel-*"))
+
+
 async def test_supervisor_diagnostics_propagate_to_runtime_host_tail(tmp_path: Path) -> None:
     supervisor = FakeSupervisor(configured_runtime(tmp_path))
     runtime = KernelRuntime(tmp_path, supervisor_factory=FakeFactory(supervisor))
@@ -256,6 +329,31 @@ async def test_reset_waits_for_cleanup_then_restarts_at_one(tmp_path: Path) -> N
         assert factory.calls == 2
     finally:
         await runtime.shutdown()
+
+
+async def test_reset_retains_artifacts_and_shutdown_removes_store(tmp_path: Path) -> None:
+    first = FakeSupervisor(configured_runtime(tmp_path), name="old")
+    second = FakeSupervisor(configured_runtime(tmp_path), name="new")
+    store = ArtifactStore(temporary_parent=tmp_path)
+    runtime = KernelRuntime(
+        tmp_path,
+        supervisor_factory=FakeFactory(first, second),
+        artifact_store=store,
+    )
+
+    bundle = await runtime.begin_artifact_bundle()
+    writer = bundle.open_artifact("retained.txt", "text/plain; charset=utf-8")
+    writer.write(b"retained")
+    record = writer.finish()
+    await bundle.publish()
+
+    await runtime.execute("before")
+    await runtime.execute("after", reset=True)
+    assert (await runtime.read_resource(record.uri)).data == b"retained"
+
+    shutdown = await runtime.shutdown()
+    assert shutdown.cleaned
+    assert list(tmp_path.iterdir()) == []
 
 
 async def test_cancelled_reset_finishes_replacement_without_cell(tmp_path: Path) -> None:
@@ -354,6 +452,35 @@ async def test_reset_cleanup_failure_suppresses_replacement(tmp_path: Path) -> N
         assert failed.execution_count == 1
         assert runtime.state == "dead"
         assert factory.calls == 1
+    finally:
+        await runtime.shutdown()
+
+
+async def test_failed_reset_retains_last_valid_runner_diagnostics(tmp_path: Path) -> None:
+    observed_runtime = RuntimeDiagnostics(
+        executable="/selected/python",
+        python_version="3.13.9",
+        working_directory=str(tmp_path),
+        environment_kind="project_venv",
+        implementation="CPython",
+        platform="selected-platform",
+        packages=(RuntimePackage(name="Pillow", version="12.0.0"),),
+    )
+    first = FakeSupervisor(observed_runtime)
+    runtime = KernelRuntime(
+        tmp_path,
+        supervisor_factory=FakeFactory(first, KernelStartError("replacement failed")),
+    )
+    try:
+        baseline = await runtime.execute("value")
+        failed = await runtime.execute("fresh", reset=True)
+
+        assert baseline.runtime == observed_runtime
+        assert failed.status == "kernel_killed"
+        assert failed.error is not None
+        assert failed.error.type == "KernelStartError"
+        assert failed.runtime == observed_runtime
+        assert failed.execution_count == 0
     finally:
         await runtime.shutdown()
 
@@ -600,6 +727,46 @@ async def test_reset_start_failure_after_launch_directory_removal_is_structured(
         assert failed.execution_count == 0
         assert failed.error is not None
         assert failed.error.type == "KernelStartError"
-        assert failed.runtime.working_directory == str(tmp_path)
+        assert failed.runtime.working_directory == "/"
     finally:
         await runtime.shutdown()
+
+
+async def test_invalid_execute_setup_does_not_leak_output_bundle(tmp_path: Path) -> None:
+    runtime = KernelRuntime(tmp_path)
+    try:
+        with pytest.raises(ValueError, match="timeout"):
+            await runtime.execute("42", timeout=0.0)
+        with pytest.raises(ValueError, match="timeout"):
+            await runtime.execute("42", timeout=0.0)
+
+        result = await runtime.execute("42", timeout=1.0)
+        assert result.status == "completed"
+        assert result.result == 42
+    finally:
+        assert (await runtime.shutdown()).cleaned
+
+
+async def test_failed_store_cleanup_can_be_retried(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    store = ArtifactStore(temporary_parent=tmp_path)
+    runtime = KernelRuntime(tmp_path, artifact_store=store)
+    cleanup = store.cleanup
+    attempts = 0
+
+    async def fail_once() -> None:
+        nonlocal attempts
+        attempts += 1
+        if attempts == 1:
+            raise ArtifactStoreError("injected Store cleanup failure")
+        await cleanup()
+
+    monkeypatch.setattr(store, "cleanup", fail_once)
+    failed = await runtime.shutdown()
+    recovered = await runtime.shutdown()
+
+    assert not failed.cleaned
+    assert failed.error == "Artifact Store cleanup failed"
+    assert recovered.cleaned
+    assert attempts == 2
