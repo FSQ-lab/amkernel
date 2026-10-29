@@ -52,7 +52,14 @@ Future experiments may apply the same kernel to Playwright, Selenium, pywinauto,
 
 ## Current phase
 
-Stage 1 execution correctness is active. The reproducible package/toolchain, protected CI, private protocol, persistent Runner, POSIX Kernel Supervisor, serialized Runtime Manager, official MCP stdio Adapter, and cross-module behavior matrix are implemented and verified. The public `python_exec` tool exposes the frozen structured execution contract; installed-wheel end-to-end coverage and native Python/OS compatibility evidence are the remaining Stage 1 proof stages. The earlier runtime spike remains outside this project and is not production scaffolding.
+Stage 1 execution correctness is complete. The packaged stdio server, persistent Runner, POSIX lifecycle supervision, serialized Runtime Manager, official MCP Adapter, installed-wheel official-client scenario, and native compatibility matrix implement and verify the frozen `python_exec` contract.
+
+### Supported environments
+
+- CPython 3.11, 3.12, and 3.13.
+- Current GitHub-hosted Ubuntu and macOS environments, where the full lifecycle suite and installed-wheel scenario pass natively.
+
+CPython 3.14, Windows, and other operating systems remain unsupported. The support claim is intentionally narrower than generic Linux or macOS package classifiers.
 
 Canonical documents:
 

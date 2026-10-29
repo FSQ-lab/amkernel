@@ -29,7 +29,7 @@ All Stage 1 production code will use Python:
 
 The host and Runner remain separate operating-system processes. A single language does not weaken protocol isolation, timeout escalation, crash detection, or hostile stdout/stderr containment.
 
-The official SDK imposes a Python 3.11 floor. AMKernel does not yet publish a `requires-python` compatibility range: dependency acceptance is not AMKernel lifecycle evidence. S1-001 defines the initial test matrix, S1-080 independently records the passing contiguous range, and S1-085 applies that reviewer-approved compatibility metadata under the Integration Lead's shared-configuration ownership.
+The official SDK imposes a Python 3.11 floor. S1-080 native lifecycle evidence approved CPython 3.11–3.13 on current GitHub-hosted Ubuntu and macOS; S1-085 publishes the bounded `>=3.11,<3.14` package requirement and matching Python classifiers. Untested operating systems and CPython 3.14 remain unsupported.
 
 ### MCP implementation
 
@@ -121,7 +121,7 @@ S1-010 must prove that a fresh checkout can:
 4. install the built artifact into a clean environment;
 5. invoke the packaged `amkernel` entry point.
 
-Until S1-080 records the evidence and S1-085 adds bounded `requires-python` metadata, built artifacts are internal verification artifacts and must not be published as compatible releases.
+S1-080 and S1-085 establish the verified compatibility metadata. Release versioning and publication procedure remain owned by REL-001; verification artifacts must not be presented as releases before that work is accepted.
 
 Stage 1 integration must additionally prove that the official MCP Python client can launch the packaged entry point over stdio, discover the execution tool, call it repeatedly against one kernel, observe typed failures and kernel state, and shut down cleanly.
 

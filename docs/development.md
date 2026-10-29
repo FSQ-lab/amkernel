@@ -17,7 +17,7 @@ Use these sources in this order:
 7. This document defines team ownership, implementation workflow, and quality gates.
 8. [`HANDOFF.md`](HANDOFF.md) and the repository README provide durable context; any drift must be resolved explicitly rather than interpreted silently.
 
-The active delivery target is Stage 1, execution correctness. Image output, artifact spill, and Appium behavior are not part of a Stage 1 change unless the architecture is deliberately revised first.
+Stage 1 execution correctness is the completed implementation baseline. Image output, artifact spill, and Appium behavior remain outside that baseline unless the architecture and an active work item deliberately advance the delivery stage.
 
 ## 2. Agent team
 

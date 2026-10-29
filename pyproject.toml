@@ -3,6 +3,13 @@ name = "amkernel"
 version = "0.0.0"
 description = "Persistent Python execution for agentic automation."
 readme = "README.md"
+requires-python = ">=3.11,<3.14"
+classifiers = [
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
 dependencies = [
     "mcp>=2.3,<3",
     "pydantic>=2.14,<3",
@@ -28,7 +35,7 @@ build-backend = "uv_build"
 [tool.uv]
 required-version = ">=0.12.5,<0.13"
 environments = [
-    "python_version >= '3.11' and python_version < '3.15'",
+    "python_version >= '3.11' and python_version < '3.14'",
 ]
 
 [tool.ruff]
