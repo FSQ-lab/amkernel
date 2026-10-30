@@ -186,6 +186,15 @@ else:
 
 Report only that `driver.quit()` was attempted and whether it returned or raised. Separately stop any Appium server, emulator/simulator, or log process started by this workflow using its owning supervisor, and verify each owned process/device state there. Never claim cleanup of resources that were pre-existing, externally owned, or no longer observable.
 
+## Paste-ready AMKernel prompts
+
+Use `references/amkernel-prompts.md` when a Coding Agent needs a bounded prompt for a read-only
+status snapshot, retained-session creation, one deterministic operation, focused repository test
+writing, failure diagnosis, or explicit cleanup. These are procedures behind this skill's existing
+interface, not a second skill or an Appium wrapper. Replace every placeholder before submission;
+missing required input is a blocker. The templates keep repository access and Appium Python actions
+inside `python_exec` while leaving server and target supervision external.
+
 ## Completion evidence
 
 Report platform/driver route; Python/Appium/Selenium versions; external server and target evidence; redacted options; retained session ID lifecycle; explicit-wait assertion; screenshot and bounded-source artifacts; exact failures/log slices; `driver.quit()` outcome; and separately observed server/device cleanup. A manual prerequisite or unknown external resource state is `blocked`, not `passed`.

@@ -9,6 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).parents[2]
 SKILL_ROOT = ROOT / "skills" / "appium-python"
 MANIFEST_PATH = SKILL_ROOT / "references" / "official-skills.json"
+PROMPTS_PATH = SKILL_ROOT / "references" / "amkernel-prompts.md"
 VERIFIER = SKILL_ROOT / "scripts" / "verify_official_skills.py"
 COMMIT = "e907024c210fe024c956ed9c74146fc27b1dd013"
 SELECTED_SKILLS = {
@@ -83,6 +84,55 @@ def test_skill_documents_persistent_safe_appium_flow() -> None:
         assert contract in skill
     assert "desired_capabilities=" not in skill
     assert "time.sleep(" not in skill
+
+
+def test_prompt_procedures_are_bounded_and_client_neutral() -> None:
+    skill = (SKILL_ROOT / "SKILL.md").read_text(encoding="utf-8")
+    prompts = PROMPTS_PATH.read_text(encoding="utf-8")
+
+    assert "references/amkernel-prompts.md" in skill
+    headings = (
+        "## Read-only status snapshot",
+        "## Connect and retain one session",
+        "## Perform one bounded Appium operation",
+        "## Inspect or write a focused Appium test",
+        "## Diagnose a failed live command",
+        "## Explicit cleanup and reconciliation",
+    )
+    for heading in headings:
+        assert heading in prompts
+
+    required_contracts = (
+        "only AMKernel's python_exec MCP tool",
+        "65,536-byte limit",
+        "timeout or nonzero exit",
+        "supplied target path itself to be relative before resolution",
+        "_amkernel_appium_owned_session_id == driver.session_id",
+        "262,144 serialized UTF-8 bytes",
+        "checking and deleting that exact sentinel",
+        "driver` is not None",
+        "session.present=false",
+        "top-level `driver`",
+        "WebDriverWait",
+        'display(..., mime_type="image/png")',
+        "page-source summary capped at 500 elements",
+        "Work only inside the current checkout",
+        "Write the complete intended content atomically",
+        "driver.quit() exactly once",
+        "still externally owned",
+    )
+    for contract in required_contracts:
+        assert contract in prompts
+
+    prohibited_contracts = (
+        "desired_capabilities=",
+        "time.sleep(",
+        "adb kill-server",
+        "adb start-server",
+        "appium driver install",
+    )
+    for contract in prohibited_contracts:
+        assert contract not in prompts
 
 
 def test_manifest_pins_complete_reviewed_inputs() -> None:
