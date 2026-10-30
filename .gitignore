@@ -9,3 +9,9 @@ __pycache__/
 .ruff_cache/
 dist/
 *.egg-info/
+.agents/skills/
+.agents/vendor/
+.claude/skills/setup-uiautomator2/
+.claude/skills/setup-xcuitest/
+.claude/skills/appium-troubleshooting/
+skills-lock.json

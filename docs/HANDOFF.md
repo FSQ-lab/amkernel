@@ -33,6 +33,7 @@ The formal repository was intentionally created design-only. A sibling spike exi
 - `docs/stage-1-implementation-plan.md` — accepted Stage 1 cross-module contracts, dependency/toolchain policy, path ownership, black-box scenarios, and risk traceability.
 - [GitHub Project #2](https://github.com/orgs/FSQ-lab/projects/2) and [repository Issues](https://github.com/FSQ-lab/amkernel/issues) — sole live project status, queue, work contracts, blockers, risks, and verification evidence.
 - `docs/stage-3-implementation-plan.md` — accepted M3 issue graph, skill/official-source trust seam, path ownership, fixture/evidence/measurement contracts, mandatory failure matrix, platform gates, and graduation criteria.
+- `skills/appium-python/` — project-local direct Appium Python procedure, complete pinned official-skill manifest, fail-closed provenance/content verifier, and focused contract tests.
 - `docs/experiments/mobile-appium.md` — experiment hypothesis, scenario matrix, failure cases, measurements, and graduation questions.
 - `docs/decisions/` — accepted durable decisions for the implementation stack, GitHub project management, public execution contract, private Runner protocol, and Runtime lifecycle.
 - `.github/workflows/ci.yml` — pinned-action hosted CI with quality, clean-wheel package smoke, and six supported Python/OS compatibility jobs; every package job retains its exact evidence JSON, wheel, dependency lock, and hash.
@@ -60,6 +61,7 @@ The formal repository was intentionally created design-only. A sibling spike exi
 - S2-070 maps complete v2 execution output through official MCP SDK types: canonical JSON plus deterministic ImageContent/ResourceLink ordering, generated resource names and logical titles, private complete zero-TTL raw/manifest/part reads, and request-scoped one-slot progress with channel/type metadata, 8 KiB/10 Hz bounds, exact unavailable/progress/failed fallback, and terminal authority under blocked or failed reporting. The final Ruff, mypy, and 244-scenario suite passed; independent correctness and security re-review found no remaining Blocker, Major, or Minor issue. Store/result-construction fatal lifecycle integration remains deliberately owned by S2-080.
 - S2-080 unifies output-limit, cancellation, deadline, shutdown, protocol/death, Store, and result-construction intervention semantics. Same-turn deadline/output-limit readiness is deterministic; earlier cancellation/limit markers retain timestamp order. Fatal paths preserve exact bounded output fields, serialize terminal construction inside Runtime FIFO, destructively clean the managed Runner, and retain failed staged/published/writer deletion progress for retry. Artifact URIs revoke before deletion, deleting bundles remain quota-charged until physical removal, reset cannot replace the Runner while output cleanup is pending, and persistent shutdown cleanup faults return truthful retryable results. Ruff, mypy, and the full 254-scenario suite pass; independent correctness and security review report no Blocker, Major, or Minor finding.
 - S2-090 and PR #66 close Stage 2. The final main hosted run passed quality, package-smoke, and Ubuntu/macOS CPython 3.11–3.13 compatibility against retained evidence. M3 and Issues #68–#74 now define the ordered Stage 3 Mobile/Appium experiment; S3-001's plan passed independent review with 0 Blocker / 0 Major / 0 Minor findings.
+- S3-010 pins `appium/skills` commit `e907024c210fe024c956ed9c74146fc27b1dd013` and Skills CLI 1.7.4, verifies the canonical detached Git tree plus `.agents` runtime and `.claude` selected-agent copies, and provides one project-local direct Appium Python procedure. The skill keeps server/device ownership external, reuses one persistent driver, uses explicit waits, bounds status/source/screenshot evidence, fails closed on source drift, prohibits automatic SDK bootstrap/shared ADB resets/unscoped mutations, and preserves cleanup identity until `driver.quit()` succeeds. Focused verification passed 5 tests plus Ruff, mypy, the real 134-file/copy verifier, and local Skills CLI discovery; independent security/workflow review found 0 Blocker / 0 Major / 0 Minor.
 - Global OMP memory is disabled; this project uses local project-scoped memory.
 - The sibling `/Users/qunmi/Documents/FSQ_LAB/omp` remains untouched as historical discussion/prototype material.
 
@@ -94,21 +96,22 @@ The formal repository was intentionally created design-only. A sibling spike exi
 
 ## Recommended next implementation slice
 
-S3-010 / Issue #68 is the next ordered slice after S3-001 merges: add the project-local Appium Python skill. Do not start fixture or platform execution work until its contract and review are complete.
+S3-020 / Issue #73 is the next ordered slice: establish deterministic mobile fixture selection plus the versioned evidence and measurement record contracts. Do not start Android or iOS vertical execution until the fixture gates are Ready.
 
 Observable contracts:
 
-1. `skills/appium-python/SKILL.md` routes Android/iOS preparation, direct Appium Python execution through `python_exec`, persistent driver reuse, explicit waits, bounded page-source handling, screenshot/artifact output, failure classification, and explicit cleanup without wrapping Appium APIs.
-2. `skills/appium-python/references/official-skills.json` pins the canonical `appium/skills` commit, recursively consumed hashes, exact install commands, generated locations, audit results, and restrictions; every use verifies installed content and fails closed on mismatch.
-3. `tests/skills/test_appium_python_skill.py` verifies structure, current Appium options, required AMKernel helpers, cleanup truth, and Android/iOS dry-run routing.
-4. Appium Server stays externally supervised; generated official-skill copies/links stay out of source control; no AMKernel production interface or dependency changes.
+1. Android and iOS fixtures are deterministic, locally inspectable, and pinned with exact provenance/build/install inputs; dynamic-download or environment-dependent demo targets are rejected.
+2. `docs/experiments/mobile-appium.md`, `tests/fixtures/mobile-appium/`, `tests/e2e/appium/`, and `evidence/mobile-appium/` receive the sole S3-020-owned schemas/templates without Appium semantics entering AMKernel core.
+3. Pre-run feasibility checks record every required environment fact before launch and classify unmet platform prerequisites truthfully as blockers rather than narrowing the experiment.
+4. Sample records are schema-complete, bounded, secret-reviewed, and independently verified before S3-030/S3-040 execution begins.
 
 ## Acceptance criteria
 
 - [x] M3 and S3-001 through S3-060 are registered in GitHub Project #2 with exact dependencies and work-item contracts.
 - [x] `docs/stage-3-implementation-plan.md` maps every graduation criterion, all 19 failure cases, all 12 measurements, exact paths/owners, and retained evidence requirements.
 - [x] Independent S3-001 review found 0 Blocker, 0 Major, and 0 Minor findings after synchronizing Issues #71 and #69.
-- [ ] S3-010 implements and independently verifies the project-local skill and immutable official-skill handoffs.
+- [x] S3-010 implements and independently verifies the project-local skill and immutable official-skill handoffs.
+- [ ] S3-020 establishes deterministic Android/iOS fixtures and versioned evidence records before platform execution.
 
 ## Constraints
 
