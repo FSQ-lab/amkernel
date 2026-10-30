@@ -2,7 +2,7 @@
 
 ## Task
 
-Advance Stage 2 agent-quality output in GitHub Project order, preserving the accepted ADR-0006 contracts and Stage 1 behavior at each increment.
+Advance Stage 3 Mobile/Appium experiment work in GitHub Project order without moving Appium, device, or platform semantics into AMKernel core.
 
 ## Context
 
@@ -32,6 +32,8 @@ The formal repository was intentionally created design-only. A sibling spike exi
 - `docs/project-management.md` — milestones, Kanban states, work-item contracts, decision management, risk management, and repository-governance rollout.
 - `docs/stage-1-implementation-plan.md` — accepted Stage 1 cross-module contracts, dependency/toolchain policy, path ownership, black-box scenarios, and risk traceability.
 - [GitHub Project #2](https://github.com/orgs/FSQ-lab/projects/2) and [repository Issues](https://github.com/FSQ-lab/amkernel/issues) — sole live project status, queue, work contracts, blockers, risks, and verification evidence.
+- `docs/stage-3-implementation-plan.md` — accepted M3 issue graph, skill/official-source trust seam, path ownership, fixture/evidence/measurement contracts, mandatory failure matrix, platform gates, and graduation criteria.
+- `docs/experiments/mobile-appium.md` — experiment hypothesis, scenario matrix, failure cases, measurements, and graduation questions.
 - `docs/decisions/` — accepted durable decisions for the implementation stack, GitHub project management, public execution contract, private Runner protocol, and Runtime lifecycle.
 - `.github/workflows/ci.yml` — pinned-action hosted CI with quality, clean-wheel package smoke, and six supported Python/OS compatibility jobs; every package job retains its exact evidence JSON, wheel, dependency lock, and hash.
 - `.omp/AGENTS.md` — project context; imports the architecture, development process, project-management policy, accepted decisions, and mobile experiment, and requires agents to inspect the active GitHub work item before changing code.
@@ -57,7 +59,7 @@ The formal repository was intentionally created design-only. A sibling spike exi
 - S2-001 accepts ADR-0006 and `docs/stage-2-implementation-plan.md`, establishing the Stage 2 milestone contract, module ownership, bounds, dependency graph, cross-cutting evidence matrix, and risks R-015 through R-020. S2-010 freezes the literal public v2 discovery schema, strict private protocol-v2 frames and sequence/transaction validator, exact malformed-frame mapping, dormant-event rejection, cancellation-safe post-terminal fatal handling, and centralized output/resource/image/package bounds. S2-020 implements the process Artifact Store, exact raw/manifest resources, collision-safe reservations, quota and whole-bundle eviction, one-read admission with leases, digest verification, descriptor-relative identity-safe cleanup, Runtime retention/shutdown ownership, and official MCP resource handlers. S2-030 adds bounded complete stream recovery, canonical stream artifacts, exact combined accounting, post-limit draining, terminal-observation attribution, and Store-failure teardown. S2-040 installs reset-restored and persistently shadowable `display`/`artifact` helpers; emits ordered strict-JSON and interrupt-atomic artifact/image protocol transactions; validates exact PNG/JPEG/GIF/WebP containers and every decoded frame in Runner and Host; publishes only complete transactions; preserves arbitrary declared MIME while promoting only validated safe content; maps ordered displays/artifacts; and bounds the compact terminal result under UTF-8 replacement expansion. S2-050 installs reset-restored and persistently shadowable `read`/`write`/`env` helpers; pins the actual launch directory handle and identity; walks relative and absolute-in-root paths descriptor-relatively without following links; restricts reads to bounded regular files with strict UTF-8; atomically replaces regular destinations with mode-`0600` files through pinned parent handles; and implements detached environment snapshots plus exact get/set/delete semantics without a sandbox claim. S2-060 validates PEP 503-normalized requested distribution names before dispatch; performs ordered selected-Runner metadata inspection after completed or failed cells inside the cell deadline; publishes only bounded control-free versions or the closed three-value error vocabulary; never inventories implicitly; and retains last-valid selected-Runner diagnostics across death and failed reset while refreshing only after successful replacement. The repository suite passes 237 scenarios; Ruff and mypy pass; independent correctness and security review found no remaining Blocker or Major issue. GitHub Project #2 advances to S2-070.
 - S2-070 maps complete v2 execution output through official MCP SDK types: canonical JSON plus deterministic ImageContent/ResourceLink ordering, generated resource names and logical titles, private complete zero-TTL raw/manifest/part reads, and request-scoped one-slot progress with channel/type metadata, 8 KiB/10 Hz bounds, exact unavailable/progress/failed fallback, and terminal authority under blocked or failed reporting. The final Ruff, mypy, and 244-scenario suite passed; independent correctness and security re-review found no remaining Blocker, Major, or Minor issue. Store/result-construction fatal lifecycle integration remains deliberately owned by S2-080.
 - S2-080 unifies output-limit, cancellation, deadline, shutdown, protocol/death, Store, and result-construction intervention semantics. Same-turn deadline/output-limit readiness is deterministic; earlier cancellation/limit markers retain timestamp order. Fatal paths preserve exact bounded output fields, serialize terminal construction inside Runtime FIFO, destructively clean the managed Runner, and retain failed staged/published/writer deletion progress for retry. Artifact URIs revoke before deletion, deleting bundles remain quota-charged until physical removal, reset cannot replace the Runner while output cleanup is pending, and persistent shutdown cleanup faults return truthful retryable results. Ruff, mypy, and the full 254-scenario suite pass; independent correctness and security review report no Blocker, Major, or Minor finding.
-- S2-090 extends the clean installed-wheel official-client scenario across v2 discovery, persistence/error/reset, progress and callback failure isolation, all four raster codecs, exact artifacts/resources, full 32-part recovery, 64+2 item pressure/eviction, external server RSS/fd/task/process plateau measurements, workspace/package diagnostics, output-limit intervention, tamper refusal, fresh-process invalidation, Runner death/recovery, child cleanup, and Store cleanup refusal. The scenario exposed and fixed Pillow WebP validation against strict-seek mmap objects. Local clean-wheel evidence passes; the final hosted Ubuntu/macOS 3.11–3.13 run remains the release-closing gate.
+- S2-090 and PR #66 close Stage 2. The final main hosted run passed quality, package-smoke, and Ubuntu/macOS CPython 3.11–3.13 compatibility against retained evidence. M3 and Issues #68–#74 now define the ordered Stage 3 Mobile/Appium experiment; S3-001's plan passed independent review with 0 Blocker / 0 Major / 0 Minor findings.
 - Global OMP memory is disabled; this project uses local project-scoped memory.
 - The sibling `/Users/qunmi/Documents/FSQ_LAB/omp` remains untouched as historical discussion/prototype material.
 
@@ -92,21 +94,21 @@ The formal repository was intentionally created design-only. A sibling spike exi
 
 ## Recommended next implementation slice
 
-Stage 2 closed through S2-090 and PR #66 on 2026-10-29. The GitHub Project has no later Ready item; do not start Stage 3 or a platform vertical until a new ordered item is ready.
+S3-010 / Issue #68 is the next ordered slice after S3-001 merges: add the project-local Appium Python skill. Do not start fixture or platform execution work until its contract and review are complete.
 
 Observable contracts:
 
-1. The installed `amkernel` entry point exercises discovery, persistent execution, v2 output, progress and client callback failure, resources, every raster codec, workspace helpers, requested packages, output-limit intervention, server resource plateaus, tamper/fresh-process invalidation, fatal recovery, Store cleanup refusal, reset, and shutdown through the official MCP client.
-2. Hosted Ubuntu and macOS on CPython 3.11–3.13 must pass against the exact same built wheel and retain per-job hashes, dependencies, interpreter/OS identity, measurements, and scenario output.
-3. Documentation states only evidence-qualified behavior and support; retained artifacts identify the exact tested wheel.
-4. Independent final review must have no unresolved Stage 2 correctness, lifecycle, security, or support overclaim.
+1. `skills/appium-python/SKILL.md` routes Android/iOS preparation, direct Appium Python execution through `python_exec`, persistent driver reuse, explicit waits, bounded page-source handling, screenshot/artifact output, failure classification, and explicit cleanup without wrapping Appium APIs.
+2. `skills/appium-python/references/official-skills.json` pins the canonical `appium/skills` commit, recursively consumed hashes, exact install commands, generated locations, audit results, and restrictions; every use verifies installed content and fails closed on mismatch.
+3. `tests/skills/test_appium_python_skill.py` verifies structure, current Appium options, required AMKernel helpers, cleanup truth, and Android/iOS dry-run routing.
+4. Appium Server stays externally supervised; generated official-skill copies/links stay out of source control; no AMKernel production interface or dependency changes.
 
 ## Acceptance criteria
 
-- [x] Local clean-wheel official-client scenario passes with bounded server/resource measurements and exact recovery evidence.
-- [x] Full 254-scenario suite, Ruff format/check, and mypy pass after the final source change.
-- [x] Independent release-evidence review accepts seam-local 66-item/128-part and read-lease race coverage and finds no remaining design gap after external server measurement was added.
-- [x] Final hosted quality, package-smoke, and six compatibility jobs passed and retained their evidence on the reviewed commit.
+- [x] M3 and S3-001 through S3-060 are registered in GitHub Project #2 with exact dependencies and work-item contracts.
+- [x] `docs/stage-3-implementation-plan.md` maps every graduation criterion, all 19 failure cases, all 12 measurements, exact paths/owners, and retained evidence requirements.
+- [x] Independent S3-001 review found 0 Blocker, 0 Major, and 0 Minor findings after synchronizing Issues #71 and #69.
+- [ ] S3-010 implements and independently verifies the project-local skill and immutable official-skill handoffs.
 
 ## Constraints
 
