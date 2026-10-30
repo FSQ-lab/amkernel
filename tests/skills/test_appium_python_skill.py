@@ -37,6 +37,7 @@ def _run_verifier(project_root: Path, manifest_path: Path) -> subprocess.Complet
         text=True,
     )
 
+
 def _git(root: Path, *arguments: str) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         ["git", "-C", str(root), *arguments],

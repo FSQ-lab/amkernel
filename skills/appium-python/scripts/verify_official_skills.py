@@ -89,6 +89,7 @@ def _file_map(value: Any, label: str) -> dict[str, str]:
         result[path] = digest
     return result
 
+
 def _location(value: Any, label: str) -> Path:
     if not isinstance(value, str):
         raise ValueError(f"{label} must be a string")
@@ -165,8 +166,7 @@ def _verify_provenance(root: Path, repository: str, commit: str) -> list[str]:
         errors.append("official source: missing origin URL")
     elif _canonical_repository(origin.stdout.strip()) != _canonical_repository(repository):
         errors.append(
-            "official source: origin mismatch: "
-            f"expected {repository}, got {origin.stdout.strip()}"
+            f"official source: origin mismatch: expected {repository}, got {origin.stdout.strip()}"
         )
     return errors
 
@@ -190,12 +190,8 @@ def verify(manifest_path: Path, project_root: Path) -> list[str]:
             raise ValueError("commit must be a full lowercase Git object ID")
 
         source = _mapping(manifest.get("source"), "source")
-        source_location = _location(
-            source.get("generatedLocation"), "source.generatedLocation"
-        )
-        source_root, errors = _validated_root(
-            project_root, source_location, "official source"
-        )
+        source_location = _location(source.get("generatedLocation"), "source.generatedLocation")
+        source_root, errors = _validated_root(project_root, source_location, "official source")
         source_files = _file_map(source.get("files"), "source.files")
         if source_root is not None:
             errors.extend(_verify_provenance(source_root, repository, commit))
@@ -231,9 +227,7 @@ def verify(manifest_path: Path, project_root: Path) -> list[str]:
             )
             errors.extend(agent_errors)
             if agent_root is not None:
-                errors.extend(
-                    _verify_tree(agent_root, files, f"selected-agent skill {name}")
-                )
+                errors.extend(_verify_tree(agent_root, files, f"selected-agent skill {name}"))
         return errors
     except (OSError, UnicodeError, json.JSONDecodeError, ValueError) as error:
         return [f"manifest verification failed: {error}"]
