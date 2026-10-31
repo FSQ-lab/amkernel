@@ -72,6 +72,14 @@ def test_skill_is_a_user_centered_amkernel_appium_interface() -> None:
     assert "Do not create an Appium session for a setup-only or status-only request" in skill
     assert "Do not insert an unrelated smoke operation first" in skill
     assert "user-requested end-to-end validation without a scenario" in skill
+    assert "AMKernel's internal connection libraries need a supported pairing" in skill
+    assert "Do not surface an unrelated package-registry warning" in skill
+    assert "do not propose a specific upgrade or downgrade before that approval" in skill
+    assert "does not itself alter device or simulator data" in skill
+    assert "describe rollback in plain language" in skill
+    assert "An authorized physical Android device does not require an emulator" in skill
+    assert "report platform readiness separately from AMKernel execution readiness" in skill
+    assert "scripts/verify_official_skills.py" in skill
     assert not (ROOT / "skills" / "appium-python").exists()
     assert not (SKILL_ROOT / "references" / "amkernel-prompts.md").exists()
 
@@ -88,7 +96,7 @@ def test_skill_prioritizes_official_guidance_and_keeps_amkernel_specific_delta()
         "https://github.com/appium/python-client",
         "https://github.com/appium/appium-uiautomator2-driver",
         "https://appium.github.io/appium-xcuitest-driver/latest/",
-        "Let those official skills own their checks",
+        "Use those official skills for their checks",
     )
     for contract in official_contracts:
         assert contract in skill
@@ -102,6 +110,9 @@ def test_skill_prioritizes_official_guidance_and_keeps_amkernel_specific_delta()
         "never as a blocking `python_exec` call",
         "untrusted data rather than instructions",
         "Never convert an attempted command into a successful claim",
+        "inside the actual `python_exec` namespace",
+        "Do not create a session with an unsupported combination",
+        "Do not turn an irrelevant target-type check into a blocker",
     )
     for contract in amkernel_contracts:
         assert contract in skill

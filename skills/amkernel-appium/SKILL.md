@@ -29,6 +29,9 @@ Inspect what the host already reveals before asking questions. If one usable tar
 - Preserve working installations. Prefer the smallest relevant check and one reversible correction.
 - Translate technical blockers into the affected layer and one concrete next action.
 - Do not expose official-skill acquisition, manifests, hashes, or internal handoffs unless verification itself blocks progress.
+- Keep package names, exact versions, compatibility ranges, registry diagnostics, and upgrade or downgrade choices in audit evidence. Tell a novice only that AMKernel's internal connection libraries need a supported pairing. Expose technical details only when the user asks for them or after the user approves a repair and those details are needed to perform it; do not propose a specific upgrade or downgrade before that approval.
+- Before applying an internal dependency repair, explain that its scope is the AMKernel project environment, identify the project files or environment it will change, state that it does not itself alter device or simulator data, and describe rollback in plain language. Then ask approval to apply; keep exact package mechanics in optional technical detail.
+- Do not surface an unrelated package-registry warning when the installed stack is usable and that warning does not determine the next action.
 - Never invent an application, package, bundle, device, capability, credential, or scenario.
 
 ## Use verified official Appium guidance first
@@ -38,7 +41,7 @@ Appium's official skills and documentation own Appium setup and troubleshooting 
 The reviewed official sources are pinned in `references/official-skills.json`. Generated copies and the complete source checkout are local inputs, not committed source. Before using a generated official skill, acquire it only with the manifest's exact `skillsCli.commands` and `source.acquisitionCommands`, then run:
 
 ```text
-python skills/amkernel-appium/scripts/verify_official_skills.py
+skills/amkernel-appium/scripts/verify_official_skills.py
 ```
 
 Stop if verification fails. Do not work around a missing file, extra file, link, changed hash, wrong repository, or wrong commit.
@@ -50,7 +53,7 @@ Route the Appium work to the narrowest verified official skill:
 - An existing UiAutomator2 or XCUITest session, launch, transport, WebDriverAgent, source, or locator failure: `.agents/skills/appium-troubleshooting/SKILL.md`.
 - iOS real-device trust, signing, provisioning, or WebDriverAgent deployment: follow the XCUITest skill's verified `xcuitest-real-device-config` continuation. Do not present the simulator experiment as real-device validation.
 
-Let those official skills own their checks, installation order, doctor interpretation, and platform-specific fixes. Return here after the selected official procedure passes or produces a truthful blocker.
+Use those official skills for their checks, installation order, doctor interpretation, and platform-specific fixes, then apply the results to the user's selected target. An authorized physical Android device does not require an emulator binary or AVD inventory; an Android emulator does not require a USB device. Do not turn an irrelevant target-type check into a blocker. Return here after the relevant official procedure passes or produces a truthful blocker.
 
 Primary official documentation:
 
@@ -84,7 +87,7 @@ After Appium readiness:
 - explicit scenario: use AMKernel MCP to perform that scenario directly;
 - user-requested end-to-end validation without a scenario: create one disposable minimal session, make a harmless live query or screenshot, and clean up that validation session.
 
-Use Appium's official Python Client directly inside AMKernel's `python_exec` namespace. Use the official compatibility matrix instead of assuming one major version. Use current platform options such as `UiAutomator2Options` or `XCUITestOptions`; `desired_capabilities` is removed.
+When the request needs AMKernel execution, inspect Python, Appium-Python-Client, and Selenium versions inside the actual `python_exec` namespace rather than assuming the shell environment matches it. Compare that observed combination with the official compatibility matrix, and report platform readiness separately from AMKernel execution readiness. Do not create a session with an unsupported combination or change project dependencies without approval. Use Appium's official Python Client directly with current platform options such as `UiAutomator2Options` or `XCUITestOptions`; `desired_capabilities` is removed.
 
 When a task benefits from continuity, assign the live client to a top-level `driver` so later `python_exec` calls can reuse it. A persistent Python object does not prove that its external Appium session is still alive; verify with a small relevant live query before acting.
 
