@@ -127,35 +127,58 @@ async def test_write_pins_renamed_parent_and_rejects_destination_substitution(
             f"""\
 import os
 import threading
-import time
 
-os.mkdir("parent")
+real_write = os.write
+write_started = threading.Event()
+write_may_finish = threading.Event()
+armed = False
 
-def rename_parent():
-    while not any(name.startswith(".amkernel-write-") for name in os.listdir("parent")):
-        time.sleep(0.0001)
-    os.rename("parent", "moved-parent")
+def controlled_write(descriptor, data):
+    global armed
+    written = real_write(descriptor, data)
+    if armed:
+        armed = False
+        write_started.set()
+        if not write_may_finish.wait(5):
+            raise RuntimeError("race action did not finish")
+    return written
 
-thread = threading.Thread(target=rename_parent)
-thread.start()
-parent_count = write("parent/large.bin", b"x" * (8 * 1024 * 1024))
-thread.join()
+def arm_race(action):
+    global armed
+    write_started.clear()
+    write_may_finish.clear()
+    armed = True
 
-write("victim.txt", "original")
+    def run_action():
+        if write_started.wait(5):
+            action()
+            write_may_finish.set()
 
-def substitute_destination():
-    while not any(name.startswith(".amkernel-write-") for name in os.listdir(".")):
-        time.sleep(0.0001)
-    os.unlink("victim.txt")
-    os.symlink({str(outside)!r}, "victim.txt")
+    thread = threading.Thread(target=run_action)
+    thread.start()
+    return thread
 
-thread = threading.Thread(target=substitute_destination)
-thread.start()
+os.write = controlled_write
 try:
-    write("victim.txt", b"y" * (8 * 1024 * 1024))
-except Exception as error:
-    race_error = type(error).__module__ + "." + type(error).__name__
-thread.join()
+    os.mkdir("parent")
+    thread = arm_race(lambda: os.rename("parent", "moved-parent"))
+    parent_count = write("parent/data.bin", b"x")
+    thread.join()
+
+    write("victim.txt", "original")
+
+    def substitute_destination():
+        os.unlink("victim.txt")
+        os.symlink({str(outside)!r}, "victim.txt")
+
+    thread = arm_race(substitute_destination)
+    try:
+        write("victim.txt", b"y")
+    except Exception as error:
+        race_error = type(error).__module__ + "." + type(error).__name__
+    thread.join()
+finally:
+    os.write = real_write
 
 write("atomic.txt", "retained")
 try:
@@ -165,7 +188,7 @@ except Exception as error:
 
 display([
     parent_count,
-    read("moved-parent/large.bin", limit=8 * 1024 * 1024)[-1],
+    read("moved-parent/data.bin")[-1],
     race_error,
     atomic_error,
     read("atomic.txt"),
@@ -174,7 +197,7 @@ display([
         )
         assert result.status == "completed"
         assert result.output.displays[0].value == [
-            8 * 1024 * 1024,
+            1,
             "x",
             "amkernel.workspace.WriteError",
             "UnicodeEncodeError",
