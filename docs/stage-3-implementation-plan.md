@@ -6,11 +6,13 @@ This is the execution plan for the Stage 3 Mobile/Appium experiment in `docs/exp
 
 The experiment tests a vertical, not a support matrix. Every claim is limited to the exact recorded environment.
 
+Post-graduation Issues #84 and #85 established the user-centered `amkernel-appium` interface; Issue #88 packages that interface as the project-installed `amkernel` skill beside the Runtime. Earlier names remain only in frozen Stage 3 evidence and are not active aliases.
+
 ## Fixed scope
 
 ### Included
 
-- one project-local `appium-python` skill for Coding Agent procedure;
+- one project-installed `amkernel` skill that routes the Appium procedure from a user goal;
 - reviewed handoffs to Appium's official setup and troubleshooting skills;
 - direct use of the official Appium Python Client through `python_exec`;
 - one deterministic logical fixture workflow on Android and iOS;
@@ -54,15 +56,15 @@ Missing platform software is an external blocker recorded on the owning Issue. I
 
 ## Deep module seams
 
-### `skills/appium-python/SKILL.md`
+### `src/amkernel/skill/SKILL.md`
 
-Owns the Coding Agent procedure: choose Android or iOS, establish evidence prerequisites, invoke reviewed official Appium setup/troubleshooting guidance, connect with current platform options, retain one driver in the persistent namespace, use explicit waits, bound model-facing data, emit images/artifacts, classify failures by layer, and clean up explicitly.
+Owns the user-facing AMKernel procedure: infer Android or iOS from a plain-language goal, route setup and diagnosis to reviewed official Appium skills, enforce readiness, use the official Python Client through `python_exec`, and report bounded evidence and truthful cleanup.
 
-Its interface is procedural. It does not define mobile action abstractions, conceal Appium APIs, run an Appium Server in a cell, or claim cleanup beyond observed actions.
+Its interface is a user goal. It does not define mobile action abstractions, expose internal session bookkeeping, conceal Appium APIs, run an Appium Server in a cell, or claim cleanup beyond observed actions.
 
 ### Official `appium/skills`
 
-Appium's official `setup-uiautomator2`, `setup-xcuitest`, and `appium-troubleshooting` skills are reviewed procedural inputs from the canonical `https://github.com/appium/skills` repository. S3-010 writes one immutable commit, every recursively consumed relative path and SHA-256, the reviewed audit result, and local restrictions to `skills/appium-python/references/official-skills.json`.
+Appium's official `setup-uiautomator2`, `setup-xcuitest`, and `appium-troubleshooting` skills are reviewed procedural inputs from the canonical `https://github.com/appium/skills` repository. The packaged manifest records one immutable commit, every recursively consumed relative path and SHA-256, the reviewed audit result, and local restrictions at `src/amkernel/skill/references/official-skills.json`.
 
 The only accepted acquisition form is `DISABLE_TELEMETRY=1 npx skills add https://github.com/appium/skills/tree/<commit>/skills/<name> --skill <name> --copy -a <selected-agent> -y`, with the placeholders replaced by manifest values. It installs project-local runtime copies under `.agents/skills/<name>` plus the selected agent link. Both locations are generated, excluded from source control, and must hash-match the manifest before every dry-run or use; absence or mismatch fails closed as a prerequisite blocker. S3-010 must first prove that the pinned tree URL is resolved at the named commit by the selected Skills CLI version. No branch/default-ref fallback is permitted.
 
@@ -83,8 +85,8 @@ Large transcripts, screenshots, source trees, and platform logs are retained as 
 | Path | Sole writer | Consumers |
 |---|---|---|
 | `docs/stage-3-implementation-plan.md` | S3-001 / Contract and Integration Lead | all M3 items |
-| `skills/appium-python/**` | S3-010 / Skill Implementation Owner | S3-020 through S3-060 |
-| `tests/skills/test_appium_python_skill.py` | S3-010 / Skill Implementation Owner | S3-010 verification and later skill changes |
+| `src/amkernel/skill/**` | #88 / Distribution and Skill Owner | installed projects and S3-020 through S3-060 |
+| `tests/skills/test_amkernel_skill.py` | #88 / Distribution and Skill Owner | provenance, user-experience, and later skill changes |
 | `.gitignore` entries for generated `.agents/skills` and selected agent links | S3-010 / Skill Implementation Owner | all local skill users |
 | `tests/fixtures/mobile_appium/scenario.json` | S3-020 / Mobile Experiment Owner | S3-030 and S3-040 |
 | `tests/fixtures/mobile_appium/evidence.schema.json` | S3-020 / Mobile Experiment Owner | S3-030 through S3-060 |
@@ -144,7 +146,7 @@ Each item includes focused evidence and independent review before it is Done. Pl
 
 S3-010 can implement the local skill without inventing architecture, platform claims, or evidence rules.
 
-### S3-010 — Add the project-local Appium Python skill (#68)
+### S3-010 — Add the pinned Appium procedure to the AMKernel skill (#68)
 
 **Owner:** Skill Implementation Owner.
 
@@ -152,9 +154,9 @@ S3-010 can implement the local skill without inventing architecture, platform cl
 
 **Deliverables**
 
-- Add `skills/appium-python/SKILL.md` with Android/iOS routing, preflight, direct Appium Python examples, persistent-driver use, explicit waits, screenshot/artifact/page-source policy, failure classification, reset/shutdown guidance, and explicit cleanup.
-- Add `skills/appium-python/references/official-skills.json` with the canonical repository, immutable commit, consumed relative paths and SHA-256 values, exact pinned install commands, Skills CLI version, generated locations, audit outcomes, and local restrictions for `setup-uiautomator2`, `setup-xcuitest`, and `appium-troubleshooting`.
-- Add focused source/structure validation at `tests/skills/test_appium_python_skill.py`; validate manifest hashes against an isolated pinned acquisition and against every installed runtime copy before use.
+- Package `src/amkernel/skill/SKILL.md` with novice-oriented Android/iOS routing, readiness, persistent-driver use, bounded evidence, scenario verification, and truthful cleanup.
+- Package `src/amkernel/skill/references/official-skills.json` with the canonical repository, immutable commit, consumed relative paths and SHA-256 values, exact pinned acquisition commands, generated locations, audit outcomes, and local restrictions.
+- Validate the source and installed copies through `tests/skills/test_amkernel_skill.py` and the packaged fail-closed verifier.
 - Keep platform setup delegated, Appium Server externally supervised, and generated `.agents/skills`/agent links out of source control through explicit `.gitignore` entries.
 
 **Focused evidence**

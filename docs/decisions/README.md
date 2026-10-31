@@ -87,3 +87,4 @@ How implementation will prove the decision works.
 | [ADR-0004](0004-stage-1-runner-protocol.md) | Accepted | Use a versioned, correlated, bounded private protocol isolated from user streams |
 | [ADR-0005](0005-stage-1-runtime-lifecycle.md) | Accepted | Serialize one Runner with explicit reset, timeout, cancellation, cleanup, environment, and platform semantics |
 | [ADR-0006](0006-stage-2-output-and-artifact-contract.md) | Accepted | Add bounded live progress, typed displays, recoverable artifacts, resource reads, prelude helpers, and requested package diagnostics |
+| [ADR-0007](0007-global-runtime-project-activation.md) | Accepted | Install one uv-managed user Runtime and activate AMKernel per project through native MCP configuration and one standard Skill |

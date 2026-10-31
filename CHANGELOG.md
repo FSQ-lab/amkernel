@@ -14,12 +14,14 @@ All notable changes to AMKernel are recorded here. Public releases use semantic 
 - Add strict JSON display, fully decoded PNG/JPEG/GIF/WebP display, explicit artifact, requested-package diagnostics, and descriptor-rooted `read`, `write`, and `env` helpers.
 - Add process-scoped Artifact Store resources with raw or manifest/part recovery, digest verification, whole-bundle quota eviction, tamper detection, and identity-safe cleanup refusal.
 - Extend clean-wheel official-client evidence across CPython 3.11–3.13 on hosted Ubuntu and macOS; CI retains each job's exact wheel hash, dependency set, interpreter/OS identity, scenario output, and lockfile.
+- Install one uv-managed user Runtime, one project-local `amkernel` Agent Skill, and native OMP, Pi, or Codex project MCP configuration through `amkernel install`.
 
 ### Changed
 
 - Unify deadline, cancellation, output-limit, Runner death, Store failure, reset, shutdown, and terminal result-construction ordering under the Runtime lifecycle authority.
 - Lock Pillow as the cross-platform raster decoder. CPython 3.11–3.13 on current GitHub-hosted Ubuntu and macOS remain the only supported environment claim; CPython 3.14 and Windows remain unsupported.
 - Document ephemeral resource retention: clients must read and verify every manifest part before another large-output call or server shutdown.
+- Replace the implementation-centered `appium-python` and interim `amkernel-appium` entries with the packaged, user-centered `amkernel` skill. The skill prioritizes verified official Appium guidance, leaves contextual judgment to the LLM, adds only AMKernel-specific knowledge, and is installed with the Runtime's project activation instead of a separate skill command.
 
 ### Security
 
