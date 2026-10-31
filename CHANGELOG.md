@@ -20,7 +20,7 @@ All notable changes to AMKernel are recorded here. Public releases use semantic 
 - Unify deadline, cancellation, output-limit, Runner death, Store failure, reset, shutdown, and terminal result-construction ordering under the Runtime lifecycle authority.
 - Lock Pillow as the cross-platform raster decoder. CPython 3.11–3.13 on current GitHub-hosted Ubuntu and macOS remain the only supported environment claim; CPython 3.14 and Windows remain unsupported.
 - Document ephemeral resource retention: clients must read and verify every manifest part before another large-output call or server shutdown.
-- Replace the implementation-centered `appium-python` skill with the user-centered `amkernel-appium` interface. The renamed skill prioritizes verified official Appium guidance, leaves contextual judgment to the LLM, adds only AMKernel-specific knowledge, and removes the fixed six-prompt workflow.
+- Replace the implementation-centered `appium-python` skill with the user-centered `amkernel-appium` interface. The skill now lives at the standard `.agents/skills/amkernel-appium` path for direct Pi, Codex, and compatible-Agent discovery and supports one-command installation through the open `skills` CLI. It prioritizes verified official Appium guidance, leaves contextual judgment to the LLM, adds only AMKernel-specific knowledge, and removes the fixed six-prompt workflow.
 
 ### Security
 

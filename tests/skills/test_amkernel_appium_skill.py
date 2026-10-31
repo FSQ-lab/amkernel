@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).parents[2]
-SKILL_ROOT = ROOT / "skills" / "amkernel-appium"
+SKILL_ROOT = ROOT / ".agents" / "skills" / "amkernel-appium"
 MANIFEST_PATH = SKILL_ROOT / "references" / "official-skills.json"
 VERIFIER = SKILL_ROOT / "scripts" / "verify_official_skills.py"
 COMMIT = "e907024c210fe024c956ed9c74146fc27b1dd013"
@@ -81,7 +81,20 @@ def test_skill_is_a_user_centered_amkernel_appium_interface() -> None:
     assert "report platform readiness separately from AMKernel execution readiness" in skill
     assert "scripts/verify_official_skills.py" in skill
     assert not (ROOT / "skills" / "appium-python").exists()
+    assert not (ROOT / "skills" / "amkernel-appium").exists()
     assert not (SKILL_ROOT / "references" / "amkernel-prompts.md").exists()
+
+
+def test_skill_uses_standard_discovery_and_installation() -> None:
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+
+    assert SKILL_ROOT == ROOT / ".agents" / "skills" / "amkernel-appium"
+    assert SKILL_ROOT.is_dir()
+    assert (
+        "DISABLE_TELEMETRY=1 npx -y skills@1.7.4 add FSQ-lab/amkernel "
+        "--skill amkernel-appium -a universal -y"
+    ) in readme
+    assert "Pi, Codex, and other compatible Coding Agents" in readme
 
 
 def test_skill_prioritizes_official_guidance_and_keeps_amkernel_specific_delta() -> None:

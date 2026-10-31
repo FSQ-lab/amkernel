@@ -41,7 +41,7 @@ Appium's official skills and documentation own Appium setup and troubleshooting 
 The reviewed official sources are pinned in `references/official-skills.json`. Generated copies and the complete source checkout are local inputs, not committed source. Before using a generated official skill, acquire it only with the manifest's exact `skillsCli.commands` and `source.acquisitionCommands`, then run:
 
 ```text
-skills/amkernel-appium/scripts/verify_official_skills.py
+.agents/skills/amkernel-appium/scripts/verify_official_skills.py
 ```
 
 Stop if verification fails. Do not work around a missing file, extra file, link, changed hash, wrong repository, or wrong commit.

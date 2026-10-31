@@ -12,6 +12,16 @@ AMKernel 是一个面向 Agent 自动化的持久 Python Execution MCP。基于 
 
 Agents use ordinary Python automation libraries while retaining live objects, imports, and state across tool calls.
 
+## Install the AMKernel Appium skill
+
+Pi, Codex, and other compatible Coding Agents can share the standard project-local `.agents/skills` path. From the project where the Agent should use AMKernel Appium guidance, run:
+
+```bash
+DISABLE_TELEMETRY=1 npx -y skills@1.7.4 add FSQ-lab/amkernel --skill amkernel-appium -a universal -y
+```
+
+This installs only the Agent skill. The skill then guides the Agent through Appium, platform-driver, device or simulator, server, and AMKernel readiness with the user's approval for changes. This command requires Node.js 22.20 or later.
+
 ## Why the name
 
 - **Automation** — Appium, Playwright, Windows, macOS, and other automation environments. / Appium、Playwright、Windows、macOS 等自动化场景。
