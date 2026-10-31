@@ -33,7 +33,7 @@ The formal repository was intentionally created design-only. A sibling spike exi
 - `docs/stage-1-implementation-plan.md` — accepted Stage 1 cross-module contracts, dependency/toolchain policy, path ownership, black-box scenarios, and risk traceability.
 - [GitHub Project #2](https://github.com/orgs/FSQ-lab/projects/2) and [repository Issues](https://github.com/FSQ-lab/amkernel/issues) — sole live project status, queue, work contracts, blockers, risks, and verification evidence.
 - `docs/stage-3-implementation-plan.md` — accepted M3 issue graph, skill/official-source trust seam, path ownership, fixture/evidence/measurement contracts, mandatory failure matrix, platform gates, and graduation criteria.
-- `skills/appium-python/` — project-local direct Appium Python procedure, complete pinned official-skill manifest, fail-closed provenance/content verifier, and focused contract tests.
+- `skills/amkernel-appium/` — user-centered Appium guidance for AMKernel, verified official-skill and documentation routes, AMKernel-specific lifecycle/output notes, a complete pinned official-skill manifest, and a fail-closed provenance/content verifier.
 - `docs/experiments/mobile-appium.md` — experiment hypothesis, scenario matrix, failure cases, measurements, and graduation questions.
 - `docs/decisions/` — accepted durable decisions for the implementation stack, GitHub project management, public execution contract, private Runner protocol, and Runtime lifecycle.
 - `.github/workflows/ci.yml` — pinned-action hosted CI with quality, clean-wheel package smoke, and six supported Python/OS compatibility jobs; every package job retains its exact evidence JSON, wheel, dependency lock, and hash.

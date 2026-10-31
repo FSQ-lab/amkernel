@@ -370,7 +370,7 @@ Platform knowledge belongs outside the core until repeated experiments reveal sh
 Initial skill:
 
 ```text
-appium-python
+amkernel-appium
 ```
 
 Possible future skills:
@@ -381,7 +381,7 @@ windows-automation
 macos-automation
 ```
 
-A skill can guide the Agent through setup, external process lifecycle, library usage, waits, large-output reduction, debugging, and cleanup. A skill is procedural knowledge, not an executable capability or security mechanism.
+A skill helps the Agent give the user a good experience by supplying trusted procedural knowledge and primary-source routes. It leaves intent recognition and contextual judgment to the Agent, refers Appium setup and troubleshooting to verified official skills and documentation, and adds only AMKernel-specific guidance. A skill is not a workflow engine, executable capability, or security mechanism.
 
 Each experiment produces evidence about the kernel:
 

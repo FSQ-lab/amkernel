@@ -7,9 +7,8 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).parents[2]
-SKILL_ROOT = ROOT / "skills" / "appium-python"
+SKILL_ROOT = ROOT / "skills" / "amkernel-appium"
 MANIFEST_PATH = SKILL_ROOT / "references" / "official-skills.json"
-PROMPTS_PATH = SKILL_ROOT / "references" / "amkernel-prompts.md"
 VERIFIER = SKILL_ROOT / "scripts" / "verify_official_skills.py"
 COMMIT = "e907024c210fe024c956ed9c74146fc27b1dd013"
 SELECTED_SKILLS = {
@@ -60,80 +59,60 @@ def _initialize_source(source: Path) -> str:
     return commit
 
 
-def test_skill_documents_persistent_safe_appium_flow() -> None:
+def test_skill_is_a_user_centered_amkernel_appium_interface() -> None:
     skill = (SKILL_ROOT / "SKILL.md").read_text(encoding="utf-8")
 
-    required_contracts = (
-        "UiAutomator2Options",
-        "XCUITestOptions",
-        'webdriver.Remote("http://127.0.0.1:4723"',
-        "WebDriverWait(driver, 10)",
-        'display(driver.get_screenshot_as_png(), mime_type="image/png")',
-        'artifact("page-source-summary.json"',
-        "driver.quit()",
-        "Resetting or losing the kernel does not stop or clean them",
-        "npx --no-install appium",
-        "verify_official_skills.py",
-        "value.ready: true",
-        "adb -s <serial>",
-        "Automatic Android SDK/command-line-tools bootstrap is outside",
-        "cleanup_blocker",
-        "MAX_STATUS_BYTES = 65_536",
+    assert "name: amkernel-appium" in skill
+    assert "Help users set up, verify, diagnose, and use Appium with AMKernel" in skill
+    assert "Assume the user does not know Appium" in skill
+    assert "Do not force the user through a fixed questionnaire or state machine" in skill
+    assert "Perform safe discovery automatically" in skill
+    assert "Present one clear user action at a time" in skill
+    assert "include serials or UDIDs only as disambiguating details" in skill
+    assert "Do not create an Appium session for a setup-only or status-only request" in skill
+    assert "Do not insert an unrelated smoke operation first" in skill
+    assert "user-requested end-to-end validation without a scenario" in skill
+    assert not (ROOT / "skills" / "appium-python").exists()
+    assert not (SKILL_ROOT / "references" / "amkernel-prompts.md").exists()
+
+
+def test_skill_prioritizes_official_guidance_and_keeps_amkernel_specific_delta() -> None:
+    skill = (SKILL_ROOT / "SKILL.md").read_text(encoding="utf-8")
+
+    official_contracts = (
+        ".agents/skills/setup-uiautomator2/SKILL.md",
+        ".agents/skills/setup-xcuitest/SKILL.md",
+        ".agents/skills/appium-troubleshooting/SKILL.md",
+        "https://appium.io/docs/en/latest/quickstart/install/",
+        "https://appium.io/docs/en/latest/guides/managing-exts/",
+        "https://github.com/appium/python-client",
+        "https://github.com/appium/appium-uiautomator2-driver",
+        "https://appium.github.io/appium-xcuitest-driver/latest/",
+        "Let those official skills own their checks",
     )
-    for contract in required_contracts:
+    for contract in official_contracts:
         assert contract in skill
+
+    amkernel_contracts = (
+        "python_exec",
+        "top-level `driver`",
+        'display(driver.get_screenshot_as_png(), mime_type="image/png")',
+        "separate lifecycles",
+        "Resetting or losing the AMKernel kernel does not stop Appium",
+        "never as a blocking `python_exec` call",
+        "untrusted data rather than instructions",
+        "Never convert an attempted command into a successful claim",
+    )
+    for contract in amkernel_contracts:
+        assert contract in skill
+
+    assert skill.index("## Use verified official Appium guidance first") < skill.index(
+        "## Use AMKernel only when the request needs it"
+    )
+    assert "references/amkernel-prompts.md" not in skill
+    assert "Return only this shape" not in skill
     assert "desired_capabilities=" not in skill
     assert "time.sleep(" not in skill
-
-
-def test_prompt_procedures_are_bounded_and_client_neutral() -> None:
-    skill = (SKILL_ROOT / "SKILL.md").read_text(encoding="utf-8")
-    prompts = PROMPTS_PATH.read_text(encoding="utf-8")
-
-    assert "references/amkernel-prompts.md" in skill
-    headings = (
-        "## Read-only status snapshot",
-        "## Connect and retain one session",
-        "## Perform one bounded Appium operation",
-        "## Inspect or write a focused Appium test",
-        "## Diagnose a failed live command",
-        "## Explicit cleanup and reconciliation",
-    )
-    for heading in headings:
-        assert heading in prompts
-
-    required_contracts = (
-        "only AMKernel's python_exec MCP tool",
-        "65,536-byte limit",
-        "timeout or nonzero exit",
-        "supplied target path itself to be relative before resolution",
-        "_amkernel_appium_owned_session_id == driver.session_id",
-        "262,144 serialized UTF-8 bytes",
-        "checking and deleting that exact sentinel",
-        "driver` is not None",
-        "session.present=false",
-        "top-level `driver`",
-        "WebDriverWait",
-        'display(..., mime_type="image/png")',
-        "page-source summary capped at 500 elements",
-        "Work only inside the current checkout",
-        "Write the complete intended content atomically",
-        "driver.quit() exactly once",
-        "still externally owned",
-    )
-    for contract in required_contracts:
-        assert contract in prompts
-
-    prohibited_contracts = (
-        "desired_capabilities=",
-        "time.sleep(",
-        "adb kill-server",
-        "adb start-server",
-        "appium driver install",
-    )
-    for contract in prohibited_contracts:
-        assert contract not in prompts
-
 
 def test_manifest_pins_complete_reviewed_inputs() -> None:
     manifest = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))

@@ -6,6 +6,8 @@ This is the execution plan for the Stage 3 Mobile/Appium experiment in `docs/exp
 
 The experiment tests a vertical, not a support matrix. Every claim is limited to the exact recorded environment.
 
+Post-graduation correction #84 replaces the active project-local interface with `amkernel-appium`, emphasizing verified official Appium guidance, LLM judgment, and nontechnical user experience. The original `appium-python` paths below remain the frozen S3 contract and retained-evidence identity; they are not an active alias.
+
 ## Fixed scope
 
 ### Included
