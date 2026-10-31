@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).parents[2]
-SKILL_ROOT = ROOT / "skills" / "appium-python"
+SKILL_ROOT = ROOT / "src" / "amkernel" / "skill"
 MANIFEST_PATH = SKILL_ROOT / "references" / "official-skills.json"
 VERIFIER = SKILL_ROOT / "scripts" / "verify_official_skills.py"
 COMMIT = "e907024c210fe024c956ed9c74146fc27b1dd013"
@@ -59,25 +59,23 @@ def _initialize_source(source: Path) -> str:
     return commit
 
 
-def test_skill_documents_persistent_safe_appium_flow() -> None:
+def test_skill_guides_a_nontechnical_user_from_goal_to_verified_result() -> None:
     skill = (SKILL_ROOT / "SKILL.md").read_text(encoding="utf-8")
 
     required_contracts = (
-        "UiAutomator2Options",
-        "XCUITestOptions",
-        'webdriver.Remote("http://127.0.0.1:4723"',
-        "WebDriverWait(driver, 10)",
-        'display(driver.get_screenshot_as_png(), mime_type="image/png")',
-        'artifact("page-source-summary.json"',
-        "driver.quit()",
-        "Resetting or losing the kernel does not stop or clean them",
-        "npx --no-install appium",
+        "Assume the user does not know Appium",
+        "Do not force the user through a fixed questionnaire",
+        "Present one clear user action at a time",
+        "setup-uiautomator2",
+        "setup-xcuitest",
+        "appium-troubleshooting",
         "verify_official_skills.py",
-        "value.ready: true",
-        "adb -s <serial>",
-        "Automatic Android SDK/command-line-tools bootstrap is outside",
-        "cleanup_blocker",
-        "MAX_STATUS_BYTES = 65_536",
+        "Do not create an Appium session for a setup-only",
+        "`python_exec`",
+        "Use AMKernel only when the request needs it",
+        "Preserve lifecycle truth",
+        "one concrete next action",
+        "Do not claim broader Android, iOS, real-device, or support coverage",
     )
     for contract in required_contracts:
         assert contract in skill

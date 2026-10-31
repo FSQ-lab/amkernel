@@ -1,6 +1,6 @@
 # Mobile/Appium Experiment
 
-Status: first AMKernel vertical experiment.
+Status: Android and iOS reference verticals, failure injection, and graduation review are complete; Mobile/Appium remains experimental and unsupported.
 
 ## 1. Purpose
 
@@ -58,21 +58,17 @@ The Coding Agent normally already has shell/process tools for those operations. 
 
 ## 4. Skill support
 
-Before Stage 3 begins, a project-local `appium-python` skill will supply procedural guidance:
+The project-installed `amkernel` skill helps the Agent support a nontechnical user. It routes setup, driver installation, doctor checks, and troubleshooting to verified official Appium skills and documentation, then adds only AMKernel-specific guidance:
 
-- verify Python client and Selenium compatibility;
-- verify the Appium `/status` endpoint;
-- discover installed Appium drivers;
-- discover devices;
-- create current XCUITest and UiAutomator2 options;
-- retain and reuse the driver;
-- use explicit waits;
-- inspect page source without flooding context;
-- return screenshots;
-- execute project automation;
-- diagnose and clean up failed sessions.
+- use Appium through `python_exec` only when the user's request needs AMKernel execution;
+- keep Appium Server, platform, target, kernel, and session lifecycles distinct;
+- reuse persistent Python objects when useful without assuming the external session is alive;
+- use explicit waits and current official client options;
+- reduce page source and logs before returning them and emit screenshots through AMKernel output;
+- stop at readiness for setup-only requests, run an explicit scenario directly, and reserve a disposable smoke session for user-requested validation without a scenario;
+- report failures and cleanup truthfully in language the user can understand.
 
-The skill does not add runtime behavior and does not wrap the Appium Python Client.
+The skill leaves contextual judgment to the Agent. It does not add runtime behavior, wrap the Appium Python Client, or duplicate official Appium procedure.
 
 ## 5. Required environments
 

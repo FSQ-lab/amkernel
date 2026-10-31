@@ -15,7 +15,11 @@ from pathlib import Path
 
 
 def run(
-    command: list[str], *, cwd: Path, capture_output: bool = False
+    command: list[str],
+    *,
+    cwd: Path,
+    capture_output: bool = False,
+    env: dict[str, str] | None = None,
 ) -> subprocess.CompletedProcess[str]:
     """Run one required smoke-test command."""
     return subprocess.run(
@@ -24,6 +28,7 @@ def run(
         cwd=cwd,
         capture_output=capture_output,
         text=True,
+        env=env,
     )
 
 
@@ -89,6 +94,108 @@ def main() -> int:
                 "unexpected installed entry-point result: "
                 f"stdout={version_result.stdout!r}, stderr={version_result.stderr!r}"
             )
+        tool_directory = Path(temporary_directory) / "uv-tools"
+        tool_bin = Path(temporary_directory) / "uv-bin"
+        installer_environment = dict(os.environ)
+        installer_environment.update(
+            {
+                "UV_TOOL_DIR": str(tool_directory),
+                "UV_TOOL_BIN_DIR": str(tool_bin),
+                "AMKERNEL_DATA_HOME": str(Path(temporary_directory) / "amkernel-data"),
+            }
+        )
+        install_result = run(
+            [
+                str(entry_point),
+                "install",
+                "--client",
+                "pi",
+                "--scope",
+                "project",
+                "--project",
+                str(workspace),
+                "--yes",
+                "--json",
+            ],
+            cwd=workspace,
+            capture_output=True,
+            env=installer_environment,
+        )
+        install_evidence = json.loads(install_result.stdout)
+        managed_executable = tool_bin / ("amkernel.exe" if os.name == "nt" else "amkernel")
+        if not managed_executable.is_file():
+            raise RuntimeError("global managed AMKernel executable was not installed")
+        if not (workspace / ".agents" / "skills" / "amkernel" / "SKILL.md").is_file():
+            raise RuntimeError("project AMKernel skill was not installed")
+        mcp_config = json.loads((workspace / ".pi" / "mcp.json").read_text())
+        configured_executable = mcp_config["mcpServers"]["amkernel"]["command"]
+        expected_executables = {
+            str(managed_executable),
+            str(managed_executable.resolve()),
+            str(managed_executable.parent.resolve() / managed_executable.name),
+        }
+        if configured_executable not in expected_executables:
+            raise RuntimeError(
+                f"project MCP executable {configured_executable!r} not in {expected_executables!r}"
+            )
+        second_install = run(
+            [
+                str(entry_point),
+                "install",
+                "--client",
+                "pi",
+                "--scope",
+                "project",
+                "--project",
+                str(workspace),
+                "--yes",
+                "--json",
+            ],
+            cwd=workspace,
+            capture_output=True,
+            env=installer_environment,
+        )
+        second_install_evidence = json.loads(second_install.stdout)
+        doctor_result = run(
+            [
+                str(entry_point),
+                "doctor",
+                "--client",
+                "pi",
+                "--project",
+                str(workspace),
+                "--json",
+            ],
+            cwd=workspace,
+            capture_output=True,
+            env=installer_environment,
+        )
+        doctor_evidence = json.loads(doctor_result.stdout)
+        run(
+            [
+                str(entry_point),
+                "uninstall",
+                "--client",
+                "pi",
+                "--scope",
+                "project",
+                "--project",
+                str(workspace),
+                "--yes",
+                "--json",
+            ],
+            cwd=workspace,
+            capture_output=True,
+            env=installer_environment,
+        )
+        run(
+            [str(entry_point), "uninstall", "--global", "--yes", "--json"],
+            cwd=workspace,
+            capture_output=True,
+            env=installer_environment,
+        )
+        if managed_executable.exists():
+            raise RuntimeError("global managed AMKernel executable remained after uninstall")
 
         scenario_command = [
             str(python),
@@ -137,9 +244,12 @@ def main() -> int:
         "buildPython": sys.version,
         "host": platform.platform(),
         "installedVersion": expected_version,
+        "distributionInstall": install_evidence,
+        "distributionDoctor": doctor_evidence,
         "scenarioCommand": scenario_command,
         "scenario": scenario_evidence,
         "scenarioJsonBytes": scenario_json_bytes,
+        "distributionReinstall": second_install_evidence,
         "hostDiagnostics": host_diagnostics,
     }
     print(json.dumps(evidence, sort_keys=True))

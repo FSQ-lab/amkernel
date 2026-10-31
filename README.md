@@ -50,6 +50,18 @@ Future experiments may apply the same kernel to Playwright, Selenium, pywinauto,
 - AMKernel is local stdio code execution first, not a remote multi-tenant sandbox.
 - The core grows from measured experimental needs, not hypothetical platform unification.
 
+## Install for a project
+
+AMKernel uses one user-level `uv`-managed Runtime and project-scoped Agent activation. From the project directory, run:
+
+```bash
+uvx --from amkernel amkernel install
+```
+
+The installer explains the changes, installs `.agents/skills/amkernel`, writes the detected OMP, Pi, or Codex project MCP entry, and asks you to restart the Coding Agent. It does not modify the project's `.venv`, install Appium Server or platform drivers, start a device, or create a session.
+
+Use `amkernel status`, `amkernel doctor`, `amkernel update`, and `amkernel uninstall` for the managed lifecycle. `amkernel uninstall --global` is explicit because it affects every activated project.
+
 ## Current phase
 
 Stage 2 agent-quality output is implemented through the packaged stdio server and the single `python_exec` tool. One persistent Runtime now provides bounded live progress, recoverable stream artifacts, strict JSON and raster displays, explicit artifacts, requested-package diagnostics, descriptor-rooted workspace helpers, hard output-limit intervention, and truthful lifecycle/cleanup results.

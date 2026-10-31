@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "repository": "https://github.com/appium/skills",
+  "commit": "e907024c210fe024c956ed9c74146fc27b1dd013",
+  "reviewedAt": "2026-10-30",
+  "skills": {
+    "setup-uiautomator2": {
+      "path": "skills/setup-uiautomator2",
+      "skillSha256": "c155a1b332f5ee5931ed18a4aae7b01ca697844a8a803c1f3f942988af7b652c"
+    },
+    "setup-xcuitest": {
+      "path": "skills/setup-xcuitest",
+      "skillSha256": "80a4c879f177c77827b0d76c153eba8a4fcf26c540efc585af1326a04b1907dd"
+    },
+    "appium-troubleshooting": {
+      "path": "skills/appium-troubleshooting",
+      "skillSha256": "2814e41699486dbde2519cd559d70913e6321928580fd75bd6397fa4e012598c"
+    }
+  },
+  "policy": "Use only the exact commit and verify each SKILL.md SHA-256 before use. Stop on missing, linked, extra, or hash-mismatched procedural input."
+}

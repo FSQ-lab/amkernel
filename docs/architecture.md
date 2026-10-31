@@ -29,6 +29,12 @@ macOS Accessibility   → macOS UI
 
 The initial mobile experiment is evidence for the core, not a permanent boundary around it.
 
+### Distribution and project activation
+
+AMKernel is installed once per user in a `uv`-managed isolated environment. Projects reuse that installed executable but activate it explicitly through their Coding Agent's project MCP configuration. Every MCP attachment starts an independent Server, Runner process group, Python namespace, and artifact lifecycle; there is no global daemon or cross-project kernel.
+
+The user-facing Agent Skill is copied to `.agents/skills/amkernel` in each activated project. Prompt-based installation delegates to the same AMKernel CLI as direct installation. The Runtime and automation Python libraries use the global managed interpreter; the initial product does not select or mutate project `.venv` environments. See [ADR-0007](decisions/0007-global-runtime-project-activation.md).
+
 ## 2. Design thesis
 
 The main model-facing interface is Python execution, not a growing catalog of automation tools.
@@ -60,7 +66,7 @@ The project succeeds by making this execution path reliable, observable, and ple
 - stream and retain stdout/stderr;
 - capture structured values and images;
 - spill large output into recoverable artifacts;
-- resolve a predictable project Python environment;
+- run the kernel from the predictable user-level AMKernel managed environment;
 - interrupt timed-out code and report whether the kernel survived;
 - reset or shut down without leaving managed descendants;
 - expose exact interpreter, execution count, duration, and kernel state;
@@ -367,19 +373,13 @@ The prelude must not shadow common user names unnecessarily or make ordinary Pyt
 
 Platform knowledge belongs outside the core until repeated experiments reveal shared runtime requirements.
 
-Initial skill:
+Initial user-facing skill:
 
 ```text
-appium-python
+amkernel
 ```
 
-Possible future skills:
-
-```text
-playwright-python
-windows-automation
-macos-automation
-```
+The skill guides installation, readiness, diagnosis, and first successful automation from the user's goal. Platform-specific setup and troubleshooting remain delegated to reviewed official skills. As new automation verticals mature, the same `amkernel` entry can route to their official procedures rather than exposing implementation-language skill names to users.
 
 A skill can guide the Agent through setup, external process lifecycle, library usage, waits, large-output reduction, debugging, and cleanup. A skill is procedural knowledge, not an executable capability or security mechanism.
 
