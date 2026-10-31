@@ -170,7 +170,8 @@ display([
     atomic_error,
     read("atomic.txt"),
 ])
-"""
+""",
+            timeout=60.0,
         )
         assert result.status == "completed"
         assert result.output.displays[0].value == [

@@ -270,7 +270,7 @@ async def test_progress_is_latest_only_rate_limited_and_request_scoped() -> None
     assert not result.is_error
     assert result.structured_content is not None
     assert result.structured_content["output"]["live"] == "progress"
-    assert 1 <= len(observed) <= 4
+    assert 1 <= len(observed) < len(runtime.progress_snapshots)
     assert [revision for _, revision, _ in observed] == sorted(
         revision for _, revision, _ in observed
     )

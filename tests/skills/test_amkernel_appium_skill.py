@@ -138,6 +138,7 @@ def test_skill_prioritizes_official_guidance_and_keeps_amkernel_specific_delta()
     assert "desired_capabilities=" not in skill
     assert "time.sleep(" not in skill
 
+
 def test_manifest_pins_complete_reviewed_inputs() -> None:
     manifest = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
 
