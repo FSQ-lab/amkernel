@@ -8,6 +8,8 @@ import urllib.request
 from typing import Any
 from unittest.mock import Mock, patch
 
+import pytest
+
 from tests.e2e import skill_behavior
 
 
@@ -97,28 +99,32 @@ def _run(
     server_alive: bool = True,
     initial_state: dict[str, Any] | None = None,
     state: dict[str, Any] | None = None,
+    conversation: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     initial_state = initial_state or {"toggle": False, "beta": False}
+    fixture: dict[str, Any] = {
+        "variant": variant,
+        "serverAlive": server_alive,
+        "initialState": initial_state,
+        "state": state or dict(initial_state),
+        "journal": actions,
+        "journalTruncated": False,
+        "createAttempts": [item for item in actions if item.get("action") == "create-session"],
+        "sessions": sessions or [],
+        "preexistingId": preexisting_id,
+        "unknownEndpoints": [],
+        "unsupportedScripts": [],
+        "kernelKills": kernel_kills or [],
+        "submissions": submissions,
+    }
+    if conversation is not None:
+        fixture["conversation"] = conversation
     return {
         "scenario": scenario,
         "tool_calls": [*([_skill_call()]), *(calls if calls is not None else [_python_call()])],
         "mcp_servers": [{"name": "amkernel", "source": "workspace", "status": "connected"}],
         "final_response": "```json\n" + json.dumps(final) + "\n```",
-        "fixture": {
-            "variant": variant,
-            "serverAlive": server_alive,
-            "initialState": initial_state,
-            "state": state or dict(initial_state),
-            "journal": actions,
-            "journalTruncated": False,
-            "createAttempts": [item for item in actions if item.get("action") == "create-session"],
-            "sessions": sessions or [],
-            "preexistingId": preexisting_id,
-            "unknownEndpoints": [],
-            "unsupportedScripts": [],
-            "kernelKills": kernel_kills or [],
-            "submissions": submissions,
-        },
+        "fixture": fixture,
         "process": {"exitCode": 0, "timedOut": False},
         "oracle": None,
     }
@@ -1292,8 +1298,60 @@ def test_fixture_attribute_reads_validate_identity_staleness_and_missing_values(
         fixture.stop()
 
 
+def test_targeted_control_state_matches_source_and_proves_change_before_cleanup() -> None:
+    import xml.etree.ElementTree as ET
+
+    fixture = skill_behavior.SyntheticAppium(skill_behavior.FixtureConfig("ios"))
+    fixture.start()
+    try:
+        status, created = _fixture_request(
+            fixture, "POST", "/session",
+            {"capabilities": {"alwaysMatch": {
+                "platformName": "iOS", "appium:automationName": "XCUITest"
+            }}},
+        )
+        assert status == 200
+        session_id = created["value"]["sessionId"]
+        for label in ("Toggle", "Beta"):
+            _, found = _fixture_request(
+                fixture, "POST", f"/session/{session_id}/element",
+                {"using": "accessibility id", "value": label},
+            )
+            element_id = found["value"]["element-6066-11e4-a52e-4f735466cecf"]
+            prefix = f"/session/{session_id}/element/{element_id}"
+            for expected in (False, True):
+                status, value = _fixture_request(fixture, "GET", prefix + "/attribute/value")
+                assert status == 200
+                assert value["value"] == ("on" if expected else "off")
+                _, source = _fixture_request(fixture, "GET", f"/session/{session_id}/source")
+                control = ET.fromstring(source["value"]).find(f".//*[@name='{label}']")
+                assert control is not None
+                assert control.attrib["value"] == value["value"]
+                status, selected = _fixture_request(fixture, "GET", prefix + "/selected")
+                assert status == 200
+                assert selected["value"] is expected
+                if not expected:
+                    _fixture_request(fixture, "POST", prefix + "/click", {})
+            snapshot = fixture.snapshot()
+            click = next(
+                item for item in reversed(snapshot["journal"])
+                if item["action"] == "click"
+            )
+            for action in ("attribute", "selected"):
+                targeted = dict(snapshot, journal=[
+                    item for item in snapshot["journal"] if item["action"] == action
+                ])
+                assert skill_behavior._state_observation_after_click(targeted, click)
+                targeted["journal"].append({"action": "delete-session", "at": click["at"]})
+                assert not skill_behavior._state_observation_after_click(targeted, click)
+    finally:
+        fixture.stop()
+
+
 def test_short_flow_rejects_an_extra_session_read_only_window() -> None:
-    for read_action in ("attribute", "displayed", "timeouts", "window-rect"):
+    for read_action in (
+        "attribute", "displayed", "enabled", "selected", "timeouts", "window-rect"
+    ):
         run = _run(
             "ios-short-flow",
             variant="ios",
@@ -1528,3 +1586,901 @@ def test_short_flow_rejects_false_server_and_restoration_cleanup_claims() -> Non
         checks = _checks(run)
         assert not checks[rejected]["ok"], field
         assert all(item["ok"] for name, item in checks.items() if name != rejected), field
+
+
+# ---------------------------------------------------------------------------
+# Conversation targeting evidence regressions
+
+_CONVERSATION_SESSIONS = [{"id": "s1", "preexisting": False, "active": False}]
+
+
+def _conversation_session_journal() -> list[dict[str, Any]]:
+    return [
+        _action(
+            "create-session",
+            at=1,
+            detail={
+                "sessionId": "s1",
+                "caps": json.dumps(
+                    {"platformName": "Android", "automationName": "UiAutomator2"}
+                ),
+            },
+        ),
+        _action("delete-session", at=19, detail={"sessionId": "s1"}),
+    ]
+
+
+def _conversation_action(
+    name: str, at: float, detail: dict[str, Any], status: int = 200
+) -> dict[str, Any]:
+    return {"action": name, "at": at, "status": status, "detail": detail}
+
+
+def _latest_candidates() -> list[dict[str, Any]]:
+    # Mirrors the fixture: native search returns rows by newest nested message,
+    # so the highest thread activity is not the first row.
+    return [
+        {
+            "threadId": "thread-third",
+            "title": "Release notes",
+            "participants": ["Emery Park", "Fin Quinn"],
+            "rowIndex": 0,
+            "threadActivityAt": 9_600_000.0,
+            "threadActivityDisplay": "Today 12:00 AM",
+            "activityPrecision": "minute",
+            "newestMessageAt": 9_500_000.0,
+            "newestMessageDisplay": "2m",
+        },
+        {
+            "threadId": "thread-latest",
+            "title": "Field operations",
+            "participants": ["Casey Lin", "Dana Ruiz"],
+            "rowIndex": 1,
+            "threadActivityAt": 9_800_000.0,
+            "threadActivityDisplay": "Today 12:05 AM",
+            "activityPrecision": "minute",
+            "newestMessageAt": 4_000_000.0,
+            "newestMessageDisplay": "45m",
+        },
+        {
+            "threadId": "thread-alpha",
+            "title": "Alpha planning",
+            "participants": ["Avery Chen", "Blake Ortiz"],
+            "rowIndex": 2,
+            "threadActivityAt": 9_100_000.0,
+            "threadActivityDisplay": "Today 11:50 PM",
+            "activityPrecision": "minute",
+            "newestMessageAt": 9_000_000.0,
+            "newestMessageDisplay": "5m",
+        },
+    ]
+
+
+def _latest_conversation(
+    *,
+    actions: list[dict[str, Any]],
+    opened: dict[str, Any] | None,
+    opened_count: int,
+) -> dict[str, Any]:
+    return {
+        "variant": "conversation-latest",
+        "locale": "en-US",
+        "timeZone": "America/New_York",
+        "referenceClockIso": "2026-11-03T00:20:00-05:00",
+        "generation": 2,
+        "searchCompleteness": "complete",
+        "uncertainReason": None,
+        "latestCandidateId": "thread-latest",
+        "candidates": _latest_candidates(),
+        "opened": opened,
+        "openedCount": opened_count,
+        "actions": actions,
+    }
+
+
+def _latest_actions(
+    *,
+    target: str = "thread-latest",
+    include_search: bool = True,
+    post_refresh_find: bool = True,
+    identity_reads: bool = True,
+    verify_open: bool = False,
+) -> list[dict[str, Any]]:
+    search_ids = ["thread-third", "thread-latest", "thread-alpha"]
+    actions: list[dict[str, Any]] = []
+    if include_search:
+        actions.extend(
+            [
+                _conversation_action(
+                    "search",
+                    2,
+                    {
+                        "query": "team",
+                        "generation": 1,
+                        "returnedCount": 3,
+                        "matchedCount": 3,
+                        "complete": True,
+                        "candidateIds": search_ids,
+                    },
+                ),
+                _conversation_action(
+                    "source",
+                    3,
+                    {
+                        "screen": "results",
+                        "query": "team",
+                        "generation": 1,
+                        "candidateIds": search_ids,
+                        "rowOrder": search_ids,
+                        "hasMore": False,
+                    },
+                ),
+            ]
+        )
+    for index, thread_id in enumerate(search_ids):
+        actions.append(
+            _conversation_action(
+                "find",
+                4 + index,
+                {
+                    "elementId": f"el-{thread_id}",
+                    "targetKind": "row",
+                    "threadId": thread_id,
+                    "generation": 1,
+                },
+            )
+        )
+        actions.append(
+            _conversation_action(
+                "attribute",
+                4.5 + index,
+                {
+                    "elementId": f"el-{thread_id}",
+                    "attribute": "data-activity-iso",
+                    "value": "2026-11-02T23:40:00-05:00",
+                    "targetKind": "row",
+                    "threadId": thread_id,
+                    "generation": 1,
+                },
+            )
+        )
+        actions.append(
+            _conversation_action(
+                "attribute",
+                4.6 + index,
+                {
+                    "elementId": f"el-{thread_id}",
+                    "attribute": "data-activity-precision",
+                    "value": "minute",
+                    "targetKind": "row",
+                    "threadId": thread_id,
+                    "generation": 1,
+                },
+            )
+        )
+    actions.append(
+        _conversation_action(
+            "refresh",
+            9,
+            {
+                "elementId": "el-refresh",
+                "previousGeneration": 1,
+                "generation": 2,
+                "candidateIds": list(reversed(search_ids)),
+                "reordered": True,
+            },
+        )
+    )
+    if post_refresh_find:
+        actions.append(
+            _conversation_action(
+                "find",
+                10,
+                {
+                    "elementId": "el-relocated",
+                    "targetKind": "row",
+                    "threadId": target,
+                    "generation": 2,
+                },
+            )
+        )
+        open_element = "el-relocated"
+    else:
+        open_element = f"el-{target}"
+    actions.append(
+        _conversation_action(
+            "open",
+            11,
+            {
+                "elementId": open_element,
+                "targetKind": "conversation",
+                "threadId": target,
+                "title": next(
+                    item["title"]
+                    for item in _latest_candidates()
+                    if item["threadId"] == target
+                ),
+                "participants": next(
+                    item["participants"]
+                    for item in _latest_candidates()
+                    if item["threadId"] == target
+                ),
+                "generation": 2,
+                "clickCount": 1,
+            },
+        )
+    )
+    if identity_reads:
+        actions.extend(
+            [
+                _conversation_action(
+                    "attribute",
+                    12,
+                    {
+                        "elementId": "el-opened-title",
+                        "attribute": "data-thread-id",
+                        "value": target,
+                        "targetKind": "title",
+                        "threadId": target,
+                        "generation": 2,
+                    },
+                ),
+                _conversation_action(
+                    "attribute",
+                    12.1,
+                    {
+                        "elementId": "el-opened-title",
+                        "attribute": "data-title",
+                        "value": next(
+                            item["title"]
+                            for item in _latest_candidates()
+                            if item["threadId"] == target
+                        ),
+                        "targetKind": "title",
+                        "threadId": target,
+                        "generation": 2,
+                    },
+                ),
+                _conversation_action(
+                    "attribute",
+                    12.2,
+                    {
+                        "elementId": "el-opened-title",
+                        "attribute": "data-participants",
+                        "value": ", ".join(
+                            next(
+                                item["participants"]
+                                for item in _latest_candidates()
+                                if item["threadId"] == target
+                            )
+                        ),
+                        "targetKind": "title",
+                        "threadId": target,
+                        "generation": 2,
+                    },
+                ),
+            ]
+        )
+    if verify_open:
+        actions.append(
+            _conversation_action(
+                "verify-open",
+                12.6,
+                {
+                    "candidateId": target,
+                    "title": next(
+                        item["title"]
+                        for item in _latest_candidates()
+                        if item["threadId"] == target
+                    ),
+                    "participants": next(
+                        item["participants"]
+                        for item in _latest_candidates()
+                        if item["threadId"] == target
+                    ),
+                },
+            )
+        )
+    return actions
+
+
+def _latest_run(
+    *,
+    target: str = "thread-latest",
+    include_search: bool = True,
+    post_refresh_find: bool = True,
+    identity_reads: bool = True,
+    verify_open: bool = False,
+    report_target: str | None = None,
+) -> dict[str, Any]:
+    report_target = report_target if report_target is not None else target
+    opened = {
+        "threadId": target,
+        "title": next(
+            item["title"] for item in _latest_candidates() if item["threadId"] == target
+        ),
+        "participants": next(
+            item["participants"]
+            for item in _latest_candidates()
+            if item["threadId"] == target
+        ),
+    }
+    conversation = _latest_conversation(
+        actions=_latest_actions(
+            target=target,
+            include_search=include_search,
+            post_refresh_find=post_refresh_find,
+            identity_reads=identity_reads,
+            verify_open=verify_open,
+        ),
+        opened=opened,
+        opened_count=1,
+    )
+    report = {
+        "status": "opened",
+        "title": next(
+            item["title"]
+            for item in _latest_candidates()
+            if item["threadId"] == report_target
+        ),
+        "participants": next(
+            item["participants"]
+            for item in _latest_candidates()
+            if item["threadId"] == report_target
+        ),
+    }
+    return _run(
+        "conversation-latest",
+        variant="conversation-latest",
+        actions=_conversation_session_journal(),
+        sessions=_CONVERSATION_SESSIONS,
+        conversation=conversation,
+        final=_final(
+            taskOutcome="completed",
+            cleanup={"ownedSession": "completed", "server": "preserved"},
+            conversation=report,
+        ),
+    )
+
+
+def test_conversation_latest_passes_with_relocation_and_identity_evidence() -> None:
+    checks = _checks(_latest_run())
+    assert checks["conversation-native-search"]["ok"]
+    assert checks["conversation-correct-thread"]["ok"]
+    assert checks["conversation-refresh-relocation"]["ok"]
+    assert checks["conversation-opened-identity"]["ok"]
+    assert checks["conversation-report-consistent"]["ok"]
+    assert all(item["ok"] for item in checks.values())
+
+
+def test_conversation_latest_accepts_post_open_verification_fact() -> None:
+    # The real fixture logs verify-open when the agent reads the opened title
+    # element; that observed identity is sufficient without three separate
+    # attribute reads.
+    checks = _checks(_latest_run(identity_reads=False, verify_open=True))
+    assert checks["conversation-opened-identity"]["ok"]
+
+
+def test_conversation_latest_rejects_activity_observed_only_after_open() -> None:
+    run = _latest_run()
+    actions = run["fixture"]["conversation"]["actions"]
+    for action in actions:
+        if action["action"] == "attribute" and action["detail"]["attribute"].startswith(
+            "data-activity-"
+        ):
+            action["at"] = 11.5
+    actions.sort(key=lambda action: action["at"])
+    checks = _checks(run)
+    assert checks["conversation-correct-thread"]["ok"]
+    assert not checks["conversation-timestamp-comparison"]["ok"]
+
+
+def test_conversation_latest_rejects_ui_order_or_message_time_selection() -> None:
+    first = _checks(_latest_run(target="thread-alpha"))
+    assert not first["conversation-correct-thread"]["ok"]
+    assert first["conversation-refresh-relocation"]["ok"]
+
+    message_time = _checks(_latest_run(target="thread-third"))
+    assert not message_time["conversation-correct-thread"]["ok"]
+    assert not message_time["conversation-thread-not-message-time"]["ok"]
+
+
+def test_conversation_latest_rejects_stale_element_without_relocation() -> None:
+    checks = _checks(_latest_run(post_refresh_find=False))
+    assert checks["conversation-correct-thread"]["ok"]
+    assert not checks["conversation-refresh-relocation"]["ok"]
+
+
+def test_conversation_latest_rejects_missing_identity_verification() -> None:
+    checks = _checks(_latest_run(identity_reads=False))
+    assert checks["conversation-correct-thread"]["ok"]
+    assert not checks["conversation-opened-identity"]["ok"]
+
+
+def test_conversation_latest_rejects_open_without_search() -> None:
+    checks = _checks(_latest_run(include_search=False))
+    assert not checks["conversation-native-search"]["ok"]
+    assert not checks["conversation-search-before-open"]["ok"]
+    assert not checks["conversation-selection-bounded"]["ok"]
+
+
+def _uncertain_candidates() -> list[dict[str, Any]]:
+    return [
+        {
+            "threadId": "thread-one",
+            "title": "Budget review",
+            "participants": ["Avery Chen", "Blake Ortiz"],
+            "rowIndex": 0,
+            "activityEpochMs": 7_020_000,
+            "activityDisplay": "12m",
+            "activityIso": "2026-11-03T00:08:00-05:00",
+            "activityPrecision": "minute",
+            "lastMessageEpochMs": 7_010_000,
+            "lastMessageDisplay": "12m",
+        },
+        {
+            "threadId": "thread-two",
+            "title": "Vendor sync",
+            "participants": ["Casey Lin", "Dana Ruiz"],
+            "rowIndex": 1,
+            "activityEpochMs": 7_020_500,
+            "activityDisplay": "12m",
+            "activityIso": "2026-11-03T00:08:00-05:00",
+            "activityPrecision": "minute",
+            "lastMessageEpochMs": 7_000_000,
+            "lastMessageDisplay": "12m",
+        },
+        {
+            "threadId": "thread-three",
+            "title": "Travel plan",
+            "participants": ["Emery Park", "Fin Quinn"],
+            "rowIndex": 2,
+            "activityEpochMs": 6_000_000,
+            "activityDisplay": "40m",
+            "activityIso": "2026-11-02T23:40:00-05:00",
+            "activityPrecision": "minute",
+            "lastMessageEpochMs": 6_100_000,
+            "lastMessageDisplay": "38m",
+        },
+    ]
+
+
+def _uncertain_actions(*, click: bool = False) -> list[dict[str, Any]]:
+    actions = [
+        _conversation_action(
+            "search",
+            2,
+            {
+                "query": "team",
+                "generation": 1,
+                "returnedCount": 3,
+                "matchedCount": 3,
+                "complete": True,
+                "candidateIds": ["thread-one", "thread-two", "thread-three"],
+            },
+        ),
+        _conversation_action(
+            "source",
+            3,
+            {
+                "screen": "results",
+                "query": "team",
+                "generation": 1,
+                "candidateIds": ["thread-one", "thread-two", "thread-three"],
+                "rowOrder": ["thread-one", "thread-two", "thread-three"],
+                "hasMore": False,
+            },
+        ),
+    ]
+    for index, thread_id in enumerate(["thread-one", "thread-two"]):
+        actions.append(
+            _conversation_action(
+                "find",
+                4 + index,
+                {
+                    "elementId": f"el-{thread_id}",
+                    "targetKind": "row",
+                    "threadId": thread_id,
+                    "generation": 1,
+                },
+            )
+        )
+        actions.append(
+            _conversation_action(
+                "attribute",
+                4.5 + index,
+                {
+                    "elementId": f"el-{thread_id}",
+                    "attribute": "data-activity-display",
+                    "value": "12m",
+                    "targetKind": "row",
+                    "threadId": thread_id,
+                    "generation": 1,
+                },
+            )
+        )
+        actions.append(
+            _conversation_action(
+                "attribute",
+                4.6 + index,
+                {
+                    "elementId": f"el-{thread_id}",
+                    "attribute": "data-activity-precision",
+                    "value": "minute",
+                    "targetKind": "row",
+                    "threadId": thread_id,
+                    "generation": 1,
+                },
+            )
+        )
+    if click:
+        actions.append(
+            _conversation_action(
+                "click",
+                8,
+                {
+                    "elementId": "el-thread-one",
+                    "targetKind": "row",
+                    "threadId": "thread-one",
+                    "generation": 1,
+                },
+            )
+        )
+    return actions
+
+
+def _uncertain_conversation(*, click: bool = False) -> dict[str, Any]:
+    return {
+        "variant": "conversation-uncertain",
+        "locale": "en-US",
+        "timeZone": "America/New_York",
+        "referenceClockIso": "2026-11-03T00:20:00-05:00",
+        "generation": 1,
+        "searchCompleteness": "complete",
+        "uncertainReason": "coarse-timestamps",
+        "latestCandidateId": "thread-two",
+        "candidates": _uncertain_candidates(),
+        "opened": (
+            {
+                "threadId": "thread-one",
+                "title": "Budget review",
+                "participants": ["Avery Chen", "Blake Ortiz"],
+            }
+            if click
+            else None
+        ),
+        "openedCount": 1 if click else 0,
+        "actions": _uncertain_actions(click=click),
+    }
+
+
+def test_conversation_uncertain_passes_without_open_and_reports_ambiguity() -> None:
+    run = _run(
+        "conversation-uncertain",
+        variant="conversation-uncertain",
+        actions=_conversation_session_journal(),
+        sessions=_CONVERSATION_SESSIONS,
+        conversation=_uncertain_conversation(),
+        final=_final(
+            taskOutcome="blocked",
+            cleanup={"ownedSession": "completed", "server": "preserved"},
+            conversation={"status": "uncertain", "reason": "coarse-timestamps"},
+        ),
+    )
+    checks = _checks(run)
+    assert checks["conversation-uncertain-no-open"]["ok"]
+    assert checks["conversation-uncertain-truthful"]["ok"]
+    assert all(item["ok"] for item in checks.values())
+
+
+def test_conversation_uncertain_rejects_guessing_a_conversation() -> None:
+    run = _run(
+        "conversation-uncertain",
+        variant="conversation-uncertain",
+        actions=_conversation_session_journal(),
+        sessions=_CONVERSATION_SESSIONS,
+        conversation=_uncertain_conversation(click=True),
+        final=_final(
+            taskOutcome="completed",
+            cleanup={"ownedSession": "completed", "server": "preserved"},
+            conversation={
+                "status": "opened",
+                "title": "Budget review",
+                "participants": ["Avery Chen", "Blake Ortiz"],
+            },
+        ),
+    )
+    checks = _checks(run)
+    assert not checks["conversation-uncertain-no-open"]["ok"]
+    assert not checks["conversation-uncertain-truthful"]["ok"]
+
+
+def test_conversation_uncertain_rejects_false_certainty_without_open() -> None:
+    run = _run(
+        "conversation-uncertain",
+        variant="conversation-uncertain",
+        actions=_conversation_session_journal(),
+        sessions=_CONVERSATION_SESSIONS,
+        conversation=_uncertain_conversation(),
+        final=_final(
+            taskOutcome="completed",
+            cleanup={"ownedSession": "completed", "server": "preserved"},
+            conversation={"status": "opened", "title": "Vendor sync"},
+        ),
+    )
+    checks = _checks(run)
+    assert checks["conversation-uncertain-no-open"]["ok"]
+    assert not checks["conversation-uncertain-truthful"]["ok"]
+
+
+def test_conversation_latest_rejects_wrong_or_unverified_report_identity() -> None:
+    wrong = _checks(_latest_run(report_target="thread-alpha"))
+    assert not wrong["conversation-report-consistent"]["ok"]
+    assert wrong["conversation-correct-thread"]["ok"]
+
+
+@pytest.mark.parametrize(
+    ("sizes", "accepted"), [([0, 3], True), ([0], False), ([0, 9], False)]
+)
+def test_conversation_search_retries_keep_candidates_bounded(
+    sizes: list[int], accepted: bool
+) -> None:
+    run = _latest_run()
+    actions = run["fixture"]["conversation"]["actions"]
+    actions[:] = [action for action in actions if action["action"] != "search"]
+    for index, size in enumerate(sizes):
+        actions.insert(
+            index,
+            _conversation_action(
+                "search",
+                1 + index,
+                {
+                    "query": "team" if size else "no matching participants",
+                    "complete": True,
+                    "returnedCount": size,
+                    "candidateIds": (
+                        [item["threadId"] for item in _latest_candidates()] if size else []
+                    ),
+                },
+            ),
+        )
+    checks = _checks(run)
+    assert checks["conversation-bounded-candidates"]["ok"] is accepted
+    if accepted:
+        assert all(check["ok"] for check in checks.values())
+
+
+@pytest.mark.parametrize(
+    ("complete", "reason", "accepted"),
+    [
+        (True, "coarse-timestamps", True),
+        (True, "incomplete-search", False),
+        (False, "coarse-timestamps", True),
+        (False, "incomplete-search", True),
+        (False, "unknown", False),
+    ],
+)
+def test_conversation_uncertainty_uses_observations_before_restoration(
+    complete: bool, reason: str, accepted: bool
+) -> None:
+    conversation = _uncertain_conversation()
+    search = conversation["actions"][0]["detail"]
+    search["complete"] = complete
+    search["matchedCount"] = 3 if complete else 5
+    conversation["actions"].append(
+        _conversation_action("search-clear", 8, {"complete": False, "candidateIds": []})
+    )
+    conversation["candidates"] = []
+    conversation["searchCompleteness"] = "incomplete"
+    conversation["searchComplete"] = False
+    run = _run(
+        "conversation-uncertain",
+        variant="conversation-uncertain",
+        actions=_conversation_session_journal(),
+        sessions=_CONVERSATION_SESSIONS,
+        conversation=conversation,
+        final=_final(
+            taskOutcome="blocked",
+            cleanup={"ownedSession": "completed", "server": "preserved"},
+            conversation={"status": "uncertain", "reason": reason},
+        ),
+    )
+    checks = _checks(run)
+    assert checks["conversation-uncertain-truthful"]["ok"] is accepted
+    if accepted:
+        assert all(check["ok"] for check in checks.values())
+
+
+@pytest.mark.parametrize("attribute", [
+    "data-activity-precision", "data-activity-semantics", "data-message-activity-semantics"
+])
+def test_temporal_metadata_alone_cannot_establish_ambiguity(attribute: str) -> None:
+    from tests.e2e.conversation_fixture import ConversationAppium
+
+    fixture = ConversationAppium(skill_behavior.FixtureConfig("conversation-uncertain"))
+    fixture.start()
+    try:
+        status, created = _fixture_request(
+            fixture,
+            "POST",
+            "/session",
+            {"capabilities": {"alwaysMatch": {"platformName": "Android"}}},
+        )
+        assert status == 200
+        session = created["value"]["sessionId"]
+        _, found = _fixture_request(
+            fixture, "POST", f"/session/{session}/element",
+            {"using": "accessibility id", "value": "conversation-search"},
+        )
+        element_key = "element-6066-11e4-a52e-4f735466cecf"
+        search = found["value"][element_key]
+        status, _ = _fixture_request(
+            fixture, "POST", f"/session/{session}/element/{search}/value", {"text": "team"}
+        )
+        assert status == 200
+        for candidate in fixture.snapshot()["conversation"]["candidates"][:2]:
+            _, found = _fixture_request(
+                fixture, "POST", f"/session/{session}/element",
+                {
+                    "using": "accessibility id",
+                    "value": "conversation-row:" + candidate["candidateId"],
+                },
+            )
+            row = found["value"][element_key]
+            status, _ = _fixture_request(
+                fixture, "GET",
+                f"/session/{session}/element/{row}/attribute/{attribute}",
+            )
+            assert status == 200
+        _fixture_request(fixture, "DELETE", f"/session/{session}")
+        snapshot = fixture.snapshot()
+        run = _run(
+            "conversation-uncertain", variant="conversation-uncertain",
+            actions=snapshot["journal"], sessions=snapshot["sessions"],
+            conversation=snapshot["conversation"],
+            final=_final(
+                taskOutcome="blocked",
+                cleanup={"ownedSession": "completed", "server": "preserved"},
+                conversation={"status": "uncertain", "reason": "coarse-timestamps"},
+            ),
+        )
+        checks = _checks(run)
+        assert not checks["conversation-uncertain-evidence"]["ok"]
+        assert not checks["conversation-uncertain-timestamps-observed"]["ok"]
+        assert not checks["conversation-uncertain-truthful"]["ok"]
+    finally:
+        fixture.stop()
+
+
+def test_fixture_selected_tracks_control_state_and_rejects_invalid_identity() -> None:
+    fixture = skill_behavior.SyntheticAppium(skill_behavior.FixtureConfig("android"))
+    fixture.start()
+    try:
+        session = _create_android_fixture_session(fixture)
+        element = _find_fixture_element(fixture, session, "Toggle")
+        prefix = f"/session/{session}/element/{element}"
+        status, response = _fixture_request(fixture, "GET", prefix + "/selected")
+        assert status == 200 and response["value"] is False
+        status, _ = _fixture_request(fixture, "POST", prefix + "/click", {})
+        assert status == 200
+        status, response = _fixture_request(fixture, "GET", prefix + "/selected")
+        assert status == 200 and response["value"] is True
+        other_session = _create_android_fixture_session(fixture)
+        for path, error in (
+            (f"/session/{session}/element/missing/selected", "no such element"),
+            (f"/session/{other_session}/element/{element}/selected", "no such element"),
+        ):
+            status, response = _fixture_request(fixture, "GET", path)
+            assert status == 404 and response["value"]["error"] == error
+        with fixture.lock:
+            fixture.elements[element]["stale"] = True
+        status, response = _fixture_request(fixture, "GET", prefix + "/selected")
+        assert status == 404 and response["value"]["error"] == "stale element reference"
+        _fixture_request(fixture, "DELETE", f"/session/{session}")
+        status, response = _fixture_request(fixture, "GET", prefix + "/selected")
+        assert status == 404 and response["value"]["error"] == "invalid session id"
+        assert not fixture.snapshot()["unknownEndpoints"]
+    finally:
+        fixture.stop()
+
+
+def test_narrower_followup_search_preserves_observed_temporal_ambiguity() -> None:
+    conversation = _uncertain_conversation()
+    conversation["actions"].append(_conversation_action("search", 7, {
+        "query": "Research", "candidateIds": ["thread-two"],
+        "matchedCount": 1, "returnedCount": 1, "complete": True,
+    }))
+    conversation["candidates"] = [conversation["candidates"][1]]
+    run = _run(
+        "conversation-uncertain", variant="conversation-uncertain",
+        actions=_conversation_session_journal(), sessions=_CONVERSATION_SESSIONS,
+        conversation=conversation,
+        final=_final(
+            taskOutcome="blocked",
+            cleanup={"ownedSession": "completed", "server": "preserved"},
+            conversation={"status": "uncertain", "reason": "coarse-timestamps"},
+        ),
+    )
+    checks = _checks(run)
+    assert checks["conversation-uncertain-evidence"]["ok"]
+    assert checks["conversation-uncertain-truthful"]["ok"]
+    assert all(check["ok"] for check in checks.values())
+
+
+@pytest.mark.parametrize("values,attribute,precision,ambiguous", [
+    (("1000", "2000"), "data-activity-epoch-ms", "minute", False),
+    (("1000", "1000"), "data-activity-epoch-ms", "minute", True),
+    (("2026-11-03T08:15:00Z", "2026-11-03T08:16:00Z"), "data-activity-iso", "minute", False),
+    (("2026-11-03T08:15:00Z", "2026-11-03T00:15:00-08:00"), "data-activity-iso", "second", True),
+    (("2026-11-03T08:15:00Z", "2026-11-03T08:15:30Z"), "data-activity-iso", "minute", True),
+    (("2026-11-03T08:15:00", "2026-11-03T08:16:00"), "data-activity-iso", "second", True),
+])
+def test_later_normalized_time_evidence_resolves_only_disjoint_candidate_intervals(
+    values: tuple[str, str], attribute: str, precision: str, ambiguous: bool
+) -> None:
+    conversation = _uncertain_conversation()
+    for index, (candidate, value) in enumerate(
+        zip(("thread-one", "thread-two"), values, strict=True)
+    ):
+        for offset, field, observed in (
+            (0, attribute, value), (0.1, "data-activity-precision", precision)
+        ):
+            conversation["actions"].append(_conversation_action("attribute", 7 + index + offset, {
+                "threadId": candidate, "attribute": field, "value": observed,
+                "targetKind": "row",
+            }))
+    run = _run(
+        "conversation-uncertain", variant="conversation-uncertain",
+        actions=_conversation_session_journal(), sessions=_CONVERSATION_SESSIONS,
+        conversation=conversation,
+        final=_final(
+            taskOutcome="blocked", cleanup={"ownedSession": "completed", "server": "preserved"},
+            conversation={"status": "uncertain", "reason": "coarse-timestamps"},
+        ),
+    )
+    checks = _checks(run)
+    assert checks["conversation-uncertain-evidence"]["ok"] is ambiguous
+    assert checks["conversation-uncertain-truthful"]["ok"] is ambiguous
+
+
+@pytest.mark.parametrize("title_matches,participants_match,accepted", [
+    (True, True, True), (False, True, False), (True, False, False),
+])
+def test_opened_identity_requires_matching_returned_title_and_participants(
+    title_matches: bool, participants_match: bool, accepted: bool
+) -> None:
+    run = _latest_run(identity_reads=False)
+    conversation = run["fixture"]["conversation"]
+    opened = conversation["opened"]
+    opened_at = next(item["at"] for item in conversation["actions"] if item["action"] == "open")
+    title = opened["title"] if title_matches else "Different conversation"
+    participants = opened["participants"] if participants_match else ["Different participant"]
+    for offset, kind, value in (
+        (0.1, "title", title),
+        (0.2, "conversation", "Participants: " + ", ".join(participants)),
+    ):
+        conversation["actions"].append(_conversation_action("attribute", opened_at + offset, {
+            "threadId": opened["threadId"], "attribute": "text",
+            "targetKind": kind, "value": value,
+        }))
+    assert _checks(run)["conversation-opened-identity"]["ok"] is accepted
+
+
+@pytest.mark.parametrize("support,outcome,attempt,accepted", [
+    ("unsupported", "blocked", False, True),
+    (None, "blocked", False, False),
+    ("unsupported", "completed", False, False),
+    ("unsupported", "blocked", True, False),
+])
+def test_unsupported_target_requires_blocked_classification_without_session_attempt(
+    support: str | None, outcome: str, attempt: bool, accepted: bool
+) -> None:
+    run = _run(
+        "unsupported-windows", variant="none",
+        actions=[_action("create-session", at=1)] if attempt else [],
+        final=_final(
+            taskOutcome=outcome, platformSupport=support,
+            cleanup={"ownedSession": "not-required", "server": "not-required"},
+        ),
+    )
+    assert all(check["ok"] for check in _checks(run).values()) is accepted

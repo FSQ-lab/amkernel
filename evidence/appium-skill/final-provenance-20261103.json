@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "scope": "Retained observed iteration provenance; input versus retained digests differ only where home/task paths were redacted. Older iterations are historical, not current-source qualification.",
+  "iterations": [
+    {
+      "file": "conversation-first-20261103.json",
+      "inputSha256": "f7fe4a0334fc6072322f81a08316e1da424b4115dae4b34fde3441b9b239be7b",
+      "retainedSha256": "f7fe4a0334fc6072322f81a08316e1da424b4115dae4b34fde3441b9b239be7b"
+    },
+    {
+      "file": "conversation-matrix-first-20261103.json",
+      "inputSha256": "0c2313efa9088151d259d421c5e911ccaeeeaa04c727415790bb0d5e1c53df4d",
+      "retainedSha256": "0c2313efa9088151d259d421c5e911ccaeeeaa04c727415790bb0d5e1c53df4d"
+    },
+    {
+      "file": "conversation-matrix-second-20261103.json",
+      "inputSha256": "16679150e8d4f45ee86ad925d117451325fb3c876b7f38429738d065db7b6cfb",
+      "retainedSha256": "16679150e8d4f45ee86ad925d117451325fb3c876b7f38429738d065db7b6cfb"
+    },
+    {
+      "file": "final-install-20261103.json",
+      "inputSha256": "18724bbdb896fbf9c524dda4dd5d75f2cc7145245c2b001f069ed91578a37925",
+      "retainedSha256": "24e0e3b3240ddbef6e20f65390d98450e3bbf4a43ffe475a3a9a21a900d0bc29"
+    },
+    {
+      "file": "final-mac2-20261103.json",
+      "inputSha256": "2e3aff4438c8dbce3647f3ab334914c0afa5de49b962d9e3735fc62e3ff7ca8f",
+      "retainedSha256": "2e3aff4438c8dbce3647f3ab334914c0afa5de49b962d9e3735fc62e3ff7ca8f"
+    },
+    {
+      "file": "final-mac2-packages-20261103.json",
+      "inputSha256": "b05586886545a2f4cdcbf3a70f34600dc2d1a03c5a613afd4261c79520f63df1",
+      "retainedSha256": "b05586886545a2f4cdcbf3a70f34600dc2d1a03c5a613afd4261c79520f63df1"
+    },
+    {
+      "file": "final-android-discovery-20261103.json",
+      "inputSha256": "b8e7f8b8364cbbd5ff805b44bb44721e024c787be8b93ccdf18875be541b71b2",
+      "retainedSha256": "b8e7f8b8364cbbd5ff805b44bb44721e024c787be8b93ccdf18875be541b71b2"
+    },
+    {
+      "file": "final-ios-simulator-discovery-20261103.json",
+      "inputSha256": "843b114e43d8c4b73b60f6c76924abfd653e0d78b3b9bd0e4fe1561e1ecadef7",
+      "retainedSha256": "843b114e43d8c4b73b60f6c76924abfd653e0d78b3b9bd0e4fe1561e1ecadef7"
+    },
+    {
+      "file": "final-ios-device-discovery-20261103.json",
+      "inputSha256": "c5cb4a7a996dd8e6d462439002c0ef138fcb8c030c60a0e55f5cf51987cb060d",
+      "retainedSha256": "c5cb4a7a996dd8e6d462439002c0ef138fcb8c030c60a0e55f5cf51987cb060d"
+    },
+    {
+      "file": "conversation-matrix-third-pre-review-20261103.json",
+      "inputSha256": "4270a8dd5c8dcae65c10baa47288bc6e339cac5534399b9fea189c45f8eddbc4",
+      "retainedSha256": "4270a8dd5c8dcae65c10baa47288bc6e339cac5534399b9fea189c45f8eddbc4"
+    },
+    {
+      "file": "conversation-matrix-fourth-20261103.json",
+      "inputSha256": "330acd42286a3f22a70fef0c764697dc1872c9b3faa4be22d510d954228d5924",
+      "retainedSha256": "330acd42286a3f22a70fef0c764697dc1872c9b3faa4be22d510d954228d5924"
+    },
+    {
+      "file": "conversation-final-20261103.json",
+      "inputSha256": "ef1828b0fd406d51cefb6d62b3e76d9302b5cc131a2634c88641d83369427348",
+      "retainedSha256": "ef1828b0fd406d51cefb6d62b3e76d9302b5cc131a2634c88641d83369427348"
+    }
+  ],
+  "currentSourceSha256": {
+    "src/amkernel/skill/SKILL.md": "01d0ec80ce8fd808df316141bc3d887645cc817fbb44b3e381a77c710b24353f",
+    "src/amkernel/skill/references/amkernel-appium.md": "a63922905780298e31985e506a53c421681f6e693223bea7e4f8ece825e6c0a8",
+    "tests/e2e/skill_behavior.py": "1a7fe90b10e71387498e8a31319ba09d0daa82e70bbf685ca5e82563b0398e58",
+    "tests/e2e/conversation_fixture.py": "82d91168575726acc9ea47b6100ebe75cc780b25d64028646dc197e9e2eccc59",
+    "tests/e2e/test_skill_behavior_evaluator.py": "044a52ef1de85558b8426cb8822c40850c5c8d92189c5e3cdd91b65edd6278eb",
+    "tests/e2e/test_conversation_fixture.py": "ebc2bb222b83de10d64fddd16980e411d56cdbff61b264ad7d7b4f3d30b228b3"
+  },
+  "finalNativeEvidence": "conversation-final-20261103.json",
+  "independentReviews": [
+    "conversation-review-20261103.json",
+    "final-platform-review-20261103.json"
+  ]
+}

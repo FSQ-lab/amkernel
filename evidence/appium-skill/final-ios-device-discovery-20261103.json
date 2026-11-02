@@ -1,0 +1,159 @@
+{
+  "schemaVersion": 2,
+  "scope": "Actual installed native Copilot read-only platform prerequisite discovery; no platform session/scenario qualification",
+  "platform": "ios-device",
+  "qualification": "not-qualified; discovery only; no platform session/scenario performed",
+  "probe": {
+    "name": "platform_readonly_probe.py",
+    "schemaVersion": 1,
+    "sourceSha256": "1da8d6ca8af451084b52e9c7bcc573070de86a52a8462764343c60707faafc90",
+    "execution": "real amkernel python_exec only",
+    "contract": "strict allowlist: booleans, counts, parsed version numbers, canonical labels"
+  },
+  "evidenceLimits": "Only allowlisted tool/status identity, hashes and schema-validated probe facts are retained. Raw code, tool arguments, stdout, stderr, final prose, device identifiers, inventories and credentials are withheld. Probe evidence proves the parsed shape of a real python_exec result, not provenance beyond the permitted tool boundary.",
+  "sourceSha256": {
+    "platform_agent_preflight.py": "385377641b59af47f9c93e2d0ef02c6f9305aeb1e355f28e9a839e9005f9b507",
+    "native_evidence.py": "507aaa93c954f5d88d317cc8e2cef6974e4ab2acd5a856a84a0a5d766317fb16",
+    "platform_readonly_probe.py": "1da8d6ca8af451084b52e9c7bcc573070de86a52a8462764343c60707faafc90"
+  },
+  "configurationBefore": {
+    "~/.zshrc": "8b66f84c11d49c4dc2182bacfbff400f8c6b28d5458dc1fdf90efb3363313b59",
+    "~/.zprofile": null,
+    "~/.bashrc": null,
+    "~/.bash_profile": null,
+    "~/.mcp.json": null,
+    "~/.copilot/config.json": "14c648f7d34cdeb934a4cc3997766ddb6c230824147f5d28da35028444af30cd",
+    "~/.copilot/mcp-config.json": null
+  },
+  "promptSha256": "5c4899940ec0e0cb98514a4a631e340572b909c3fe04836754597ecce4d342ea",
+  "process": {
+    "exitCode": 0,
+    "timedOut": false,
+    "durationMs": 13988,
+    "runnerCleanup": [
+      {
+        "runnerPid": 46199,
+        "reason": "process-exit",
+        "observedExit": true
+      }
+    ],
+    "eventCount": 226,
+    "malformedEventLines": 0
+  },
+  "calls": [
+    {
+      "toolName": "skill",
+      "mcpToolName": null,
+      "mcpConfigSource": null,
+      "argumentsSha256": "de9b6567632b0b47ce0453c423f596fa219298e6b161f87767fa72f1e6b701f1",
+      "codeSha256": null,
+      "success": true,
+      "skill": "amkernel"
+    },
+    {
+      "toolName": "skill",
+      "mcpToolName": null,
+      "mcpConfigSource": null,
+      "argumentsSha256": "114fc5e2d5d134aa33054fd02a09d42ba033bb8049fd86c5a8e541b74efcdf09",
+      "codeSha256": null,
+      "success": true,
+      "skill": "setup-xcuitest"
+    },
+    {
+      "toolName": "view",
+      "mcpToolName": null,
+      "mcpConfigSource": null,
+      "argumentsSha256": "0fc32daaa2b31bc9049c5ad14a3ddd29429c8e30430adb5ac2d688697e79350e",
+      "codeSha256": null,
+      "success": true
+    },
+    {
+      "toolName": "amkernel-python_exec",
+      "mcpToolName": "python_exec",
+      "mcpConfigSource": "workspace",
+      "argumentsSha256": "5f30d0d648425137c86732e345ba94c67256b2730360973c7922fd8889d60e7d",
+      "codeSha256": "d4d289c0132fc8944ee15488889e3ec58eefaf8867b42bd5862fe2a349e77a50",
+      "success": true,
+      "status": "completed",
+      "kernelState": "alive",
+      "executionCount": 1,
+      "durationMs": 115,
+      "stdoutSha256": "3ae50b74445da25ea6bb321c32b87d64f6fc3a2a4d8b65fc3f7624e7149d44c8",
+      "stdoutBytes": 381,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrBytes": 0
+    }
+  ],
+  "observedCompletedAlive": true,
+  "mainSkillLoaded": true,
+  "finalReportSha256": "dee8b8d95d131d422455ab992b2b272ad29c816e80484a428184cd4e2c87fe3d",
+  "finalStatus": {
+    "taskOutcome": "blocked",
+    "stateRestoration": "not-needed",
+    "sessionCleanup": "not-applicable",
+    "serverCleanup": "not-applicable"
+  },
+  "limits": "Only allowlisted status/identity evidence and hashes retained; raw code, output, final prose and stderr withheld.",
+  "toolPolicy": {
+    "observedToolCount": 3,
+    "unexpectedToolCount": 0,
+    "onlyPermittedTools": true,
+    "pythonExecObserved": true,
+    "skillNames": [
+      "amkernel",
+      "setup-xcuitest"
+    ],
+    "exactProbeExecuted": true,
+    "executionCount": 1
+  },
+  "probeObservation": {
+    "validation": "valid",
+    "observationCount": 1,
+    "rejectedCount": 0,
+    "observed": true
+  },
+  "probeFacts": {
+    "devicectl": {
+      "countsKnown": true,
+      "devices": {
+        "connected": 0,
+        "paired": 0,
+        "total": 0,
+        "unavailable": 0,
+        "unknown": 0
+      },
+      "listExecuted": true,
+      "parseable": true,
+      "present": true
+    },
+    "xcode": {
+      "buildExecuted": true,
+      "major": 27,
+      "minor": 2,
+      "selectExecuted": true,
+      "selected": true,
+      "versionParsed": true
+    }
+  },
+  "probeLimitations": [],
+  "agentOutcome": "blocked",
+  "probeOutcome": "blocked",
+  "observedReadiness": "blocked",
+  "observedReadinessSource": "agent+probe-conservative",
+  "agentProbeAgree": true,
+  "blockers": [
+    "physical-devices-zero"
+  ],
+  "runnerCleanupObserved": true,
+  "runnerCleanupEntries": 1,
+  "configurationAfter": {
+    "~/.zshrc": "8b66f84c11d49c4dc2182bacfbff400f8c6b28d5458dc1fdf90efb3363313b59",
+    "~/.zprofile": null,
+    "~/.bashrc": null,
+    "~/.bash_profile": null,
+    "~/.mcp.json": null,
+    "~/.copilot/config.json": "14c648f7d34cdeb934a4cc3997766ddb6c230824147f5d28da35028444af30cd",
+    "~/.copilot/mcp-config.json": null
+  },
+  "configurationUnchanged": true
+}

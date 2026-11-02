@@ -51,11 +51,19 @@ belong in a separate `details` field, and session identifiers in optional
 | `sessions.old`, `sessions.current` | `alive`, `dead`, `unknown`, `absent` |
 | `cleanup.ownedSession`, `cleanup.restoration` | `completed`, `failed`, `unknown`, `not-required` |
 | `cleanup.server` | `preserved`, `completed`, `failed`, `unknown`, `not-required` |
+| `platformSupport` for an unsupported target | `unsupported` (with `taskOutcome` `blocked`) |
 
 These are final-report controls, not a workflow state machine or a Runtime API.
 Completed cleanup requires observed cleanup evidence. A dead Python namespace does
 not prove that an external session died: report the latter as unknown without
 remote evidence. Free-text detail cannot override contradictory observations.
+Unsupported-scope classification is an explicit report control, not a match on
+phrases in `details`. Its no-session/no-fallback acceptance still depends on
+observed tool and endpoint behavior, not on the report alone.
+The unsupported-Windows case supplies no endpoint. Its empty fixture journal
+proves no fixture-recorded create, not global absence of external network/session
+attempts inside unrestricted Python; do not turn that refusal check into a Windows
+Runtime, device-readiness or sandbox claim.
 Fixture servers always belong to the harness: an Agent cannot claim completed
 server cleanup, and a preserved-server claim requires observed server liveness.
 A completed restoration claim requires the observed state to equal the recorded
@@ -481,4 +489,103 @@ Independent final source and all-four-case evidence review found no Blocker,
 Major or P2 findings. Review scope, source/evidence digests and limitations are
 retained in `environment-discovery-review-20261103.json`. The reviewer inspected
 observations; it did not run checks or independently re-probe Runner exits.
+
+## 12. Conversation identity and owned user-visible state (#107)
+
+`tests/e2e/conversation_fixture.py` supplies synthetic conversations to the same
+installed-Skill/native-client harness. Run `conversation-latest` and
+`conversation-uncertain` individually with `--scenario`, or omit that option for
+the full 18-scenario matrix. No Gmail account, private mailbox or device data is
+used. The fixture is not a production Runtime API.
+
+The latest-conversation case separates thread activity from newest nested-message
+time, crosses a local date boundary, changes list ordering on refresh, and rejects
+stale elements. Success needs bounded native search, actual temporal evidence,
+fresh fingerprint-based location, and matching returned title/participants after
+opening. Neither a fixed row nor a hidden opened-ID field proves identity. A
+context query, missing attribute, or partial identity read cannot manufacture a
+complete verification event; a full opened source is valid because it returns
+the identity facts.
+
+The uncertain case exposes coarse timestamps and potentially incomplete search.
+Precision/semantics metadata alone is not time evidence. Observations retain their
+actual attribute names. Coherent search windows preserve an earlier observed tie
+after a narrower query; later timezone-aware evidence resolves it only when every
+tied candidate has comparable, nonoverlapping time intervals. Equal instants with
+different offsets, overlapping minute intervals and timezone-naive timestamps
+cannot justify a guessed winner.
+
+The existing approval/restoration cases also enforce task ownership and action
+limits: approve visible changes first, restore only reversible task-owned effects
+before `driver.quit()`, preserve pre-existing services, and distinguish task
+outcome, restoration, session deletion and server cleanup. Standard targeted
+`value` and `selected` queries observe the same control state as page source.
+Each session-bearing execution window counts toward compact-flow limits.
+
+Earlier failures remain in `conversation-first-20261103.json`,
+`conversation-matrix-first-20261103.json` and
+`conversation-matrix-second-20261103.json` under `evidence/appium-skill/`.
+Independent review also reproduced metadata-as-time, manufactured identity and
+narrowed-query false-negative paths before correction. Those regression tests
+remain; the pre-correction native pass is not the final corrected-oracle proof.
+The third matrix passed before those oracle corrections; it is retained as
+`conversation-matrix-third-pre-review-20261103.json`, not final proof. The fourth
+matrix exercised the corrected conversation paths successfully but exposed a
+legacy prose-based Windows refusal false negative ("scope excludes" was rejected).
+`conversation-matrix-fourth-20261103.json` retains it. That wording test was
+removed in favor of the explicit unsupported report control above, with negative
+coverage for missing classification, a contradictory completion claim and a
+recorded session attempt.
+
+Final current-source acceptance is retained in
+`conversation-final-20261103.json`: **18/18 passed**, zero failed/blocked scenarios,
+unchanged recorded user-configuration hashes and observed exit for every recorded
+owned Runner. Full pytest: **514 passed**; Ruff, mypy (60 source files) and wheel
+build passed. Source hashes, independent final review (0 Blocker / 0 Major / 0 P2)
+and exact observation limits are retained in `conversation-review-20261103.json`
+and `final-provenance-20261103.json`. The native uncertain case exercises coarse
+timestamps; incomplete-search and other interval branches retain regression
+coverage, not a claim that every branch ran through a physical platform.
+
+## 13. Ordered native installation and platform observations
+
+The final sequence began in a clean external project, not the development
+checkout. Evidence files below live in `evidence/appium-skill/`.
+
+| Step | Retained evidence | Observed result |
+| --- | --- | --- |
+| Copilot installation | `final-install-20261103.json` | Passed installation/discovery, pinned dependency copies, fail-closed tamper handling, MCP coexistence and observed cross-call persistence. |
+| Calculator / Mac2 | `final-mac2-20261103.json` | Not qualified: task-owned server became ready, but no successful actual Mac2 session or required Calculator/window query occurred. |
+| Android | `final-android-discovery-20261103.json` | Discovery only: Java candidates did not execute successfully; SDK/ADB were not found; target counts remain unknown. |
+| iOS simulator | `final-ios-simulator-discovery-20261103.json` | Discovery only: selected Xcode 27.2, successful parsed simctl inventory, zero available runtimes/devices. |
+| Physical iOS | `final-ios-device-discovery-20261103.json` | Discovery only: selected Xcode 27.2, successful parsed devicectl inventory, zero listed physical targets. |
+
+These are not five platform passes. No dependency installation, simulator
+creation/boot, pairing/trust, signing, permission or global Xcode change was
+authorized by discovery. Windows Runtime/Android qualification still requires a
+reachable Windows host and target under #100.
+
+Mac2's exact failure cause is not established by the retained error types/hashes.
+The desktop was observed at `loginwindow`; this is not proof of the failure's
+cause. The separate `final-mac2-packages-20261103.json` establishes actual MCP
+package metadata, not dependency incompatibility or a causal diagnosis. Missing
+`packaging` metadata must not be elevated to a proven Appium/Selenium conflict.
+Mac2 cleanup separately observed task-owned server/process-group/ports and Runner
+exit, removal of its raw log, and matching desktop snapshots; unrelated resources
+are outside that claim.
+
+The retained final platform-discovery records show one successful expected-hash
+`python_exec`, completed/alive status, permitted tools, unchanged recorded config,
+and a nonempty observed Runner-exit record. The probe verifies its own exact byte
+digest inside the actual Kernel before compilation. Static verifier sources and
+original/retained source digests are retained in
+`final-verification-source-20261103.json`; only checkout/home path constants are
+redacted. Source strings are verification programs, not captured model tool code
+or user data. Independent source/evidence re-review found no remaining findings
+in these discovery predicates; it did not itself run device commands.
+
+The final independent platform-evidence review, artifact digests and qualification
+limits are retained in `final-platform-review-20261103.json` (0 Blocker / 0 Major /
+0 P2; inspection only). The rebuilt wheel's observed SHA-256 matches the native
+installation record; no rebuild substituted a different wheel for that proof.
 

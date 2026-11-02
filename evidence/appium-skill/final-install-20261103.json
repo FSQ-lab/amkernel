@@ -1,0 +1,440 @@
+{
+  "schemaVersion": 1,
+  "issue": 105,
+  "scope": "Clean installed wheel, external non-git project, native GitHub Copilot discovery and MCP",
+  "base": "$TASK_ROOT",
+  "project": "$TASK_ROOT/project",
+  "wheelSha256": "330e0bc42bebbf35b8c1e96577b9cc60b7cfecdab76df8b8a35552b3132da92d",
+  "checks": [
+    "clean-installed-wheel",
+    "no-project-git-or-python-environment-mutation",
+    "complete-pinned-source-and-every-skill-copy",
+    "installed-standalone-verifier",
+    "native-client-skills-and-workspace-mcp-discovery",
+    "real-native-client-project-skill-and-persistent-python-exec",
+    "native-real-device-continuation-skill-loaded",
+    "source-tamper-fails-closed",
+    "owned-source-repaired-by-installer",
+    "missing-official-copy-fails-closed-and-repairs",
+    "native-active-config-coexistence-github-only",
+    "native-active-config-coexistence-both-present"
+  ],
+  "commands": [
+    {
+      "argv": [
+        "uvx",
+        "--from",
+        "/private/tmp/amkernel-remediation-tools/dist/amkernel-0.1.0-py3-none-any.whl",
+        "amkernel",
+        "install",
+        "--client",
+        "copilot",
+        "--project",
+        "$TASK_ROOT/project",
+        "--scope",
+        "project",
+        "--yes",
+        "--json"
+      ],
+      "cwd": "$TASK_ROOT/project",
+      "exit": 0,
+      "stdout": "{\n  \"client\": \"copilot\",\n  \"detail\": null,\n  \"known_project_references\": [],\n  \"mcp_configured\": true,\n  \"notice\": \"Copilot loads project MCP servers only after you trust this project folder; confirm the trust prompt before treating the setup as ready.\",\n  \"project\": \"/private$TASK_ROOT/project\",\n  \"references_truncated\": false,\n  \"restart_required\": true,\n  \"runtime_executable\": \"/private$TASK_ROOT/bin/amkernel\",\n  \"runtime_installed\": true,\n  \"runtime_version\": \"0.1.0\",\n  \"skill_commit\": \"e907024c210fe024c956ed9c74146fc27b1dd013\",\n  \"skill_content_verified\": true,\n  \"skill_installed\": true,\n  \"skill_provenance\": true,\n  \"skill_version\": \"0.1.0\"\n}\n",
+      "stderr": "Planned changes:\n- Runtime: /private$TASK_ROOT/bin/amkernel\n- Skill: /private$TASK_ROOT/project/.agents/skills/amkernel\n- Official Skills: /private$TASK_ROOT/project/.agents/skills\n- Official source: /private$TASK_ROOT/project/.agents/vendor/appium-skills\n- MCP (copilot): /private$TASK_ROOT/project/.mcp.json\n"
+    },
+    {
+      "argv": [
+        "$HOME/Documents/FSQ_LAB/amkernel/.venv/bin/python3",
+        "$TASK_ROOT/project/.agents/skills/amkernel/scripts/verify_official_skills.py",
+        "--project-root",
+        "$TASK_ROOT/project"
+      ],
+      "cwd": "$TASK_ROOT/project",
+      "exit": 0,
+      "stdout": "Pinned Appium source and installed skill copies verified.\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "uvx",
+        "--from",
+        "/private/tmp/amkernel-remediation-tools/dist/amkernel-0.1.0-py3-none-any.whl",
+        "amkernel",
+        "doctor",
+        "--project",
+        "$TASK_ROOT/project",
+        "--json"
+      ],
+      "cwd": "$TASK_ROOT/project",
+      "exit": 0,
+      "stdout": "{\n  \"client\": \"copilot\",\n  \"detail\": null,\n  \"known_project_references\": [],\n  \"mcp_configured\": true,\n  \"notice\": \"Copilot loads project MCP servers only after you trust this project folder; confirm the trust prompt before treating the setup as ready.\",\n  \"project\": \"/private$TASK_ROOT/project\",\n  \"references_truncated\": false,\n  \"restart_required\": true,\n  \"runtime_executable\": \"/private$TASK_ROOT/bin/amkernel\",\n  \"runtime_installed\": true,\n  \"runtime_version\": \"0.1.0\",\n  \"skill_commit\": \"e907024c210fe024c956ed9c74146fc27b1dd013\",\n  \"skill_content_verified\": true,\n  \"skill_installed\": true,\n  \"skill_provenance\": true,\n  \"skill_version\": \"0.1.0\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/tmp/amkernel-remediation-tools/node_modules/.bin/copilot",
+        "--version"
+      ],
+      "cwd": "$TASK_ROOT/project",
+      "exit": 0,
+      "stdout": "GitHub Copilot CLI 1.0.105.\nRun 'copilot update' to check for updates.\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/tmp/amkernel-remediation-tools/node_modules/.bin/copilot",
+        "skill",
+        "list",
+        "--json"
+      ],
+      "cwd": "$TASK_ROOT/project",
+      "exit": 0,
+      "stdout": "[\n  {\n    \"name\": \"amkernel\",\n    \"description\": \"Help users verify, diagnose, and use AMKernel for local automation through a Coding Agent. Use for AMKernel readiness or MCP connection failures, and for Appium Android, iOS, or macOS Mac2 setup, diagnosis, and scenarios that should run through AMKernel.\",\n    \"source\": \"project\",\n    \"path\": \"/private$TASK_ROOT/project/.agents/skills/amkernel\",\n    \"enabled\": true\n  },\n  {\n    \"name\": \"appium-troubleshooting\",\n    \"description\": \"Diagnose existing UiAutomator2 session-startup, app-activity, adb transport, helper-server, native or hybrid locator failures, and XCUITest WebDriverAgent, session-startup, app install or launch, device or simulator state, alert, element-source, or locator failures. Use when a session or command under one of those drivers already fails. Do not use for first-time setup, pre-failure real-device provisioning, or Espresso, Chromium, Gecko, Safari, or Mac2 failures.\",\n    \"source\": \"project\",\n    \"path\": \"/private$TASK_ROOT/project/.agents/skills/appium-troubleshooting\",\n    \"enabled\": true\n  },\n  {\n    \"name\": \"setup-mac2\",\n    \"description\": \"Prepare and verify Appium Mac2 for native macOS automation by validating Node/Appium, macOS and Xcode tooling, driver installation, doctor output, privacy authorization boundaries, and server smoke evidence. Use after the setup Skill selects Mac2. Do not use for an existing Mac2 runtime failure after prerequisites pass.\",\n    \"source\": \"project\",\n    \"path\": \"/private$TASK_ROOT/project/.agents/skills/setup-mac2\",\n    \"enabled\": true\n  },\n  {\n    \"name\": \"setup-uiautomator2\",\n    \"description\": \"Prepare and verify Appium UiAutomator2 by validating Node/Appium, Android SDK and Java prerequisites, driver installation, doctor output, and server smoke evidence. Use after the setup Skill selects UiAutomator2 or appium-troubleshooting hands off a UiAutomator2 prerequisite or doctor failure. Do not use for an existing runtime failure after prerequisites pass.\",\n    \"source\": \"project\",\n    \"path\": \"/private$TASK_ROOT/project/.agents/skills/setup-uiautomator2\",\n    \"enabled\": true\n  },\n  {\n    \"name\": \"setup-xcuitest\",\n    \"description\": \"Prepare and verify Appium XCUITest for iOS or tvOS on macOS by validating Node/Appium, Xcode, driver installation, doctor output, simulator or shared real-device prerequisites, and server smoke evidence. Use when the setup Skill selects XCUITest or appium-troubleshooting hands off an XCUITest prerequisite or doctor failure. For a real device, continue to xcuitest-real-device-config after this Skill passes. Do not use for real-device signing, provisioning, or WebDriverAgent deployment.\",\n    \"source\": \"project\",\n    \"path\": \"/private$TASK_ROOT/project/.agents/skills/setup-xcuitest\",\n    \"enabled\": true\n  },\n  {\n    \"name\": \"xcuitest-real-device-config\",\n    \"description\": \"Prepare real iOS or tvOS devices for Appium XCUITest by validating readiness, provisioning, signing, WebDriverAgent deployment, and connectivity. Use only after setup-xcuitest completes shared XCUITest prerequisites and continues to this Skill for a real-device target. Do not use for general XCUITest setup or later runtime failures unrelated to signing or WebDriverAgent deployment.\",\n    \"source\": \"project\",\n    \"path\": \"/private$TASK_ROOT/project/.agents/skills/xcuitest-real-device-config\",\n    \"enabled\": true\n  },\n  {\n    \"name\": \"customize-cloud-agent\",\n    \"description\": \"Skill for customizing the Copilot cloud agent (formerly known as Copilot coding agent) environment, including copilot-setup-steps.yml configuration, preinstalling tools and dependencies, runners, and settings. Use when the user mentions copilot-setup-steps, copilot setup steps, or wants to configure the cloud agent environment.\",\n    \"source\": \"builtin\",\n    \"path\": \"$HOME/Library/Caches/copilot/pkg/darwin-arm64/1.0.105/builtin/customize-cloud-agent\",\n    \"enabled\": true\n  },\n  {\n    \"name\": \"github-pr-media\",\n    \"description\": \"Upload an image or video to GitHub's user attachments API and embed it in a pull request description or comment. Use when asked to add screenshots, diagrams, recordings, or other media to a PR or GitHub comment.\",\n    \"source\": \"builtin\",\n    \"path\": \"$HOME/Library/Caches/copilot/pkg/darwin-arm64/1.0.105/builtin/github-pr-media\",\n    \"enabled\": true\n  }\n]\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/tmp/amkernel-remediation-tools/node_modules/.bin/copilot",
+        "mcp",
+        "get",
+        "amkernel",
+        "--json"
+      ],
+      "cwd": "$TASK_ROOT/project",
+      "exit": 0,
+      "stdout": "{\n  \"amkernel\": {\n    \"tools\": [\n      \"*\"\n    ],\n    \"type\": \"stdio\",\n    \"command\": \"/private$TASK_ROOT/bin/amkernel\",\n    \"args\": [],\n    \"cwd\": \"/private$TASK_ROOT/project\",\n    \"source\": \"workspace\",\n    \"sourcePath\": \"/private$TASK_ROOT/project/.mcp.json\",\n    \"enabled\": true\n  }\n}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "uvx",
+        "--from",
+        "/private/tmp/amkernel-remediation-tools/dist/amkernel-0.1.0-py3-none-any.whl",
+        "amkernel",
+        "doctor",
+        "--project",
+        "$TASK_ROOT/project",
+        "--json"
+      ],
+      "cwd": "$TASK_ROOT/project",
+      "exit": 1,
+      "stdout": "{\n  \"client\": \"copilot\",\n  \"detail\": \"run `amkernel install` to repair Runtime, Skill, or MCP drift\",\n  \"known_project_references\": [],\n  \"mcp_configured\": true,\n  \"notice\": \"Copilot loads project MCP servers only after you trust this project folder; confirm the trust prompt before treating the setup as ready.\",\n  \"project\": \"/private$TASK_ROOT/project\",\n  \"references_truncated\": false,\n  \"restart_required\": false,\n  \"runtime_executable\": \"/private$TASK_ROOT/bin/amkernel\",\n  \"runtime_installed\": true,\n  \"runtime_version\": \"0.1.0\",\n  \"skill_commit\": \"e907024c210fe024c956ed9c74146fc27b1dd013\",\n  \"skill_content_verified\": false,\n  \"skill_installed\": true,\n  \"skill_provenance\": false,\n  \"skill_version\": \"0.1.0\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "uvx",
+        "--from",
+        "/private/tmp/amkernel-remediation-tools/dist/amkernel-0.1.0-py3-none-any.whl",
+        "amkernel",
+        "install",
+        "--client",
+        "copilot",
+        "--project",
+        "$TASK_ROOT/project",
+        "--scope",
+        "project",
+        "--yes",
+        "--json"
+      ],
+      "cwd": "$TASK_ROOT/project",
+      "exit": 0,
+      "stdout": "{\n  \"client\": \"copilot\",\n  \"detail\": null,\n  \"known_project_references\": [],\n  \"mcp_configured\": true,\n  \"notice\": \"Copilot loads project MCP servers only after you trust this project folder; confirm the trust prompt before treating the setup as ready.\",\n  \"project\": \"/private$TASK_ROOT/project\",\n  \"references_truncated\": false,\n  \"restart_required\": true,\n  \"runtime_executable\": \"/private$TASK_ROOT/bin/amkernel\",\n  \"runtime_installed\": true,\n  \"runtime_version\": \"0.1.0\",\n  \"skill_commit\": \"e907024c210fe024c956ed9c74146fc27b1dd013\",\n  \"skill_content_verified\": true,\n  \"skill_installed\": true,\n  \"skill_provenance\": true,\n  \"skill_version\": \"0.1.0\"\n}\n",
+      "stderr": "Planned changes:\n- Runtime: /private$TASK_ROOT/bin/amkernel\n- Skill: /private$TASK_ROOT/project/.agents/skills/amkernel\n- Official Skills: /private$TASK_ROOT/project/.agents/skills\n- Official source: /private$TASK_ROOT/project/.agents/vendor/appium-skills\n- MCP (copilot): /private$TASK_ROOT/project/.mcp.json\n"
+    },
+    {
+      "argv": [
+        "uvx",
+        "--from",
+        "/private/tmp/amkernel-remediation-tools/dist/amkernel-0.1.0-py3-none-any.whl",
+        "amkernel",
+        "doctor",
+        "--project",
+        "$TASK_ROOT/project",
+        "--json"
+      ],
+      "cwd": "$TASK_ROOT/project",
+      "exit": 1,
+      "stdout": "{\n  \"client\": \"copilot\",\n  \"detail\": \"run `amkernel install` to repair Runtime, Skill, or MCP drift\",\n  \"known_project_references\": [],\n  \"mcp_configured\": true,\n  \"notice\": \"Copilot loads project MCP servers only after you trust this project folder; confirm the trust prompt before treating the setup as ready.\",\n  \"project\": \"/private$TASK_ROOT/project\",\n  \"references_truncated\": false,\n  \"restart_required\": false,\n  \"runtime_executable\": \"/private$TASK_ROOT/bin/amkernel\",\n  \"runtime_installed\": true,\n  \"runtime_version\": \"0.1.0\",\n  \"skill_commit\": \"e907024c210fe024c956ed9c74146fc27b1dd013\",\n  \"skill_content_verified\": false,\n  \"skill_installed\": true,\n  \"skill_provenance\": false,\n  \"skill_version\": \"0.1.0\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "uvx",
+        "--from",
+        "/private/tmp/amkernel-remediation-tools/dist/amkernel-0.1.0-py3-none-any.whl",
+        "amkernel",
+        "install",
+        "--client",
+        "copilot",
+        "--project",
+        "$TASK_ROOT/project",
+        "--scope",
+        "project",
+        "--yes",
+        "--json"
+      ],
+      "cwd": "$TASK_ROOT/project",
+      "exit": 0,
+      "stdout": "{\n  \"client\": \"copilot\",\n  \"detail\": null,\n  \"known_project_references\": [],\n  \"mcp_configured\": true,\n  \"notice\": \"Copilot loads project MCP servers only after you trust this project folder; confirm the trust prompt before treating the setup as ready.\",\n  \"project\": \"/private$TASK_ROOT/project\",\n  \"references_truncated\": false,\n  \"restart_required\": true,\n  \"runtime_executable\": \"/private$TASK_ROOT/bin/amkernel\",\n  \"runtime_installed\": true,\n  \"runtime_version\": \"0.1.0\",\n  \"skill_commit\": \"e907024c210fe024c956ed9c74146fc27b1dd013\",\n  \"skill_content_verified\": true,\n  \"skill_installed\": true,\n  \"skill_provenance\": true,\n  \"skill_version\": \"0.1.0\"\n}\n",
+      "stderr": "Planned changes:\n- Runtime: /private$TASK_ROOT/bin/amkernel\n- Skill: /private$TASK_ROOT/project/.agents/skills/amkernel\n- Official Skills: /private$TASK_ROOT/project/.agents/skills\n- Official source: /private$TASK_ROOT/project/.agents/vendor/appium-skills\n- MCP (copilot): /private$TASK_ROOT/project/.mcp.json\n"
+    },
+    {
+      "argv": [
+        "uvx",
+        "--from",
+        "/private/tmp/amkernel-remediation-tools/dist/amkernel-0.1.0-py3-none-any.whl",
+        "amkernel",
+        "install",
+        "--client",
+        "copilot",
+        "--project",
+        "$TASK_ROOT/github-only",
+        "--scope",
+        "project",
+        "--yes",
+        "--json"
+      ],
+      "cwd": "$TASK_ROOT/github-only",
+      "exit": 0,
+      "stdout": "{\n  \"client\": \"copilot\",\n  \"detail\": null,\n  \"known_project_references\": [],\n  \"mcp_configured\": true,\n  \"notice\": \"Copilot loads project MCP servers only after you trust this project folder; confirm the trust prompt before treating the setup as ready.\",\n  \"project\": \"/private$TASK_ROOT/github-only\",\n  \"references_truncated\": false,\n  \"restart_required\": true,\n  \"runtime_executable\": \"/private$TASK_ROOT/bin/amkernel\",\n  \"runtime_installed\": true,\n  \"runtime_version\": \"0.1.0\",\n  \"skill_commit\": \"e907024c210fe024c956ed9c74146fc27b1dd013\",\n  \"skill_content_verified\": true,\n  \"skill_installed\": true,\n  \"skill_provenance\": true,\n  \"skill_version\": \"0.1.0\"\n}\n",
+      "stderr": "Planned changes:\n- Runtime: /private$TASK_ROOT/bin/amkernel\n- Skill: /private$TASK_ROOT/github-only/.agents/skills/amkernel\n- Official Skills: /private$TASK_ROOT/github-only/.agents/skills\n- Official source: /private$TASK_ROOT/github-only/.agents/vendor/appium-skills\n- MCP (copilot): /private$TASK_ROOT/github-only/.github/mcp.json\n"
+    },
+    {
+      "argv": [
+        "/tmp/amkernel-remediation-tools/node_modules/.bin/copilot",
+        "--no-auto-update",
+        "mcp",
+        "get",
+        "kept",
+        "--json"
+      ],
+      "cwd": "$TASK_ROOT/github-only",
+      "exit": 0,
+      "stdout": "{\n  \"kept\": {\n    \"tools\": [\n      \"*\"\n    ],\n    \"type\": \"stdio\",\n    \"command\": \"$HOME/Documents/FSQ_LAB/amkernel/.venv/bin/python3\",\n    \"args\": [\n      \"-c\",\n      \"pass\"\n    ],\n    \"source\": \"workspace\",\n    \"sourcePath\": \"/private$TASK_ROOT/github-only/.github/mcp.json\",\n    \"enabled\": true\n  }\n}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/tmp/amkernel-remediation-tools/node_modules/.bin/copilot",
+        "--no-auto-update",
+        "mcp",
+        "get",
+        "amkernel",
+        "--json"
+      ],
+      "cwd": "$TASK_ROOT/github-only",
+      "exit": 0,
+      "stdout": "{\n  \"amkernel\": {\n    \"tools\": [\n      \"*\"\n    ],\n    \"type\": \"stdio\",\n    \"command\": \"/private$TASK_ROOT/bin/amkernel\",\n    \"args\": [],\n    \"cwd\": \"/private$TASK_ROOT/github-only\",\n    \"source\": \"workspace\",\n    \"sourcePath\": \"/private$TASK_ROOT/github-only/.github/mcp.json\",\n    \"enabled\": true\n  }\n}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "uvx",
+        "--from",
+        "/private/tmp/amkernel-remediation-tools/dist/amkernel-0.1.0-py3-none-any.whl",
+        "amkernel",
+        "install",
+        "--client",
+        "copilot",
+        "--project",
+        "$TASK_ROOT/both-present",
+        "--scope",
+        "project",
+        "--yes",
+        "--json"
+      ],
+      "cwd": "$TASK_ROOT/both-present",
+      "exit": 0,
+      "stdout": "{\n  \"client\": \"copilot\",\n  \"detail\": null,\n  \"known_project_references\": [],\n  \"mcp_configured\": true,\n  \"notice\": \"Copilot loads project MCP servers only after you trust this project folder; confirm the trust prompt before treating the setup as ready.\",\n  \"project\": \"/private$TASK_ROOT/both-present\",\n  \"references_truncated\": false,\n  \"restart_required\": true,\n  \"runtime_executable\": \"/private$TASK_ROOT/bin/amkernel\",\n  \"runtime_installed\": true,\n  \"runtime_version\": \"0.1.0\",\n  \"skill_commit\": \"e907024c210fe024c956ed9c74146fc27b1dd013\",\n  \"skill_content_verified\": true,\n  \"skill_installed\": true,\n  \"skill_provenance\": true,\n  \"skill_version\": \"0.1.0\"\n}\n",
+      "stderr": "Planned changes:\n- Runtime: /private$TASK_ROOT/bin/amkernel\n- Skill: /private$TASK_ROOT/both-present/.agents/skills/amkernel\n- Official Skills: /private$TASK_ROOT/both-present/.agents/skills\n- Official source: /private$TASK_ROOT/both-present/.agents/vendor/appium-skills\n- MCP (copilot): /private$TASK_ROOT/both-present/.mcp.json\n"
+    },
+    {
+      "argv": [
+        "/tmp/amkernel-remediation-tools/node_modules/.bin/copilot",
+        "--no-auto-update",
+        "mcp",
+        "get",
+        "kept",
+        "--json"
+      ],
+      "cwd": "$TASK_ROOT/both-present",
+      "exit": 0,
+      "stdout": "{\n  \"kept\": {\n    \"tools\": [\n      \"*\"\n    ],\n    \"type\": \"stdio\",\n    \"command\": \"$HOME/Documents/FSQ_LAB/amkernel/.venv/bin/python3\",\n    \"args\": [\n      \"-c\",\n      \"pass\"\n    ],\n    \"source\": \"workspace\",\n    \"sourcePath\": \"/private$TASK_ROOT/both-present/.mcp.json\",\n    \"enabled\": true\n  }\n}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/tmp/amkernel-remediation-tools/node_modules/.bin/copilot",
+        "--no-auto-update",
+        "mcp",
+        "get",
+        "amkernel",
+        "--json"
+      ],
+      "cwd": "$TASK_ROOT/both-present",
+      "exit": 0,
+      "stdout": "{\n  \"amkernel\": {\n    \"tools\": [\n      \"*\"\n    ],\n    \"type\": \"stdio\",\n    \"command\": \"/private$TASK_ROOT/bin/amkernel\",\n    \"args\": [],\n    \"cwd\": \"/private$TASK_ROOT/both-present\",\n    \"source\": \"workspace\",\n    \"sourcePath\": \"/private$TASK_ROOT/both-present/.mcp.json\",\n    \"enabled\": true\n  }\n}\n",
+      "stderr": ""
+    }
+  ],
+  "nativeSkillDiscovery": [
+    {
+      "name": "amkernel",
+      "description": "Help users verify, diagnose, and use AMKernel for local automation through a Coding Agent. Use for AMKernel readiness or MCP connection failures, and for Appium Android, iOS, or macOS Mac2 setup, diagnosis, and scenarios that should run through AMKernel.",
+      "source": "project",
+      "path": "/private$TASK_ROOT/project/.agents/skills/amkernel",
+      "enabled": true
+    },
+    {
+      "name": "appium-troubleshooting",
+      "description": "Diagnose existing UiAutomator2 session-startup, app-activity, adb transport, helper-server, native or hybrid locator failures, and XCUITest WebDriverAgent, session-startup, app install or launch, device or simulator state, alert, element-source, or locator failures. Use when a session or command under one of those drivers already fails. Do not use for first-time setup, pre-failure real-device provisioning, or Espresso, Chromium, Gecko, Safari, or Mac2 failures.",
+      "source": "project",
+      "path": "/private$TASK_ROOT/project/.agents/skills/appium-troubleshooting",
+      "enabled": true
+    },
+    {
+      "name": "setup-mac2",
+      "description": "Prepare and verify Appium Mac2 for native macOS automation by validating Node/Appium, macOS and Xcode tooling, driver installation, doctor output, privacy authorization boundaries, and server smoke evidence. Use after the setup Skill selects Mac2. Do not use for an existing Mac2 runtime failure after prerequisites pass.",
+      "source": "project",
+      "path": "/private$TASK_ROOT/project/.agents/skills/setup-mac2",
+      "enabled": true
+    },
+    {
+      "name": "setup-uiautomator2",
+      "description": "Prepare and verify Appium UiAutomator2 by validating Node/Appium, Android SDK and Java prerequisites, driver installation, doctor output, and server smoke evidence. Use after the setup Skill selects UiAutomator2 or appium-troubleshooting hands off a UiAutomator2 prerequisite or doctor failure. Do not use for an existing runtime failure after prerequisites pass.",
+      "source": "project",
+      "path": "/private$TASK_ROOT/project/.agents/skills/setup-uiautomator2",
+      "enabled": true
+    },
+    {
+      "name": "setup-xcuitest",
+      "description": "Prepare and verify Appium XCUITest for iOS or tvOS on macOS by validating Node/Appium, Xcode, driver installation, doctor output, simulator or shared real-device prerequisites, and server smoke evidence. Use when the setup Skill selects XCUITest or appium-troubleshooting hands off an XCUITest prerequisite or doctor failure. For a real device, continue to xcuitest-real-device-config after this Skill passes. Do not use for real-device signing, provisioning, or WebDriverAgent deployment.",
+      "source": "project",
+      "path": "/private$TASK_ROOT/project/.agents/skills/setup-xcuitest",
+      "enabled": true
+    },
+    {
+      "name": "xcuitest-real-device-config",
+      "description": "Prepare real iOS or tvOS devices for Appium XCUITest by validating readiness, provisioning, signing, WebDriverAgent deployment, and connectivity. Use only after setup-xcuitest completes shared XCUITest prerequisites and continues to this Skill for a real-device target. Do not use for general XCUITest setup or later runtime failures unrelated to signing or WebDriverAgent deployment.",
+      "source": "project",
+      "path": "/private$TASK_ROOT/project/.agents/skills/xcuitest-real-device-config",
+      "enabled": true
+    },
+    {
+      "name": "customize-cloud-agent",
+      "description": "Skill for customizing the Copilot cloud agent (formerly known as Copilot coding agent) environment, including copilot-setup-steps.yml configuration, preinstalling tools and dependencies, runners, and settings. Use when the user mentions copilot-setup-steps, copilot setup steps, or wants to configure the cloud agent environment.",
+      "source": "builtin",
+      "path": "$HOME/Library/Caches/copilot/pkg/darwin-arm64/1.0.105/builtin/customize-cloud-agent",
+      "enabled": true
+    },
+    {
+      "name": "github-pr-media",
+      "description": "Upload an image or video to GitHub's user attachments API and embed it in a pull request description or comment. Use when asked to add screenshots, diagrams, recordings, or other media to a PR or GitHub comment.",
+      "source": "builtin",
+      "path": "$HOME/Library/Caches/copilot/pkg/darwin-arm64/1.0.105/builtin/github-pr-media",
+      "enabled": true
+    }
+  ],
+  "nativeMcpDiscovery": {
+    "amkernel": {
+      "tools": [
+        "*"
+      ],
+      "type": "stdio",
+      "command": "/private$TASK_ROOT/bin/amkernel",
+      "args": [],
+      "cwd": "/private$TASK_ROOT/project",
+      "source": "workspace",
+      "sourcePath": "/private$TASK_ROOT/project/.mcp.json",
+      "enabled": true
+    }
+  },
+  "nativeClient": {
+    "process": {
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 18554,
+      "runnerCleanup": [
+        {
+          "runnerPid": 39674,
+          "reason": "process-exit",
+          "observedExit": true
+        }
+      ],
+      "eventCount": 486,
+      "malformedEventLines": 0
+    },
+    "calls": [
+      {
+        "toolName": "skill",
+        "mcpToolName": null,
+        "mcpConfigSource": null,
+        "argumentsSha256": "de9b6567632b0b47ce0453c423f596fa219298e6b161f87767fa72f1e6b701f1",
+        "codeSha256": null,
+        "success": true,
+        "skill": "amkernel"
+      },
+      {
+        "toolName": "amkernel-python_exec",
+        "mcpToolName": "python_exec",
+        "mcpConfigSource": "workspace",
+        "argumentsSha256": "d59b38ac76127e924a0adeefa80a433c62d4dc034c42f9c333342a973d52bece",
+        "codeSha256": "702d24e04f1157d1df00c48c2e78c2086bb4467f058167187493459dbeb9513c",
+        "success": true,
+        "status": "completed",
+        "kernelState": "alive",
+        "executionCount": 1,
+        "durationMs": 0,
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderrBytes": 0
+      },
+      {
+        "toolName": "amkernel-python_exec",
+        "mcpToolName": "python_exec",
+        "mcpConfigSource": "workspace",
+        "argumentsSha256": "d76dce1207ef923d328160902b392cc6468c6ad2fcbe400059b7214404b6db5a",
+        "codeSha256": "68209acac8d94d29737b94bc0aad1346b6fa8169e45712247441acd3b4056856",
+        "success": true,
+        "status": "completed",
+        "kernelState": "alive",
+        "executionCount": 2,
+        "durationMs": 1,
+        "stdoutSha256": "391bc2795d8d0dbdbf106bcfa7e4ee2eade5ad3e19448190fe93c9133d6ad658",
+        "stdoutBytes": 281,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderrBytes": 0
+      },
+      {
+        "toolName": "skill",
+        "mcpToolName": null,
+        "mcpConfigSource": null,
+        "argumentsSha256": "5e3c002e3ad42a95c691394e9eed093076ee223ace20c1c8370c795f8789b254",
+        "codeSha256": null,
+        "success": true,
+        "skill": "xcuitest-real-device-config"
+      },
+      {
+        "toolName": "view",
+        "mcpToolName": null,
+        "mcpConfigSource": null,
+        "argumentsSha256": "4beb54f1acabf501b5c498250d3887211a80efece6670447f8e87dca6e571d5b",
+        "codeSha256": null,
+        "success": true
+      }
+    ],
+    "finalReportSha256": "3f4e9f697b7fdbfa3bee32c16903c20df86e3b3399ebc6dc6417b4500d70bc47",
+    "finalStatus": {},
+    "observedCompletedAlive": true,
+    "mainSkillLoaded": true,
+    "limits": "Only allowlisted status/identity evidence and hashes retained; raw code, output, final prose and stderr withheld."
+  },
+  "persistenceExecutionCounts": [
+    1,
+    2
+  ],
+  "exactStateOperationsObserved": true,
+  "persistenceObserved": true,
+  "status": "passed"
+}

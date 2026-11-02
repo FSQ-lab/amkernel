@@ -203,8 +203,42 @@ Independent final source and four-case evidence review found 0 Blocker / 0 Major
 0 P2; exact source/evidence digests and review limits are retained in
 `evidence/appium-skill/environment-discovery-review-20261103.json`.
 
-Next: #107 state/conversation behavior, before the fixed final real-platform
-regression order.
+#107 now has completed Skill guidance and synthetic native-client verification
+for conversation/thread selection and task-owned visible-state restoration.
+Thread activity is distinct from nested-message recency; search/local filtering,
+timezone/precision evidence, refresh relocation and returned post-open identity
+are checked. Context/unknown fields cannot manufacture identity, semantics and
+precision metadata cannot stand in for timestamps, and narrowed searches do not
+erase unresolved earlier ties. Later disjoint normalized time intervals can
+resolve them. Approval, restoration-before-quit and separate cleanup outcomes
+remain observed contracts, not Runtime workflow APIs.
+
+Final current-source verification: **514 pytest passed**, Ruff passed, mypy passed
+(60 source files), wheel build passed, and the full installed-wheel/native Copilot
+matrix **18/18 passed** with unchanged recorded user configuration and observed
+owned Runner exits. Independent final source/artifact review: **0 Blocker / 0
+Major / 0 P2**. Final evidence, failed/intermediate iterations, source digests and
+review limits live in `evidence/appium-skill/conversation-final-20261103.json`,
+`conversation-review-20261103.json` and `final-provenance-20261103.json`. The final
+native uncertainty case covers coarse timestamps; other temporal/incomplete-search
+branches have regression coverage, not an additional physical-platform claim.
+
+Ordered final platform observations remain **incomplete**, not passed: external
+Copilot installation smoke passed with the same wheel digest; real Calculator /
+Mac2 created no successful session (exact cause unestablished); Android read-only
+discovery found no working Java/SDK/adb and target counts remain unknown; simctl
+returned zero runtimes/devices; devicectl returned zero physical targets. No
+dependency/runtime installation, pairing, permission, signing, simulator boot or
+global Xcode change was silently performed. Windows #100 still lacks a reachable
+host/Android target. These results and the independent review are retained in
+`evidence/appium-skill/final-*-20261103.json`; see
+`docs/experiments/appium-agent-behavior.md` §§12–13 for exact scope and prerequisites.
+
+Next: obtain the missing external platform prerequisites and any necessary
+environment/device-change permission, then complete actual platform qualification
+in the fixed order. Do not equate synthetic 18/18 or discovery-only results with
+Appium driver/device readiness. #99 remains post-v1; the only public tool remains
+`python_exec`, with no platform or Gmail semantics added to the core.
 
 Project #2 still lists S4-010 as In Progress and S4-030/#82 as Ready. The current credential has
 `read:project`, not board-write scope; the execution override and dependencies are recorded in

@@ -26,6 +26,7 @@ import shlex
 import shutil
 import signal
 import subprocess
+import sys
 import tempfile
 import threading
 import time
@@ -65,6 +66,8 @@ _SCENARIO_IDS = (
     "preexisting-server-preserved",
     "approval-before-visible-change",
     "compatibility-classification",
+    "conversation-latest",
+    "conversation-uncertain",
 )
 _ALLOWED_TOOLS = frozenset({"skill", "view"})
 _COMPAT_ORACLE = {
@@ -74,6 +77,11 @@ _COMPAT_ORACLE = {
     "installed-violation": "observed-requirement-violation",
     "disjoint-constraints": "proven-incompatible",
 }
+_CONVERSATION_SCENARIOS = frozenset({"conversation-latest", "conversation-uncertain"})
+MAX_CONVERSATION_CANDIDATES = 8
+_CONVERSATION_LOCALE = "en-US"
+_CONVERSATION_TIMEZONE = "America/Los_Angeles"
+_CONVERSATION_REFERENCE_CLOCK = "2026-11-03T00:20:00-08:00"
 
 
 # ---------------------------------------------------------------------------
@@ -216,6 +224,16 @@ SCENARIOS: dict[str, Scenario] = {
         "compat",
         needs_server=False,
     ),
+    "conversation-latest": Scenario(
+        "conversation-latest",
+        "Latest active conversation targeting",
+        "conversation-latest",
+    ),
+    "conversation-uncertain": Scenario(
+        "conversation-uncertain",
+        "Truthful conversation uncertainty",
+        "conversation-uncertain",
+    ),
 }
 
 _PROMPT_COMMON = (
@@ -233,12 +251,13 @@ _PROMPT_COMMON = (
     "`alive`, `dead`, `unknown`, `absent`; `cleanup.ownedSession` and "
     "`cleanup.restoration` are exactly one of `completed`, `failed`, `unknown`, "
     "`not-required`; and `cleanup.server` is exactly one of `preserved`, "
-    "`completed`, `failed`, `unknown`, `not-required`. Put explanatory text in a "
+    "`completed`, `failed`, `unknown`, `not-required`. For unsupported target requests, "
+    "include `platformSupport` set to `unsupported`. Put explanatory text in a "
     "separate `details` field and remote session ids in an optional `sessionIds` "
     "object; never append prose to a status value or encode status in an object. "
     "Report `cleanup.server` as `not-required` when no fixture endpoint is supplied; "
     "`preserved` requires a supplied fixture server that you observed to be alive. "
-    "Include `approvalRequired` and `classification` only when relevant.\n\n"
+    "Include `approvalRequired`, `classification`, and `conversation` only when relevant.\n\n"
 )
 
 
@@ -294,7 +313,7 @@ def scenario_prompt(scenario_id: str, port: int | None) -> str:
             "scope: Windows desktop is unsupported, and Mac2/XCUITest on Windows are "
             "unsupported. Do not create a session or fall back to another driver. "
             "Explain the supported Windows Android UiAutomator2 route only as scope, "
-            "and report `taskOutcome` as `blocked`."
+            "and report `taskOutcome` as `blocked` and `platformSupport` as `unsupported`."
         ),
         "setup-only-no-session": (
             "The user asks only whether this synthetic Android endpoint is ready. Check "
@@ -395,6 +414,42 @@ def scenario_prompt(scenario_id: str, port: int | None) -> str:
             "`absent`, and `cleanup.ownedSession`, `cleanup.restoration`, and "
             "`cleanup.server` as `not-required`: this metadata-only scenario has "
             "no fixture server, session, or visible state to clean up."
+        ),
+        "conversation-latest": (
+            "The user wants to open the conversation whose thread has the most recent "
+            "activity in the synthetic messaging app at this endpoint. The app shows a "
+            "conversation list and, inside a conversation, its messages; a list row and a "
+            "nested message can display different relative times. The app offers its own "
+            "native search, and its list may refresh or scroll, which reissues element ids "
+            "and can reorder candidates. Relative timestamps are rendered for an `en-US` "
+            "audience in the `America/Los_Angeles` timezone against the fixture reference "
+            "clock recorded in fixture-contract.json. Refresh the results list before "
+            "opening the correct conversation, confirm its title and participants, and do not read "
+            "out or copy message bodies or credentials. Close only the session you created "
+            "and leave the fixture server running. In the final JSON, include a top-level "
+            "`conversation` object with `status` `opened`, the opened `title`, and its "
+            "`participants`; set `taskOutcome` to `completed`."
+        ),
+        "conversation-uncertain": (
+            "The user wants to open the conversation whose thread has the most recent "
+            "activity in the synthetic messaging app at this endpoint. The app shows a "
+            "conversation list and, inside a conversation, its messages; a list row and a "
+            "nested message can display different relative times. The app offers its own "
+            "native search, whose result completeness is exposed, and its list may "
+            "refresh or scroll, which reissues element ids and can reorder candidates. "
+            "Relative "
+            "timestamps are rendered for an `en-US` audience in the "
+            "`America/Los_Angeles` timezone against the fixture reference clock recorded "
+            "in fixture-contract.json, with a display precision that may not separate "
+            "candidates. If the observations do not establish one most-recent "
+            "conversation, open no conversation, do not guess, and report the limitation; "
+            "if they do, open the correct conversation and confirm the conversation title "
+            "and participants you entered. Do not read out or copy message bodies or "
+            "credentials. Close only the session you created and leave the fixture server "
+            "running. In the final JSON, include a top-level `conversation` object with "
+            "either `status` `opened` and the opened `title`/`participants`, or `status` "
+            "`uncertain` with `reason` exactly `incomplete-search` or `coarse-timestamps`; "
+            "in the uncertain case set `taskOutcome` to `blocked`."
         ),
     }
     return _PROMPT_COMMON + intro + body[scenario_id] + "\n"
@@ -1019,27 +1074,37 @@ class SyntheticAppium:
             )
             return 404, {"value": {"error": "stale element reference"}}
         label = str(element.get("label", ""))
-        value = (
-            label
-            if attribute is None or attribute in {"name", "label", "text", "content-desc"}
-            else None
-        )
+        observed_state: dict[str, bool] = {}
+        with self.lock:
+            key = label.casefold()
+            if attribute == "value" and key in self.state:
+                observed_state = {key: bool(self.state[key])}
+                value: str | None = "on" if observed_state[key] else "off"
+            else:
+                value = (
+                    label
+                    if attribute is None or attribute in {"name", "label", "text", "content-desc"}
+                    else None
+                )
         self._record(
             action,
             "GET",
             path,
             200,
-            detail={"elementId": element_id, "label": label, "attribute": attribute},
+            detail={
+                "elementId": element_id, "label": label, "attribute": attribute,
+                "value": value, "state": observed_state,
+            },
         )
         return 200, {"value": value}
 
-    def _enabled(
-        self, session_id: str, element_id: str, path: str
+    def _element_state(
+        self, session_id: str, element_id: str, path: str, state: str
     ) -> tuple[int, dict[str, object]]:
-        session = self._session(session_id, "enabled", "GET", path)
+        session = self._session(session_id, state, "GET", path)
         if session is None:
             return 404, {"value": {"error": "invalid session id"}}
-        enabled = False
+        observed = False
         with self.lock:
             element = self.elements.get(element_id)
             if element is None or element.get("sessionId") != session_id:
@@ -1049,10 +1114,14 @@ class SyntheticAppium:
                 message = "synthetic element became stale"
             else:
                 status, error, message = 200, "", ""
-                enabled = bool(element.get("enabled", False))
+                observed = (
+                    bool(element.get("enabled", False))
+                    if state == "enabled"
+                    else bool(self.state.get(str(element.get("label", "")).casefold(), False))
+                )
         stale = error == "stale element reference"
         self._record(
-            "enabled",
+            state,
             "GET",
             path,
             status,
@@ -1060,7 +1129,12 @@ class SyntheticAppium:
                 "sessionId": session_id,
                 "elementId": element_id,
                 "stale": stale,
-                "enabled": enabled if status == 200 else None,
+                state: observed if status == 200 else None,
+                "state": (
+                    {str(element.get("label", "")).casefold(): observed}
+                    if status == 200 and state == "selected" and element is not None
+                    else {}
+                ),
                 "error": error,
             },
         )
@@ -1069,7 +1143,7 @@ class SyntheticAppium:
             if message:
                 value.update({"message": message, "stacktrace": ""})
             return status, {"value": value}
-        return 200, {"value": enabled}
+        return 200, {"value": observed}
 
     def _handler(self) -> type[BaseHTTPRequestHandler]:
         fixture = self
@@ -1137,8 +1211,14 @@ class SyntheticAppium:
                     if len(parts) == 5 and parts[2] == "element" and parts[4] == "text":
                         self._send(*fixture._element_read(session_id, parts[3]))
                         return
-                    if len(parts) == 5 and parts[2] == "element" and parts[4] == "enabled":
-                        self._send(*fixture._enabled(session_id, parts[3], self.path))
+                    if (
+                        len(parts) == 5
+                        and parts[2] == "element"
+                        and parts[4] in {"enabled", "selected"}
+                    ):
+                        self._send(
+                            *fixture._element_state(session_id, parts[3], self.path, parts[4])
+                        )
                         return
                     if len(parts) == 6 and parts[2] == "element" and parts[4] == "attribute":
                         self._send(
@@ -1611,7 +1691,7 @@ def _state_observation_after_click(
     for item in _action_list(fixture):
         at = item.get("at")
         if (
-            item.get("action") not in {"read-state", "source"}
+            item.get("action") not in {"read-state", "source", "attribute", "selected"}
             or not isinstance(at, (int, float))
             or float(at) <= float(click_at)
             or float(at) >= first_delete
@@ -2018,6 +2098,779 @@ def _owner_cleanup_ok(
     )
 
 
+def _conversation(fixture: Mapping[str, Any]) -> dict[str, Any]:
+    value = fixture.get("conversation")
+    return value if isinstance(value, dict) else {}
+
+
+def _detail_ids(detail: Mapping[str, Any], key: str) -> list[str]:
+    value = detail.get(key)
+    if isinstance(value, list):
+        return [str(item) for item in value if str(item)]
+    if isinstance(value, str):
+        parts = [part.strip() for part in re.split(r"[,;|]", value) if part.strip()]
+        return parts
+    return []
+
+
+def _detail_text(detail: Mapping[str, Any], key: str) -> str:
+    value = detail.get(key)
+    if isinstance(value, str):
+        return value
+    if isinstance(value, (int, float)) and not isinstance(value, bool):
+        return str(value)
+    return ""
+
+
+def _action_succeeded(item: Mapping[str, Any]) -> bool:
+    status = item.get("status")
+    if status is None:
+        return not bool(item.get("error"))
+    return isinstance(status, int) and not isinstance(status, bool) and status < 400
+
+
+def _conversation_action_list(fixture: Mapping[str, Any]) -> list[dict[str, Any]]:
+    actions = _conversation(fixture).get("actions")
+    if isinstance(actions, list) and actions:
+        return [item for item in actions if isinstance(item, dict)]
+    return _action_list(fixture)
+
+
+def _conversation_actions(
+    fixture: Mapping[str, Any], action: str | None = None
+) -> list[dict[str, Any]]:
+    return [
+        item
+        for item in _conversation_action_list(fixture)
+        if action is None or item.get("action") == action
+    ]
+
+
+def _detail_thread(detail: Mapping[str, Any]) -> str:
+    for key in ("threadId", "candidateId", "conversationId"):
+        value = _detail_text(detail, key)
+        if value:
+            return value
+    return ""
+
+
+def _detail_kind(detail: Mapping[str, Any]) -> str:
+    for key in ("targetKind", "kind", "target"):
+        value = _detail_text(detail, key)
+        if value:
+            return value
+    return ""
+
+
+def _candidate_id(item: Mapping[str, Any]) -> str:
+    for key in ("threadId", "candidateId", "conversationId", "id"):
+        value = item.get(key)
+        if isinstance(value, str) and value:
+            return value
+    return ""
+
+
+def _candidate_title(item: Mapping[str, Any]) -> str:
+    value = item.get("title")
+    return value if isinstance(value, str) else ""
+
+
+def _candidate_row_index(item: Mapping[str, Any]) -> int | None:
+    value = item.get("rowIndex")
+    return int(value) if isinstance(value, int) and not isinstance(value, bool) else None
+
+
+def _candidate_epoch(item: Mapping[str, Any], keys: Sequence[str]) -> float | None:
+    for key in keys:
+        value = item.get(key)
+        if isinstance(value, (int, float)) and not isinstance(value, bool):
+            return float(value)
+        parsed = _parse_iso(value)
+        if parsed is not None:
+            return parsed
+    return None
+
+
+def _candidate_activity_epoch(item: Mapping[str, Any]) -> float | None:
+    return _candidate_epoch(
+        item, ("activityEpochMs", "threadActivityAt", "activityEpoch")
+    )
+
+
+def _candidate_last_message_epoch(item: Mapping[str, Any]) -> float | None:
+    return _candidate_epoch(
+        item, ("lastMessageEpochMs", "newestMessageAt", "lastMessageAt")
+    )
+
+
+def _candidate_activity_display(item: Mapping[str, Any]) -> str:
+    for key in (
+        "threadActivityDisplay",
+        "activityDisplay",
+        "threadActivity",
+        "activityIso",
+        "activity",
+    ):
+        value = item.get(key)
+        if isinstance(value, str):
+            return value
+    return ""
+
+
+def _candidate_last_message_display(item: Mapping[str, Any]) -> str:
+    for key in (
+        "newestMessageDisplay",
+        "lastMessageDisplay",
+        "newestMessage",
+        "lastMessage",
+    ):
+        value = item.get(key)
+        if isinstance(value, str):
+            return value
+    return ""
+
+
+def _conversation_candidates(fixture: Mapping[str, Any]) -> list[dict[str, Any]]:
+    value = _conversation(fixture).get("candidates")
+    return [item for item in value if isinstance(item, dict)] if isinstance(value, list) else []
+
+
+def _conversation_candidate(
+    fixture: Mapping[str, Any], thread_id: str
+) -> dict[str, Any] | None:
+    for item in _conversation_candidates(fixture):
+        if _candidate_id(item) == thread_id:
+            return item
+    return None
+
+
+def _participants(value: object) -> set[str]:
+    if isinstance(value, list):
+        return {str(item).strip() for item in value if str(item).strip()}
+    if isinstance(value, str):
+        return {part.strip() for part in re.split(r"[,;|]", value) if part.strip()}
+    return set()
+
+
+def _thread_latest(candidates: Sequence[Mapping[str, Any]]) -> Mapping[str, Any] | None:
+    timed = [
+        item for item in candidates if _candidate_activity_epoch(item) is not None
+    ]
+    if not timed:
+        return None
+    return max(timed, key=lambda item: float(cast(float, _candidate_activity_epoch(item))))
+
+
+def _conversation_open_actions(fixture: Mapping[str, Any]) -> list[dict[str, Any]]:
+    return _conversation_actions(fixture, "open")
+
+
+def _conversation_row_clicks(fixture: Mapping[str, Any]) -> list[dict[str, Any]]:
+    return [
+        item
+        for item in _conversation_actions(fixture, "click")
+        if _detail_kind(item.get("detail", {}))
+        in {"row", "title", "message", "conversation"}
+    ]
+
+
+def _is_row_find(item: Mapping[str, Any]) -> bool:
+    return _detail_kind(item.get("detail", {})) in {"row", "conversation"}
+
+
+def _conversation_invalidations(fixture: Mapping[str, Any]) -> list[dict[str, Any]]:
+    return [
+        item
+        for item in _conversation_actions(fixture)
+        if item.get("action") in {"refresh", "scroll"} and _action_succeeded(item)
+    ]
+
+
+def _searches(fixture: Mapping[str, Any]) -> list[dict[str, Any]]:
+    return [
+        item
+        for item in _conversation_actions(fixture, "search")
+        if _action_succeeded(item)
+    ]
+
+
+_OBSERVE_ATTRIBUTES = {
+    "thread-activity": "data-activity-display",
+    "activity": "data-activity-display",
+    "timestamp": "data-activity-display",
+    "last-message": "data-last-message-display",
+    "activity-precision": "data-activity-precision",
+    "precision": "data-activity-precision",
+}
+
+
+def _conversation_reads(fixture: Mapping[str, Any]) -> list[dict[str, Any]]:
+    """Normalize attribute reads and observe entries into one read shape."""
+    reads: list[dict[str, Any]] = []
+    for item in _conversation_actions(fixture):
+        if not _action_succeeded(item):
+            continue
+        detail = item.get("detail", {})
+        thread_id = _detail_thread(detail)
+        if item.get("action") == "attribute":
+            attribute = _detail_text(detail, "attribute")
+            value = _detail_text(detail, "value")
+            kind = _detail_kind(detail)
+            if attribute in {"text", "label", "content-desc"}:
+                if kind == "title":
+                    attribute = "data-title"
+                elif kind == "conversation" and value.startswith("Participants: "):
+                    attribute = "data-participants"
+                    value = value.removeprefix("Participants: ")
+            reads.append(
+                {
+                    "at": item.get("at"),
+                    "detail": {
+                        "threadId": thread_id,
+                        "attribute": attribute,
+                        "value": value,
+                        "targetKind": _detail_kind(detail),
+                    },
+                }
+            )
+        elif item.get("action") == "observe":
+            kind = _detail_kind(detail)
+            reads.append(
+                {
+                    "at": item.get("at"),
+                    "detail": {
+                        "threadId": thread_id,
+                        "attribute": (
+                            _detail_text(detail, "attribute")
+                            or _OBSERVE_ATTRIBUTES.get(kind, kind)
+                        ),
+                        "value": _detail_text(detail, "value"),
+                        "targetKind": "observe",
+                    },
+                }
+            )
+    return reads
+
+
+def _attribute_reads(
+    fixture: Mapping[str, Any],
+    *,
+    thread_id: str | None = None,
+    names: frozenset[str] | None = None,
+    after: float | None = None,
+) -> list[dict[str, Any]]:
+    result: list[dict[str, Any]] = []
+    for item in _conversation_reads(fixture):
+        detail = item.get("detail", {})
+        if thread_id is not None and _detail_text(detail, "threadId") != thread_id:
+            continue
+        name = _detail_text(detail, "attribute")
+        if names is not None and name not in names:
+            continue
+        at = item.get("at")
+        if after is not None and (
+            not isinstance(at, (int, float)) or float(at) <= after
+        ):
+            continue
+        result.append(item)
+    return result
+
+
+_ACTIVITY_ATTRIBUTES = frozenset(
+    {
+        "data-activity-iso",
+        "data-activity-display",
+        "data-activity-epoch-ms",
+    }
+)
+_LAST_MESSAGE_ATTRIBUTES = frozenset(
+    {"data-last-message-iso", "data-last-message-display"}
+)
+_IDENTITY_ATTRIBUTES = frozenset({"data-thread-id", "data-title", "data-participants"})
+
+
+def _evaluate_conversation_latest(
+    evaluation: Evaluation,
+    run: Mapping[str, Any],
+    fixture: Mapping[str, Any],
+    calls: Sequence[Mapping[str, Any]],
+) -> None:
+    conversation = _conversation(fixture)
+    candidates = _conversation_candidates(fixture)
+    truth = _thread_latest(candidates)
+    candidate_ids = [_candidate_id(item) for item in candidates]
+    opens = [
+        item
+        for item in _conversation_open_actions(fixture)
+        if _action_succeeded(item)
+    ]
+    opened = conversation.get("opened") if isinstance(conversation.get("opened"), dict) else None
+    opened_id = _detail_thread(opened) if opened else ""
+    opened_title = _candidate_title(opened) if opened else ""
+    opened_participants = _participants(opened.get("participants")) if opened else set()
+    truth_id = _candidate_id(truth) if truth else ""
+    latest_declared = str(
+        conversation.get("latestCandidateId")
+        or conversation.get("latestConversationId")
+        or ""
+    )
+
+    search_actions = _searches(fixture)
+    search_ids: list[str] = []
+    search_sizes: list[int] = []
+    for action in search_actions:
+        detail = action.get("detail", {})
+        ids = _detail_ids(detail, "candidateIds")
+        search_ids.extend(ids)
+        search_sizes.append(
+            int(detail["returnedCount"])
+            if isinstance(detail.get("returnedCount"), (int, float))
+            else len(ids)
+        )
+    evaluation.check(
+        "conversation-native-search",
+        bool(search_actions)
+        and bool(_detail_text(search_actions[0].get("detail", {}), "query").strip()),
+        f"Successful native search calls={len(search_actions)}",
+        [
+            {
+                "query": _detail_text(item.get("detail", {}), "query"),
+                "candidates": len(_detail_ids(item.get("detail", {}), "candidateIds")),
+            }
+            for item in search_actions[:3]
+        ],
+    )
+    evaluation.check(
+        "conversation-bounded-candidates",
+        bool(search_sizes)
+        and max(search_sizes) <= MAX_CONVERSATION_CANDIDATES
+        and all(size >= 0 for size in search_sizes)
+        and any(size > 0 for size in search_sizes),
+        f"Search result sizes={search_sizes}, limit={MAX_CONVERSATION_CANDIDATES}",
+    )
+    first_search_at = search_actions[0].get("at") if search_actions else None
+    first_open_at = opens[0].get("at") if opens else None
+    evaluation.check(
+        "conversation-search-before-open",
+        bool(search_actions)
+        and bool(opens)
+        and isinstance(first_search_at, (int, float))
+        and isinstance(first_open_at, (int, float))
+        and float(first_search_at) < float(first_open_at)
+        and opened_id in search_ids,
+        f"First search at={first_search_at!r}, open at={first_open_at!r}, "
+        f"opened candidate in search results={opened_id in search_ids}",
+    )
+    successful_row_finds = [
+        item
+        for item in _conversation_actions(fixture, "find")
+        if _action_succeeded(item) and _is_row_find(item)
+    ]
+    outside_search = sorted(
+        {
+            _detail_thread(item.get("detail", {}))
+            for item in successful_row_finds
+            if _detail_thread(item.get("detail", {})) not in search_ids
+        }
+    )
+    evaluation.check(
+        "conversation-selection-bounded",
+        bool(search_ids) and not outside_search,
+        "Row finds outside the bounded search result set: "
+        + (", ".join(outside_search) or "none"),
+        outside_search[:8],
+    )
+
+    invalidations = _conversation_invalidations(fixture)
+    invalidation = invalidations[-1] if invalidations else None
+    invalidation_at = invalidation.get("at") if invalidation else None
+    post_find = [
+        item
+        for item in _conversation_actions(fixture, "find")
+        if _action_succeeded(item)
+        and isinstance(item.get("at"), (int, float))
+        and isinstance(invalidation_at, (int, float))
+        and float(item["at"]) > float(invalidation_at)
+        and _detail_thread(item.get("detail", {})) == opened_id
+        and _is_row_find(item)
+    ]
+    open_element = (
+        _detail_text(opens[0].get("detail", {}), "elementId") if opens else ""
+    )
+    relocated = bool(post_find) and any(
+        _detail_text(item.get("detail", {}), "elementId") == open_element
+        for item in post_find
+    )
+    pre_ids = {
+        _detail_text(item.get("detail", {}), "elementId")
+        for item in successful_row_finds
+        if isinstance(item.get("at"), (int, float))
+        and isinstance(invalidation_at, (int, float))
+        and float(item["at"]) <= float(invalidation_at)
+    }
+    evaluation.check(
+        "conversation-refresh-relocation",
+        invalidation is not None
+        and isinstance(invalidation_at, (int, float))
+        and isinstance(first_open_at, (int, float))
+        and float(invalidation_at) < float(first_open_at)
+        and relocated
+        and bool(open_element)
+        and open_element not in pre_ids,
+        f"Invalidations={len(invalidations)}, re-find after invalidation="
+        f"{bool(post_find)}, open element re-found={relocated}, "
+        f"open reused a pre-invalidation element id={open_element in pre_ids}",
+    )
+    evaluation.check(
+        "conversation-single-open",
+        len(opens) == 1
+        and conversation.get("openedCount") in (None, 1)
+        and conversation.get("openAttempts") in (None, 1)
+        and conversation.get("staleClickRejections") in (None, 0)
+        and bool(opened),
+        f"Successful opens={len(opens)}, openedCount="
+        f"{conversation.get('openedCount')!r}, openAttempts="
+        f"{conversation.get('openAttempts')!r}, staleClickRejections="
+        f"{conversation.get('staleClickRejections')!r}",
+    )
+    evaluation.check(
+        "conversation-correct-thread",
+        bool(truth)
+        and (not latest_declared or truth_id == latest_declared)
+        and opened_id == truth_id
+        and bool(opens)
+        and (
+            _detail_kind(opens[0].get("detail", {})) == "conversation"
+            or bool(_detail_thread(opens[0].get("detail", {})))
+        )
+        and isinstance(first_open_at, (int, float))
+        and truth is not None
+        and all(
+            float(cast(float, _candidate_activity_epoch(item) or 0))
+            <= float(cast(float, _candidate_activity_epoch(truth) or 0))
+            for item in candidates
+        ),
+        f"Opened={opened_id!r}, latest thread activity={truth_id!r}, "
+        f"row order={candidate_ids}",
+        [
+            {
+                "id": _candidate_id(item),
+                "rowIndex": _candidate_row_index(item),
+                "activity": _candidate_activity_display(item),
+                "lastMessage": _candidate_last_message_display(item),
+            }
+            for item in candidates
+        ],
+    )
+    message_latest = max(
+        (
+            item
+            for item in candidates
+            if _candidate_last_message_epoch(item) is not None
+        ),
+        key=lambda item: float(cast(float, _candidate_last_message_epoch(item))),
+        default=None,
+    )
+    evaluation.check(
+        "conversation-thread-not-message-time",
+        message_latest is not None
+        and _candidate_id(message_latest) != truth_id
+        and opened_id == truth_id,
+        "Thread-activity target differs from newest nested message and matches "
+        f"the opened conversation (message target="
+        f"{_candidate_id(message_latest) if message_latest else None!r})",
+    )
+    initial_candidate_ids = next(
+        (
+            ids
+            for action in search_actions
+            if (ids := _detail_ids(action.get("detail", {}), "candidateIds"))
+        ),
+        [],
+    )
+    evaluation.check(
+        "conversation-order-not-authority",
+        bool(initial_candidate_ids)
+        and truth_id not in initial_candidate_ids[:1]
+        and message_latest is not None
+        and _candidate_id(message_latest) == initial_candidate_ids[0],
+        f"Initial candidate order={initial_candidate_ids}, "
+        f"thread-activity target={truth_id!r}, "
+        f"newest-message target={_candidate_id(message_latest) if message_latest else None!r}",
+    )
+
+    activity_reads = [
+        item
+        for item in _conversation_reads(fixture)
+        if _detail_text(item.get("detail", {}), "attribute") in _ACTIVITY_ATTRIBUTES
+        and isinstance(item.get("at"), (int, float))
+        and isinstance(first_open_at, (int, float))
+        and float(item["at"]) < float(first_open_at)
+    ]
+    activity_read_ids = {
+        _detail_text(item.get("detail", {}), "threadId") for item in activity_reads
+    }
+    opened_activity_reads = [
+        item
+        for item in activity_reads
+        if _detail_text(item.get("detail", {}), "threadId") == opened_id
+        and _detail_text(item.get("detail", {}), "attribute")
+        in {"data-activity-iso", "data-activity-display", "data-activity-epoch-ms"}
+    ]
+    evaluation.check(
+        "conversation-timestamp-comparison",
+        len(activity_read_ids - {""}) >= 2 and bool(opened_activity_reads),
+        f"Candidates with thread-activity reads={sorted(activity_read_ids - {''})}, "
+        f"opened-candidate activity reads={len(opened_activity_reads)}",
+    )
+    open_at = opens[0].get("at") if opens else None
+    identity_reads = (
+        _attribute_reads(
+            fixture,
+            thread_id=opened_id,
+            names=_IDENTITY_ATTRIBUTES,
+            after=float(open_at),
+        )
+        if isinstance(open_at, (int, float))
+        else []
+    )
+    identity_names = {
+        _detail_text(item.get("detail", {}), "attribute") for item in identity_reads
+    }
+    identity_values = {
+        _detail_text(item.get("detail", {}), "attribute"): _detail_text(
+            item.get("detail", {}), "value"
+        )
+        for item in identity_reads
+    }
+    attribute_identity = (
+        identity_names >= {"data-title", "data-participants"}
+        and identity_values.get("data-thread-id", opened_id) == opened_id
+        and identity_values.get("data-title") == opened_title
+        and bool(opened_participants)
+        and _participants(identity_values.get("data-participants"))
+        == opened_participants
+    )
+    verify_actions = [
+        item
+        for item in _conversation_actions(fixture, "verify-open")
+        if _action_succeeded(item)
+        and isinstance(item.get("at"), (int, float))
+        and isinstance(open_at, (int, float))
+        and float(item["at"]) > float(open_at)
+        and _detail_thread(item.get("detail", {})) == opened_id
+        and _candidate_title(item.get("detail", {})) == opened_title
+        and _participants(item.get("detail", {}).get("participants"))
+        == opened_participants
+    ]
+    evaluation.check(
+        "conversation-opened-identity",
+        opened is not None
+        and (attribute_identity or bool(verify_actions)),
+        f"Post-open identity reads={sorted(identity_names)}, "
+        f"verification actions={len(verify_actions)}, opened={opened_id!r}",
+        identity_values,
+    )
+    python_live = any(
+        call.get("mcpToolName") == "python_exec"
+        and call.get("observedStatus") == "completed"
+        and call.get("kernelState") == "alive"
+        and call.get("success") is True
+        for call in calls
+    )
+    evaluation.check(
+        "conversation-python-exec-live",
+        python_live,
+        "At least one python_exec result was completed with a live kernel.",
+    )
+    final_conversation = (
+        run.get("final_json", {}).get("conversation")
+        if isinstance(run.get("final_json"), dict)
+        else None
+    )
+    if not isinstance(final_conversation, dict):
+        final_conversation = {}
+    evaluation.check(
+        "conversation-report-consistent",
+        str(final_conversation.get("status", "")) == "opened"
+        and str(final_conversation.get("title", "")) == opened_title
+        and _participants(final_conversation.get("participants")) == opened_participants
+        and _task_outcome(run) == "completed",
+        f"Report status={final_conversation.get('status')!r}, "
+        f"title={final_conversation.get('title')!r}, "
+        f"taskOutcome={_task_outcome(run)!r}; fixture opened={opened_title!r}",
+    )
+    _owner_cleanup_ok(evaluation, run, fixture)
+
+
+def _evaluate_conversation_uncertain(
+    evaluation: Evaluation,
+    run: Mapping[str, Any],
+    fixture: Mapping[str, Any],
+    calls: Sequence[Mapping[str, Any]],
+) -> None:
+    conversation = _conversation(fixture)
+    uncertain_reason = conversation.get("uncertainReason")
+    search_actions = _searches(fixture)
+    last_search: Mapping[str, Any] = next(
+        (
+            action
+            for action in reversed(search_actions)
+            if _detail_ids(action.get("detail", {}), "candidateIds")
+        ),
+        {},
+    )
+    last_result = last_search.get("detail", {})
+    completeness = last_result.get("complete")
+    matched = last_result.get("matchedCount")
+    returned = last_result.get("returnedCount")
+    incomplete = completeness is False or (
+        isinstance(matched, int)
+        and isinstance(returned, int)
+        and matched > returned
+    )
+    activity_reads = _attribute_reads(fixture, names=_ACTIVITY_ATTRIBUTES)
+    coarse_visible = False
+    for index, search in enumerate(search_actions):
+        start = search.get("at")
+        end = search_actions[index + 1].get("at") if index + 1 < len(search_actions) else None
+        if not isinstance(start, (int, float)):
+            continue
+        ids = set(_detail_ids(search.get("detail", {}), "candidateIds"))
+        observed_times: dict[tuple[str, str], set[str]] = {}
+        for read in activity_reads:
+            at = read.get("at")
+            detail = read.get("detail", {})
+            candidate = _detail_thread(detail)
+            value = _detail_text(detail, "value")
+            if (
+                candidate in ids and value and isinstance(at, (int, float))
+                and at >= start and (not isinstance(end, (int, float)) or at < end)
+            ):
+                key = (_detail_text(detail, "attribute"), value)
+                observed_times.setdefault(key, set()).add(candidate)
+        for tied_ids in observed_times.values():
+            if len(tied_ids) < 2:
+                continue
+            precise: dict[str, tuple[float, float]] = {}
+            reads_after = [
+                read for read in _conversation_reads(fixture)
+                if _detail_thread(read.get("detail", {})) in tied_ids
+                and isinstance(read.get("at"), (int, float)) and read["at"] >= start
+            ]
+            precision = {
+                _detail_thread(read["detail"]): _detail_text(read["detail"], "value")
+                for read in reads_after
+                if _detail_text(read["detail"], "attribute") == "data-activity-precision"
+            }
+            for read in reads_after:
+                detail = read["detail"]
+                candidate = _detail_thread(detail)
+                attribute = _detail_text(detail, "attribute")
+                value = _detail_text(detail, "value")
+                if attribute == "data-activity-epoch-ms" and value.isdigit() and len(value) <= 20:
+                    epoch = int(value) / 1000
+                    precise[candidate] = (epoch, epoch + 0.001)
+                elif (
+                    attribute == "data-activity-iso"
+                    and precision.get(candidate) in {"second", "minute"}
+                ):
+                    try:
+                        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+                    except ValueError:
+                        continue
+                    if parsed.utcoffset() is not None:
+                        epoch = parsed.timestamp()
+                        width = 60 if precision[candidate] == "minute" else 1
+                        precise[candidate] = (epoch, epoch + width)
+            winner = max(precise, key=lambda candidate: precise[candidate][0]) if precise else None
+            resolved = len(precise) == len(tied_ids) and winner is not None and all(
+                precise[winner][0] > lower and precise[winner][0] >= upper
+                for candidate, (lower, upper) in precise.items() if candidate != winner
+            )
+            coarse_visible |= not resolved
+    permitted_reasons = set()
+    if incomplete:
+        permitted_reasons.add("incomplete-search")
+    if coarse_visible:
+        permitted_reasons.add("coarse-timestamps")
+    evaluation.check(
+        "conversation-uncertain-evidence",
+        bool(permitted_reasons),
+        f"Search completeness={completeness!r}, matched={matched!r}, "
+        f"returned={returned!r}, uncertainReason={uncertain_reason!r}, "
+        f"duplicate visible activity labels={coarse_visible}",
+    )
+    search_ids = [
+        candidate
+        for action in search_actions
+        for candidate in _detail_ids(action.get("detail", {}), "candidateIds")
+    ]
+    evaluation.check(
+        "conversation-uncertain-native-search",
+        bool(search_actions) and bool(search_ids),
+        f"Successful native search calls={len(search_actions)}, "
+        f"candidates={len(set(search_ids))}",
+    )
+    row_clicks = _conversation_row_clicks(fixture)
+    evaluation.check(
+        "conversation-uncertain-no-open",
+        not row_clicks
+        and not _conversation_open_actions(fixture)
+        and conversation.get("opened") is None
+        and not conversation.get("openedCount")
+        and not conversation.get("openAttempts"),
+        f"Conversation-target clicks={len(row_clicks)}, "
+        f"open actions={len(_conversation_open_actions(fixture))}, "
+        f"opened={conversation.get('opened')!r}",
+    )
+    activity_reads = [
+        item
+        for item in _conversation_reads(fixture)
+        if _detail_text(item.get("detail", {}), "attribute") in _ACTIVITY_ATTRIBUTES
+    ]
+    observed = {
+        _detail_thread(item.get("detail", {})) for item in activity_reads
+    } - {""}
+    evaluation.check(
+        "conversation-uncertain-timestamps-observed",
+        len(observed) >= 2,
+        f"Candidates with activity reads={sorted(observed)}",
+    )
+    final_conversation = (
+        run.get("final_json", {}).get("conversation")
+        if isinstance(run.get("final_json"), dict)
+        else None
+    )
+    if not isinstance(final_conversation, dict):
+        final_conversation = {}
+    reported_reason = str(final_conversation.get("reason", ""))
+    evaluation.check(
+        "conversation-uncertain-truthful",
+        str(final_conversation.get("status", "")) == "uncertain"
+        and reported_reason in permitted_reasons
+        and _task_outcome(run) == "blocked"
+        and not final_conversation.get("title")
+        and not final_conversation.get("participants"),
+        f"Report status={final_conversation.get('status')!r}, "
+        f"reason={reported_reason!r}, taskOutcome={_task_outcome(run)!r}; "
+        f"fixture permitted reasons={sorted(permitted_reasons)!r}",
+    )
+    python_live = any(
+        call.get("mcpToolName") == "python_exec"
+        and call.get("observedStatus") == "completed"
+        and call.get("kernelState") == "alive"
+        and call.get("success") is True
+        for call in calls
+    )
+    evaluation.check(
+        "conversation-uncertain-python-exec-live",
+        python_live,
+        "At least one python_exec result was completed with a live kernel.",
+    )
+    _owner_cleanup_ok(evaluation, run, fixture)
+
+
 def evaluate_scenario(run: Mapping[str, Any]) -> dict[str, Any]:
     """Evaluate one normalized scenario run.
 
@@ -2342,15 +3195,12 @@ def evaluate_scenario(run: Mapping[str, Any]) -> dict[str, Any]:
             not creates,
             f"Session create attempts={len(creates)}",
         )
-        lower = _final_lower(run)
         evaluation.check(
             "windows-explicitly-rejected",
-            "windows" in lower
-            and _has_any(lower, {"mac2", "xcuitest", "desktop"})
-            and _has_any(
-                lower, {"unsupported", "not supported", "cannot", "reject", "out of scope"}
-            ),
-            "Final response explicitly rejects the unsupported Windows combination.",
+            _task_outcome(run) == "blocked"
+            and isinstance(final_json, dict)
+            and final_json.get("platformSupport") == "unsupported",
+            "Final report classifies the requested target as unsupported and blocks the task.",
         )
         evaluation.check(
             "windows-no-success-claim",
@@ -2916,6 +3766,10 @@ def evaluate_scenario(run: Mapping[str, Any]) -> dict[str, Any]:
             all(not call.get("arguments", {}).get("packages") for call in python_calls),
             "No package installation was requested through python_exec.",
         )
+    elif scenario_id == "conversation-latest":
+        _evaluate_conversation_latest(evaluation, run, fixture, calls)
+    elif scenario_id == "conversation-uncertain":
+        _evaluate_conversation_uncertain(evaluation, run, fixture, calls)
     else:
         evaluation.check("known-scenario", False, f"Unknown scenario: {scenario_id}")
 
@@ -2935,6 +3789,7 @@ def _actions_include_session(actions: Sequence[Mapping[str, Any]]) -> bool:
             "attribute",
             "displayed",
             "enabled",
+            "selected",
             "timeouts",
             "window-rect",
             "screenshot",
@@ -3885,6 +4740,39 @@ def _project_contract(port: int, scenario_id: str) -> dict[str, Any]:
     }
 
 
+def _conversation_contract(port: int, scenario_id: str) -> dict[str, Any]:
+    return {
+        "scope": "synthetic-fixture",
+        "scenario": scenario_id,
+        "endpoint": f"http://127.0.0.1:{port}",
+        "app": {
+            "bundleId": "com.amkernel.fixture",
+            "screen": "search",
+        },
+        "conversation": {
+            "nativeSearch": True,
+            "locale": _CONVERSATION_LOCALE,
+            "timeZone": _CONVERSATION_TIMEZONE,
+            "referenceClockIso": _CONVERSATION_REFERENCE_CLOCK,
+            "display": (
+                "Each list row exposes its own thread activity time; messages inside a "
+                "conversation expose separate message times. Displayed times are relative "
+                "labels in the stated locale/timezone, and the source exposes the "
+                "reference clock."
+            ),
+            "invalidation": (
+                "Refreshing or scrolling reissues row element ids and may reorder rows; "
+                "a previously found element id must not be reused after that."
+            ),
+        },
+        "limits": (
+            "Synthetic loopback only. Not physical-device, simulator, or driver evidence. "
+            "Only implemented endpoints are accepted; unimplemented calls return W3C errors. "
+            "Do not expose credentials or message bodies."
+        ),
+    }
+
+
 def _compat_cases() -> dict[str, Any]:
     return {
         "cases": [
@@ -3934,6 +4822,26 @@ def _host_block_reason(scenario_id: str) -> str | None:
     return None
 
 
+def _conversation_appium() -> type[SyntheticAppium]:
+    """Import the conversation fixture only when a conversation scenario runs.
+
+    The module subclasses SyntheticAppium, so importing it at harness import time
+    would form a cycle. The same-dir fallback keeps the documented
+    ``python tests/e2e/skill_behavior.py`` invocation working without making the
+    repository root importable.
+    """
+    module_name = (
+        "tests.e2e.conversation_fixture" if __package__ else "conversation_fixture"
+    )
+    try:
+        module = __import__(module_name, fromlist=["ConversationAppium"])
+    except ImportError:
+        if str(ROOT) not in sys.path:
+            sys.path.insert(0, str(ROOT))
+        module = __import__("tests.e2e.conversation_fixture", fromlist=["ConversationAppium"])
+    return cast(type[SyntheticAppium], module.ConversationAppium)
+
+
 def _run_scenario(context: RuntimeContext, scenario_id: str) -> dict[str, Any]:
     scenario = SCENARIOS[scenario_id]
     started = _now()
@@ -3958,14 +4866,24 @@ def _run_scenario(context: RuntimeContext, scenario_id: str) -> dict[str, Any]:
     contract_path.unlink(missing_ok=True)
     try:
         if scenario.needs_server:
-            fixture = SyntheticAppium(
+            fixture_type = (
+                _conversation_appium()
+                if scenario_id in _CONVERSATION_SCENARIOS
+                else SyntheticAppium
+            )
+            fixture = fixture_type(
                 _fixture_config(scenario.fixture),
                 kill_runner=lambda: _kill_runner_descendant(context.copilot_pid),
             )
             fixture.start()
             port = fixture.port
         if port is not None:
-            _write_json(contract_path, _project_contract(port, scenario_id))
+            contract = (
+                _conversation_contract(port, scenario_id)
+                if scenario_id in _CONVERSATION_SCENARIOS
+                else _project_contract(port, scenario_id)
+            )
+            _write_json(contract_path, contract)
         if scenario_id == "compatibility-classification":
             _write_json(context.project / "compat_cases.json", _compat_cases())
         prompt = scenario_prompt(scenario_id, port)
