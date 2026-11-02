@@ -817,21 +817,27 @@ def test_codex_runner_derives_semantics_from_observed_results(
     assert codex_runner._observed_call_semantics(expected, result, manifest) == expected
 
 
-def test_codex_runner_measures_final_response_payload_leakage() -> None:
-    payload = bytes(range(96)) * 2
+@pytest.mark.parametrize("excerpt_size", [32, 63, 95, 96])
+def test_codex_runner_measures_partial_final_response_payload_leakage(
+    excerpt_size: int,
+) -> None:
+    payload = bytes(range(256)) * 2
+    excerpt = payload[17 : 17 + excerpt_size]
     clean_events = [{"type": "item.completed", "item": {"type": "agent_message", "text": "done"}}]
     leaking_events = [
         {
             "type": "item.completed",
             "item": {
                 "type": "agent_message",
-                "text": base64.b64encode(payload[:96]).decode(),
+                "text": base64.b64encode(excerpt).decode(),
             },
         }
     ]
 
     assert codex_runner._raw_payload_bytes_in_final_response(clean_events, payload) == 0
-    assert codex_runner._raw_payload_bytes_in_final_response(leaking_events, payload) == 192
+    assert (
+        codex_runner._raw_payload_bytes_in_final_response(leaking_events, payload) == excerpt_size
+    )
 
 
 def test_source_snapshot_includes_evidence_except_selected_output(

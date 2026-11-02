@@ -6,6 +6,7 @@ import hashlib
 import json
 import os
 import platform
+import re
 import shutil
 import subprocess
 import sys
@@ -328,6 +329,13 @@ def _observed_call_semantics(
     return observed
 
 
+def _payload_match_length(payload: bytes, candidate: bytes) -> int:
+    if len(candidate) < 32:
+        return 0
+    position = payload.find(candidate)
+    return len(candidate) if position >= 0 else 0
+
+
 def _raw_payload_bytes_in_final_response(events: list[dict[str, Any]], payload: bytes) -> int:
     messages: list[str] = []
     for event in events:
@@ -341,20 +349,32 @@ def _raw_payload_bytes_in_final_response(events: list[dict[str, Any]], payload: 
     if not messages:
         raise RuntimeError("Codex produced no final agent response")
     response = messages[-1].encode()
-    compact_response = b"".join(response.split())
-    leaked = 0
-    chunk_size = 96
-    for offset in range(0, len(payload), chunk_size):
-        chunk = payload[offset : offset + chunk_size]
-        if len(chunk) < 32:
-            continue
-        if (
-            chunk in response
-            or base64.b64encode(chunk) in compact_response
-            or chunk.hex().encode() in compact_response
-        ):
-            leaked += len(chunk)
-    return leaked
+
+    for offset in range(max(0, len(response) - 31)):
+        if payload.find(response[offset : offset + 32]) >= 0:
+            return 32
+
+    for match in re.finditer(rb"[A-Za-z0-9+/]{43,}={0,2}", response):
+        token = match.group()
+        for offset in range(4):
+            encoded = token[offset:]
+            encoded += b"=" * (-len(encoded) % 4)
+            try:
+                decoded = base64.b64decode(encoded, validate=True)
+            except ValueError:
+                continue
+            matched = _payload_match_length(payload, decoded)
+            if matched:
+                return matched
+
+    for match in re.finditer(rb"[0-9a-fA-F]{64,}", response):
+        token = match.group()
+        for offset in range(2):
+            encoded = token[offset : len(token) - ((len(token) - offset) % 2)]
+            matched = _payload_match_length(payload, bytes.fromhex(encoded.decode()))
+            if matched:
+                return matched
+    return 0
 
 
 def _assert_deterministic_results(
