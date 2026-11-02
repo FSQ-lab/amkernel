@@ -1,0 +1,153 @@
+name: Mobile Appium experiment
+
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: Mobile platform attached to the lab runner
+        required: true
+        type: choice
+        options: [android, ios]
+      fixture_artifact:
+        description: Absolute path to the pinned APK or simulator ZIP
+        required: true
+        type: string
+      device_id:
+        description: Android serial or iOS simulator UDID
+        required: true
+        type: string
+      device_name:
+        description: Human-readable device model
+        required: true
+        type: string
+      os_version:
+        description: Device operating-system version
+        required: true
+        type: string
+      device_kind:
+        description: Evidence device kind
+        required: true
+        type: choice
+        options: [android-emulator, android-device, ios-simulator]
+      appium_driver_version:
+        description: Installed UiAutomator2 or XCUITest driver version
+        required: true
+        type: string
+      appium_log:
+        description: Absolute path to the Appium server log for this run
+        required: true
+        type: string
+      measurement_results:
+        description: Absolute path to independently collected measurement-protocol results JSON
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mobile-appium-lab
+  cancel-in-progress: false
+
+env:
+  UV_DEFAULT_INDEX: https://pypi.tuna.tsinghua.edu.cn/simple
+  UV_HTTP_RETRIES: "10"
+  APPIUM_SKIP_UPDATE_CHECK: "1"
+
+jobs:
+  mobile-experiment:
+    name: ${{ inputs.platform }} fixture run
+    runs-on: [self-hosted, mobile-lab]
+    timeout-minutes: 20
+    env:
+      AMK_PLATFORM: ${{ inputs.platform }}
+      AMK_FIXTURE: ${{ inputs.fixture_artifact }}
+      AMK_DEVICE_ID: ${{ inputs.device_id }}
+      AMK_DEVICE_NAME: ${{ inputs.device_name }}
+      AMK_OS_VERSION: ${{ inputs.os_version }}
+      AMK_DEVICE_KIND: ${{ inputs.device_kind }}
+      AMK_DRIVER_VERSION: ${{ inputs.appium_driver_version }}
+      AMK_APPIUM_LOG: ${{ inputs.appium_log }}
+      AMK_MEASUREMENTS: ${{ inputs.measurement_results }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up uv
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          version: 0.12.5
+          enable-cache: true
+      - name: Sync locked contract-test environment
+        run: uv sync --frozen --all-groups
+      - name: Verify fixture, schema, and measurement contracts
+        run: uv run pytest -q tests/e2e/test_mobile_appium_contract.py
+      - name: Build and install the AMKernel wheel
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv build --wheel --out-dir "$RUNNER_TEMP/amkernel-dist"
+          wheel=$(printf '%s\n' "$RUNNER_TEMP"/amkernel-dist/*.whl)
+          test -f "$wheel"
+          uv venv --python 3.13 "$RUNNER_TEMP/amkernel-mobile-venv"
+          uv export --frozen --all-groups --no-emit-project --output-file "$RUNNER_TEMP/amkernel-mobile-requirements.txt"
+          uv pip install --python "$RUNNER_TEMP/amkernel-mobile-venv/bin/python" --require-hashes --requirements "$RUNNER_TEMP/amkernel-mobile-requirements.txt"
+          uv pip install --python "$RUNNER_TEMP/amkernel-mobile-venv/bin/python" --no-deps "$wheel"
+          printf 'AMK_WHEEL=%s\n' "$wheel" >> "$GITHUB_ENV"
+      - name: Verify frozen toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(node --version)" = "v26.12.1"
+          test "$(appium --version)" = "3.7.0"
+          drivers=$(appium driver list --installed --json)
+          DRIVER_JSON="$drivers" AMK_PLATFORM="$AMK_PLATFORM" uv run python - <<'PY'
+          import json, os
+          drivers = json.loads(os.environ["DRIVER_JSON"])
+          expected = {"android": ("uiautomator2", "8.7.0"), "ios": ("xcuitest", "12.13.2")}
+          name, version = expected[os.environ["AMK_PLATFORM"]]
+          if drivers.get(name, {}).get("version") != version:
+              raise SystemExit(f"expected {name} {version}")
+          PY
+          test -s "$AMK_APPIUM_LOG"
+      - name: Install pinned fixture
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$AMK_PLATFORM" == "android" ]]; then
+            printf '%s  %s\n' a9eecf37b26cd084855c530db81c2bb1b91f4c1b095a04f47aa7c20e2791f686 "$AMK_FIXTURE" | shasum -a 256 --check
+          else
+            printf '%s  %s\n' 6708c9cbdf28bf69b45b10b2cfd53e98c998ad011315bb21b1815399f6a8387e "$AMK_FIXTURE" | shasum -a 256 --check
+          fi
+          if [[ "$AMK_PLATFORM" == "android" ]]; then
+            adb -s "$AMK_DEVICE_ID" install -r -g "$AMK_FIXTURE"
+          else
+            rm -rf "$RUNNER_TEMP/UIKitCatalog-iphonesimulator"
+            ditto -x -k "$AMK_FIXTURE" "$RUNNER_TEMP/UIKitCatalog-iphonesimulator"
+            xcrun simctl install "$AMK_DEVICE_ID" "$RUNNER_TEMP/UIKitCatalog-iphonesimulator/UIKitCatalog.app"
+          fi
+      - name: Run public AMKernel workflow
+        run: |
+          uv run python tests/e2e/mobile_appium.py \
+            --platform "$AMK_PLATFORM" \
+            --entry-point "$RUNNER_TEMP/amkernel-mobile-venv/bin/amkernel" \
+            --amkernel-wheel "$AMK_WHEEL" \
+            --workspace "$RUNNER_TEMP/amkernel-mobile-workspace" \
+            --fixture-artifact "$AMK_FIXTURE" \
+            --output-dir "$RUNNER_TEMP/amkernel-mobile-evidence" \
+            --device-id "$AMK_DEVICE_ID" \
+            --measurement-results "$AMK_MEASUREMENTS" \
+            --device-name "$AMK_DEVICE_NAME" \
+            --os-version "$AMK_OS_VERSION" \
+            --device-kind "$AMK_DEVICE_KIND" \
+            --appium-driver-version "$AMK_DRIVER_VERSION" \
+            --amkernel-revision "$GITHUB_SHA" \
+            --appium-log "$AMK_APPIUM_LOG"
+      - name: Retain experiment evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: mobile-appium-${{ inputs.platform }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/amkernel-mobile-evidence
+          if-no-files-found: warn
+          compression-level: 0
+          retention-days: 30

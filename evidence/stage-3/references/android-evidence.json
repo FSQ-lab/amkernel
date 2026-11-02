@@ -1,0 +1,1664 @@
+{
+  "amkernel": {
+    "calls": 3,
+    "continuationVerified": true,
+    "executionCounts": [
+      1,
+      2,
+      3
+    ],
+    "kernelState": "alive",
+    "outputs": [
+      {
+        "artifactCount": 0,
+        "call": 1,
+        "discardedBytes": 0,
+        "durationMs": 3346,
+        "limitBytes": 268435456,
+        "live": "unavailable",
+        "status": "completed",
+        "stderrStoredBytes": 0,
+        "stdoutStoredBytes": 0,
+        "textSha256": "d1354666964f6c704302f5d3cc00c141422a74f7d11120e542a7dbbe269731b1",
+        "totalBytes": 0,
+        "truncated": false
+      },
+      {
+        "artifactCount": 11,
+        "call": 2,
+        "discardedBytes": 0,
+        "durationMs": 25367,
+        "limitBytes": 268435456,
+        "live": "unavailable",
+        "status": "completed",
+        "stderrStoredBytes": 0,
+        "stdoutStoredBytes": 17183,
+        "textSha256": "43f74553a8f53c9f4a75e3dca828f190d37947b9c2ca32fee89834e9143738b9",
+        "totalBytes": 17183,
+        "truncated": false
+      },
+      {
+        "artifactCount": 0,
+        "call": 3,
+        "discardedBytes": 0,
+        "durationMs": 3,
+        "limitBytes": 268435456,
+        "live": "unavailable",
+        "status": "completed",
+        "stderrStoredBytes": 0,
+        "stdoutStoredBytes": 0,
+        "textSha256": "b75e2ed1a68d4b48ca053a938aeab308b026d28ad796179dffc5d5bdb5ab1166",
+        "totalBytes": 0,
+        "truncated": false
+      }
+    ],
+    "tool": "python_exec"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "mimeType": "image/png",
+      "path": "android-launch.png",
+      "sha256": "2de337fc6ee27362e2951d448abcfdfaa4343e2a81e8497fcf730e021f6d6811",
+      "sizeBytes": 69525
+    },
+    {
+      "kind": "screenshot",
+      "mimeType": "image/png",
+      "path": "android-confirm-text.png",
+      "sha256": "2976db8d99aa1e62c63196cd60b28a0376e5a3133fd9a3b9d6e1f66dcb3724c7",
+      "sizeBytes": 187680
+    },
+    {
+      "kind": "screenshot",
+      "mimeType": "image/png",
+      "path": "android-confirm-modal-dismissed.png",
+      "sha256": "08eb5b0d027bc0598783c7473965ffebbb6225d5b16d18fcc45de1b7e529c334",
+      "sizeBytes": 127741
+    },
+    {
+      "kind": "screenshot",
+      "mimeType": "image/png",
+      "path": "android-wait-chronometer-change.png",
+      "sha256": "cfd16696fa819b5a779402d4a23a42edeeebb8de967a58e3a8d495778444f252",
+      "sizeBytes": 63632
+    },
+    {
+      "kind": "screenshot",
+      "mimeType": "image/png",
+      "path": "android-confirm-success.png",
+      "sha256": "4628149dfa3c55b6730c6ac5121f78a803d15757afceb5fd94f260e8d7c186b8",
+      "sizeBytes": 114670
+    },
+    {
+      "kind": "page-source",
+      "mimeType": "application/xml",
+      "path": "android-capture-large-tree.xml",
+      "sha256": "146f1f1086126370f322f5a731edc0103edced3dadcc0514f8d810a7294c646c",
+      "sizeBytes": 17182
+    },
+    {
+      "call": 2,
+      "kind": "amkernel-artifact",
+      "mimeType": "image/png",
+      "path": "public-call-2-artifact-1.bin",
+      "sequence": 1,
+      "sha256": "2de337fc6ee27362e2951d448abcfdfaa4343e2a81e8497fcf730e021f6d6811",
+      "sizeBytes": 69525,
+      "sourceUri": "amkernel://artifact/58b567e21eb34926ad2ca4f6db1aa0ba/0550b5247ac34aa78bf19f6e024cd6b0"
+    },
+    {
+      "call": 2,
+      "kind": "amkernel-artifact",
+      "mimeType": "image/png",
+      "path": "public-call-2-artifact-2.png",
+      "sequence": 2,
+      "sha256": "2de337fc6ee27362e2951d448abcfdfaa4343e2a81e8497fcf730e021f6d6811",
+      "sizeBytes": 69525,
+      "sourceUri": "amkernel://artifact/58b567e21eb34926ad2ca4f6db1aa0ba/84dcfefd02214cf49fe0fbccb289f244"
+    },
+    {
+      "call": 2,
+      "kind": "amkernel-artifact",
+      "mimeType": "image/png",
+      "path": "public-call-2-artifact-3.bin",
+      "sequence": 3,
+      "sha256": "2976db8d99aa1e62c63196cd60b28a0376e5a3133fd9a3b9d6e1f66dcb3724c7",
+      "sizeBytes": 187680,
+      "sourceUri": "amkernel://artifact/58b567e21eb34926ad2ca4f6db1aa0ba/b13354e3eb1d4de68d3192f687232a8b"
+    },
+    {
+      "call": 2,
+      "kind": "amkernel-artifact",
+      "mimeType": "image/png",
+      "path": "public-call-2-artifact-4.png",
+      "sequence": 4,
+      "sha256": "2976db8d99aa1e62c63196cd60b28a0376e5a3133fd9a3b9d6e1f66dcb3724c7",
+      "sizeBytes": 187680,
+      "sourceUri": "amkernel://artifact/58b567e21eb34926ad2ca4f6db1aa0ba/ef5edfbe93c34f2b8689346bb48412ed"
+    },
+    {
+      "call": 2,
+      "kind": "amkernel-artifact",
+      "mimeType": "image/png",
+      "path": "public-call-2-artifact-5.bin",
+      "sequence": 5,
+      "sha256": "08eb5b0d027bc0598783c7473965ffebbb6225d5b16d18fcc45de1b7e529c334",
+      "sizeBytes": 127741,
+      "sourceUri": "amkernel://artifact/58b567e21eb34926ad2ca4f6db1aa0ba/bbca9183838b4eb58ba524d55d281049"
+    },
+    {
+      "call": 2,
+      "kind": "amkernel-artifact",
+      "mimeType": "image/png",
+      "path": "public-call-2-artifact-6.png",
+      "sequence": 6,
+      "sha256": "08eb5b0d027bc0598783c7473965ffebbb6225d5b16d18fcc45de1b7e529c334",
+      "sizeBytes": 127741,
+      "sourceUri": "amkernel://artifact/58b567e21eb34926ad2ca4f6db1aa0ba/11691ce2abae4a81b037207fa7692986"
+    },
+    {
+      "call": 2,
+      "kind": "amkernel-artifact",
+      "mimeType": "image/png",
+      "path": "public-call-2-artifact-7.bin",
+      "sequence": 7,
+      "sha256": "cfd16696fa819b5a779402d4a23a42edeeebb8de967a58e3a8d495778444f252",
+      "sizeBytes": 63632,
+      "sourceUri": "amkernel://artifact/58b567e21eb34926ad2ca4f6db1aa0ba/caa0d486956c481cb7a7641673268259"
+    },
+    {
+      "call": 2,
+      "kind": "amkernel-artifact",
+      "mimeType": "image/png",
+      "path": "public-call-2-artifact-8.png",
+      "sequence": 8,
+      "sha256": "cfd16696fa819b5a779402d4a23a42edeeebb8de967a58e3a8d495778444f252",
+      "sizeBytes": 63632,
+      "sourceUri": "amkernel://artifact/58b567e21eb34926ad2ca4f6db1aa0ba/529422fbc69d473d8340aaac30e27541"
+    },
+    {
+      "call": 2,
+      "kind": "amkernel-artifact",
+      "mimeType": "image/png",
+      "path": "public-call-2-artifact-9.bin",
+      "sequence": 9,
+      "sha256": "4628149dfa3c55b6730c6ac5121f78a803d15757afceb5fd94f260e8d7c186b8",
+      "sizeBytes": 114670,
+      "sourceUri": "amkernel://artifact/58b567e21eb34926ad2ca4f6db1aa0ba/c17f76b45a504ad29ea4ffaa75d0efc4"
+    },
+    {
+      "call": 2,
+      "kind": "amkernel-artifact",
+      "mimeType": "image/png",
+      "path": "public-call-2-artifact-10.png",
+      "sequence": 10,
+      "sha256": "4628149dfa3c55b6730c6ac5121f78a803d15757afceb5fd94f260e8d7c186b8",
+      "sizeBytes": 114670,
+      "sourceUri": "amkernel://artifact/58b567e21eb34926ad2ca4f6db1aa0ba/e1c4076de3014942b9bac99da0e5c838"
+    },
+    {
+      "call": 2,
+      "kind": "amkernel-artifact",
+      "mimeType": "application/octet-stream",
+      "path": "public-call-2-artifact-11.xml",
+      "sequence": 11,
+      "sha256": "146f1f1086126370f322f5a731edc0103edced3dadcc0514f8d810a7294c646c",
+      "sizeBytes": 17182,
+      "sourceUri": "amkernel://artifact/58b567e21eb34926ad2ca4f6db1aa0ba/c61379a069424f469231f279f61bd4b7"
+    },
+    {
+      "call": 2,
+      "kind": "amkernel-display",
+      "mimeType": "image/png",
+      "path": "public-call-2-display-12.bin",
+      "sequence": 12,
+      "sha256": "2de337fc6ee27362e2951d448abcfdfaa4343e2a81e8497fcf730e021f6d6811",
+      "sizeBytes": 69525,
+      "sourceUri": "amkernel://artifact/58b567e21eb34926ad2ca4f6db1aa0ba/0550b5247ac34aa78bf19f6e024cd6b0"
+    },
+    {
+      "call": 2,
+      "kind": "amkernel-display",
+      "mimeType": "image/png",
+      "path": "public-call-2-display-13.bin",
+      "sequence": 13,
+      "sha256": "2976db8d99aa1e62c63196cd60b28a0376e5a3133fd9a3b9d6e1f66dcb3724c7",
+      "sizeBytes": 187680,
+      "sourceUri": "amkernel://artifact/58b567e21eb34926ad2ca4f6db1aa0ba/b13354e3eb1d4de68d3192f687232a8b"
+    },
+    {
+      "call": 2,
+      "kind": "amkernel-display",
+      "mimeType": "image/png",
+      "path": "public-call-2-display-14.bin",
+      "sequence": 14,
+      "sha256": "08eb5b0d027bc0598783c7473965ffebbb6225d5b16d18fcc45de1b7e529c334",
+      "sizeBytes": 127741,
+      "sourceUri": "amkernel://artifact/58b567e21eb34926ad2ca4f6db1aa0ba/bbca9183838b4eb58ba524d55d281049"
+    },
+    {
+      "call": 2,
+      "kind": "amkernel-display",
+      "mimeType": "image/png",
+      "path": "public-call-2-display-15.bin",
+      "sequence": 15,
+      "sha256": "cfd16696fa819b5a779402d4a23a42edeeebb8de967a58e3a8d495778444f252",
+      "sizeBytes": 63632,
+      "sourceUri": "amkernel://artifact/58b567e21eb34926ad2ca4f6db1aa0ba/caa0d486956c481cb7a7641673268259"
+    },
+    {
+      "call": 2,
+      "kind": "amkernel-display",
+      "mimeType": "image/png",
+      "path": "public-call-2-display-16.bin",
+      "sequence": 16,
+      "sha256": "4628149dfa3c55b6730c6ac5121f78a803d15757afceb5fd94f260e8d7c186b8",
+      "sizeBytes": 114670,
+      "sourceUri": "amkernel://artifact/58b567e21eb34926ad2ca4f6db1aa0ba/c17f76b45a504ad29ea4ffaa75d0efc4"
+    },
+    {
+      "kind": "amkernel-result",
+      "mimeType": "application/json",
+      "path": "amkernel-result.json",
+      "sha256": "2e18b5249b891b950b495fb0f86e5f139a45ce32199c1f2e01fae5e07afaab87",
+      "sizeBytes": 45644
+    },
+    {
+      "kind": "screenshot",
+      "mimeType": "image/png",
+      "path": "screenshot-01.png",
+      "sha256": "737aba173a326489cc457356259638e14f82317bcf8bfcf335047779a0f0987f",
+      "sizeBytes": 70689
+    },
+    {
+      "kind": "screenshot",
+      "mimeType": "image/png",
+      "path": "screenshot-02.png",
+      "sha256": "737aba173a326489cc457356259638e14f82317bcf8bfcf335047779a0f0987f",
+      "sizeBytes": 70689
+    },
+    {
+      "kind": "screenshot",
+      "mimeType": "image/png",
+      "path": "screenshot-03.png",
+      "sha256": "737aba173a326489cc457356259638e14f82317bcf8bfcf335047779a0f0987f",
+      "sizeBytes": 70689
+    },
+    {
+      "kind": "screenshot",
+      "mimeType": "image/png",
+      "path": "screenshot-04.png",
+      "sha256": "737aba173a326489cc457356259638e14f82317bcf8bfcf335047779a0f0987f",
+      "sizeBytes": 70689
+    },
+    {
+      "kind": "screenshot",
+      "mimeType": "image/png",
+      "path": "screenshot-05.png",
+      "sha256": "737aba173a326489cc457356259638e14f82317bcf8bfcf335047779a0f0987f",
+      "sizeBytes": 70689
+    },
+    {
+      "kind": "screenshot",
+      "mimeType": "image/png",
+      "path": "screenshot-06.png",
+      "sha256": "737aba173a326489cc457356259638e14f82317bcf8bfcf335047779a0f0987f",
+      "sizeBytes": 70689
+    },
+    {
+      "kind": "screenshot",
+      "mimeType": "image/png",
+      "path": "screenshot-07.png",
+      "sha256": "737aba173a326489cc457356259638e14f82317bcf8bfcf335047779a0f0987f",
+      "sizeBytes": 70689
+    },
+    {
+      "kind": "screenshot",
+      "mimeType": "image/png",
+      "path": "screenshot-08.png",
+      "sha256": "737aba173a326489cc457356259638e14f82317bcf8bfcf335047779a0f0987f",
+      "sizeBytes": 70689
+    },
+    {
+      "kind": "screenshot",
+      "mimeType": "image/png",
+      "path": "screenshot-09.png",
+      "sha256": "737aba173a326489cc457356259638e14f82317bcf8bfcf335047779a0f0987f",
+      "sizeBytes": 70689
+    },
+    {
+      "kind": "screenshot",
+      "mimeType": "image/png",
+      "path": "screenshot-10.png",
+      "sha256": "737aba173a326489cc457356259638e14f82317bcf8bfcf335047779a0f0987f",
+      "sizeBytes": 70689
+    },
+    {
+      "kind": "page-source",
+      "mimeType": "application/xml",
+      "path": "source-01.xml",
+      "sha256": "b1f5964069d0459a12785c8f063ac31793bb82786e2cfd3c06d613f9954f65f0",
+      "sizeBytes": 13605
+    },
+    {
+      "kind": "page-source",
+      "mimeType": "application/xml",
+      "path": "source-02.xml",
+      "sha256": "b1f5964069d0459a12785c8f063ac31793bb82786e2cfd3c06d613f9954f65f0",
+      "sizeBytes": 13605
+    },
+    {
+      "kind": "page-source",
+      "mimeType": "application/xml",
+      "path": "source-03.xml",
+      "sha256": "b1f5964069d0459a12785c8f063ac31793bb82786e2cfd3c06d613f9954f65f0",
+      "sizeBytes": 13605
+    },
+    {
+      "kind": "page-source",
+      "mimeType": "application/xml",
+      "path": "source-04.xml",
+      "sha256": "b1f5964069d0459a12785c8f063ac31793bb82786e2cfd3c06d613f9954f65f0",
+      "sizeBytes": 13605
+    },
+    {
+      "kind": "page-source",
+      "mimeType": "application/xml",
+      "path": "source-05.xml",
+      "sha256": "b1f5964069d0459a12785c8f063ac31793bb82786e2cfd3c06d613f9954f65f0",
+      "sizeBytes": 13605
+    },
+    {
+      "kind": "page-source",
+      "mimeType": "application/xml",
+      "path": "source-06.xml",
+      "sha256": "b1f5964069d0459a12785c8f063ac31793bb82786e2cfd3c06d613f9954f65f0",
+      "sizeBytes": 13605
+    },
+    {
+      "kind": "page-source",
+      "mimeType": "application/xml",
+      "path": "source-07.xml",
+      "sha256": "b1f5964069d0459a12785c8f063ac31793bb82786e2cfd3c06d613f9954f65f0",
+      "sizeBytes": 13605
+    },
+    {
+      "kind": "page-source",
+      "mimeType": "application/xml",
+      "path": "source-08.xml",
+      "sha256": "b1f5964069d0459a12785c8f063ac31793bb82786e2cfd3c06d613f9954f65f0",
+      "sizeBytes": 13605
+    },
+    {
+      "kind": "page-source",
+      "mimeType": "application/xml",
+      "path": "source-09.xml",
+      "sha256": "b1f5964069d0459a12785c8f063ac31793bb82786e2cfd3c06d613f9954f65f0",
+      "sizeBytes": 13605
+    },
+    {
+      "kind": "page-source",
+      "mimeType": "application/xml",
+      "path": "source-10.xml",
+      "sha256": "b1f5964069d0459a12785c8f063ac31793bb82786e2cfd3c06d613f9954f65f0",
+      "sizeBytes": 13605
+    },
+    {
+      "kind": "appium-log",
+      "mimeType": "text/plain",
+      "path": "appium.log",
+      "sha256": "b21309cf99b1f9778559c983d071c0c164ae742b00abc0fdc89e4356f8557935",
+      "sizeBytes": 464269
+    },
+    {
+      "kind": "driver-log",
+      "mimeType": "text/plain",
+      "path": "driver.log",
+      "sha256": "fcacc933040c00b539c24071ebb6cb97cb0e337f9ee6b12fc2f51de6c66bc366",
+      "sizeBytes": 42
+    },
+    {
+      "kind": "device-log",
+      "mimeType": "text/plain",
+      "path": "device.log",
+      "sha256": "6525f44fe8ba51753c8770358f6365403595dfd825e10dd60355a7f0e1e2395b",
+      "sizeBytes": 448803
+    },
+    {
+      "kind": "amkernel-log",
+      "mimeType": "text/plain",
+      "path": "amkernel.log",
+      "sha256": "e235f8da6f7adf7c8c262a3a2704ab55dbdda5746003d3673db45f25299845d9",
+      "sizeBytes": 27
+    }
+  ],
+  "cleanup": {
+    "applicationStopped": "observed",
+    "attempted": true,
+    "completed": true,
+    "deviceUsable": "observed",
+    "driverQuit": "observed",
+    "managedProcessesExited": "observed",
+    "observation": "application termination and driver quit completed; AMKernel server and runner processes exited; Appium session 95f48563-3fc1-4197-9dd6-198d79a14654 is absent; device probe returned 'device'",
+    "remainingExternalResources": [],
+    "sessionAbsent": "observed"
+  },
+  "completedAt": "2026-10-30T07:14:00.141043Z",
+  "device": {
+    "id": "emulator-5554",
+    "kind": "android-emulator",
+    "name": "Pixel 9",
+    "osVersion": "16",
+    "platformDetails": {
+      "abi": "arm64-v8a",
+      "apiLevel": 36,
+      "deviceProfile": "pixel_9",
+      "sdkRootLabel": "ANDROID_HOME",
+      "systemImage": "system-images;android-36;google_apis;arm64-v8a"
+    },
+    "state": "online"
+  },
+  "durationMs": 29707,
+  "environment": {
+    "amkernel": {
+      "revision": "f25a7abdf1dd9dd33e8031961a41143f14d13bc1",
+      "version": "0.0.0",
+      "wheel": {
+        "filename": "amkernel-0.0.0-py3-none-any.whl",
+        "sha256": "40acc828cd8d1181194b1d572c7bc8ce43f866ad8f519490fcdba0a3ba47a15d",
+        "sizeBytes": 67668
+      }
+    },
+    "appium": {
+      "baseUrl": "http://127.0.0.1:4723",
+      "driverName": "uiautomator2",
+      "driverVersion": "8.7.0",
+      "pythonClientVersion": "5.2.5",
+      "seleniumVersion": "4.52.0",
+      "serverVersion": "3.7.0"
+    },
+    "capabilities": {
+      "applicationId": "io.appium.android.apis",
+      "automationName": "UiAutomator2",
+      "noReset": true,
+      "platformName": "Android",
+      "udid": "emulator-5554"
+    },
+    "host": {
+      "architecture": "arm64",
+      "os": "Darwin",
+      "release": "25.6.0"
+    },
+    "mcp": {
+      "clientVersion": "2.3.0",
+      "protocolVersion": "2026-07-28"
+    },
+    "nodeVersion": "26.12.1",
+    "officialSkills": {
+      "appiumPythonPath": "skills/appium-python",
+      "commit": "e907024c210fe024c956ed9c74146fc27b1dd013",
+      "repository": "https://github.com/appium/skills"
+    },
+    "python": {
+      "implementation": "CPython",
+      "version": "3.13.15"
+    }
+  },
+  "experimentId": "S3-mobile-appium",
+  "fixture": {
+    "applicationId": "io.appium.android.apis",
+    "artifactName": "ApiDemos-debug.apk",
+    "artifactSha256": "a9eecf37b26cd084855c530db81c2bb1b91f4c1b095a04f47aa7c20e2791f686",
+    "artifactSizeBytes": 6521217,
+    "buildCommands": [
+      "git clone https://github.com/appium/android-apidemos.git android-apidemos",
+      "git -C android-apidemos checkout --detach 3e716ee04ef3390284bfab761e28da8c15c08143",
+      "cd android-apidemos && ./gradlew --no-daemon clean assembleDebug"
+    ],
+    "commit": "3e716ee04ef3390284bfab761e28da8c15c08143",
+    "id": "appium-android-apidemos-v6.0.18",
+    "installCommand": "adb -s $ANDROID_SERIAL install -r -g ApiDemos-debug.apk",
+    "license": "Apache-2.0",
+    "redistribution": "Apache-2.0 redistribution permitted with license and notice preservation",
+    "repository": "https://github.com/appium/android-apidemos",
+    "tag": "v6.0.18"
+  },
+  "logs": {
+    "amkernel": {
+      "kind": "amkernel-log",
+      "mimeType": "text/plain",
+      "path": "amkernel.log",
+      "sha256": "e235f8da6f7adf7c8c262a3a2704ab55dbdda5746003d3673db45f25299845d9",
+      "sizeBytes": 27
+    },
+    "appiumServer": {
+      "kind": "appium-log",
+      "mimeType": "text/plain",
+      "path": "appium.log",
+      "sha256": "b21309cf99b1f9778559c983d071c0c164ae742b00abc0fdc89e4356f8557935",
+      "sizeBytes": 464269
+    },
+    "device": {
+      "kind": "device-log",
+      "mimeType": "text/plain",
+      "path": "device.log",
+      "sha256": "6525f44fe8ba51753c8770358f6365403595dfd825e10dd60355a7f0e1e2395b",
+      "sizeBytes": 448803
+    },
+    "platformDriver": {
+      "kind": "driver-log",
+      "mimeType": "text/plain",
+      "path": "driver.log",
+      "sha256": "fcacc933040c00b539c24071ebb6cb97cb0e337f9ee6b12fc2f51de6c66bc366",
+      "sizeBytes": 42
+    }
+  },
+  "measurementProtocol": {
+    "definitionSha256": "cce69f8edc3f63e88a614eaf83d419440869219a654369df05a78057bb8f3faf",
+    "id": "amkernel-mobile-appium-measurement-v1",
+    "resultsProvenance": {
+      "amkernelRevision": "f25a7abdf1dd9dd33e8031961a41143f14d13bc1",
+      "amkernelWheelSha256": "40acc828cd8d1181194b1d572c7bc8ce43f866ad8f519490fcdba0a3ba47a15d",
+      "completedAt": "2026-10-30T07:06:26.880812Z",
+      "deviceBuild": "google/sdk_gphone64_arm64/emu64a:16/BE2A.250530.026.F3/13894323:userdebug/dev-keys",
+      "deviceId": "emulator-5554",
+      "measurementProtocolSha256": "cce69f8edc3f63e88a614eaf83d419440869219a654369df05a78057bb8f3faf",
+      "platform": "android",
+      "startedAt": "2026-10-30T07:06:08.273779Z"
+    }
+  },
+  "measurements": {
+    "activeDriverMemory": {
+      "baselinePoint": "post-session-baseline",
+      "ceilingDelta": 1073741824,
+      "deltas": {
+        "amkernel": 81920,
+        "appiumServer": 8126464,
+        "platformDriver": 18833408
+      },
+      "passed": true,
+      "status": "measured",
+      "unit": "bytes"
+    },
+    "agentToolCallCount": {
+      "ceiling": 40,
+      "passed": true,
+      "samples": [
+        3
+      ],
+      "status": "measured",
+      "summary": {
+        "maximum": 3,
+        "median": 3,
+        "minimum": 3
+      },
+      "unit": "calls"
+    },
+    "appiumSessionStartup": {
+      "ceiling": 120000,
+      "passed": true,
+      "samples": [
+        2837.99975,
+        2017.029917,
+        2046.779333
+      ],
+      "status": "measured",
+      "summary": {
+        "maximum": 2837.99975,
+        "median": 2046.779333,
+        "minimum": 2017.029917
+      },
+      "unit": "milliseconds"
+    },
+    "contextReduction": {
+      "maximumAfterBytes": 32768,
+      "minimumReductionRatio": 0.8,
+      "observations": [
+        {
+          "afterBytes": 968,
+          "beforeBytes": 13605,
+          "reductionRatio": 0.9288496876148474
+        },
+        {
+          "afterBytes": 968,
+          "beforeBytes": 13605,
+          "reductionRatio": 0.9288496876148474
+        },
+        {
+          "afterBytes": 968,
+          "beforeBytes": 13605,
+          "reductionRatio": 0.9288496876148474
+        },
+        {
+          "afterBytes": 968,
+          "beforeBytes": 13605,
+          "reductionRatio": 0.9288496876148474
+        },
+        {
+          "afterBytes": 968,
+          "beforeBytes": 13605,
+          "reductionRatio": 0.9288496876148474
+        },
+        {
+          "afterBytes": 968,
+          "beforeBytes": 13605,
+          "reductionRatio": 0.9288496876148474
+        },
+        {
+          "afterBytes": 968,
+          "beforeBytes": 13605,
+          "reductionRatio": 0.9288496876148474
+        },
+        {
+          "afterBytes": 968,
+          "beforeBytes": 13605,
+          "reductionRatio": 0.9288496876148474
+        },
+        {
+          "afterBytes": 968,
+          "beforeBytes": 13605,
+          "reductionRatio": 0.9288496876148474
+        },
+        {
+          "afterBytes": 968,
+          "beforeBytes": 13605,
+          "reductionRatio": 0.9288496876148474
+        }
+      ],
+      "passed": true,
+      "status": "measured"
+    },
+    "escalationCleanup": {
+      "ceiling": 15000,
+      "passed": true,
+      "samples": [
+        211.307042,
+        212.093125,
+        211.88
+      ],
+      "status": "measured",
+      "summary": {
+        "maximum": 212.093125,
+        "median": 211.88,
+        "minimum": 211.307042
+      },
+      "unit": "milliseconds"
+    },
+    "idleKernelMemory": {
+      "ceiling": 1073741824,
+      "observations": {
+        "amkernel": 73908224,
+        "appiumServer": 301842432
+      },
+      "passed": true,
+      "status": "measured",
+      "unit": "bytes"
+    },
+    "kernelStartup": {
+      "ceiling": 10000,
+      "passed": true,
+      "samples": [
+        579.862625,
+        352.241792,
+        379.402958
+      ],
+      "status": "measured",
+      "summary": {
+        "maximum": 579.862625,
+        "median": 379.402958,
+        "minimum": 352.241792
+      },
+      "unit": "milliseconds"
+    },
+    "outputDeliveryLatency": {
+      "ceiling": 10000,
+      "passed": true,
+      "samples": [
+        6.23275000000001,
+        5.489249999999998,
+        5.471500000000006,
+        6.455624999999998,
+        7.063708000000005,
+        5.544458000000006,
+        7.495249999999999,
+        5.294667000000004,
+        8.753540999999998,
+        5.438832999999988
+      ],
+      "status": "measured",
+      "summary": {
+        "maximum": 8.753540999999998,
+        "median": 5.888604000000008,
+        "minimum": 5.294667000000004
+      },
+      "unit": "milliseconds"
+    },
+    "pageSource": {
+      "baseline": 4.2299585,
+      "ceilingDerivedLatency": 15000,
+      "derivedLatencySummary": {
+        "maximum": 5.428124499999999,
+        "median": 4.3858749999999995,
+        "minimum": 3.7775415
+      },
+      "maximumBytes": 16777216,
+      "observations": [
+        {
+          "artifactPath": "source-01.xml",
+          "bytes": 13605,
+          "derivedLatencyMs": 5.0722085,
+          "integrityVerified": true,
+          "latencyMs": 9.302167,
+          "nodeCount": 21,
+          "sha256": "b1f5964069d0459a12785c8f063ac31793bb82786e2cfd3c06d613f9954f65f0"
+        },
+        {
+          "artifactPath": "source-02.xml",
+          "bytes": 13605,
+          "derivedLatencyMs": 4.2559995,
+          "integrityVerified": true,
+          "latencyMs": 8.485958,
+          "nodeCount": 21,
+          "sha256": "b1f5964069d0459a12785c8f063ac31793bb82786e2cfd3c06d613f9954f65f0"
+        },
+        {
+          "artifactPath": "source-03.xml",
+          "bytes": 13605,
+          "derivedLatencyMs": 5.016833499999999,
+          "integrityVerified": true,
+          "latencyMs": 9.246792,
+          "nodeCount": 21,
+          "sha256": "b1f5964069d0459a12785c8f063ac31793bb82786e2cfd3c06d613f9954f65f0"
+        },
+        {
+          "artifactPath": "source-04.xml",
+          "bytes": 13605,
+          "derivedLatencyMs": 4.106541499999999,
+          "integrityVerified": true,
+          "latencyMs": 8.3365,
+          "nodeCount": 21,
+          "sha256": "b1f5964069d0459a12785c8f063ac31793bb82786e2cfd3c06d613f9954f65f0"
+        },
+        {
+          "artifactPath": "source-05.xml",
+          "bytes": 13605,
+          "derivedLatencyMs": 4.515750499999999,
+          "integrityVerified": true,
+          "latencyMs": 8.745709,
+          "nodeCount": 21,
+          "sha256": "b1f5964069d0459a12785c8f063ac31793bb82786e2cfd3c06d613f9954f65f0"
+        },
+        {
+          "artifactPath": "source-06.xml",
+          "bytes": 13605,
+          "derivedLatencyMs": 5.428124499999999,
+          "integrityVerified": true,
+          "latencyMs": 9.658083,
+          "nodeCount": 21,
+          "sha256": "b1f5964069d0459a12785c8f063ac31793bb82786e2cfd3c06d613f9954f65f0"
+        },
+        {
+          "artifactPath": "source-07.xml",
+          "bytes": 13605,
+          "derivedLatencyMs": 3.7775415,
+          "integrityVerified": true,
+          "latencyMs": 8.0075,
+          "nodeCount": 21,
+          "sha256": "b1f5964069d0459a12785c8f063ac31793bb82786e2cfd3c06d613f9954f65f0"
+        },
+        {
+          "artifactPath": "source-08.xml",
+          "bytes": 13605,
+          "derivedLatencyMs": 5.337291499999999,
+          "integrityVerified": true,
+          "latencyMs": 9.56725,
+          "nodeCount": 21,
+          "sha256": "b1f5964069d0459a12785c8f063ac31793bb82786e2cfd3c06d613f9954f65f0"
+        },
+        {
+          "artifactPath": "source-09.xml",
+          "bytes": 13605,
+          "derivedLatencyMs": 4.199291499999999,
+          "integrityVerified": true,
+          "latencyMs": 8.42925,
+          "nodeCount": 21,
+          "sha256": "b1f5964069d0459a12785c8f063ac31793bb82786e2cfd3c06d613f9954f65f0"
+        },
+        {
+          "artifactPath": "source-10.xml",
+          "bytes": 13605,
+          "derivedLatencyMs": 4.045749499999999,
+          "integrityVerified": true,
+          "latencyMs": 8.275708,
+          "nodeCount": 21,
+          "sha256": "b1f5964069d0459a12785c8f063ac31793bb82786e2cfd3c06d613f9954f65f0"
+        }
+      ],
+      "passed": true,
+      "status": "measured"
+    },
+    "perCellOverhead": {
+      "baseline": 4.2299585,
+      "baselineSamples": [
+        5.560459,
+        5.169375,
+        5.373834,
+        4.191542,
+        4.160916,
+        4.394875,
+        4.268375,
+        3.693,
+        3.634458,
+        3.429333
+      ],
+      "ceilingDerived": 2000,
+      "derivedSamples": [
+        0.0,
+        0.0,
+        0.0,
+        1.9571664999999996,
+        0.0,
+        4.8447914999999995,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "derivedSummary": {
+        "maximum": 4.8447914999999995,
+        "median": 0.0,
+        "minimum": 0.0
+      },
+      "passed": true,
+      "rawSamples": [
+        3.566375,
+        3.768375,
+        3.273917,
+        6.187125,
+        3.915083,
+        9.07475,
+        3.917209,
+        3.588791,
+        4.0385,
+        3.752208
+      ],
+      "rawSummary": {
+        "maximum": 9.07475,
+        "median": 3.841729,
+        "minimum": 3.273917
+      },
+      "status": "measured",
+      "unit": "milliseconds"
+    },
+    "resourcePlateau": {
+      "amkernel": {
+        "descendantProcessDelta": 0,
+        "iteration10Pid": 68898,
+        "iteration5Pid": 68898,
+        "openFileDelta": 0,
+        "passed": true,
+        "rssDeltaBytes": 32768,
+        "samePid": true,
+        "taskDelta": 0
+      },
+      "appiumServer": {
+        "descendantProcessDelta": 0,
+        "iteration10Pid": 57626,
+        "iteration5Pid": 57626,
+        "openFileDelta": 0,
+        "passed": true,
+        "rssDeltaBytes": 819200,
+        "samePid": true,
+        "taskDelta": 0
+      },
+      "platformDriver": {
+        "descendantProcessDelta": 0,
+        "iteration10Pid": 14222,
+        "iteration5Pid": 14222,
+        "openFileDelta": -1,
+        "passed": true,
+        "rssDeltaBytes": -19005440,
+        "samePid": true,
+        "taskDelta": 0
+      }
+    },
+    "resourceSamples": [
+      {
+        "amkernel": {
+          "descendants": 1,
+          "openFiles": 29,
+          "pid": 68898,
+          "rssBytes": 73908224,
+          "tasks": 4
+        },
+        "appiumServer": {
+          "descendants": 3,
+          "openFiles": 188,
+          "pid": 57626,
+          "rssBytes": 301842432,
+          "tasks": 12
+        },
+        "point": "pre-session-idle"
+      },
+      {
+        "amkernel": {
+          "descendants": 1,
+          "openFiles": 29,
+          "pid": 68898,
+          "rssBytes": 73990144,
+          "tasks": 4
+        },
+        "appiumServer": {
+          "descendants": 5,
+          "openFiles": 199,
+          "pid": 57626,
+          "rssBytes": 309968896,
+          "tasks": 12
+        },
+        "platformDriver": {
+          "descendants": 0,
+          "openFiles": 121,
+          "pid": 14222,
+          "rssBytes": 174010368,
+          "tasks": 26
+        },
+        "point": "post-session-baseline"
+      },
+      {
+        "amkernel": {
+          "descendants": 1,
+          "openFiles": 29,
+          "pid": 68898,
+          "rssBytes": 74121216,
+          "tasks": 4
+        },
+        "appiumServer": {
+          "descendants": 5,
+          "openFiles": 199,
+          "pid": 57626,
+          "rssBytes": 309968896,
+          "tasks": 12
+        },
+        "platformDriver": {
+          "descendants": 0,
+          "openFiles": 121,
+          "pid": 14222,
+          "rssBytes": 192540672,
+          "tasks": 26
+        },
+        "point": "post-warmup"
+      },
+      {
+        "amkernel": {
+          "descendants": 1,
+          "openFiles": 29,
+          "pid": 68898,
+          "rssBytes": 74121216,
+          "tasks": 4
+        },
+        "appiumServer": {
+          "descendants": 5,
+          "openFiles": 199,
+          "pid": 57626,
+          "rssBytes": 309968896,
+          "tasks": 12
+        },
+        "platformDriver": {
+          "descendants": 0,
+          "openFiles": 121,
+          "pid": 14222,
+          "rssBytes": 196210688,
+          "tasks": 26
+        },
+        "point": "iteration-1"
+      },
+      {
+        "amkernel": {
+          "descendants": 1,
+          "openFiles": 29,
+          "pid": 68898,
+          "rssBytes": 74153984,
+          "tasks": 4
+        },
+        "appiumServer": {
+          "descendants": 5,
+          "openFiles": 199,
+          "pid": 57626,
+          "rssBytes": 309968896,
+          "tasks": 12
+        },
+        "platformDriver": {
+          "descendants": 0,
+          "openFiles": 121,
+          "pid": 14222,
+          "rssBytes": 211849216,
+          "tasks": 26
+        },
+        "point": "iteration-5"
+      },
+      {
+        "amkernel": {
+          "descendants": 1,
+          "openFiles": 29,
+          "pid": 68898,
+          "rssBytes": 74186752,
+          "tasks": 4
+        },
+        "appiumServer": {
+          "descendants": 5,
+          "openFiles": 199,
+          "pid": 57626,
+          "rssBytes": 310788096,
+          "tasks": 12
+        },
+        "platformDriver": {
+          "descendants": 0,
+          "openFiles": 120,
+          "pid": 14222,
+          "rssBytes": 192843776,
+          "tasks": 26
+        },
+        "point": "iteration-10"
+      }
+    ],
+    "screenshot": {
+      "baseline": 4.2299585,
+      "ceilingDerivedLatency": 15000,
+      "derivedLatencySummary": {
+        "maximum": 94.6476245,
+        "median": 93.192458,
+        "minimum": 89.4695835
+      },
+      "maximumDecodedBytes": 16777216,
+      "observations": [
+        {
+          "artifactPath": "screenshot-01.png",
+          "decodedBytes": 70689,
+          "derivedLatencyMs": 94.6476245,
+          "encodedBytes": 94252,
+          "integrityVerified": true,
+          "latencyMs": 98.877583,
+          "sha256": "737aba173a326489cc457356259638e14f82317bcf8bfcf335047779a0f0987f"
+        },
+        {
+          "artifactPath": "screenshot-02.png",
+          "decodedBytes": 70689,
+          "derivedLatencyMs": 93.4434995,
+          "encodedBytes": 94252,
+          "integrityVerified": true,
+          "latencyMs": 97.673458,
+          "sha256": "737aba173a326489cc457356259638e14f82317bcf8bfcf335047779a0f0987f"
+        },
+        {
+          "artifactPath": "screenshot-03.png",
+          "decodedBytes": 70689,
+          "derivedLatencyMs": 93.49950050000001,
+          "encodedBytes": 94252,
+          "integrityVerified": true,
+          "latencyMs": 97.729459,
+          "sha256": "737aba173a326489cc457356259638e14f82317bcf8bfcf335047779a0f0987f"
+        },
+        {
+          "artifactPath": "screenshot-04.png",
+          "decodedBytes": 70689,
+          "derivedLatencyMs": 91.29895850000001,
+          "encodedBytes": 94252,
+          "integrityVerified": true,
+          "latencyMs": 95.528917,
+          "sha256": "737aba173a326489cc457356259638e14f82317bcf8bfcf335047779a0f0987f"
+        },
+        {
+          "artifactPath": "screenshot-05.png",
+          "decodedBytes": 70689,
+          "derivedLatencyMs": 90.96104150000001,
+          "encodedBytes": 94252,
+          "integrityVerified": true,
+          "latencyMs": 95.191,
+          "sha256": "737aba173a326489cc457356259638e14f82317bcf8bfcf335047779a0f0987f"
+        },
+        {
+          "artifactPath": "screenshot-06.png",
+          "decodedBytes": 70689,
+          "derivedLatencyMs": 92.43662450000001,
+          "encodedBytes": 94252,
+          "integrityVerified": true,
+          "latencyMs": 96.666583,
+          "sha256": "737aba173a326489cc457356259638e14f82317bcf8bfcf335047779a0f0987f"
+        },
+        {
+          "artifactPath": "screenshot-07.png",
+          "decodedBytes": 70689,
+          "derivedLatencyMs": 93.5384575,
+          "encodedBytes": 94252,
+          "integrityVerified": true,
+          "latencyMs": 97.768416,
+          "sha256": "737aba173a326489cc457356259638e14f82317bcf8bfcf335047779a0f0987f"
+        },
+        {
+          "artifactPath": "screenshot-08.png",
+          "decodedBytes": 70689,
+          "derivedLatencyMs": 92.9414165,
+          "encodedBytes": 94252,
+          "integrityVerified": true,
+          "latencyMs": 97.171375,
+          "sha256": "737aba173a326489cc457356259638e14f82317bcf8bfcf335047779a0f0987f"
+        },
+        {
+          "artifactPath": "screenshot-09.png",
+          "decodedBytes": 70689,
+          "derivedLatencyMs": 89.4695835,
+          "encodedBytes": 94252,
+          "integrityVerified": true,
+          "latencyMs": 93.699542,
+          "sha256": "737aba173a326489cc457356259638e14f82317bcf8bfcf335047779a0f0987f"
+        },
+        {
+          "artifactPath": "screenshot-10.png",
+          "decodedBytes": 70689,
+          "derivedLatencyMs": 94.2812085,
+          "encodedBytes": 94252,
+          "integrityVerified": true,
+          "latencyMs": 98.511167,
+          "sha256": "737aba173a326489cc457356259638e14f82317bcf8bfcf335047779a0f0987f"
+        }
+      ],
+      "passed": true,
+      "status": "measured"
+    },
+    "startupTrials": [
+      {
+        "appiumSessionStartupMs": 2837.99975,
+        "clientClosed": true,
+        "kernelStartupMs": 579.862625,
+        "managedProcessesExited": true,
+        "runnerPid": 68734,
+        "serverPid": 68731,
+        "sessionAbsent": true,
+        "sessionId": "42fba81c-c23d-4b49-96ed-c4ce8c2d2c4f"
+      },
+      {
+        "appiumSessionStartupMs": 2017.029917,
+        "clientClosed": true,
+        "kernelStartupMs": 352.241792,
+        "managedProcessesExited": true,
+        "runnerPid": 68793,
+        "serverPid": 68790,
+        "sessionAbsent": true,
+        "sessionId": "62e99137-2d45-46be-98bb-ff7baefa8258"
+      },
+      {
+        "appiumSessionStartupMs": 2046.779333,
+        "clientClosed": true,
+        "kernelStartupMs": 379.402958,
+        "managedProcessesExited": true,
+        "runnerPid": 68848,
+        "serverPid": 68844,
+        "sessionAbsent": true,
+        "sessionId": "4b4ddc58-8511-4ca7-8d2c-061516429227"
+      }
+    ],
+    "timeoutToInterrupt": {
+      "ceiling": 5000,
+      "passed": true,
+      "samples": [
+        14.888749999999987,
+        13.45066700000001,
+        31.47762499999999
+      ],
+      "status": "measured",
+      "summary": {
+        "maximum": 31.47762499999999,
+        "median": 14.888749999999987,
+        "minimum": 13.45066700000001
+      },
+      "unit": "milliseconds"
+    }
+  },
+  "outcome": "passed",
+  "platform": "android",
+  "preflight": {
+    "checkedAt": "2026-10-30T07:13:30.434321Z",
+    "checks": [
+      {
+        "id": "device-kind",
+        "observation": "android-emulator selected; frozen contract requires android-emulator",
+        "status": "passed"
+      },
+      {
+        "id": "amkernel-revision",
+        "observation": "AMKernel revision is a lowercase 40-character commit",
+        "status": "passed"
+      },
+      {
+        "id": "amkernel-entry-point",
+        "observation": "amkernel-entry-point is a readable file",
+        "status": "passed"
+      },
+      {
+        "id": "amkernel-wheel",
+        "observation": "amkernel-wheel is a readable file",
+        "status": "passed"
+      },
+      {
+        "id": "fixture-artifact",
+        "observation": "fixture-artifact is a readable file",
+        "status": "passed"
+      },
+      {
+        "id": "measurement-results",
+        "observation": "measurement-results is a readable file",
+        "status": "passed"
+      },
+      {
+        "id": "appium-log",
+        "observation": "appium-log is a readable file",
+        "status": "passed"
+      },
+      {
+        "id": "fixture-size",
+        "observation": "fixture size is 6521217 bytes",
+        "status": "passed"
+      },
+      {
+        "id": "fixture-sha256",
+        "observation": "fixture SHA-256 is a9eecf37b26cd084855c530db81c2bb1b91f4c1b095a04f47aa7c20e2791f686",
+        "status": "passed"
+      },
+      {
+        "id": "python-runtime",
+        "observation": "Python runtime is CPython 3.13.15; expected CPython 3.13",
+        "status": "passed"
+      },
+      {
+        "id": "appium-python-client",
+        "observation": "Appium-Python-Client version is 5.2.5; expected 5.2.5",
+        "status": "passed"
+      },
+      {
+        "id": "selenium",
+        "observation": "selenium version is 4.52.0; expected 4.52.0",
+        "status": "passed"
+      },
+      {
+        "id": "driver-version",
+        "observation": "driver version is 8.7.0; expected 8.7.0",
+        "status": "passed"
+      },
+      {
+        "id": "android-apiLevel",
+        "observation": "observed apiLevel is 36; expected 36",
+        "status": "passed"
+      },
+      {
+        "id": "android-abi",
+        "observation": "observed abi is 'arm64-v8a'; expected 'arm64-v8a'",
+        "status": "passed"
+      },
+      {
+        "id": "android-systemImage",
+        "observation": "observed systemImage is 'system-images;android-36;google_apis;arm64-v8a'; expected 'system-images;android-36;google_apis;arm64-v8a'",
+        "status": "passed"
+      },
+      {
+        "id": "android-device-profile",
+        "observation": "observed device profile is 'pixel_9'; expected 'pixel_9'",
+        "status": "passed"
+      },
+      {
+        "id": "observed-os-version",
+        "observation": "observed OS is '16'; dispatch declared '16'",
+        "status": "passed"
+      },
+      {
+        "id": "measurement-shape",
+        "observation": "measurement results match the frozen schema",
+        "status": "passed"
+      },
+      {
+        "id": "node-version",
+        "observation": "Node version is 26.12.1; expected 26.12.1",
+        "status": "passed"
+      },
+      {
+        "id": "appium-server",
+        "observation": "Appium Server version is 3.7.0; expected 3.7.0",
+        "status": "passed"
+      }
+    ],
+    "classification": "ready"
+  },
+  "runId": "android-20261030t071330z-844863b1",
+  "runState": {
+    "appAfter": "not-running",
+    "appBefore": "unknown",
+    "deviceAfter": "online",
+    "deviceBefore": "online",
+    "kernelAfter": "dead",
+    "kernelBefore": "not-started",
+    "sessionAfter": "absent",
+    "sessionBefore": "absent"
+  },
+  "scenario": {
+    "definitionSha256": "9b26d414042e6d593b0817aa8d4059a113bf0cb5a6fbd814219359e8e13e58a3",
+    "executionCount": 1,
+    "id": "amkernel-mobile-appium-v1"
+  },
+  "schemaVersion": 1,
+  "startedAt": "2026-10-30T07:13:30.434321Z",
+  "steps": [
+    {
+      "action": "waitVisible",
+      "completedAt": "2026-10-30T07:13:35.757273Z",
+      "durationMs": 1467,
+      "id": "android-launch",
+      "locator": {
+        "strategy": "accessibility id",
+        "value": "Views"
+      },
+      "observation": "element became visible",
+      "outcome": "passed",
+      "screenshot": {
+        "kind": "screenshot",
+        "mimeType": "image/png",
+        "path": "android-launch.png",
+        "sha256": "2de337fc6ee27362e2951d448abcfdfaa4343e2a81e8497fcf730e021f6d6811",
+        "sizeBytes": 69525
+      },
+      "startedAt": "2026-10-30T07:13:34.289464Z"
+    },
+    {
+      "action": "click",
+      "completedAt": "2026-10-30T07:13:36.907534Z",
+      "durationMs": 1150,
+      "id": "android-open-views",
+      "locator": {
+        "strategy": "accessibility id",
+        "value": "Views"
+      },
+      "observation": "element clicked",
+      "outcome": "passed",
+      "startedAt": "2026-10-30T07:13:35.757284Z"
+    },
+    {
+      "action": "click",
+      "completedAt": "2026-10-30T07:13:38.060935Z",
+      "durationMs": 1153,
+      "id": "android-open-controls",
+      "locator": {
+        "strategy": "accessibility id",
+        "value": "Controls"
+      },
+      "observation": "element clicked",
+      "outcome": "passed",
+      "startedAt": "2026-10-30T07:13:36.907546Z"
+    },
+    {
+      "action": "click",
+      "completedAt": "2026-10-30T07:13:39.295917Z",
+      "durationMs": 1235,
+      "id": "android-open-light-controls",
+      "locator": {
+        "strategy": "accessibility id",
+        "value": "1. Light Theme"
+      },
+      "observation": "element clicked",
+      "outcome": "passed",
+      "startedAt": "2026-10-30T07:13:38.060962Z"
+    },
+    {
+      "action": "type",
+      "completedAt": "2026-10-30T07:13:40.340728Z",
+      "durationMs": 1045,
+      "id": "android-enter-text",
+      "locator": {
+        "strategy": "id",
+        "value": "io.appium.android.apis:id/edit"
+      },
+      "observation": "text entered",
+      "outcome": "passed",
+      "startedAt": "2026-10-30T07:13:39.295936Z"
+    },
+    {
+      "action": "assertText",
+      "completedAt": "2026-10-30T07:13:41.037838Z",
+      "durationMs": 697,
+      "id": "android-confirm-text",
+      "locator": {
+        "strategy": "id",
+        "value": "io.appium.android.apis:id/edit"
+      },
+      "observation": "text value matched",
+      "outcome": "passed",
+      "screenshot": {
+        "kind": "screenshot",
+        "mimeType": "image/png",
+        "path": "android-confirm-text.png",
+        "sha256": "2976db8d99aa1e62c63196cd60b28a0376e5a3133fd9a3b9d6e1f66dcb3724c7",
+        "sizeBytes": 187680
+      },
+      "startedAt": "2026-10-30T07:13:40.340746Z"
+    },
+    {
+      "action": "relaunch",
+      "completedAt": "2026-10-30T07:13:41.234957Z",
+      "durationMs": 197,
+      "id": "android-relaunch",
+      "observation": "application terminated and reactivated",
+      "outcome": "passed",
+      "startedAt": "2026-10-30T07:13:41.037849Z"
+    },
+    {
+      "action": "click",
+      "completedAt": "2026-10-30T07:13:43.380295Z",
+      "durationMs": 2145,
+      "id": "android-open-app",
+      "locator": {
+        "strategy": "accessibility id",
+        "value": "App"
+      },
+      "observation": "element clicked",
+      "outcome": "passed",
+      "startedAt": "2026-10-30T07:13:41.234977Z"
+    },
+    {
+      "action": "click",
+      "completedAt": "2026-10-30T07:13:44.887693Z",
+      "durationMs": 1507,
+      "id": "android-open-alerts",
+      "locator": {
+        "strategy": "accessibility id",
+        "value": "Alert Dialogs"
+      },
+      "observation": "element clicked",
+      "outcome": "passed",
+      "startedAt": "2026-10-30T07:13:43.380315Z"
+    },
+    {
+      "action": "click",
+      "completedAt": "2026-10-30T07:13:44.985033Z",
+      "durationMs": 97,
+      "id": "android-open-modal",
+      "locator": {
+        "strategy": "accessibility id",
+        "value": "OK Cancel dialog with a message"
+      },
+      "observation": "element clicked",
+      "outcome": "passed",
+      "startedAt": "2026-10-30T07:13:44.887714Z"
+    },
+    {
+      "action": "click",
+      "completedAt": "2026-10-30T07:13:45.932172Z",
+      "durationMs": 947,
+      "id": "android-dismiss-modal",
+      "locator": {
+        "strategy": "id",
+        "value": "android:id/button1"
+      },
+      "observation": "element clicked",
+      "outcome": "passed",
+      "startedAt": "2026-10-30T07:13:44.985045Z"
+    },
+    {
+      "action": "waitGone",
+      "completedAt": "2026-10-30T07:13:46.365189Z",
+      "durationMs": 433,
+      "id": "android-confirm-modal-dismissed",
+      "locator": {
+        "strategy": "id",
+        "value": "android:id/button1"
+      },
+      "observation": "element became invisible",
+      "outcome": "passed",
+      "screenshot": {
+        "kind": "screenshot",
+        "mimeType": "image/png",
+        "path": "android-confirm-modal-dismissed.png",
+        "sha256": "08eb5b0d027bc0598783c7473965ffebbb6225d5b16d18fcc45de1b7e529c334",
+        "sizeBytes": 127741
+      },
+      "startedAt": "2026-10-30T07:13:45.932186Z"
+    },
+    {
+      "action": "relaunch",
+      "completedAt": "2026-10-30T07:13:46.582429Z",
+      "durationMs": 217,
+      "id": "android-relaunch-for-delayed-state",
+      "observation": "application terminated and reactivated",
+      "outcome": "passed",
+      "startedAt": "2026-10-30T07:13:46.365199Z"
+    },
+    {
+      "action": "click",
+      "completedAt": "2026-10-30T07:13:48.746515Z",
+      "durationMs": 2164,
+      "id": "android-open-views-for-delayed-state",
+      "locator": {
+        "strategy": "accessibility id",
+        "value": "Views"
+      },
+      "observation": "element clicked",
+      "outcome": "passed",
+      "startedAt": "2026-10-30T07:13:46.582443Z"
+    },
+    {
+      "action": "click",
+      "completedAt": "2026-10-30T07:13:49.907430Z",
+      "durationMs": 1161,
+      "id": "android-open-chronometer",
+      "locator": {
+        "strategy": "accessibility id",
+        "value": "Chronometer"
+      },
+      "observation": "element clicked",
+      "outcome": "passed",
+      "startedAt": "2026-10-30T07:13:48.746530Z"
+    },
+    {
+      "action": "click",
+      "completedAt": "2026-10-30T07:13:50.476395Z",
+      "durationMs": 569,
+      "id": "android-start-chronometer",
+      "locator": {
+        "strategy": "id",
+        "value": "io.appium.android.apis:id/start"
+      },
+      "observation": "element clicked",
+      "outcome": "passed",
+      "startedAt": "2026-10-30T07:13:49.907441Z"
+    },
+    {
+      "action": "waitAttributeChange",
+      "completedAt": "2026-10-30T07:13:51.529448Z",
+      "durationMs": 1053,
+      "id": "android-wait-chronometer-change",
+      "locator": {
+        "strategy": "id",
+        "value": "io.appium.android.apis:id/chronometer"
+      },
+      "observation": "text changed from 'Initial format: 00:01' to 'Initial format: 00:02'",
+      "outcome": "passed",
+      "screenshot": {
+        "kind": "screenshot",
+        "mimeType": "image/png",
+        "path": "android-wait-chronometer-change.png",
+        "sha256": "cfd16696fa819b5a779402d4a23a42edeeebb8de967a58e3a8d495778444f252",
+        "sizeBytes": 63632
+      },
+      "startedAt": "2026-10-30T07:13:50.476406Z"
+    },
+    {
+      "action": "relaunch",
+      "completedAt": "2026-10-30T07:13:51.728120Z",
+      "durationMs": 199,
+      "id": "android-relaunch-for-large-tree",
+      "observation": "application terminated and reactivated",
+      "outcome": "passed",
+      "startedAt": "2026-10-30T07:13:51.529458Z"
+    },
+    {
+      "action": "click",
+      "completedAt": "2026-10-30T07:13:54.193542Z",
+      "durationMs": 2465,
+      "id": "android-open-views-for-large-tree",
+      "locator": {
+        "strategy": "accessibility id",
+        "value": "Views"
+      },
+      "observation": "element clicked",
+      "outcome": "passed",
+      "startedAt": "2026-10-30T07:13:51.728134Z"
+    },
+    {
+      "action": "scrollIntoView",
+      "completedAt": "2026-10-30T07:13:58.848265Z",
+      "durationMs": 4655,
+      "id": "android-scroll-large-tree",
+      "locator": {
+        "strategy": "-android uiautomator",
+        "value": "new UiScrollable(new UiSelector().scrollable(true)).scrollIntoView(new UiSelector().description(\"WebView3\"))"
+      },
+      "observation": "element was scrolled into view",
+      "outcome": "passed",
+      "startedAt": "2026-10-30T07:13:54.193564Z"
+    },
+    {
+      "action": "assertVisible",
+      "completedAt": "2026-10-30T07:13:59.008494Z",
+      "durationMs": 160,
+      "id": "android-confirm-success",
+      "locator": {
+        "strategy": "accessibility id",
+        "value": "WebView3"
+      },
+      "observation": "element was visible",
+      "outcome": "passed",
+      "screenshot": {
+        "kind": "screenshot",
+        "mimeType": "image/png",
+        "path": "android-confirm-success.png",
+        "sha256": "4628149dfa3c55b6730c6ac5121f78a803d15757afceb5fd94f260e8d7c186b8",
+        "sizeBytes": 114670
+      },
+      "startedAt": "2026-10-30T07:13:58.848277Z"
+    },
+    {
+      "action": "captureSource",
+      "completedAt": "2026-10-30T07:13:59.025309Z",
+      "durationMs": 17,
+      "id": "android-capture-large-tree",
+      "nodeCount": 26,
+      "observation": "bounded page source captured",
+      "outcome": "passed",
+      "pageSource": {
+        "kind": "page-source",
+        "mimeType": "application/xml",
+        "path": "android-capture-large-tree.xml",
+        "sha256": "146f1f1086126370f322f5a731edc0103edced3dadcc0514f8d810a7294c646c",
+        "sizeBytes": 17182
+      },
+      "startedAt": "2026-10-30T07:13:59.008503Z"
+    }
+  ]
+}

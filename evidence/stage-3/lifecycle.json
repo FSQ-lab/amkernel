@@ -1,0 +1,1105 @@
+{
+  "amkernelRevision": "f25a7abdf1dd9dd33e8031961a41143f14d13bc1",
+  "amkernelWheel": {
+    "filename": "amkernel-0.0.0-py3-none-any.whl",
+    "sha256": "40acc828cd8d1181194b1d572c7bc8ce43f866ad8f519490fcdba0a3ba47a15d",
+    "sizeBytes": 67668
+  },
+  "experimentId": "S3-mobile-appium-lifecycle",
+  "generatedAt": "2026-10-30T08:20:26.105884Z",
+  "matrixDefinitionSha256": "bf2b207e8d86f3a95d1ed0d3b051c0fb939f02112cce71d80271b0cdecd31a15",
+  "occurrences": [
+    {
+      "coverage": "Both",
+      "failure": {
+        "agentObservation": "fixture application termination was observed as an explicit failed call",
+        "category": "driver",
+        "cleanupAttempted": true,
+        "cleanupObserved": true,
+        "deviceState": "online",
+        "kernelState": "alive",
+        "lastCompletedStep": "failure-injected",
+        "message": "fixture application termination was observed as an explicit failed call",
+        "recoverableEvidence": [
+          "occurrences/app-crash-android.json"
+        ],
+        "recreationRequired": [
+          "application"
+        ],
+        "remainingExternalResources": [],
+        "serverState": "online",
+        "sessionState": "present"
+      },
+      "id": "app-crash",
+      "injectedAt": "2026-10-30T08:06:08.678814Z",
+      "injection": "executed app-crash against a live Appium session",
+      "platform": "android",
+      "transcript": {
+        "kind": "amkernel-result",
+        "mimeType": "application/json",
+        "path": "occurrences/app-crash-android.json",
+        "sha256": "b8ec9ad73d32588f7910d3842e0f8b38c591b293f85769385d39ee2fbbb5a1a3",
+        "sizeBytes": 3117
+      }
+    },
+    {
+      "coverage": "Both",
+      "failure": {
+        "agentObservation": "fixture application termination was observed as an explicit failed call",
+        "category": "driver",
+        "cleanupAttempted": true,
+        "cleanupObserved": true,
+        "deviceState": "online",
+        "kernelState": "alive",
+        "lastCompletedStep": "failure-injected",
+        "message": "fixture application termination was observed as an explicit failed call",
+        "recoverableEvidence": [
+          "occurrences/app-crash-ios.json"
+        ],
+        "recreationRequired": [
+          "application"
+        ],
+        "remainingExternalResources": [],
+        "serverState": "online",
+        "sessionState": "present"
+      },
+      "id": "app-crash",
+      "injectedAt": "2026-10-30T08:07:31.570067Z",
+      "injection": "executed app-crash against a live Appium session",
+      "platform": "ios",
+      "transcript": {
+        "kind": "amkernel-result",
+        "mimeType": "application/json",
+        "path": "occurrences/app-crash-ios.json",
+        "sha256": "f721d24e1b5080b153c8beaa1b1e19941ec3d248a7e6d07ecc51a88f6edc7207",
+        "sizeBytes": 3107
+      }
+    },
+    {
+      "coverage": "Both",
+      "failure": {
+        "agentObservation": "{'type': 'urllib3.exceptions.MaxRetryError', 'message': 'HTTPConnectionPool(host=\\'127.0.0.1\\', port=4723): Max retries exceeded with url: /session/c809b7b7-c83d-4eaa-9c66-ef57b7ecae66/source (Caused by ReadTimeoutError(\"HTTPConnectionPool(host=\\'127.0.0.1\\', port=4723): Read timed out. (read timeout=1e-06)\"))', 'traceback': ['Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 540, in _make_request', '    response = conn.getresponse()', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connection.py\", line 638, in getresponse', '    httplib_response = super().getresponse()', '  File \"<home>/.local/share/uv/python/cpython-3.13.15-macos-aarch64-none/lib/python3.13/http/client.py\", line 1478, in getresponse', '    response.begin()', '    ~~~~~~~~~~~~~~^^', '  File \"<home>/.local/share/uv/python/cpython-3.13.15-macos-aarch64-none/lib/python3.13/http/client.py\", line 343, in begin', '    version, status, reason = self._read_status()', '                              ~~~~~~~~~~~~~~~~~^^', '  File \"<home>/.local/share/uv/python/cpython-3.13.15-macos-aarch64-none/lib/python3.13/http/client.py\", line 304, in _read_status', '    line = str(self.fp.readline(_MAXLINE + 1), \"iso-8859-1\")', '               ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^', '  File \"<home>/.local/share/uv/python/cpython-3.13.15-macos-aarch64-none/lib/python3.13/socket.py\", line 723, in readinto', '    return self._sock.recv_into(b)', '           ~~~~~~~~~~~~~~~~~~~~^^^', 'TimeoutError: timed out', '', 'The above exception was the direct cause of the following exception:', '', 'Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 793, in urlopen', '    response = self._make_request(', '        conn,', '    ...<10 lines>...', '        **response_kw,', '    )', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 542, in _make_request', '    self._raise_timeout(err=e, url=url, timeout_value=read_timeout)', '    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 373, in _raise_timeout', '    raise ReadTimeoutError(', '        self, url, f\"Read timed out. (read timeout={timeout_value})\"', '    ) from err', \"urllib3.exceptions.ReadTimeoutError: HTTPConnectionPool(host='127.0.0.1', port=4723): Read timed out. (read timeout=1e-06)\", '', 'The above exception was the direct cause of the following exception:', '', 'Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell', '    value = _compile_and_execute(code, execution_count, namespace)', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 528, in _compile_and_execute', '    return eval(expression_code, namespace, namespace)', '  File \"<amkernel-cell-2>\", line 2, in <module>', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 706, in page_source', '    return self.execute(Command.GET_PAGE_SOURCE)[\"value\"]', '           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 563, in execute', '    response = cast(RemoteConnection, self.command_executor).execute(driver_command, params)', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/remote_connection.py\", line 435, in execute', '    return self._request(command_info[0], url, body=data)', '           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/remote_connection.py\", line 459, in _request', '    response = self._conn.request(method, url, body=body, headers=headers, timeout=self._client_config.timeout)', '  File \"<venv>/lib/python3.13/site-packages/urllib3/_request_methods.py\", line 135, in request', '    return self.request_encode_url(', '           ~~~~~~~~~~~~~~~~~~~~~~~^', '        method,', '        ^^^^^^^', '    ...<3 lines>...', '        **urlopen_kw,', '        ^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/_request_methods.py\", line 182, in request_encode_url', '    return self.urlopen(method, url, **extra_kw)', '           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/poolmanager.py\", line 459, in urlopen', '    response = conn.urlopen(method, u.request_uri, **kw)', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 886, in urlopen', '    return self.urlopen(', '           ~~~~~~~~~~~~^', '        method,', '        ^^^^^^^', '    ...<13 lines>...', '        **response_kw,', '        ^^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 886, in urlopen', '    return self.urlopen(', '           ~~~~~~~~~~~~^', '        method,', '        ^^^^^^^', '    ...<13 lines>...', '        **response_kw,', '        ^^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 886, in urlopen', '    return self.urlopen(', '           ~~~~~~~~~~~~^', '        method,', '        ^^^^^^^', '    ...<13 lines>...', '        **response_kw,', '        ^^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 847, in urlopen', '    retries = retries.increment(', '        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]', '    )', '  File \"<venv>/lib/python3.13/site-packages/urllib3/util/retry.py\", line 555, in increment', '    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]', '    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', 'urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host=\\'127.0.0.1\\', port=4723): Max retries exceeded with url: /session/c809b7b7-c83d-4eaa-9c66-ef57b7ecae66/source (Caused by ReadTimeoutError(\"HTTPConnectionPool(host=\\'127.0.0.1\\', port=4723): Read timed out. (read timeout=1e-06)\"))']}",
+        "category": "driver",
+        "cleanupAttempted": true,
+        "cleanupObserved": true,
+        "deviceState": "online",
+        "kernelState": "alive",
+        "lastCompletedStep": "failure-injected",
+        "message": "{'type': 'urllib3.exceptions.MaxRetryError', 'message': 'HTTPConnectionPool(host=\\'127.0.0.1\\', port=4723): Max retries exceeded with url: /session/c809b7b7-c83d-4eaa-9c66-ef57b7ecae66/source (Caused by ReadTimeoutError(\"HTTPConnectionPool(host=\\'127.0.0.1\\', port=4723): Read timed out. (read timeout=1e-06)\"))', 'traceback': ['Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 540, in _make_request', '    response = conn.getresponse()', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connection.py\", line 638, in getresponse', '    httplib_response = super().getresponse()', '  File \"<home>/.local/share/uv/python/cpython-3.13.15-macos-aarch64-none/lib/python3.13/http/client.py\", line 1478, in getresponse', '    response.begin()', '    ~~~~~~~~~~~~~~^^', '  File \"<home>/.local/share/uv/python/cpython-3.13.15-macos-aarch64-none/lib/python3.13/http/client.py\", line 343, in begin', '    version, status, reason = self._read_status()', '                              ~~~~~~~~~~~~~~~~~^^', '  File \"<home>/.local/share/uv/python/cpython-3.13.15-macos-aarch64-none/lib/python3.13/http/client.py\", line 304, in _read_status', '    line = str(self.fp.readline(_MAXLINE + 1), \"iso-8859-1\")', '               ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^', '  File \"<home>/.local/share/uv/python/cpython-3.13.15-macos-aarch64-none/lib/python3.13/socket.py\", line 723, in readinto', '    return self._sock.recv_into(b)', '           ~~~~~~~~~~~~~~~~~~~~^^^', 'TimeoutError: timed out', '', 'The above exception was the direct cause of the following exception:', '', 'Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 793, in urlopen', '    response = self._make_request(', '        conn,', '    ...<10 lines>...', '        **response_kw,', '    )', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 542, in _make_request', '    self._raise_timeout(err=e, url=url, timeout_value=read_timeout)', '    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 373, in _raise_timeout', '    raise ReadTimeoutError(', '        self, url, f\"Read timed out. (read timeout={timeout_value})\"', '    ) from err', \"urllib3.exceptions.ReadTimeoutError: HTTPConnectionPool(host='127.0.0.1', port=4723): Read timed out. (read timeout=1e-06)\", '', 'The above exception was the direct cause of the following exception:', '', 'Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell', '    value = _compile_and_execute(code, execution_count, namespace)', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 528, in _compile_and_execute', '    return eval(expression_code, namespace, namespace)', '  File \"<amkernel-cell-2>\", line 2, in <module>', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 706, in page_source', '    return self.execute(Command.GET_PAGE_SOURCE)[\"value\"]', '           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 563, in execute', '    response = cast(RemoteConnection, self.command_executor).execute(driver_command, params)', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/remote_connection.py\", line 435, in execute', '    return self._request(command_info[0], url, body=data)', '           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/remote_connection.py\", line 459, in _request', '    response = self._conn.request(method, url, body=body, headers=headers, timeout=self._client_config.timeout)', '  File \"<venv>/lib/python3.13/site-packages/urllib3/_request_methods.py\", line 135, in request', '    return self.request_encode_url(', '           ~~~~~~~~~~~~~~~~~~~~~~~^', '        method,', '        ^^^^^^^', '    ...<3 lines>...', '        **urlopen_kw,', '        ^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/_request_methods.py\", line 182, in request_encode_url', '    return self.urlopen(method, url, **extra_kw)', '           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/poolmanager.py\", line 459, in urlopen', '    response = conn.urlopen(method, u.request_uri, **kw)', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 886, in urlopen', '    return self.urlopen(', '           ~~~~~~~~~~~~^', '        method,', '        ^^^^^^^', '    ...<13 lines>...', '        **response_kw,', '        ^^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 886, in urlopen', '    return self.urlopen(', '           ~~~~~~~~~~~~^', '        method,', '        ^^^^^^^', '    ...<13 lines>...', '        **response_kw,', '        ^^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 886, in urlopen', '    return self.urlopen(', '           ~~~~~~~~~~~~^', '        method,', '        ^^^^^^^', '    ...<13 lines>...', '        **response_kw,', '        ^^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 847, in urlopen', '    retries = retries.increment(', '        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]', '    )', '  File \"<venv>/lib/python3.13/site-packages/urllib3/util/retry.py\", line 555, in increment', '    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]', '    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', 'urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host=\\'127.0.0.1\\', port=4723): Max retries exceeded with url: /session/c809b7b7-c83d-4eaa-9c66-ef57b7ecae66/source (Caused by ReadTimeoutError(\"HTTPConnectionPool(host=\\'127.0.0.1\\', port=4723): Read timed out. (read timeout=1e-06)\"))']}",
+        "recoverableEvidence": [
+          "occurrences/appium-command-timeout-android.json"
+        ],
+        "recreationRequired": [
+          "driver",
+          "session"
+        ],
+        "remainingExternalResources": [],
+        "serverState": "online",
+        "sessionState": "present"
+      },
+      "id": "appium-command-timeout",
+      "injectedAt": "2026-10-30T08:06:05.386263Z",
+      "injection": "executed appium-command-timeout against a live Appium session",
+      "platform": "android",
+      "transcript": {
+        "kind": "amkernel-result",
+        "mimeType": "application/json",
+        "path": "occurrences/appium-command-timeout-android.json",
+        "sha256": "e975a2d786e1575f09632f5b0ed8c692e12eafb9a0bfb03e1f31090950723c2a",
+        "sizeBytes": 10036
+      }
+    },
+    {
+      "coverage": "Both",
+      "failure": {
+        "agentObservation": "{'type': 'urllib3.exceptions.MaxRetryError', 'message': 'HTTPConnectionPool(host=\\'127.0.0.1\\', port=4723): Max retries exceeded with url: /session/04b77d1f-43cb-47d8-bac3-b253f11348c4/source (Caused by ReadTimeoutError(\"HTTPConnectionPool(host=\\'127.0.0.1\\', port=4723): Read timed out. (read timeout=1e-06)\"))', 'traceback': ['Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 540, in _make_request', '    response = conn.getresponse()', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connection.py\", line 638, in getresponse', '    httplib_response = super().getresponse()', '  File \"<home>/.local/share/uv/python/cpython-3.13.15-macos-aarch64-none/lib/python3.13/http/client.py\", line 1478, in getresponse', '    response.begin()', '    ~~~~~~~~~~~~~~^^', '  File \"<home>/.local/share/uv/python/cpython-3.13.15-macos-aarch64-none/lib/python3.13/http/client.py\", line 343, in begin', '    version, status, reason = self._read_status()', '                              ~~~~~~~~~~~~~~~~~^^', '  File \"<home>/.local/share/uv/python/cpython-3.13.15-macos-aarch64-none/lib/python3.13/http/client.py\", line 304, in _read_status', '    line = str(self.fp.readline(_MAXLINE + 1), \"iso-8859-1\")', '               ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^', '  File \"<home>/.local/share/uv/python/cpython-3.13.15-macos-aarch64-none/lib/python3.13/socket.py\", line 723, in readinto', '    return self._sock.recv_into(b)', '           ~~~~~~~~~~~~~~~~~~~~^^^', 'TimeoutError: timed out', '', 'The above exception was the direct cause of the following exception:', '', 'Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 793, in urlopen', '    response = self._make_request(', '        conn,', '    ...<10 lines>...', '        **response_kw,', '    )', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 542, in _make_request', '    self._raise_timeout(err=e, url=url, timeout_value=read_timeout)', '    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 373, in _raise_timeout', '    raise ReadTimeoutError(', '        self, url, f\"Read timed out. (read timeout={timeout_value})\"', '    ) from err', \"urllib3.exceptions.ReadTimeoutError: HTTPConnectionPool(host='127.0.0.1', port=4723): Read timed out. (read timeout=1e-06)\", '', 'The above exception was the direct cause of the following exception:', '', 'Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell', '    value = _compile_and_execute(code, execution_count, namespace)', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 528, in _compile_and_execute', '    return eval(expression_code, namespace, namespace)', '  File \"<amkernel-cell-2>\", line 2, in <module>', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 706, in page_source', '    return self.execute(Command.GET_PAGE_SOURCE)[\"value\"]', '           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 563, in execute', '    response = cast(RemoteConnection, self.command_executor).execute(driver_command, params)', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/remote_connection.py\", line 435, in execute', '    return self._request(command_info[0], url, body=data)', '           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/remote_connection.py\", line 459, in _request', '    response = self._conn.request(method, url, body=body, headers=headers, timeout=self._client_config.timeout)', '  File \"<venv>/lib/python3.13/site-packages/urllib3/_request_methods.py\", line 135, in request', '    return self.request_encode_url(', '           ~~~~~~~~~~~~~~~~~~~~~~~^', '        method,', '        ^^^^^^^', '    ...<3 lines>...', '        **urlopen_kw,', '        ^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/_request_methods.py\", line 182, in request_encode_url', '    return self.urlopen(method, url, **extra_kw)', '           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/poolmanager.py\", line 459, in urlopen', '    response = conn.urlopen(method, u.request_uri, **kw)', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 886, in urlopen', '    return self.urlopen(', '           ~~~~~~~~~~~~^', '        method,', '        ^^^^^^^', '    ...<13 lines>...', '        **response_kw,', '        ^^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 886, in urlopen', '    return self.urlopen(', '           ~~~~~~~~~~~~^', '        method,', '        ^^^^^^^', '    ...<13 lines>...', '        **response_kw,', '        ^^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 886, in urlopen', '    return self.urlopen(', '           ~~~~~~~~~~~~^', '        method,', '        ^^^^^^^', '    ...<13 lines>...', '        **response_kw,', '        ^^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 847, in urlopen', '    retries = retries.increment(', '        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]', '    )', '  File \"<venv>/lib/python3.13/site-packages/urllib3/util/retry.py\", line 555, in increment', '    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]', '    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', 'urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host=\\'127.0.0.1\\', port=4723): Max retries exceeded with url: /session/04b77d1f-43cb-47d8-bac3-b253f11348c4/source (Caused by ReadTimeoutError(\"HTTPConnectionPool(host=\\'127.0.0.1\\', port=4723): Read timed out. (read timeout=1e-06)\"))']}",
+        "category": "driver",
+        "cleanupAttempted": true,
+        "cleanupObserved": true,
+        "deviceState": "online",
+        "kernelState": "alive",
+        "lastCompletedStep": "failure-injected",
+        "message": "{'type': 'urllib3.exceptions.MaxRetryError', 'message': 'HTTPConnectionPool(host=\\'127.0.0.1\\', port=4723): Max retries exceeded with url: /session/04b77d1f-43cb-47d8-bac3-b253f11348c4/source (Caused by ReadTimeoutError(\"HTTPConnectionPool(host=\\'127.0.0.1\\', port=4723): Read timed out. (read timeout=1e-06)\"))', 'traceback': ['Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 540, in _make_request', '    response = conn.getresponse()', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connection.py\", line 638, in getresponse', '    httplib_response = super().getresponse()', '  File \"<home>/.local/share/uv/python/cpython-3.13.15-macos-aarch64-none/lib/python3.13/http/client.py\", line 1478, in getresponse', '    response.begin()', '    ~~~~~~~~~~~~~~^^', '  File \"<home>/.local/share/uv/python/cpython-3.13.15-macos-aarch64-none/lib/python3.13/http/client.py\", line 343, in begin', '    version, status, reason = self._read_status()', '                              ~~~~~~~~~~~~~~~~~^^', '  File \"<home>/.local/share/uv/python/cpython-3.13.15-macos-aarch64-none/lib/python3.13/http/client.py\", line 304, in _read_status', '    line = str(self.fp.readline(_MAXLINE + 1), \"iso-8859-1\")', '               ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^', '  File \"<home>/.local/share/uv/python/cpython-3.13.15-macos-aarch64-none/lib/python3.13/socket.py\", line 723, in readinto', '    return self._sock.recv_into(b)', '           ~~~~~~~~~~~~~~~~~~~~^^^', 'TimeoutError: timed out', '', 'The above exception was the direct cause of the following exception:', '', 'Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 793, in urlopen', '    response = self._make_request(', '        conn,', '    ...<10 lines>...', '        **response_kw,', '    )', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 542, in _make_request', '    self._raise_timeout(err=e, url=url, timeout_value=read_timeout)', '    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 373, in _raise_timeout', '    raise ReadTimeoutError(', '        self, url, f\"Read timed out. (read timeout={timeout_value})\"', '    ) from err', \"urllib3.exceptions.ReadTimeoutError: HTTPConnectionPool(host='127.0.0.1', port=4723): Read timed out. (read timeout=1e-06)\", '', 'The above exception was the direct cause of the following exception:', '', 'Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell', '    value = _compile_and_execute(code, execution_count, namespace)', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 528, in _compile_and_execute', '    return eval(expression_code, namespace, namespace)', '  File \"<amkernel-cell-2>\", line 2, in <module>', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 706, in page_source', '    return self.execute(Command.GET_PAGE_SOURCE)[\"value\"]', '           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 563, in execute', '    response = cast(RemoteConnection, self.command_executor).execute(driver_command, params)', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/remote_connection.py\", line 435, in execute', '    return self._request(command_info[0], url, body=data)', '           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/remote_connection.py\", line 459, in _request', '    response = self._conn.request(method, url, body=body, headers=headers, timeout=self._client_config.timeout)', '  File \"<venv>/lib/python3.13/site-packages/urllib3/_request_methods.py\", line 135, in request', '    return self.request_encode_url(', '           ~~~~~~~~~~~~~~~~~~~~~~~^', '        method,', '        ^^^^^^^', '    ...<3 lines>...', '        **urlopen_kw,', '        ^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/_request_methods.py\", line 182, in request_encode_url', '    return self.urlopen(method, url, **extra_kw)', '           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/poolmanager.py\", line 459, in urlopen', '    response = conn.urlopen(method, u.request_uri, **kw)', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 886, in urlopen', '    return self.urlopen(', '           ~~~~~~~~~~~~^', '        method,', '        ^^^^^^^', '    ...<13 lines>...', '        **response_kw,', '        ^^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 886, in urlopen', '    return self.urlopen(', '           ~~~~~~~~~~~~^', '        method,', '        ^^^^^^^', '    ...<13 lines>...', '        **response_kw,', '        ^^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 886, in urlopen', '    return self.urlopen(', '           ~~~~~~~~~~~~^', '        method,', '        ^^^^^^^', '    ...<13 lines>...', '        **response_kw,', '        ^^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 847, in urlopen', '    retries = retries.increment(', '        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]', '    )', '  File \"<venv>/lib/python3.13/site-packages/urllib3/util/retry.py\", line 555, in increment', '    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]', '    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', 'urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host=\\'127.0.0.1\\', port=4723): Max retries exceeded with url: /session/04b77d1f-43cb-47d8-bac3-b253f11348c4/source (Caused by ReadTimeoutError(\"HTTPConnectionPool(host=\\'127.0.0.1\\', port=4723): Read timed out. (read timeout=1e-06)\"))']}",
+        "recoverableEvidence": [
+          "occurrences/appium-command-timeout-ios.json"
+        ],
+        "recreationRequired": [
+          "driver",
+          "session"
+        ],
+        "remainingExternalResources": [],
+        "serverState": "online",
+        "sessionState": "present"
+      },
+      "id": "appium-command-timeout",
+      "injectedAt": "2026-10-30T08:07:27.905805Z",
+      "injection": "executed appium-command-timeout against a live Appium session",
+      "platform": "ios",
+      "transcript": {
+        "kind": "amkernel-result",
+        "mimeType": "application/json",
+        "path": "occurrences/appium-command-timeout-ios.json",
+        "sha256": "c88bfa80d18c48b6417b81a172b6bdf10e06aa11754447b75dd0377b2ba2cb5e",
+        "sizeBytes": 9953
+      }
+    },
+    {
+      "coverage": "Both",
+      "failure": {
+        "agentObservation": "{'type': 'urllib3.exceptions.MaxRetryError', 'message': 'HTTPConnectionPool(host=\\'127.0.0.1\\', port=1): Max retries exceeded with url: /session (Caused by NewConnectionError(\"HTTPConnection(host=\\'127.0.0.1\\', port=1): Failed to establish a new connection: [Errno 61] Connection refused\"))', 'traceback': ['Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connection.py\", line 239, in _new_conn', '    sock = connection.create_connection(', '        (self._dns_host, self.port),', '    ...<2 lines>...', '        socket_options=self.socket_options,', '    )', '  File \"<venv>/lib/python3.13/site-packages/urllib3/util/connection.py\", line 85, in create_connection', '    raise err', '  File \"<venv>/lib/python3.13/site-packages/urllib3/util/connection.py\", line 73, in create_connection', '    sock.connect(sa)', '    ~~~~~~~~~~~~^^^^', \"ConnectionRefusedError: (61, 'Connection refused')\", '', 'The above exception was the direct cause of the following exception:', '', 'Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 793, in urlopen', '    response = self._make_request(', '        conn,', '    ...<10 lines>...', '        **response_kw,', '    )', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 499, in _make_request', '    conn.request(', '    ~~~~~~~~~~~~^', '        method,', '        ^^^^^^^', '    ...<6 lines>...', '        enforce_content_length=enforce_content_length,', '        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connection.py\", line 567, in request', '    self.endheaders()', '    ~~~~~~~~~~~~~~~^^', '  File \"<home>/.local/share/uv/python/cpython-3.13.15-macos-aarch64-none/lib/python3.13/http/client.py\", line 1381, in endheaders', '    self._send_output(message_body, encode_chunked=encode_chunked)', '    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<home>/.local/share/uv/python/cpython-3.13.15-macos-aarch64-none/lib/python3.13/http/client.py\", line 1141, in _send_output', '    self.send(msg)', '    ~~~~~~~~~^^^^^', '  File \"<home>/.local/share/uv/python/cpython-3.13.15-macos-aarch64-none/lib/python3.13/http/client.py\", line 1085, in send', '    self.connect()', '    ~~~~~~~~~~~~^^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connection.py\", line 398, in connect', '    self.sock = self._new_conn()', '                ~~~~~~~~~~~~~~^^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connection.py\", line 254, in _new_conn', '    raise NewConnectionError(', '        self, f\"Failed to establish a new connection: {e}\"', '    ) from e', \"urllib3.exceptions.NewConnectionError: HTTPConnection(host='127.0.0.1', port=1): Failed to establish a new connection: [Errno 61] Connection refused\", '', 'The above exception was the direct cause of the following exception:', '', 'Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell', '    value = _compile_and_execute(code, execution_count, namespace)', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 525, in _compile_and_execute', '    exec(prefix_code, namespace, namespace)', '    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<amkernel-cell-1>\", line 10, in <module>', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/webdriver.py\", line 249, in __init__', '    super().__init__(', '    ~~~~~~~~~~~~~~~~^', '        command_executor=command_executor,', '        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '    ...<3 lines>...', '        client_config=client_config,', '        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 356, in __init__', '    self.start_session(capabilities)', '    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/webdriver.py\", line 342, in start_session', '    response = self.execute(RemoteCommand.NEW_SESSION, w3c_caps)', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 563, in execute', '    response = cast(RemoteConnection, self.command_executor).execute(driver_command, params)', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/remote_connection.py\", line 435, in execute', '    return self._request(command_info[0], url, body=data)', '           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/remote_connection.py\", line 459, in _request', '    response = self._conn.request(method, url, body=body, headers=headers, timeout=self._client_config.timeout)', '  File \"<venv>/lib/python3.13/site-packages/urllib3/_request_methods.py\", line 143, in request', '    return self.request_encode_body(', '           ~~~~~~~~~~~~~~~~~~~~~~~~^', '        method, url, fields=fields, headers=headers, **urlopen_kw', '        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/_request_methods.py\", line 278, in request_encode_body', '    return self.urlopen(method, url, **extra_kw)', '           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/poolmanager.py\", line 459, in urlopen', '    response = conn.urlopen(method, u.request_uri, **kw)', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 886, in urlopen', '    return self.urlopen(', '           ~~~~~~~~~~~~^', '        method,', '        ^^^^^^^', '    ...<13 lines>...', '        **response_kw,', '        ^^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 886, in urlopen', '    return self.urlopen(', '           ~~~~~~~~~~~~^', '        method,', '        ^^^^^^^', '    ...<13 lines>...', '        **response_kw,', '        ^^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 886, in urlopen', '    return self.urlopen(', '           ~~~~~~~~~~~~^', '        method,', '        ^^^^^^^', '    ...<13 lines>...', '        **response_kw,', '        ^^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 847, in urlopen', '    retries = retries.increment(', '        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]', '    )', '  File \"<venv>/lib/python3.13/site-packages/urllib3/util/retry.py\", line 555, in increment', '    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]', '    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', 'urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host=\\'127.0.0.1\\', port=1): Max retries exceeded with url: /session (Caused by NewConnectionError(\"HTTPConnection(host=\\'127.0.0.1\\', port=1): Failed to establish a new connection: [Errno 61] Connection refused\"))']}",
+        "category": "prerequisite",
+        "cleanupAttempted": false,
+        "cleanupObserved": true,
+        "deviceState": "online",
+        "kernelState": "alive",
+        "lastCompletedStep": null,
+        "message": "{'type': 'urllib3.exceptions.MaxRetryError', 'message': 'HTTPConnectionPool(host=\\'127.0.0.1\\', port=1): Max retries exceeded with url: /session (Caused by NewConnectionError(\"HTTPConnection(host=\\'127.0.0.1\\', port=1): Failed to establish a new connection: [Errno 61] Connection refused\"))', 'traceback': ['Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connection.py\", line 239, in _new_conn', '    sock = connection.create_connection(', '        (self._dns_host, self.port),', '    ...<2 lines>...', '        socket_options=self.socket_options,', '    )', '  File \"<venv>/lib/python3.13/site-packages/urllib3/util/connection.py\", line 85, in create_connection', '    raise err', '  File \"<venv>/lib/python3.13/site-packages/urllib3/util/connection.py\", line 73, in create_connection', '    sock.connect(sa)', '    ~~~~~~~~~~~~^^^^', \"ConnectionRefusedError: (61, 'Connection refused')\", '', 'The above exception was the direct cause of the following exception:', '', 'Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 793, in urlopen', '    response = self._make_request(', '        conn,', '    ...<10 lines>...', '        **response_kw,', '    )', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 499, in _make_request', '    conn.request(', '    ~~~~~~~~~~~~^', '        method,', '        ^^^^^^^', '    ...<6 lines>...', '        enforce_content_length=enforce_content_length,', '        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connection.py\", line 567, in request', '    self.endheaders()', '    ~~~~~~~~~~~~~~~^^', '  File \"<home>/.local/share/uv/python/cpython-3.13.15-macos-aarch64-none/lib/python3.13/http/client.py\", line 1381, in endheaders', '    self._send_output(message_body, encode_chunked=encode_chunked)', '    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<home>/.local/share/uv/python/cpython-3.13.15-macos-aarch64-none/lib/python3.13/http/client.py\", line 1141, in _send_output', '    self.send(msg)', '    ~~~~~~~~~^^^^^', '  File \"<home>/.local/share/uv/python/cpython-3.13.15-macos-aarch64-none/lib/python3.13/http/client.py\", line 1085, in send', '    self.connect()', '    ~~~~~~~~~~~~^^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connection.py\", line 398, in connect', '    self.sock = self._new_conn()', '                ~~~~~~~~~~~~~~^^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connection.py\", line 254, in _new_conn', '    raise NewConnectionError(', '        self, f\"Failed to establish a new connection: {e}\"', '    ) from e', \"urllib3.exceptions.NewConnectionError: HTTPConnection(host='127.0.0.1', port=1): Failed to establish a new connection: [Errno 61] Connection refused\", '', 'The above exception was the direct cause of the following exception:', '', 'Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell', '    value = _compile_and_execute(code, execution_count, namespace)', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 525, in _compile_and_execute', '    exec(prefix_code, namespace, namespace)', '    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<amkernel-cell-1>\", line 10, in <module>', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/webdriver.py\", line 249, in __init__', '    super().__init__(', '    ~~~~~~~~~~~~~~~~^', '        command_executor=command_executor,', '        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '    ...<3 lines>...', '        client_config=client_config,', '        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 356, in __init__', '    self.start_session(capabilities)', '    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/webdriver.py\", line 342, in start_session', '    response = self.execute(RemoteCommand.NEW_SESSION, w3c_caps)', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 563, in execute', '    response = cast(RemoteConnection, self.command_executor).execute(driver_command, params)', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/remote_connection.py\", line 435, in execute', '    return self._request(command_info[0], url, body=data)', '           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/remote_connection.py\", line 459, in _request', '    response = self._conn.request(method, url, body=body, headers=headers, timeout=self._client_config.timeout)', '  File \"<venv>/lib/python3.13/site-packages/urllib3/_request_methods.py\", line 143, in request', '    return self.request_encode_body(', '           ~~~~~~~~~~~~~~~~~~~~~~~~^', '        method, url, fields=fields, headers=headers, **urlopen_kw', '        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/_request_methods.py\", line 278, in request_encode_body', '    return self.urlopen(method, url, **extra_kw)', '           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/poolmanager.py\", line 459, in urlopen', '    response = conn.urlopen(method, u.request_uri, **kw)', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 886, in urlopen', '    return self.urlopen(', '           ~~~~~~~~~~~~^', '        method,', '        ^^^^^^^', '    ...<13 lines>...', '        **response_kw,', '        ^^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 886, in urlopen', '    return self.urlopen(', '           ~~~~~~~~~~~~^', '        method,', '        ^^^^^^^', '    ...<13 lines>...', '        **response_kw,', '        ^^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 886, in urlopen', '    return self.urlopen(', '           ~~~~~~~~~~~~^', '        method,', '        ^^^^^^^', '    ...<13 lines>...', '        **response_kw,', '        ^^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 847, in urlopen', '    retries = retries.increment(', '        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]', '    )', '  File \"<venv>/lib/python3.13/site-packages/urllib3/util/retry.py\", line 555, in increment', '    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]', '    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', 'urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host=\\'127.0.0.1\\', port=1): Max retries exceeded with url: /session (Caused by NewConnectionError(\"HTTPConnection(host=\\'127.0.0.1\\', port=1): Failed to establish a new connection: [Errno 61] Connection refused\"))']}",
+        "recoverableEvidence": [
+          "occurrences/appium-endpoint-unavailable-android.json"
+        ],
+        "recreationRequired": [
+          "server"
+        ],
+        "remainingExternalResources": [],
+        "serverState": "offline",
+        "sessionState": "absent"
+      },
+      "id": "appium-endpoint-unavailable",
+      "injectedAt": "2026-10-30T08:05:47.201929Z",
+      "injection": "connected to an unused loopback Appium endpoint",
+      "platform": "android",
+      "transcript": {
+        "kind": "amkernel-result",
+        "mimeType": "application/json",
+        "path": "occurrences/appium-endpoint-unavailable-android.json",
+        "sha256": "706e4366e2825c5299d74675dd43bf237757a83683c819ae655f1b8933d1edf2",
+        "sizeBytes": 9540
+      }
+    },
+    {
+      "coverage": "Both",
+      "failure": {
+        "agentObservation": "{'type': 'urllib3.exceptions.MaxRetryError', 'message': 'HTTPConnectionPool(host=\\'127.0.0.1\\', port=1): Max retries exceeded with url: /session (Caused by NewConnectionError(\"HTTPConnection(host=\\'127.0.0.1\\', port=1): Failed to establish a new connection: [Errno 61] Connection refused\"))', 'traceback': ['Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connection.py\", line 239, in _new_conn', '    sock = connection.create_connection(', '        (self._dns_host, self.port),', '    ...<2 lines>...', '        socket_options=self.socket_options,', '    )', '  File \"<venv>/lib/python3.13/site-packages/urllib3/util/connection.py\", line 85, in create_connection', '    raise err', '  File \"<venv>/lib/python3.13/site-packages/urllib3/util/connection.py\", line 73, in create_connection', '    sock.connect(sa)', '    ~~~~~~~~~~~~^^^^', \"ConnectionRefusedError: (61, 'Connection refused')\", '', 'The above exception was the direct cause of the following exception:', '', 'Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 793, in urlopen', '    response = self._make_request(', '        conn,', '    ...<10 lines>...', '        **response_kw,', '    )', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 499, in _make_request', '    conn.request(', '    ~~~~~~~~~~~~^', '        method,', '        ^^^^^^^', '    ...<6 lines>...', '        enforce_content_length=enforce_content_length,', '        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connection.py\", line 567, in request', '    self.endheaders()', '    ~~~~~~~~~~~~~~~^^', '  File \"<home>/.local/share/uv/python/cpython-3.13.15-macos-aarch64-none/lib/python3.13/http/client.py\", line 1381, in endheaders', '    self._send_output(message_body, encode_chunked=encode_chunked)', '    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<home>/.local/share/uv/python/cpython-3.13.15-macos-aarch64-none/lib/python3.13/http/client.py\", line 1141, in _send_output', '    self.send(msg)', '    ~~~~~~~~~^^^^^', '  File \"<home>/.local/share/uv/python/cpython-3.13.15-macos-aarch64-none/lib/python3.13/http/client.py\", line 1085, in send', '    self.connect()', '    ~~~~~~~~~~~~^^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connection.py\", line 398, in connect', '    self.sock = self._new_conn()', '                ~~~~~~~~~~~~~~^^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connection.py\", line 254, in _new_conn', '    raise NewConnectionError(', '        self, f\"Failed to establish a new connection: {e}\"', '    ) from e', \"urllib3.exceptions.NewConnectionError: HTTPConnection(host='127.0.0.1', port=1): Failed to establish a new connection: [Errno 61] Connection refused\", '', 'The above exception was the direct cause of the following exception:', '', 'Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell', '    value = _compile_and_execute(code, execution_count, namespace)', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 525, in _compile_and_execute', '    exec(prefix_code, namespace, namespace)', '    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<amkernel-cell-1>\", line 9, in <module>', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/webdriver.py\", line 249, in __init__', '    super().__init__(', '    ~~~~~~~~~~~~~~~~^', '        command_executor=command_executor,', '        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '    ...<3 lines>...', '        client_config=client_config,', '        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 356, in __init__', '    self.start_session(capabilities)', '    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/webdriver.py\", line 342, in start_session', '    response = self.execute(RemoteCommand.NEW_SESSION, w3c_caps)', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 563, in execute', '    response = cast(RemoteConnection, self.command_executor).execute(driver_command, params)', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/remote_connection.py\", line 435, in execute', '    return self._request(command_info[0], url, body=data)', '           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/remote_connection.py\", line 459, in _request', '    response = self._conn.request(method, url, body=body, headers=headers, timeout=self._client_config.timeout)', '  File \"<venv>/lib/python3.13/site-packages/urllib3/_request_methods.py\", line 143, in request', '    return self.request_encode_body(', '           ~~~~~~~~~~~~~~~~~~~~~~~~^', '        method, url, fields=fields, headers=headers, **urlopen_kw', '        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/_request_methods.py\", line 278, in request_encode_body', '    return self.urlopen(method, url, **extra_kw)', '           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/poolmanager.py\", line 459, in urlopen', '    response = conn.urlopen(method, u.request_uri, **kw)', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 886, in urlopen', '    return self.urlopen(', '           ~~~~~~~~~~~~^', '        method,', '        ^^^^^^^', '    ...<13 lines>...', '        **response_kw,', '        ^^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 886, in urlopen', '    return self.urlopen(', '           ~~~~~~~~~~~~^', '        method,', '        ^^^^^^^', '    ...<13 lines>...', '        **response_kw,', '        ^^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 886, in urlopen', '    return self.urlopen(', '           ~~~~~~~~~~~~^', '        method,', '        ^^^^^^^', '    ...<13 lines>...', '        **response_kw,', '        ^^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 847, in urlopen', '    retries = retries.increment(', '        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]', '    )', '  File \"<venv>/lib/python3.13/site-packages/urllib3/util/retry.py\", line 555, in increment', '    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]', '    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', 'urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host=\\'127.0.0.1\\', port=1): Max retries exceeded with url: /session (Caused by NewConnectionError(\"HTTPConnection(host=\\'127.0.0.1\\', port=1): Failed to establish a new connection: [Errno 61] Connection refused\"))']}",
+        "category": "prerequisite",
+        "cleanupAttempted": false,
+        "cleanupObserved": true,
+        "deviceState": "online",
+        "kernelState": "alive",
+        "lastCompletedStep": null,
+        "message": "{'type': 'urllib3.exceptions.MaxRetryError', 'message': 'HTTPConnectionPool(host=\\'127.0.0.1\\', port=1): Max retries exceeded with url: /session (Caused by NewConnectionError(\"HTTPConnection(host=\\'127.0.0.1\\', port=1): Failed to establish a new connection: [Errno 61] Connection refused\"))', 'traceback': ['Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connection.py\", line 239, in _new_conn', '    sock = connection.create_connection(', '        (self._dns_host, self.port),', '    ...<2 lines>...', '        socket_options=self.socket_options,', '    )', '  File \"<venv>/lib/python3.13/site-packages/urllib3/util/connection.py\", line 85, in create_connection', '    raise err', '  File \"<venv>/lib/python3.13/site-packages/urllib3/util/connection.py\", line 73, in create_connection', '    sock.connect(sa)', '    ~~~~~~~~~~~~^^^^', \"ConnectionRefusedError: (61, 'Connection refused')\", '', 'The above exception was the direct cause of the following exception:', '', 'Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 793, in urlopen', '    response = self._make_request(', '        conn,', '    ...<10 lines>...', '        **response_kw,', '    )', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 499, in _make_request', '    conn.request(', '    ~~~~~~~~~~~~^', '        method,', '        ^^^^^^^', '    ...<6 lines>...', '        enforce_content_length=enforce_content_length,', '        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connection.py\", line 567, in request', '    self.endheaders()', '    ~~~~~~~~~~~~~~~^^', '  File \"<home>/.local/share/uv/python/cpython-3.13.15-macos-aarch64-none/lib/python3.13/http/client.py\", line 1381, in endheaders', '    self._send_output(message_body, encode_chunked=encode_chunked)', '    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<home>/.local/share/uv/python/cpython-3.13.15-macos-aarch64-none/lib/python3.13/http/client.py\", line 1141, in _send_output', '    self.send(msg)', '    ~~~~~~~~~^^^^^', '  File \"<home>/.local/share/uv/python/cpython-3.13.15-macos-aarch64-none/lib/python3.13/http/client.py\", line 1085, in send', '    self.connect()', '    ~~~~~~~~~~~~^^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connection.py\", line 398, in connect', '    self.sock = self._new_conn()', '                ~~~~~~~~~~~~~~^^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connection.py\", line 254, in _new_conn', '    raise NewConnectionError(', '        self, f\"Failed to establish a new connection: {e}\"', '    ) from e', \"urllib3.exceptions.NewConnectionError: HTTPConnection(host='127.0.0.1', port=1): Failed to establish a new connection: [Errno 61] Connection refused\", '', 'The above exception was the direct cause of the following exception:', '', 'Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell', '    value = _compile_and_execute(code, execution_count, namespace)', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 525, in _compile_and_execute', '    exec(prefix_code, namespace, namespace)', '    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<amkernel-cell-1>\", line 9, in <module>', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/webdriver.py\", line 249, in __init__', '    super().__init__(', '    ~~~~~~~~~~~~~~~~^', '        command_executor=command_executor,', '        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '    ...<3 lines>...', '        client_config=client_config,', '        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 356, in __init__', '    self.start_session(capabilities)', '    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/webdriver.py\", line 342, in start_session', '    response = self.execute(RemoteCommand.NEW_SESSION, w3c_caps)', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 563, in execute', '    response = cast(RemoteConnection, self.command_executor).execute(driver_command, params)', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/remote_connection.py\", line 435, in execute', '    return self._request(command_info[0], url, body=data)', '           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/remote_connection.py\", line 459, in _request', '    response = self._conn.request(method, url, body=body, headers=headers, timeout=self._client_config.timeout)', '  File \"<venv>/lib/python3.13/site-packages/urllib3/_request_methods.py\", line 143, in request', '    return self.request_encode_body(', '           ~~~~~~~~~~~~~~~~~~~~~~~~^', '        method, url, fields=fields, headers=headers, **urlopen_kw', '        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/_request_methods.py\", line 278, in request_encode_body', '    return self.urlopen(method, url, **extra_kw)', '           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/poolmanager.py\", line 459, in urlopen', '    response = conn.urlopen(method, u.request_uri, **kw)', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 886, in urlopen', '    return self.urlopen(', '           ~~~~~~~~~~~~^', '        method,', '        ^^^^^^^', '    ...<13 lines>...', '        **response_kw,', '        ^^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 886, in urlopen', '    return self.urlopen(', '           ~~~~~~~~~~~~^', '        method,', '        ^^^^^^^', '    ...<13 lines>...', '        **response_kw,', '        ^^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 886, in urlopen', '    return self.urlopen(', '           ~~~~~~~~~~~~^', '        method,', '        ^^^^^^^', '    ...<13 lines>...', '        **response_kw,', '        ^^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/urllib3/connectionpool.py\", line 847, in urlopen', '    retries = retries.increment(', '        method, url, error=new_e, _pool=self, _stacktrace=sys.exc_info()[2]', '    )', '  File \"<venv>/lib/python3.13/site-packages/urllib3/util/retry.py\", line 555, in increment', '    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]', '    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', 'urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host=\\'127.0.0.1\\', port=1): Max retries exceeded with url: /session (Caused by NewConnectionError(\"HTTPConnection(host=\\'127.0.0.1\\', port=1): Failed to establish a new connection: [Errno 61] Connection refused\"))']}",
+        "recoverableEvidence": [
+          "occurrences/appium-endpoint-unavailable-ios.json"
+        ],
+        "recreationRequired": [
+          "server"
+        ],
+        "remainingExternalResources": [],
+        "serverState": "offline",
+        "sessionState": "absent"
+      },
+      "id": "appium-endpoint-unavailable",
+      "injectedAt": "2026-10-30T08:07:07.133067Z",
+      "injection": "connected to an unused loopback Appium endpoint",
+      "platform": "ios",
+      "transcript": {
+        "kind": "amkernel-result",
+        "mimeType": "application/json",
+        "path": "occurrences/appium-endpoint-unavailable-ios.json",
+        "sha256": "92efd846ac7b1d0b0933d114fdd7ba9093c85fb62868b3c663110b110f37100c",
+        "sizeBytes": 9529
+      }
+    },
+    {
+      "coverage": "Both",
+      "failure": {
+        "agentObservation": "{'type': 'selenium.common.exceptions.InvalidSessionIdException', 'message': '<custom __str__ omitted for selenium.common.exceptions.InvalidSessionIdException>', 'traceback': ['Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell', '    value = _compile_and_execute(code, execution_count, namespace)', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 528, in _compile_and_execute', '    return eval(expression_code, namespace, namespace)', '  File \"<amkernel-cell-2>\", line 1, in <module>', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 706, in page_source', '    return self.execute(Command.GET_PAGE_SOURCE)[\"value\"]', '           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 566, in execute', '    self.error_handler.check_response(response)', '    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/errorhandler.py\", line 125, in check_response', '    raise exception_class(msg=message, stacktrace=format_stacktrace(stacktrace))', 'selenium.common.exceptions.InvalidSessionIdException: <custom __str__ omitted for selenium.common.exceptions.InvalidSessionIdException>']}",
+        "category": "driver",
+        "cleanupAttempted": true,
+        "cleanupObserved": true,
+        "deviceState": "online",
+        "kernelState": "alive",
+        "lastCompletedStep": "failure-injected",
+        "message": "{'type': 'selenium.common.exceptions.InvalidSessionIdException', 'message': '<custom __str__ omitted for selenium.common.exceptions.InvalidSessionIdException>', 'traceback': ['Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell', '    value = _compile_and_execute(code, execution_count, namespace)', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 528, in _compile_and_execute', '    return eval(expression_code, namespace, namespace)', '  File \"<amkernel-cell-2>\", line 1, in <module>', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 706, in page_source', '    return self.execute(Command.GET_PAGE_SOURCE)[\"value\"]', '           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 566, in execute', '    self.error_handler.check_response(response)', '    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/errorhandler.py\", line 125, in check_response', '    raise exception_class(msg=message, stacktrace=format_stacktrace(stacktrace))', 'selenium.common.exceptions.InvalidSessionIdException: <custom __str__ omitted for selenium.common.exceptions.InvalidSessionIdException>']}",
+        "recoverableEvidence": [
+          "occurrences/appium-server-restart-android.json"
+        ],
+        "recreationRequired": [
+          "server",
+          "driver",
+          "session"
+        ],
+        "remainingExternalResources": [],
+        "serverState": "restarted",
+        "sessionState": "absent"
+      },
+      "id": "appium-server-restart",
+      "injectedAt": "2026-10-30T08:06:26.844558Z",
+      "injection": "executed appium-server-restart against a live Appium session",
+      "platform": "android",
+      "transcript": {
+        "kind": "amkernel-result",
+        "mimeType": "application/json",
+        "path": "occurrences/appium-server-restart-android.json",
+        "sha256": "a651b3906d8c6ae2799b462c41a2e67229a6d44a7d5aea6c72b74d84bc9aa0db",
+        "sizeBytes": 5621
+      }
+    },
+    {
+      "coverage": "Both",
+      "failure": {
+        "agentObservation": "{'type': 'selenium.common.exceptions.InvalidSessionIdException', 'message': '<custom __str__ omitted for selenium.common.exceptions.InvalidSessionIdException>', 'traceback': ['Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell', '    value = _compile_and_execute(code, execution_count, namespace)', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 528, in _compile_and_execute', '    return eval(expression_code, namespace, namespace)', '  File \"<amkernel-cell-2>\", line 1, in <module>', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 706, in page_source', '    return self.execute(Command.GET_PAGE_SOURCE)[\"value\"]', '           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 566, in execute', '    self.error_handler.check_response(response)', '    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/errorhandler.py\", line 125, in check_response', '    raise exception_class(msg=message, stacktrace=format_stacktrace(stacktrace))', 'selenium.common.exceptions.InvalidSessionIdException: <custom __str__ omitted for selenium.common.exceptions.InvalidSessionIdException>']}",
+        "category": "driver",
+        "cleanupAttempted": true,
+        "cleanupObserved": true,
+        "deviceState": "online",
+        "kernelState": "alive",
+        "lastCompletedStep": "failure-injected",
+        "message": "{'type': 'selenium.common.exceptions.InvalidSessionIdException', 'message': '<custom __str__ omitted for selenium.common.exceptions.InvalidSessionIdException>', 'traceback': ['Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell', '    value = _compile_and_execute(code, execution_count, namespace)', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 528, in _compile_and_execute', '    return eval(expression_code, namespace, namespace)', '  File \"<amkernel-cell-2>\", line 1, in <module>', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 706, in page_source', '    return self.execute(Command.GET_PAGE_SOURCE)[\"value\"]', '           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 566, in execute', '    self.error_handler.check_response(response)', '    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/errorhandler.py\", line 125, in check_response', '    raise exception_class(msg=message, stacktrace=format_stacktrace(stacktrace))', 'selenium.common.exceptions.InvalidSessionIdException: <custom __str__ omitted for selenium.common.exceptions.InvalidSessionIdException>']}",
+        "recoverableEvidence": [
+          "occurrences/appium-server-restart-ios.json"
+        ],
+        "recreationRequired": [
+          "server",
+          "driver",
+          "session"
+        ],
+        "remainingExternalResources": [],
+        "serverState": "restarted",
+        "sessionState": "absent"
+      },
+      "id": "appium-server-restart",
+      "injectedAt": "2026-10-30T08:07:42.019626Z",
+      "injection": "executed appium-server-restart against a live Appium session",
+      "platform": "ios",
+      "transcript": {
+        "kind": "amkernel-result",
+        "mimeType": "application/json",
+        "path": "occurrences/appium-server-restart-ios.json",
+        "sha256": "70568b4f48c85aed5f24f354696397c39aa3da9ec1e61584972cc3a36e1ed3d2",
+        "sizeBytes": 5611
+      }
+    },
+    {
+      "coverage": "Shared",
+      "failure": {
+        "agentObservation": "{'type': 'RuntimeError', 'message': 'AMKernel returned an MCP tool error: python_exec failed internally'}",
+        "category": "amkernel",
+        "cleanupAttempted": false,
+        "cleanupObserved": true,
+        "deviceState": "online",
+        "kernelState": "alive",
+        "lastCompletedStep": null,
+        "message": "{'type': 'RuntimeError', 'message': 'AMKernel returned an MCP tool error: python_exec failed internally'}",
+        "recoverableEvidence": [
+          "occurrences/artifact-write-failure-android.json"
+        ],
+        "recreationRequired": [],
+        "remainingExternalResources": [],
+        "serverState": "online",
+        "sessionState": "absent"
+      },
+      "id": "artifact-write-failure",
+      "injectedAt": "2026-10-30T08:06:41.286922Z",
+      "injection": "removed write permission from the isolated Artifact Store root",
+      "platform": "android",
+      "transcript": {
+        "kind": "amkernel-result",
+        "mimeType": "application/json",
+        "path": "occurrences/artifact-write-failure-android.json",
+        "sha256": "0d415df38832b3fda1285786f181b2b36c28e393ae72a5780205b9f8df9accbe",
+        "sizeBytes": 1758
+      }
+    },
+    {
+      "coverage": "Both",
+      "failure": {
+        "agentObservation": "{'type': 'selenium.common.exceptions.WebDriverException', 'message': '<custom __str__ omitted for selenium.common.exceptions.WebDriverException>', 'traceback': ['Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell', '    value = _compile_and_execute(code, execution_count, namespace)', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 525, in _compile_and_execute', '    exec(prefix_code, namespace, namespace)', '    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<amkernel-cell-1>\", line 10, in <module>', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/webdriver.py\", line 249, in __init__', '    super().__init__(', '    ~~~~~~~~~~~~~~~~^', '        command_executor=command_executor,', '        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '    ...<3 lines>...', '        client_config=client_config,', '        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 356, in __init__', '    self.start_session(capabilities)', '    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/webdriver.py\", line 342, in start_session', '    response = self.execute(RemoteCommand.NEW_SESSION, w3c_caps)', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 566, in execute', '    self.error_handler.check_response(response)', '    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/errorhandler.py\", line 234, in check_response', '    raise exception_class(message, screen, stacktrace)', 'selenium.common.exceptions.WebDriverException: <custom __str__ omitted for selenium.common.exceptions.WebDriverException>']}",
+        "category": "prerequisite",
+        "cleanupAttempted": true,
+        "cleanupObserved": true,
+        "deviceState": "offline",
+        "kernelState": "alive",
+        "lastCompletedStep": null,
+        "message": "{'type': 'selenium.common.exceptions.WebDriverException', 'message': '<custom __str__ omitted for selenium.common.exceptions.WebDriverException>', 'traceback': ['Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell', '    value = _compile_and_execute(code, execution_count, namespace)', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 525, in _compile_and_execute', '    exec(prefix_code, namespace, namespace)', '    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<amkernel-cell-1>\", line 10, in <module>', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/webdriver.py\", line 249, in __init__', '    super().__init__(', '    ~~~~~~~~~~~~~~~~^', '        command_executor=command_executor,', '        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '    ...<3 lines>...', '        client_config=client_config,', '        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 356, in __init__', '    self.start_session(capabilities)', '    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/webdriver.py\", line 342, in start_session', '    response = self.execute(RemoteCommand.NEW_SESSION, w3c_caps)', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 566, in execute', '    self.error_handler.check_response(response)', '    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/errorhandler.py\", line 234, in check_response', '    raise exception_class(message, screen, stacktrace)', 'selenium.common.exceptions.WebDriverException: <custom __str__ omitted for selenium.common.exceptions.WebDriverException>']}",
+        "recoverableEvidence": [
+          "occurrences/device-offline-android.json"
+        ],
+        "recreationRequired": [],
+        "remainingExternalResources": [],
+        "serverState": "online",
+        "sessionState": "absent"
+      },
+      "id": "device-offline",
+      "injectedAt": "2026-10-30T08:19:38.828810Z",
+      "injection": "requested the isolated target while it was powered off",
+      "platform": "android",
+      "transcript": {
+        "kind": "amkernel-result",
+        "mimeType": "application/json",
+        "path": "occurrences/device-offline-android.json",
+        "sha256": "a3ddb9c405a80a05a8a4bf118520468b1048da1ad8ed4595ce25d8773c740ccb",
+        "sizeBytes": 3391
+      }
+    },
+    {
+      "coverage": "Both",
+      "failure": {
+        "agentObservation": "{'type': 'TimeoutError', 'message': 'cell interrupted by deadline', 'traceback': []}",
+        "category": "prerequisite",
+        "cleanupAttempted": true,
+        "cleanupObserved": true,
+        "deviceState": "offline",
+        "kernelState": "alive",
+        "lastCompletedStep": null,
+        "message": "{'type': 'TimeoutError', 'message': 'cell interrupted by deadline', 'traceback': []}",
+        "recoverableEvidence": [
+          "occurrences/device-offline-ios.json"
+        ],
+        "recreationRequired": [],
+        "remainingExternalResources": [],
+        "serverState": "online",
+        "sessionState": "absent"
+      },
+      "id": "device-offline",
+      "injectedAt": "2026-10-30T08:10:14.777617Z",
+      "injection": "requested the isolated target while it was powered off",
+      "platform": "ios",
+      "transcript": {
+        "kind": "amkernel-result",
+        "mimeType": "application/json",
+        "path": "occurrences/device-offline-ios.json",
+        "sha256": "1a8635d135766efe1286e679d73b8a9b7efafd1517754f415b847dc4461883df",
+        "sizeBytes": 1238
+      }
+    },
+    {
+      "coverage": "Both",
+      "failure": {
+        "agentObservation": "closed MCP transport while the Appium driver remained live",
+        "category": "cleanup",
+        "cleanupAttempted": true,
+        "cleanupObserved": true,
+        "deviceState": "online",
+        "kernelState": "dead",
+        "lastCompletedStep": "transport-closed-with-live-session",
+        "message": "closed MCP transport while the Appium driver remained live",
+        "recoverableEvidence": [
+          "occurrences/driver-quit-during-kernel-shutdown-android.json"
+        ],
+        "recreationRequired": [
+          "session"
+        ],
+        "remainingExternalResources": [],
+        "serverState": "online",
+        "sessionState": "present"
+      },
+      "id": "driver-quit-during-kernel-shutdown",
+      "injectedAt": "2026-10-30T08:06:44.745704Z",
+      "injection": "closed MCP transport while the Appium driver remained live",
+      "platform": "android",
+      "transcript": {
+        "kind": "amkernel-result",
+        "mimeType": "application/json",
+        "path": "occurrences/driver-quit-during-kernel-shutdown-android.json",
+        "sha256": "7ff9f85b76b5c8ce9ec634031ff6e8a4beb1bc2cbaf624ec5a5cc328c41eaf27",
+        "sizeBytes": 1229
+      }
+    },
+    {
+      "coverage": "Both",
+      "failure": {
+        "agentObservation": "closed MCP transport while the Appium driver remained live",
+        "category": "cleanup",
+        "cleanupAttempted": true,
+        "cleanupObserved": true,
+        "deviceState": "online",
+        "kernelState": "dead",
+        "lastCompletedStep": "transport-closed-with-live-session",
+        "message": "closed MCP transport while the Appium driver remained live",
+        "recoverableEvidence": [
+          "occurrences/driver-quit-during-kernel-shutdown-ios.json"
+        ],
+        "recreationRequired": [
+          "session"
+        ],
+        "remainingExternalResources": [],
+        "serverState": "online",
+        "sessionState": "present"
+      },
+      "id": "driver-quit-during-kernel-shutdown",
+      "injectedAt": "2026-10-30T08:08:17.020471Z",
+      "injection": "closed MCP transport while the Appium driver remained live",
+      "platform": "ios",
+      "transcript": {
+        "kind": "amkernel-result",
+        "mimeType": "application/json",
+        "path": "occurrences/driver-quit-during-kernel-shutdown-ios.json",
+        "sha256": "8d5af7ea0ddd028bea4bdbc0a7033ffd5d7a7812811fdbcc362b975cfb2c9fd5",
+        "sizeBytes": 1219
+      }
+    },
+    {
+      "coverage": "Shared",
+      "failure": {
+        "agentObservation": "{'type': 'AssertionError', 'message': 'injected client requires selenium<4; installed selenium is 4.52.0', 'traceback': ['Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell', '    value = _compile_and_execute(code, execution_count, namespace)', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 525, in _compile_and_execute', '    exec(prefix_code, namespace, namespace)', '    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<amkernel-cell-1>\", line 6, in <module>', 'AssertionError: injected client requires selenium<4; installed selenium is 4.52.0']}",
+        "category": "prerequisite",
+        "cleanupAttempted": false,
+        "cleanupObserved": true,
+        "deviceState": "online",
+        "kernelState": "alive",
+        "lastCompletedStep": null,
+        "message": "{'type': 'AssertionError', 'message': 'injected client requires selenium<4; installed selenium is 4.52.0', 'traceback': ['Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell', '    value = _compile_and_execute(code, execution_count, namespace)', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 525, in _compile_and_execute', '    exec(prefix_code, namespace, namespace)', '    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<amkernel-cell-1>\", line 6, in <module>', 'AssertionError: injected client requires selenium<4; installed selenium is 4.52.0']}",
+        "recoverableEvidence": [
+          "occurrences/incompatible-client-selenium-android.json"
+        ],
+        "recreationRequired": [
+          "kernel"
+        ],
+        "remainingExternalResources": [],
+        "serverState": "online",
+        "sessionState": "absent"
+      },
+      "id": "incompatible-client-selenium",
+      "injectedAt": "2026-10-30T08:05:48.249049Z",
+      "injection": "injected a client requirement of selenium<4",
+      "platform": "android",
+      "transcript": {
+        "kind": "amkernel-result",
+        "mimeType": "application/json",
+        "path": "occurrences/incompatible-client-selenium-android.json",
+        "sha256": "35222a18c7427be853b38762342af9f8e33913ce97f3f8b911034a001014bf6f",
+        "sizeBytes": 2167
+      }
+    },
+    {
+      "coverage": "Both",
+      "failure": {
+        "agentObservation": "{'type': 'selenium.common.exceptions.WebDriverException', 'message': '<custom __str__ omitted for selenium.common.exceptions.WebDriverException>', 'traceback': ['Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell', '    value = _compile_and_execute(code, execution_count, namespace)', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 528, in _compile_and_execute', '    return eval(expression_code, namespace, namespace)', '  File \"<amkernel-cell-2>\", line 1, in <module>', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/extensions/applications.py\", line 187, in activate_app', '    self.assert_extension_exists(ext_name).execute_script(', '    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^', '        ext_name,', '        ^^^^^^^^^', '    ...<3 lines>...', '        },', '        ^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 677, in execute_script', '    return self.execute(command, {\"script\": script, \"args\": converted_args})[\"value\"]', '           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 566, in execute', '    self.error_handler.check_response(response)', '    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/errorhandler.py\", line 125, in check_response', '    raise exception_class(msg=message, stacktrace=format_stacktrace(stacktrace))', 'selenium.common.exceptions.WebDriverException: <custom __str__ omitted for selenium.common.exceptions.WebDriverException>']}",
+        "category": "driver",
+        "cleanupAttempted": true,
+        "cleanupObserved": true,
+        "deviceState": "online",
+        "kernelState": "alive",
+        "lastCompletedStep": "failure-injected",
+        "message": "{'type': 'selenium.common.exceptions.WebDriverException', 'message': '<custom __str__ omitted for selenium.common.exceptions.WebDriverException>', 'traceback': ['Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell', '    value = _compile_and_execute(code, execution_count, namespace)', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 528, in _compile_and_execute', '    return eval(expression_code, namespace, namespace)', '  File \"<amkernel-cell-2>\", line 1, in <module>', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/extensions/applications.py\", line 187, in activate_app', '    self.assert_extension_exists(ext_name).execute_script(', '    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^', '        ext_name,', '        ^^^^^^^^^', '    ...<3 lines>...', '        },', '        ^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 677, in execute_script', '    return self.execute(command, {\"script\": script, \"args\": converted_args})[\"value\"]', '           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 566, in execute', '    self.error_handler.check_response(response)', '    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/errorhandler.py\", line 125, in check_response', '    raise exception_class(msg=message, stacktrace=format_stacktrace(stacktrace))', 'selenium.common.exceptions.WebDriverException: <custom __str__ omitted for selenium.common.exceptions.WebDriverException>']}",
+        "recoverableEvidence": [
+          "occurrences/invalid-app-target-android.json"
+        ],
+        "recreationRequired": [
+          "application"
+        ],
+        "remainingExternalResources": [],
+        "serverState": "online",
+        "sessionState": "present"
+      },
+      "id": "invalid-app-target",
+      "injectedAt": "2026-10-30T08:05:54.733115Z",
+      "injection": "executed invalid-app-target against a live Appium session",
+      "platform": "android",
+      "transcript": {
+        "kind": "amkernel-result",
+        "mimeType": "application/json",
+        "path": "occurrences/invalid-app-target-android.json",
+        "sha256": "27144c267ce69b12aee82d2ac2ca0d92742bbd6fb2fbd3caa29b793445d613f5",
+        "sizeBytes": 4461
+      }
+    },
+    {
+      "coverage": "Both",
+      "failure": {
+        "agentObservation": "{'type': 'selenium.common.exceptions.InvalidArgumentException', 'message': '<custom __str__ omitted for selenium.common.exceptions.InvalidArgumentException>', 'traceback': ['Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/extensions/applications.py\", line 187, in activate_app', '    self.assert_extension_exists(ext_name).execute_script(', '    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^', '        ext_name,', '        ^^^^^^^^^', '    ...<3 lines>...', '        },', '        ^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 677, in execute_script', '    return self.execute(command, {\"script\": script, \"args\": converted_args})[\"value\"]', '           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 566, in execute', '    self.error_handler.check_response(response)', '    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/errorhandler.py\", line 125, in check_response', '    raise exception_class(msg=message, stacktrace=format_stacktrace(stacktrace))', 'selenium.common.exceptions.InvalidArgumentException: <custom __str__ omitted for selenium.common.exceptions.InvalidArgumentException>', '', 'During handling of the above exception, another exception occurred:', '', 'Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell', '    value = _compile_and_execute(code, execution_count, namespace)', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 528, in _compile_and_execute', '    return eval(expression_code, namespace, namespace)', '  File \"<amkernel-cell-2>\", line 1, in <module>', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/extensions/applications.py\", line 196, in activate_app', \"    self.mark_extension_absence(ext_name).execute(Command.ACTIVATE_APP, {'appId': app_id})\", '    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 566, in execute', '    self.error_handler.check_response(response)', '    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/errorhandler.py\", line 125, in check_response', '    raise exception_class(msg=message, stacktrace=format_stacktrace(stacktrace))', 'selenium.common.exceptions.InvalidArgumentException: <custom __str__ omitted for selenium.common.exceptions.InvalidArgumentException>']}",
+        "category": "driver",
+        "cleanupAttempted": true,
+        "cleanupObserved": true,
+        "deviceState": "online",
+        "kernelState": "alive",
+        "lastCompletedStep": "failure-injected",
+        "message": "{'type': 'selenium.common.exceptions.InvalidArgumentException', 'message': '<custom __str__ omitted for selenium.common.exceptions.InvalidArgumentException>', 'traceback': ['Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/extensions/applications.py\", line 187, in activate_app', '    self.assert_extension_exists(ext_name).execute_script(', '    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^', '        ext_name,', '        ^^^^^^^^^', '    ...<3 lines>...', '        },', '        ^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 677, in execute_script', '    return self.execute(command, {\"script\": script, \"args\": converted_args})[\"value\"]', '           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 566, in execute', '    self.error_handler.check_response(response)', '    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/errorhandler.py\", line 125, in check_response', '    raise exception_class(msg=message, stacktrace=format_stacktrace(stacktrace))', 'selenium.common.exceptions.InvalidArgumentException: <custom __str__ omitted for selenium.common.exceptions.InvalidArgumentException>', '', 'During handling of the above exception, another exception occurred:', '', 'Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell', '    value = _compile_and_execute(code, execution_count, namespace)', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 528, in _compile_and_execute', '    return eval(expression_code, namespace, namespace)', '  File \"<amkernel-cell-2>\", line 1, in <module>', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/extensions/applications.py\", line 196, in activate_app', \"    self.mark_extension_absence(ext_name).execute(Command.ACTIVATE_APP, {'appId': app_id})\", '    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 566, in execute', '    self.error_handler.check_response(response)', '    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/errorhandler.py\", line 125, in check_response', '    raise exception_class(msg=message, stacktrace=format_stacktrace(stacktrace))', 'selenium.common.exceptions.InvalidArgumentException: <custom __str__ omitted for selenium.common.exceptions.InvalidArgumentException>']}",
+        "recoverableEvidence": [
+          "occurrences/invalid-app-target-ios.json"
+        ],
+        "recreationRequired": [
+          "application"
+        ],
+        "remainingExternalResources": [],
+        "serverState": "online",
+        "sessionState": "present"
+      },
+      "id": "invalid-app-target",
+      "injectedAt": "2026-10-30T08:07:11.868698Z",
+      "injection": "executed invalid-app-target against a live Appium session",
+      "platform": "ios",
+      "transcript": {
+        "kind": "amkernel-result",
+        "mimeType": "application/json",
+        "path": "occurrences/invalid-app-target-ios.json",
+        "sha256": "668d1ba8a9de885a73d10e8f30d8a550547085d4ee8749fff3de121c12616d31",
+        "sizeBytes": 5577
+      }
+    },
+    {
+      "coverage": "Shared",
+      "failure": {
+        "agentObservation": "{'type': 'KernelExited', 'message': 'kernel process exited unexpectedly', 'traceback': []}",
+        "category": "amkernel",
+        "cleanupAttempted": true,
+        "cleanupObserved": true,
+        "deviceState": "online",
+        "kernelState": "dead",
+        "lastCompletedStep": "replacement-kernel-verified",
+        "message": "{'type': 'KernelExited', 'message': 'kernel process exited unexpectedly', 'traceback': []}",
+        "recoverableEvidence": [
+          "occurrences/kernel-hard-kill-android.json"
+        ],
+        "recreationRequired": [
+          "kernel"
+        ],
+        "remainingExternalResources": [],
+        "serverState": "online",
+        "sessionState": "present"
+      },
+      "id": "kernel-hard-kill",
+      "injectedAt": "2026-10-30T08:06:39.571903Z",
+      "injection": "sent SIGKILL to the isolated Runner while an Appium session was live",
+      "platform": "android",
+      "transcript": {
+        "kind": "amkernel-result",
+        "mimeType": "application/json",
+        "path": "occurrences/kernel-hard-kill-android.json",
+        "sha256": "94d5a867c39e7c0fee3d13f9d6c0a59a5f0235a9d69b2d634b5d4c8eec3382dc",
+        "sizeBytes": 2719
+      }
+    },
+    {
+      "coverage": "Both",
+      "failure": {
+        "agentObservation": "{'type': 'selenium.common.exceptions.NoSuchElementException', 'message': '<custom __str__ omitted for selenium.common.exceptions.NoSuchElementException>', 'traceback': ['Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell', '    value = _compile_and_execute(code, execution_count, namespace)', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 528, in _compile_and_execute', '    return eval(expression_code, namespace, namespace)', '  File \"<amkernel-cell-2>\", line 1, in <module>', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 974, in find_element', '    return self.execute(Command.FIND_ELEMENT, {\"using\": by, \"value\": value})[\"value\"]', '           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 566, in execute', '    self.error_handler.check_response(response)', '    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/errorhandler.py\", line 125, in check_response', '    raise exception_class(msg=message, stacktrace=format_stacktrace(stacktrace))', 'selenium.common.exceptions.NoSuchElementException: <custom __str__ omitted for selenium.common.exceptions.NoSuchElementException>']}",
+        "category": "driver",
+        "cleanupAttempted": true,
+        "cleanupObserved": true,
+        "deviceState": "online",
+        "kernelState": "alive",
+        "lastCompletedStep": "failure-injected",
+        "message": "{'type': 'selenium.common.exceptions.NoSuchElementException', 'message': '<custom __str__ omitted for selenium.common.exceptions.NoSuchElementException>', 'traceback': ['Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell', '    value = _compile_and_execute(code, execution_count, namespace)', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 528, in _compile_and_execute', '    return eval(expression_code, namespace, namespace)', '  File \"<amkernel-cell-2>\", line 1, in <module>', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 974, in find_element', '    return self.execute(Command.FIND_ELEMENT, {\"using\": by, \"value\": value})[\"value\"]', '           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 566, in execute', '    self.error_handler.check_response(response)', '    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/errorhandler.py\", line 125, in check_response', '    raise exception_class(msg=message, stacktrace=format_stacktrace(stacktrace))', 'selenium.common.exceptions.NoSuchElementException: <custom __str__ omitted for selenium.common.exceptions.NoSuchElementException>']}",
+        "recoverableEvidence": [
+          "occurrences/missing-ambiguous-element-android.json"
+        ],
+        "recreationRequired": [],
+        "remainingExternalResources": [],
+        "serverState": "online",
+        "sessionState": "present"
+      },
+      "id": "missing-ambiguous-element",
+      "injectedAt": "2026-10-30T08:05:58.434443Z",
+      "injection": "executed missing-ambiguous-element against a live Appium session",
+      "platform": "android",
+      "transcript": {
+        "kind": "amkernel-result",
+        "mimeType": "application/json",
+        "path": "occurrences/missing-ambiguous-element-android.json",
+        "sha256": "7d80cf9cebc77928bcc080f27f6c7e5c209c3a1820053cf2f5abe2edf0c35731",
+        "sizeBytes": 4033
+      }
+    },
+    {
+      "coverage": "Both",
+      "failure": {
+        "agentObservation": "{'type': 'selenium.common.exceptions.NoSuchElementException', 'message': '<custom __str__ omitted for selenium.common.exceptions.NoSuchElementException>', 'traceback': ['Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell', '    value = _compile_and_execute(code, execution_count, namespace)', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 528, in _compile_and_execute', '    return eval(expression_code, namespace, namespace)', '  File \"<amkernel-cell-2>\", line 1, in <module>', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 974, in find_element', '    return self.execute(Command.FIND_ELEMENT, {\"using\": by, \"value\": value})[\"value\"]', '           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 566, in execute', '    self.error_handler.check_response(response)', '    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/errorhandler.py\", line 125, in check_response', '    raise exception_class(msg=message, stacktrace=format_stacktrace(stacktrace))', 'selenium.common.exceptions.NoSuchElementException: <custom __str__ omitted for selenium.common.exceptions.NoSuchElementException>']}",
+        "category": "driver",
+        "cleanupAttempted": true,
+        "cleanupObserved": true,
+        "deviceState": "online",
+        "kernelState": "alive",
+        "lastCompletedStep": "failure-injected",
+        "message": "{'type': 'selenium.common.exceptions.NoSuchElementException', 'message': '<custom __str__ omitted for selenium.common.exceptions.NoSuchElementException>', 'traceback': ['Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell', '    value = _compile_and_execute(code, execution_count, namespace)', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 528, in _compile_and_execute', '    return eval(expression_code, namespace, namespace)', '  File \"<amkernel-cell-2>\", line 1, in <module>', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 974, in find_element', '    return self.execute(Command.FIND_ELEMENT, {\"using\": by, \"value\": value})[\"value\"]', '           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 566, in execute', '    self.error_handler.check_response(response)', '    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/errorhandler.py\", line 125, in check_response', '    raise exception_class(msg=message, stacktrace=format_stacktrace(stacktrace))', 'selenium.common.exceptions.NoSuchElementException: <custom __str__ omitted for selenium.common.exceptions.NoSuchElementException>']}",
+        "recoverableEvidence": [
+          "occurrences/missing-ambiguous-element-ios.json"
+        ],
+        "recreationRequired": [],
+        "remainingExternalResources": [],
+        "serverState": "online",
+        "sessionState": "present"
+      },
+      "id": "missing-ambiguous-element",
+      "injectedAt": "2026-10-30T08:07:14.493169Z",
+      "injection": "executed missing-ambiguous-element against a live Appium session",
+      "platform": "ios",
+      "transcript": {
+        "kind": "amkernel-result",
+        "mimeType": "application/json",
+        "path": "occurrences/missing-ambiguous-element-ios.json",
+        "sha256": "ff8ee440a993330e01f765bc025fa4c148b91c4a6ae7b66d819c993b30b08823",
+        "sizeBytes": 4023
+      }
+    },
+    {
+      "coverage": "Both",
+      "failure": {
+        "agentObservation": "{'type': 'selenium.common.exceptions.WebDriverException', 'message': '<custom __str__ omitted for selenium.common.exceptions.WebDriverException>', 'traceback': ['Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell', '    value = _compile_and_execute(code, execution_count, namespace)', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 525, in _compile_and_execute', '    exec(prefix_code, namespace, namespace)', '    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<amkernel-cell-1>\", line 10, in <module>', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/webdriver.py\", line 249, in __init__', '    super().__init__(', '    ~~~~~~~~~~~~~~~~^', '        command_executor=command_executor,', '        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '    ...<3 lines>...', '        client_config=client_config,', '        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 356, in __init__', '    self.start_session(capabilities)', '    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/webdriver.py\", line 342, in start_session', '    response = self.execute(RemoteCommand.NEW_SESSION, w3c_caps)', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 566, in execute', '    self.error_handler.check_response(response)', '    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/errorhandler.py\", line 234, in check_response', '    raise exception_class(message, screen, stacktrace)', 'selenium.common.exceptions.WebDriverException: <custom __str__ omitted for selenium.common.exceptions.WebDriverException>']}",
+        "category": "prerequisite",
+        "cleanupAttempted": false,
+        "cleanupObserved": true,
+        "deviceState": "online",
+        "kernelState": "alive",
+        "lastCompletedStep": null,
+        "message": "{'type': 'selenium.common.exceptions.WebDriverException', 'message': '<custom __str__ omitted for selenium.common.exceptions.WebDriverException>', 'traceback': ['Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell', '    value = _compile_and_execute(code, execution_count, namespace)', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 525, in _compile_and_execute', '    exec(prefix_code, namespace, namespace)', '    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<amkernel-cell-1>\", line 10, in <module>', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/webdriver.py\", line 249, in __init__', '    super().__init__(', '    ~~~~~~~~~~~~~~~~^', '        command_executor=command_executor,', '        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '    ...<3 lines>...', '        client_config=client_config,', '        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 356, in __init__', '    self.start_session(capabilities)', '    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/webdriver.py\", line 342, in start_session', '    response = self.execute(RemoteCommand.NEW_SESSION, w3c_caps)', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 566, in execute', '    self.error_handler.check_response(response)', '    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/errorhandler.py\", line 234, in check_response', '    raise exception_class(message, screen, stacktrace)', 'selenium.common.exceptions.WebDriverException: <custom __str__ omitted for selenium.common.exceptions.WebDriverException>']}",
+        "recoverableEvidence": [
+          "occurrences/missing-appium-driver-android.json"
+        ],
+        "recreationRequired": [
+          "server"
+        ],
+        "remainingExternalResources": [],
+        "serverState": "online",
+        "sessionState": "absent"
+      },
+      "id": "missing-appium-driver",
+      "injectedAt": "2026-10-30T08:05:49.465545Z",
+      "injection": "requested an uninstalled Appium automation driver",
+      "platform": "android",
+      "transcript": {
+        "kind": "amkernel-result",
+        "mimeType": "application/json",
+        "path": "occurrences/missing-appium-driver-android.json",
+        "sha256": "8f650d0df7ca420cdaacac1296021d568451ba020bdb52ea0966e1b79faed8fb",
+        "sizeBytes": 3176
+      }
+    },
+    {
+      "coverage": "Both",
+      "failure": {
+        "agentObservation": "{'type': 'selenium.common.exceptions.WebDriverException', 'message': '<custom __str__ omitted for selenium.common.exceptions.WebDriverException>', 'traceback': ['Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell', '    value = _compile_and_execute(code, execution_count, namespace)', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 525, in _compile_and_execute', '    exec(prefix_code, namespace, namespace)', '    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<amkernel-cell-1>\", line 9, in <module>', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/webdriver.py\", line 249, in __init__', '    super().__init__(', '    ~~~~~~~~~~~~~~~~^', '        command_executor=command_executor,', '        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '    ...<3 lines>...', '        client_config=client_config,', '        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 356, in __init__', '    self.start_session(capabilities)', '    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/webdriver.py\", line 342, in start_session', '    response = self.execute(RemoteCommand.NEW_SESSION, w3c_caps)', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 566, in execute', '    self.error_handler.check_response(response)', '    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/errorhandler.py\", line 234, in check_response', '    raise exception_class(message, screen, stacktrace)', 'selenium.common.exceptions.WebDriverException: <custom __str__ omitted for selenium.common.exceptions.WebDriverException>']}",
+        "category": "prerequisite",
+        "cleanupAttempted": false,
+        "cleanupObserved": true,
+        "deviceState": "online",
+        "kernelState": "alive",
+        "lastCompletedStep": null,
+        "message": "{'type': 'selenium.common.exceptions.WebDriverException', 'message': '<custom __str__ omitted for selenium.common.exceptions.WebDriverException>', 'traceback': ['Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell', '    value = _compile_and_execute(code, execution_count, namespace)', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 525, in _compile_and_execute', '    exec(prefix_code, namespace, namespace)', '    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<amkernel-cell-1>\", line 9, in <module>', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/webdriver.py\", line 249, in __init__', '    super().__init__(', '    ~~~~~~~~~~~~~~~~^', '        command_executor=command_executor,', '        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '    ...<3 lines>...', '        client_config=client_config,', '        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 356, in __init__', '    self.start_session(capabilities)', '    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/webdriver.py\", line 342, in start_session', '    response = self.execute(RemoteCommand.NEW_SESSION, w3c_caps)', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 566, in execute', '    self.error_handler.check_response(response)', '    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/errorhandler.py\", line 234, in check_response', '    raise exception_class(message, screen, stacktrace)', 'selenium.common.exceptions.WebDriverException: <custom __str__ omitted for selenium.common.exceptions.WebDriverException>']}",
+        "recoverableEvidence": [
+          "occurrences/missing-appium-driver-ios.json"
+        ],
+        "recreationRequired": [
+          "server"
+        ],
+        "remainingExternalResources": [],
+        "serverState": "online",
+        "sessionState": "absent"
+      },
+      "id": "missing-appium-driver",
+      "injectedAt": "2026-10-30T08:07:08.213281Z",
+      "injection": "requested an uninstalled Appium automation driver",
+      "platform": "ios",
+      "transcript": {
+        "kind": "amkernel-result",
+        "mimeType": "application/json",
+        "path": "occurrences/missing-appium-driver-ios.json",
+        "sha256": "4d3ec5d8f4ac4069db6e20190c49e12cd4dfb6ba315e794b5f068508bf0c7aae",
+        "sizeBytes": 3165
+      }
+    },
+    {
+      "coverage": "Shared",
+      "failure": {
+        "agentObservation": "changed a workspace module after importing it in the persistent kernel",
+        "category": "amkernel",
+        "cleanupAttempted": false,
+        "cleanupObserved": true,
+        "deviceState": "online",
+        "kernelState": "alive",
+        "lastCompletedStep": null,
+        "message": "changed a workspace module after importing it in the persistent kernel",
+        "recoverableEvidence": [
+          "occurrences/module-changed-after-import-android.json"
+        ],
+        "recreationRequired": [],
+        "remainingExternalResources": [],
+        "serverState": "online",
+        "sessionState": "absent"
+      },
+      "id": "module-changed-after-import",
+      "injectedAt": "2026-10-30T08:06:41.872603Z",
+      "injection": "changed a workspace module after importing it in the persistent kernel",
+      "platform": "android",
+      "transcript": {
+        "kind": "amkernel-result",
+        "mimeType": "application/json",
+        "path": "occurrences/module-changed-after-import-android.json",
+        "sha256": "5e734142d6e2d19ff67d7ba736fc0e18faa18427b806bb29a285ac43c7ff28c8",
+        "sizeBytes": 1835
+      }
+    },
+    {
+      "coverage": "Shared",
+      "failure": {
+        "agentObservation": "{'type': 'OutputLimitExceeded', 'message': 'output limit exceeded', 'traceback': []}",
+        "category": "amkernel",
+        "cleanupAttempted": false,
+        "cleanupObserved": true,
+        "deviceState": "online",
+        "kernelState": "alive",
+        "lastCompletedStep": null,
+        "message": "{'type': 'OutputLimitExceeded', 'message': 'output limit exceeded', 'traceback': []}",
+        "recoverableEvidence": [
+          "occurrences/oversized-output-android.json"
+        ],
+        "recreationRequired": [],
+        "remainingExternalResources": [],
+        "serverState": "online",
+        "sessionState": "absent"
+      },
+      "id": "oversized-output",
+      "injectedAt": "2026-10-30T08:06:40.663076Z",
+      "injection": "wrote beyond the frozen per-execution output limit",
+      "platform": "android",
+      "transcript": {
+        "kind": "amkernel-result",
+        "mimeType": "application/json",
+        "path": "occurrences/oversized-output-android.json",
+        "sha256": "546a9b7dd7d44db33c83556a4be3a4187fc8fc4278222a2e376f39b14be99156",
+        "sizeBytes": 1965
+      }
+    },
+    {
+      "coverage": "Both",
+      "failure": {
+        "agentObservation": "{'type': 'selenium.common.exceptions.WebDriverException', 'message': '<custom __str__ omitted for selenium.common.exceptions.WebDriverException>', 'traceback': ['Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell', '    value = _compile_and_execute(code, execution_count, namespace)', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 528, in _compile_and_execute', '    return eval(expression_code, namespace, namespace)', '  File \"<amkernel-cell-2>\", line 1, in <module>', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 706, in page_source', '    return self.execute(Command.GET_PAGE_SOURCE)[\"value\"]', '           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 566, in execute', '    self.error_handler.check_response(response)', '    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/errorhandler.py\", line 125, in check_response', '    raise exception_class(msg=message, stacktrace=format_stacktrace(stacktrace))', 'selenium.common.exceptions.WebDriverException: <custom __str__ omitted for selenium.common.exceptions.WebDriverException>']}",
+        "category": "driver",
+        "cleanupAttempted": true,
+        "cleanupObserved": true,
+        "deviceState": "online",
+        "kernelState": "alive",
+        "lastCompletedStep": "failure-injected",
+        "message": "{'type': 'selenium.common.exceptions.WebDriverException', 'message': '<custom __str__ omitted for selenium.common.exceptions.WebDriverException>', 'traceback': ['Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell', '    value = _compile_and_execute(code, execution_count, namespace)', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 528, in _compile_and_execute', '    return eval(expression_code, namespace, namespace)', '  File \"<amkernel-cell-2>\", line 1, in <module>', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 706, in page_source', '    return self.execute(Command.GET_PAGE_SOURCE)[\"value\"]', '           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 566, in execute', '    self.error_handler.check_response(response)', '    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/errorhandler.py\", line 125, in check_response', '    raise exception_class(msg=message, stacktrace=format_stacktrace(stacktrace))', 'selenium.common.exceptions.WebDriverException: <custom __str__ omitted for selenium.common.exceptions.WebDriverException>']}",
+        "recoverableEvidence": [
+          "occurrences/platform-driver-failure-android.json"
+        ],
+        "recreationRequired": [
+          "driver",
+          "session"
+        ],
+        "remainingExternalResources": [],
+        "serverState": "online",
+        "sessionState": "present"
+      },
+      "id": "platform-driver-failure",
+      "injectedAt": "2026-10-30T08:06:29.954591Z",
+      "injection": "stopped the actual platform driver: force-stopped io.appium.uiautomator2.server; force-stopped io.appium.uiautomator2.server.test",
+      "platform": "android",
+      "transcript": {
+        "kind": "amkernel-result",
+        "mimeType": "application/json",
+        "path": "occurrences/platform-driver-failure-android.json",
+        "sha256": "07882d1acc517deb64b1eccab11b5f553d151c3de56da20d6c77bc0993d42845",
+        "sizeBytes": 4081
+      }
+    },
+    {
+      "coverage": "Both",
+      "failure": {
+        "agentObservation": "{'type': 'selenium.common.exceptions.WebDriverException', 'message': '<custom __str__ omitted for selenium.common.exceptions.WebDriverException>', 'traceback': ['Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell', '    value = _compile_and_execute(code, execution_count, namespace)', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 528, in _compile_and_execute', '    return eval(expression_code, namespace, namespace)', '  File \"<amkernel-cell-2>\", line 1, in <module>', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 706, in page_source', '    return self.execute(Command.GET_PAGE_SOURCE)[\"value\"]', '           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 566, in execute', '    self.error_handler.check_response(response)', '    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/errorhandler.py\", line 125, in check_response', '    raise exception_class(msg=message, stacktrace=format_stacktrace(stacktrace))', 'selenium.common.exceptions.WebDriverException: <custom __str__ omitted for selenium.common.exceptions.WebDriverException>']}",
+        "category": "driver",
+        "cleanupAttempted": true,
+        "cleanupObserved": true,
+        "deviceState": "online",
+        "kernelState": "alive",
+        "lastCompletedStep": "failure-injected",
+        "message": "{'type': 'selenium.common.exceptions.WebDriverException', 'message': '<custom __str__ omitted for selenium.common.exceptions.WebDriverException>', 'traceback': ['Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell', '    value = _compile_and_execute(code, execution_count, namespace)', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 528, in _compile_and_execute', '    return eval(expression_code, namespace, namespace)', '  File \"<amkernel-cell-2>\", line 1, in <module>', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 706, in page_source', '    return self.execute(Command.GET_PAGE_SOURCE)[\"value\"]', '           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 566, in execute', '    self.error_handler.check_response(response)', '    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/errorhandler.py\", line 125, in check_response', '    raise exception_class(msg=message, stacktrace=format_stacktrace(stacktrace))', 'selenium.common.exceptions.WebDriverException: <custom __str__ omitted for selenium.common.exceptions.WebDriverException>']}",
+        "recoverableEvidence": [
+          "occurrences/platform-driver-failure-ios.json"
+        ],
+        "recreationRequired": [
+          "driver",
+          "session"
+        ],
+        "remainingExternalResources": [],
+        "serverState": "online",
+        "sessionState": "present"
+      },
+      "id": "platform-driver-failure",
+      "injectedAt": "2026-10-30T08:13:27.029113Z",
+      "injection": "stopped the actual platform driver: terminated the installed WebDriverAgentRunner bundle",
+      "platform": "ios",
+      "transcript": {
+        "kind": "amkernel-result",
+        "mimeType": "application/json",
+        "path": "occurrences/platform-driver-failure-ios.json",
+        "sha256": "cfbc5a2bc6722d9a8d2ff1912da6193c9740384ba202fe1fc6be1a5104f5f73c",
+        "sizeBytes": 4018
+      }
+    },
+    {
+      "coverage": "Both",
+      "failure": {
+        "agentObservation": "{'type': 'ValueError', 'message': 'injected lifecycle Python exception', 'traceback': ['Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell', '    value = _compile_and_execute(code, execution_count, namespace)', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 525, in _compile_and_execute', '    exec(prefix_code, namespace, namespace)', '    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<amkernel-cell-2>\", line 1, in <module>', 'ValueError: injected lifecycle Python exception']}",
+        "category": "scenario",
+        "cleanupAttempted": true,
+        "cleanupObserved": true,
+        "deviceState": "online",
+        "kernelState": "alive",
+        "lastCompletedStep": "failure-injected",
+        "message": "{'type': 'ValueError', 'message': 'injected lifecycle Python exception', 'traceback': ['Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell', '    value = _compile_and_execute(code, execution_count, namespace)', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 525, in _compile_and_execute', '    exec(prefix_code, namespace, namespace)', '    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<amkernel-cell-2>\", line 1, in <module>', 'ValueError: injected lifecycle Python exception']}",
+        "recoverableEvidence": [
+          "occurrences/python-exception-android.json"
+        ],
+        "recreationRequired": [],
+        "remainingExternalResources": [],
+        "serverState": "online",
+        "sessionState": "present"
+      },
+      "id": "python-exception",
+      "injectedAt": "2026-10-30T08:06:32.852255Z",
+      "injection": "executed python-exception against a live Appium session",
+      "platform": "android",
+      "transcript": {
+        "kind": "amkernel-result",
+        "mimeType": "application/json",
+        "path": "occurrences/python-exception-android.json",
+        "sha256": "deb3cb2716a36071251aee02138fd93b88159179d2d3d9e74da00d3fd51b9e3a",
+        "sizeBytes": 3117
+      }
+    },
+    {
+      "coverage": "Both",
+      "failure": {
+        "agentObservation": "{'type': 'ValueError', 'message': 'injected lifecycle Python exception', 'traceback': ['Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell', '    value = _compile_and_execute(code, execution_count, namespace)', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 525, in _compile_and_execute', '    exec(prefix_code, namespace, namespace)', '    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<amkernel-cell-2>\", line 1, in <module>', 'ValueError: injected lifecycle Python exception']}",
+        "category": "scenario",
+        "cleanupAttempted": true,
+        "cleanupObserved": true,
+        "deviceState": "online",
+        "kernelState": "alive",
+        "lastCompletedStep": "failure-injected",
+        "message": "{'type': 'ValueError', 'message': 'injected lifecycle Python exception', 'traceback': ['Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell', '    value = _compile_and_execute(code, execution_count, namespace)', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 525, in _compile_and_execute', '    exec(prefix_code, namespace, namespace)', '    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<amkernel-cell-2>\", line 1, in <module>', 'ValueError: injected lifecycle Python exception']}",
+        "recoverableEvidence": [
+          "occurrences/python-exception-ios.json"
+        ],
+        "recreationRequired": [],
+        "remainingExternalResources": [],
+        "serverState": "online",
+        "sessionState": "present"
+      },
+      "id": "python-exception",
+      "injectedAt": "2026-10-30T08:08:11.886786Z",
+      "injection": "executed python-exception against a live Appium session",
+      "platform": "ios",
+      "transcript": {
+        "kind": "amkernel-result",
+        "mimeType": "application/json",
+        "path": "occurrences/python-exception-ios.json",
+        "sha256": "aed8590c55c1baeb5dcf783bcbb3191a24c8ce029b1a86a8bb8a1ceb80c0712b",
+        "sizeBytes": 3107
+      }
+    },
+    {
+      "coverage": "Both",
+      "failure": {
+        "agentObservation": "{'type': 'TimeoutError', 'message': 'cell interrupted by deadline', 'traceback': []}",
+        "category": "scenario",
+        "cleanupAttempted": true,
+        "cleanupObserved": true,
+        "deviceState": "online",
+        "kernelState": "alive",
+        "lastCompletedStep": "failure-injected",
+        "message": "{'type': 'TimeoutError', 'message': 'cell interrupted by deadline', 'traceback': []}",
+        "recoverableEvidence": [
+          "occurrences/python-timeout-surviving-kernel-android.json"
+        ],
+        "recreationRequired": [],
+        "remainingExternalResources": [],
+        "serverState": "online",
+        "sessionState": "present"
+      },
+      "id": "python-timeout-surviving-kernel",
+      "injectedAt": "2026-10-30T08:06:36.165972Z",
+      "injection": "executed python-timeout-surviving-kernel against a live Appium session",
+      "platform": "android",
+      "transcript": {
+        "kind": "amkernel-result",
+        "mimeType": "application/json",
+        "path": "occurrences/python-timeout-surviving-kernel-android.json",
+        "sha256": "56fd86004337c1dbc4cddc915fa6f37764db724d8f7e76c9fceb2751b5f654b7",
+        "sizeBytes": 2550
+      }
+    },
+    {
+      "coverage": "Both",
+      "failure": {
+        "agentObservation": "{'type': 'TimeoutError', 'message': 'cell interrupted by deadline', 'traceback': []}",
+        "category": "scenario",
+        "cleanupAttempted": true,
+        "cleanupObserved": true,
+        "deviceState": "online",
+        "kernelState": "alive",
+        "lastCompletedStep": "failure-injected",
+        "message": "{'type': 'TimeoutError', 'message': 'cell interrupted by deadline', 'traceback': []}",
+        "recoverableEvidence": [
+          "occurrences/python-timeout-surviving-kernel-ios.json"
+        ],
+        "recreationRequired": [],
+        "remainingExternalResources": [],
+        "serverState": "online",
+        "sessionState": "present"
+      },
+      "id": "python-timeout-surviving-kernel",
+      "injectedAt": "2026-10-30T08:08:14.459723Z",
+      "injection": "executed python-timeout-surviving-kernel against a live Appium session",
+      "platform": "ios",
+      "transcript": {
+        "kind": "amkernel-result",
+        "mimeType": "application/json",
+        "path": "occurrences/python-timeout-surviving-kernel-ios.json",
+        "sha256": "fb14f882f16606ffd2fa8db2b35bcee81175159666a1f4f77d839db5a9edeeae",
+        "sizeBytes": 2540
+      }
+    },
+    {
+      "coverage": "Both",
+      "failure": {
+        "agentObservation": "{'type': 'selenium.common.exceptions.SessionNotCreatedException', 'message': '<custom __str__ omitted for selenium.common.exceptions.SessionNotCreatedException>', 'traceback': ['Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell', '    value = _compile_and_execute(code, execution_count, namespace)', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 525, in _compile_and_execute', '    exec(prefix_code, namespace, namespace)', '    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<amkernel-cell-1>\", line 11, in <module>', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/webdriver.py\", line 249, in __init__', '    super().__init__(', '    ~~~~~~~~~~~~~~~~^', '        command_executor=command_executor,', '        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '    ...<3 lines>...', '        client_config=client_config,', '        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 356, in __init__', '    self.start_session(capabilities)', '    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/webdriver.py\", line 342, in start_session', '    response = self.execute(RemoteCommand.NEW_SESSION, w3c_caps)', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 566, in execute', '    self.error_handler.check_response(response)', '    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/errorhandler.py\", line 234, in check_response', '    raise exception_class(message, screen, stacktrace)', 'selenium.common.exceptions.SessionNotCreatedException: <custom __str__ omitted for selenium.common.exceptions.SessionNotCreatedException>']}",
+        "category": "driver",
+        "cleanupAttempted": false,
+        "cleanupObserved": true,
+        "deviceState": "online",
+        "kernelState": "alive",
+        "lastCompletedStep": null,
+        "message": "{'type': 'selenium.common.exceptions.SessionNotCreatedException', 'message': '<custom __str__ omitted for selenium.common.exceptions.SessionNotCreatedException>', 'traceback': ['Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell', '    value = _compile_and_execute(code, execution_count, namespace)', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 525, in _compile_and_execute', '    exec(prefix_code, namespace, namespace)', '    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<amkernel-cell-1>\", line 11, in <module>', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/webdriver.py\", line 249, in __init__', '    super().__init__(', '    ~~~~~~~~~~~~~~~~^', '        command_executor=command_executor,', '        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '    ...<3 lines>...', '        client_config=client_config,', '        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 356, in __init__', '    self.start_session(capabilities)', '    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/webdriver.py\", line 342, in start_session', '    response = self.execute(RemoteCommand.NEW_SESSION, w3c_caps)', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 566, in execute', '    self.error_handler.check_response(response)', '    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/errorhandler.py\", line 234, in check_response', '    raise exception_class(message, screen, stacktrace)', 'selenium.common.exceptions.SessionNotCreatedException: <custom __str__ omitted for selenium.common.exceptions.SessionNotCreatedException>']}",
+        "recoverableEvidence": [
+          "occurrences/session-creation-failure-android.json"
+        ],
+        "recreationRequired": [
+          "session"
+        ],
+        "remainingExternalResources": [],
+        "serverState": "online",
+        "sessionState": "absent"
+      },
+      "id": "session-creation-failure",
+      "injectedAt": "2026-10-30T08:05:50.596157Z",
+      "injection": "requested an impossible platform version",
+      "platform": "android",
+      "transcript": {
+        "kind": "amkernel-result",
+        "mimeType": "application/json",
+        "path": "occurrences/session-creation-failure-android.json",
+        "sha256": "456db075afd406c6df41fdda36d3965569a27df839daf75f8b8b4a0260b4209d",
+        "sizeBytes": 3202
+      }
+    },
+    {
+      "coverage": "Both",
+      "failure": {
+        "agentObservation": "{'type': 'selenium.common.exceptions.SessionNotCreatedException', 'message': '<custom __str__ omitted for selenium.common.exceptions.SessionNotCreatedException>', 'traceback': ['Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell', '    value = _compile_and_execute(code, execution_count, namespace)', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 525, in _compile_and_execute', '    exec(prefix_code, namespace, namespace)', '    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<amkernel-cell-1>\", line 10, in <module>', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/webdriver.py\", line 249, in __init__', '    super().__init__(', '    ~~~~~~~~~~~~~~~~^', '        command_executor=command_executor,', '        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '    ...<3 lines>...', '        client_config=client_config,', '        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 356, in __init__', '    self.start_session(capabilities)', '    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/webdriver.py\", line 342, in start_session', '    response = self.execute(RemoteCommand.NEW_SESSION, w3c_caps)', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 566, in execute', '    self.error_handler.check_response(response)', '    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/errorhandler.py\", line 234, in check_response', '    raise exception_class(message, screen, stacktrace)', 'selenium.common.exceptions.SessionNotCreatedException: <custom __str__ omitted for selenium.common.exceptions.SessionNotCreatedException>']}",
+        "category": "driver",
+        "cleanupAttempted": false,
+        "cleanupObserved": true,
+        "deviceState": "online",
+        "kernelState": "alive",
+        "lastCompletedStep": null,
+        "message": "{'type': 'selenium.common.exceptions.SessionNotCreatedException', 'message': '<custom __str__ omitted for selenium.common.exceptions.SessionNotCreatedException>', 'traceback': ['Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell', '    value = _compile_and_execute(code, execution_count, namespace)', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 525, in _compile_and_execute', '    exec(prefix_code, namespace, namespace)', '    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<amkernel-cell-1>\", line 10, in <module>', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/webdriver.py\", line 249, in __init__', '    super().__init__(', '    ~~~~~~~~~~~~~~~~^', '        command_executor=command_executor,', '        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '    ...<3 lines>...', '        client_config=client_config,', '        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '    )', '    ^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 356, in __init__', '    self.start_session(capabilities)', '    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/webdriver.py\", line 342, in start_session', '    response = self.execute(RemoteCommand.NEW_SESSION, w3c_caps)', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 566, in execute', '    self.error_handler.check_response(response)', '    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/errorhandler.py\", line 234, in check_response', '    raise exception_class(message, screen, stacktrace)', 'selenium.common.exceptions.SessionNotCreatedException: <custom __str__ omitted for selenium.common.exceptions.SessionNotCreatedException>']}",
+        "recoverableEvidence": [
+          "occurrences/session-creation-failure-ios.json"
+        ],
+        "recreationRequired": [
+          "session"
+        ],
+        "remainingExternalResources": [],
+        "serverState": "online",
+        "sessionState": "absent"
+      },
+      "id": "session-creation-failure",
+      "injectedAt": "2026-10-30T08:07:09.339070Z",
+      "injection": "requested an impossible platform version",
+      "platform": "ios",
+      "transcript": {
+        "kind": "amkernel-result",
+        "mimeType": "application/json",
+        "path": "occurrences/session-creation-failure-ios.json",
+        "sha256": "2ceb0903dde1f425be4b43bf8516aae119cf68598d2666c6135c3eaad26dcd64",
+        "sizeBytes": 3192
+      }
+    },
+    {
+      "coverage": "Both",
+      "failure": {
+        "agentObservation": "{'type': 'selenium.common.exceptions.StaleElementReferenceException', 'message': '<custom __str__ omitted for selenium.common.exceptions.StaleElementReferenceException>', 'traceback': ['Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell', '    value = _compile_and_execute(code, execution_count, namespace)', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 528, in _compile_and_execute', '    return eval(expression_code, namespace, namespace)', '  File \"<amkernel-cell-2>\", line 6, in <module>', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/webelement.py\", line 87, in is_displayed', \"    return self._execute(Command.IS_ELEMENT_DISPLAYED)['value']\", '           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webelement.py\", line 505, in _execute', '    return self._parent.execute(command, params)', '           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 566, in execute', '    self.error_handler.check_response(response)', '    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/errorhandler.py\", line 125, in check_response', '    raise exception_class(msg=message, stacktrace=format_stacktrace(stacktrace))', 'selenium.common.exceptions.StaleElementReferenceException: <custom __str__ omitted for selenium.common.exceptions.StaleElementReferenceException>']}",
+        "category": "driver",
+        "cleanupAttempted": true,
+        "cleanupObserved": true,
+        "deviceState": "online",
+        "kernelState": "alive",
+        "lastCompletedStep": "failure-injected",
+        "message": "{'type': 'selenium.common.exceptions.StaleElementReferenceException', 'message': '<custom __str__ omitted for selenium.common.exceptions.StaleElementReferenceException>', 'traceback': ['Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell', '    value = _compile_and_execute(code, execution_count, namespace)', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 528, in _compile_and_execute', '    return eval(expression_code, namespace, namespace)', '  File \"<amkernel-cell-2>\", line 6, in <module>', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/webelement.py\", line 87, in is_displayed', \"    return self._execute(Command.IS_ELEMENT_DISPLAYED)['value']\", '           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webelement.py\", line 505, in _execute', '    return self._parent.execute(command, params)', '           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 566, in execute', '    self.error_handler.check_response(response)', '    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/errorhandler.py\", line 125, in check_response', '    raise exception_class(msg=message, stacktrace=format_stacktrace(stacktrace))', 'selenium.common.exceptions.StaleElementReferenceException: <custom __str__ omitted for selenium.common.exceptions.StaleElementReferenceException>']}",
+        "recoverableEvidence": [
+          "occurrences/stale-element-android.json"
+        ],
+        "recreationRequired": [
+          "application"
+        ],
+        "remainingExternalResources": [],
+        "serverState": "online",
+        "sessionState": "present"
+      },
+      "id": "stale-element",
+      "injectedAt": "2026-10-30T08:11:49.209176Z",
+      "injection": "executed stale-element against a live Appium session",
+      "platform": "android",
+      "transcript": {
+        "kind": "amkernel-result",
+        "mimeType": "application/json",
+        "path": "occurrences/stale-element-android.json",
+        "sha256": "b830cfe3eb414f174bec330b32af8904ac5ba334df9d5a75043b3da8aa3ccdf5",
+        "sizeBytes": 4229
+      }
+    },
+    {
+      "coverage": "Both",
+      "failure": {
+        "agentObservation": "{'type': 'selenium.common.exceptions.StaleElementReferenceException', 'message': '<custom __str__ omitted for selenium.common.exceptions.StaleElementReferenceException>', 'traceback': ['Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell', '    value = _compile_and_execute(code, execution_count, namespace)', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 528, in _compile_and_execute', '    return eval(expression_code, namespace, namespace)', '  File \"<amkernel-cell-2>\", line 4, in <module>', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/webelement.py\", line 87, in is_displayed', \"    return self._execute(Command.IS_ELEMENT_DISPLAYED)['value']\", '           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webelement.py\", line 505, in _execute', '    return self._parent.execute(command, params)', '           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 566, in execute', '    self.error_handler.check_response(response)', '    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/errorhandler.py\", line 125, in check_response', '    raise exception_class(msg=message, stacktrace=format_stacktrace(stacktrace))', 'selenium.common.exceptions.StaleElementReferenceException: <custom __str__ omitted for selenium.common.exceptions.StaleElementReferenceException>']}",
+        "category": "driver",
+        "cleanupAttempted": true,
+        "cleanupObserved": true,
+        "deviceState": "online",
+        "kernelState": "alive",
+        "lastCompletedStep": "failure-injected",
+        "message": "{'type': 'selenium.common.exceptions.StaleElementReferenceException', 'message': '<custom __str__ omitted for selenium.common.exceptions.StaleElementReferenceException>', 'traceback': ['Traceback (most recent call last):', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell', '    value = _compile_and_execute(code, execution_count, namespace)', '  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 528, in _compile_and_execute', '    return eval(expression_code, namespace, namespace)', '  File \"<amkernel-cell-2>\", line 4, in <module>', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/webelement.py\", line 87, in is_displayed', \"    return self._execute(Command.IS_ELEMENT_DISPLAYED)['value']\", '           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webelement.py\", line 505, in _execute', '    return self._parent.execute(command, params)', '           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 566, in execute', '    self.error_handler.check_response(response)', '    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^', '  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/errorhandler.py\", line 125, in check_response', '    raise exception_class(msg=message, stacktrace=format_stacktrace(stacktrace))', 'selenium.common.exceptions.StaleElementReferenceException: <custom __str__ omitted for selenium.common.exceptions.StaleElementReferenceException>']}",
+        "recoverableEvidence": [
+          "occurrences/stale-element-ios.json"
+        ],
+        "recreationRequired": [
+          "application"
+        ],
+        "remainingExternalResources": [],
+        "serverState": "online",
+        "sessionState": "present"
+      },
+      "id": "stale-element",
+      "injectedAt": "2026-10-30T08:07:23.532606Z",
+      "injection": "executed stale-element against a live Appium session",
+      "platform": "ios",
+      "transcript": {
+        "kind": "amkernel-result",
+        "mimeType": "application/json",
+        "path": "occurrences/stale-element-ios.json",
+        "sha256": "abbae6f87b9ebf10adbce7eee7696b5ddfcf2f3cf34bb001ce89e71b4f1687d8",
+        "sizeBytes": 4219
+      }
+    }
+  ],
+  "referenceEvidence": {
+    "android": {
+      "kind": "amkernel-result",
+      "mimeType": "application/json",
+      "path": "references/android-evidence.json",
+      "sha256": "9d0a9b7abba3c27f60d480937467f887170408932dcb372a7c545a318636b732",
+      "sizeBytes": 50454
+    },
+    "ios": {
+      "kind": "amkernel-result",
+      "mimeType": "application/json",
+      "path": "references/ios-evidence.json",
+      "sha256": "5777eedf082ca9fa8899c728b34de7bb8c2a3d57f1cf9500b342a44e64135b85",
+      "sizeBytes": 48913
+    }
+  },
+  "schemaVersion": 1
+}

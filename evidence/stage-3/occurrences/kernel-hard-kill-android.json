@@ -1,0 +1,97 @@
+{
+  "calls": [
+    {
+      "error": null,
+      "executionCount": 1,
+      "kernelState": "alive",
+      "output": {
+        "discardedBytes": 0,
+        "discardedLines": 0,
+        "limitBytes": 268435456,
+        "limitExceeded": false,
+        "live": "unavailable",
+        "totalBytes": 0,
+        "totalLines": 0,
+        "truncated": false
+      },
+      "result": "0a05aa37-af72-4f07-953e-b021ecd876e1",
+      "status": "completed"
+    },
+    {
+      "error": {
+        "message": "kernel process exited unexpectedly",
+        "traceback": [],
+        "type": "KernelExited"
+      },
+      "executionCount": 2,
+      "kernelState": "dead",
+      "output": {
+        "discardedBytes": 0,
+        "discardedLines": 0,
+        "limitBytes": 268435456,
+        "limitExceeded": false,
+        "live": "unavailable",
+        "totalBytes": 0,
+        "totalLines": 0,
+        "truncated": false
+      },
+      "result": null,
+      "status": "kernel_killed"
+    },
+    {
+      "error": {
+        "message": "kernel is dead; reset=true is required for recovery",
+        "traceback": [],
+        "type": "KernelUnavailable"
+      },
+      "executionCount": 2,
+      "kernelState": "dead",
+      "output": {
+        "discardedBytes": 0,
+        "discardedLines": 0,
+        "limitBytes": 268435456,
+        "limitExceeded": false,
+        "live": "unavailable",
+        "totalBytes": 0,
+        "totalLines": 0,
+        "truncated": false
+      },
+      "result": null,
+      "status": "kernel_killed"
+    },
+    {
+      "error": null,
+      "executionCount": 1,
+      "kernelState": "alive",
+      "output": {
+        "discardedBytes": 0,
+        "discardedLines": 0,
+        "limitBytes": 268435456,
+        "limitExceeded": false,
+        "live": "unavailable",
+        "totalBytes": 0,
+        "totalLines": 0,
+        "truncated": false
+      },
+      "result": {
+        "driverPresent": false
+      },
+      "status": "completed"
+    }
+  ],
+  "case": "kernel-hard-kill",
+  "injection": "sent SIGKILL to the isolated Runner while an Appium session was live",
+  "observations": {
+    "controlServerState": "online",
+    "deviceAfterFailure": "device probe returned 'device'",
+    "deviceBeforeInjection": "device probe returned 'device'",
+    "kernelAfterRecovery": "alive",
+    "kernelAtFailure": "dead",
+    "managedPids": [],
+    "platformDriverFault": null,
+    "serverAtFailure": "online",
+    "sessionAfterCleanup": "Appium session 0a05aa37-af72-4f07-953e-b021ecd876e1 remains active; DELETE session returned HTTP 200; Appium session 0a05aa37-af72-4f07-953e-b021ecd876e1 is absent",
+    "sessionAtFailure": "Appium session 0a05aa37-af72-4f07-953e-b021ecd876e1 remains active"
+  },
+  "platform": "android"
+}

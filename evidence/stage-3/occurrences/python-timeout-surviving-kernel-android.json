@@ -1,0 +1,94 @@
+{
+  "calls": [
+    {
+      "error": null,
+      "executionCount": 1,
+      "kernelState": "alive",
+      "output": {
+        "discardedBytes": 0,
+        "discardedLines": 0,
+        "limitBytes": 268435456,
+        "limitExceeded": false,
+        "live": "unavailable",
+        "totalBytes": 0,
+        "totalLines": 0,
+        "truncated": false
+      },
+      "result": "d6c9c1f5-a9f9-4590-9f32-927153ee16cb",
+      "status": "completed"
+    },
+    {
+      "error": {
+        "message": "cell interrupted by deadline",
+        "traceback": [],
+        "type": "TimeoutError"
+      },
+      "executionCount": 2,
+      "kernelState": "alive",
+      "output": {
+        "discardedBytes": 0,
+        "discardedLines": 0,
+        "limitBytes": 268435456,
+        "limitExceeded": false,
+        "live": "unavailable",
+        "totalBytes": 0,
+        "totalLines": 0,
+        "truncated": false
+      },
+      "result": null,
+      "status": "timed_out"
+    },
+    {
+      "error": null,
+      "executionCount": 3,
+      "kernelState": "alive",
+      "output": {
+        "discardedBytes": 0,
+        "discardedLines": 0,
+        "limitBytes": 268435456,
+        "limitExceeded": false,
+        "live": "unavailable",
+        "totalBytes": 0,
+        "totalLines": 0,
+        "truncated": false
+      },
+      "result": {
+        "kernel": "alive",
+        "sessionId": "d6c9c1f5-a9f9-4590-9f32-927153ee16cb"
+      },
+      "status": "completed"
+    },
+    {
+      "error": null,
+      "executionCount": 4,
+      "kernelState": "alive",
+      "output": {
+        "discardedBytes": 0,
+        "discardedLines": 0,
+        "limitBytes": 268435456,
+        "limitExceeded": false,
+        "live": "unavailable",
+        "totalBytes": 0,
+        "totalLines": 0,
+        "truncated": false
+      },
+      "result": "quit observed",
+      "status": "completed"
+    }
+  ],
+  "case": "python-timeout-surviving-kernel",
+  "injection": "executed python-timeout-surviving-kernel against a live Appium session",
+  "observations": {
+    "controlServerState": "online",
+    "deviceAfterFailure": "device probe returned 'device'",
+    "deviceBeforeInjection": "device probe returned 'device'",
+    "kernelAfterRecovery": "alive",
+    "kernelAtFailure": "alive",
+    "managedPids": [],
+    "platformDriverFault": null,
+    "serverAtFailure": "online",
+    "sessionAfterCleanup": "Appium session d6c9c1f5-a9f9-4590-9f32-927153ee16cb is absent",
+    "sessionAtFailure": "Appium session d6c9c1f5-a9f9-4590-9f32-927153ee16cb remains active"
+  },
+  "platform": "android"
+}

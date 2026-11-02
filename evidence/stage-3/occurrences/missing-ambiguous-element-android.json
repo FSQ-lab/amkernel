@@ -1,0 +1,110 @@
+{
+  "calls": [
+    {
+      "error": null,
+      "executionCount": 1,
+      "kernelState": "alive",
+      "output": {
+        "discardedBytes": 0,
+        "discardedLines": 0,
+        "limitBytes": 268435456,
+        "limitExceeded": false,
+        "live": "unavailable",
+        "totalBytes": 0,
+        "totalLines": 0,
+        "truncated": false
+      },
+      "result": "141da40e-55c8-4da3-95ab-eda16591f810",
+      "status": "completed"
+    },
+    {
+      "error": {
+        "message": "<custom __str__ omitted for selenium.common.exceptions.NoSuchElementException>",
+        "traceback": [
+          "Traceback (most recent call last):",
+          "  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell",
+          "    value = _compile_and_execute(code, execution_count, namespace)",
+          "  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 528, in _compile_and_execute",
+          "    return eval(expression_code, namespace, namespace)",
+          "  File \"<amkernel-cell-2>\", line 1, in <module>",
+          "  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 974, in find_element",
+          "    return self.execute(Command.FIND_ELEMENT, {\"using\": by, \"value\": value})[\"value\"]",
+          "           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+          "  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 566, in execute",
+          "    self.error_handler.check_response(response)",
+          "    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^",
+          "  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/errorhandler.py\", line 125, in check_response",
+          "    raise exception_class(msg=message, stacktrace=format_stacktrace(stacktrace))",
+          "selenium.common.exceptions.NoSuchElementException: <custom __str__ omitted for selenium.common.exceptions.NoSuchElementException>"
+        ],
+        "type": "selenium.common.exceptions.NoSuchElementException"
+      },
+      "executionCount": 2,
+      "kernelState": "alive",
+      "output": {
+        "discardedBytes": 0,
+        "discardedLines": 0,
+        "limitBytes": 268435456,
+        "limitExceeded": false,
+        "live": "unavailable",
+        "totalBytes": 0,
+        "totalLines": 0,
+        "truncated": false
+      },
+      "result": null,
+      "status": "failed"
+    },
+    {
+      "error": null,
+      "executionCount": 3,
+      "kernelState": "alive",
+      "output": {
+        "discardedBytes": 0,
+        "discardedLines": 0,
+        "limitBytes": 268435456,
+        "limitExceeded": false,
+        "live": "unavailable",
+        "totalBytes": 0,
+        "totalLines": 0,
+        "truncated": false
+      },
+      "result": {
+        "kernel": "alive",
+        "sessionId": "141da40e-55c8-4da3-95ab-eda16591f810"
+      },
+      "status": "completed"
+    },
+    {
+      "error": null,
+      "executionCount": 4,
+      "kernelState": "alive",
+      "output": {
+        "discardedBytes": 0,
+        "discardedLines": 0,
+        "limitBytes": 268435456,
+        "limitExceeded": false,
+        "live": "unavailable",
+        "totalBytes": 0,
+        "totalLines": 0,
+        "truncated": false
+      },
+      "result": "quit observed",
+      "status": "completed"
+    }
+  ],
+  "case": "missing-ambiguous-element",
+  "injection": "executed missing-ambiguous-element against a live Appium session",
+  "observations": {
+    "controlServerState": "online",
+    "deviceAfterFailure": "device probe returned 'device'",
+    "deviceBeforeInjection": "device probe returned 'device'",
+    "kernelAfterRecovery": "alive",
+    "kernelAtFailure": "alive",
+    "managedPids": [],
+    "platformDriverFault": null,
+    "serverAtFailure": "online",
+    "sessionAfterCleanup": "Appium session 141da40e-55c8-4da3-95ab-eda16591f810 is absent",
+    "sessionAtFailure": "Appium session 141da40e-55c8-4da3-95ab-eda16591f810 remains active"
+  },
+  "platform": "android"
+}

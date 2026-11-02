@@ -1,0 +1,120 @@
+{
+  "calls": [
+    {
+      "error": null,
+      "executionCount": 1,
+      "kernelState": "alive",
+      "output": {
+        "discardedBytes": 0,
+        "discardedLines": 0,
+        "limitBytes": 268435456,
+        "limitExceeded": false,
+        "live": "unavailable",
+        "totalBytes": 0,
+        "totalLines": 0,
+        "truncated": false
+      },
+      "result": "1671e281-02a7-4135-8fbc-55fbe2597da5",
+      "status": "completed"
+    },
+    {
+      "error": {
+        "message": "<custom __str__ omitted for selenium.common.exceptions.WebDriverException>",
+        "traceback": [
+          "Traceback (most recent call last):",
+          "  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell",
+          "    value = _compile_and_execute(code, execution_count, namespace)",
+          "  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 528, in _compile_and_execute",
+          "    return eval(expression_code, namespace, namespace)",
+          "  File \"<amkernel-cell-2>\", line 1, in <module>",
+          "  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/extensions/applications.py\", line 187, in activate_app",
+          "    self.assert_extension_exists(ext_name).execute_script(",
+          "    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^",
+          "        ext_name,",
+          "        ^^^^^^^^^",
+          "    ...<3 lines>...",
+          "        },",
+          "        ^^",
+          "    )",
+          "    ^",
+          "  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 677, in execute_script",
+          "    return self.execute(command, {\"script\": script, \"args\": converted_args})[\"value\"]",
+          "           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+          "  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 566, in execute",
+          "    self.error_handler.check_response(response)",
+          "    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^",
+          "  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/errorhandler.py\", line 125, in check_response",
+          "    raise exception_class(msg=message, stacktrace=format_stacktrace(stacktrace))",
+          "selenium.common.exceptions.WebDriverException: <custom __str__ omitted for selenium.common.exceptions.WebDriverException>"
+        ],
+        "type": "selenium.common.exceptions.WebDriverException"
+      },
+      "executionCount": 2,
+      "kernelState": "alive",
+      "output": {
+        "discardedBytes": 0,
+        "discardedLines": 0,
+        "limitBytes": 268435456,
+        "limitExceeded": false,
+        "live": "unavailable",
+        "totalBytes": 0,
+        "totalLines": 0,
+        "truncated": false
+      },
+      "result": null,
+      "status": "failed"
+    },
+    {
+      "error": null,
+      "executionCount": 3,
+      "kernelState": "alive",
+      "output": {
+        "discardedBytes": 0,
+        "discardedLines": 0,
+        "limitBytes": 268435456,
+        "limitExceeded": false,
+        "live": "unavailable",
+        "totalBytes": 0,
+        "totalLines": 0,
+        "truncated": false
+      },
+      "result": {
+        "kernel": "alive",
+        "sessionId": "1671e281-02a7-4135-8fbc-55fbe2597da5"
+      },
+      "status": "completed"
+    },
+    {
+      "error": null,
+      "executionCount": 4,
+      "kernelState": "alive",
+      "output": {
+        "discardedBytes": 0,
+        "discardedLines": 0,
+        "limitBytes": 268435456,
+        "limitExceeded": false,
+        "live": "unavailable",
+        "totalBytes": 0,
+        "totalLines": 0,
+        "truncated": false
+      },
+      "result": "quit observed",
+      "status": "completed"
+    }
+  ],
+  "case": "invalid-app-target",
+  "injection": "executed invalid-app-target against a live Appium session",
+  "observations": {
+    "controlServerState": "online",
+    "deviceAfterFailure": "device probe returned 'device'",
+    "deviceBeforeInjection": "device probe returned 'device'",
+    "kernelAfterRecovery": "alive",
+    "kernelAtFailure": "alive",
+    "managedPids": [],
+    "platformDriverFault": null,
+    "serverAtFailure": "online",
+    "sessionAfterCleanup": "Appium session 1671e281-02a7-4135-8fbc-55fbe2597da5 is absent",
+    "sessionAtFailure": "Appium session 1671e281-02a7-4135-8fbc-55fbe2597da5 remains active"
+  },
+  "platform": "android"
+}

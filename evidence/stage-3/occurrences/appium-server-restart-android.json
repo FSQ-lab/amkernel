@@ -1,0 +1,110 @@
+{
+  "calls": [
+    {
+      "error": null,
+      "executionCount": 1,
+      "kernelState": "alive",
+      "output": {
+        "discardedBytes": 0,
+        "discardedLines": 0,
+        "limitBytes": 268435456,
+        "limitExceeded": false,
+        "live": "unavailable",
+        "totalBytes": 0,
+        "totalLines": 0,
+        "truncated": false
+      },
+      "result": "89f4834a-04be-415d-9d6d-708b99df3de6",
+      "status": "completed"
+    },
+    {
+      "error": {
+        "message": "<custom __str__ omitted for selenium.common.exceptions.InvalidSessionIdException>",
+        "traceback": [
+          "Traceback (most recent call last):",
+          "  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell",
+          "    value = _compile_and_execute(code, execution_count, namespace)",
+          "  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 528, in _compile_and_execute",
+          "    return eval(expression_code, namespace, namespace)",
+          "  File \"<amkernel-cell-2>\", line 1, in <module>",
+          "  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 706, in page_source",
+          "    return self.execute(Command.GET_PAGE_SOURCE)[\"value\"]",
+          "           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^",
+          "  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 566, in execute",
+          "    self.error_handler.check_response(response)",
+          "    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^",
+          "  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/errorhandler.py\", line 125, in check_response",
+          "    raise exception_class(msg=message, stacktrace=format_stacktrace(stacktrace))",
+          "selenium.common.exceptions.InvalidSessionIdException: <custom __str__ omitted for selenium.common.exceptions.InvalidSessionIdException>"
+        ],
+        "type": "selenium.common.exceptions.InvalidSessionIdException"
+      },
+      "executionCount": 2,
+      "kernelState": "alive",
+      "output": {
+        "discardedBytes": 0,
+        "discardedLines": 0,
+        "limitBytes": 268435456,
+        "limitExceeded": false,
+        "live": "unavailable",
+        "totalBytes": 0,
+        "totalLines": 0,
+        "truncated": false
+      },
+      "result": null,
+      "status": "failed"
+    },
+    {
+      "error": null,
+      "executionCount": 3,
+      "kernelState": "alive",
+      "output": {
+        "discardedBytes": 0,
+        "discardedLines": 0,
+        "limitBytes": 268435456,
+        "limitExceeded": false,
+        "live": "unavailable",
+        "totalBytes": 0,
+        "totalLines": 0,
+        "truncated": false
+      },
+      "result": {
+        "kernel": "alive",
+        "sessionId": "89f4834a-04be-415d-9d6d-708b99df3de6"
+      },
+      "status": "completed"
+    },
+    {
+      "error": null,
+      "executionCount": 4,
+      "kernelState": "alive",
+      "output": {
+        "discardedBytes": 0,
+        "discardedLines": 0,
+        "limitBytes": 268435456,
+        "limitExceeded": false,
+        "live": "unavailable",
+        "totalBytes": 0,
+        "totalLines": 0,
+        "truncated": false
+      },
+      "result": "InvalidSessionIdException: Message: A session is either terminated or not started; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#invalidsessionidexception\nStacktrace:\nNoSuchDriverError: A session is either terminated or not started\n    at asyncHandler (/opt/homebrew/lib/node_modules/appium/node_modules/@appium/base-driver/build/lib/protocol/protocol.js:331:23)\n    at /opt/homebrew/lib/node_modules/appium/node_modules/@appium/base-driver/build/lib/protocol/protocol.js:490:14\n    at Layer.handleRequest (/opt/homebrew/lib/node_modules/appium/node_modules/router/lib/layer.js:152:17)\n    at next (/opt/homebrew/lib/node_modules/appium/node_modules/router/lib/route.js:157:13)\n    at Route.dispatch (/opt/homebrew/lib/node_modules/appium/node_modules/router/lib/route.js:117:3)\n    at handle (/opt/homebrew/lib/node_modules/appium/node_modules/router/index.js:435:11)\n    at Layer.handleRequest (/opt/homebrew/lib/node_modules/appium/node_modules/router/lib/layer.js:152:17)\n    at /opt/homebrew/lib/node_modules/appium/node_modules/router/index.js:295:15\n    at param (/opt/homebrew/lib/node_modules/appium/node_modules/router/index.js:600:14)\n    at param (/opt/homebrew/lib/node_modules/appium/node_modules/router/index.js:610:14)\n    at processParams (/opt/homebrew/lib/node_modules/appium/node_modules/router/index.js:664:3)\n    at Immediate.next (/opt/homebrew/lib/node_modules/appium/node_modules/router/index.js:291:5)\n    at Immediate._onImmediate (/opt/homebrew/lib/node_modules/appium/node_modules/router/index.js:688:15)\n    at process.processImmediate (node:internal/timers:576:21)",
+      "status": "completed"
+    }
+  ],
+  "case": "appium-server-restart",
+  "injection": "executed appium-server-restart against a live Appium session",
+  "observations": {
+    "controlServerState": "online",
+    "deviceAfterFailure": "device probe returned 'device'",
+    "deviceBeforeInjection": "device probe returned 'device'",
+    "kernelAfterRecovery": "alive",
+    "kernelAtFailure": "alive",
+    "managedPids": [],
+    "platformDriverFault": null,
+    "serverAtFailure": "restarted",
+    "sessionAfterCleanup": "Appium Server restart invalidated the old session",
+    "sessionAtFailure": "Appium Server restart invalidated the old session"
+  },
+  "platform": "android"
+}

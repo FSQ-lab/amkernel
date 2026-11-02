@@ -1,0 +1,456 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fsq-lab.example/amkernel/mobile-appium-graduation-index.schema.json",
+  "title": "AMKernel Stage 3 Mobile/Appium graduation index",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "experimentId",
+    "generatedAt",
+    "decision",
+    "artifacts",
+    "identities",
+    "criteria",
+    "measurements",
+    "failures",
+    "reviews",
+    "results",
+    "limitations"
+  ],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "experimentId": {"const": "S3-mobile-appium-graduation"},
+    "generatedAt": {"type": "string", "format": "date-time"},
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["outcome", "supportStatus", "coreChangeRecommended", "mobileSpecificInterfaceRecommended"],
+      "properties": {
+        "outcome": {"const": "advance-to-stage-4-cross-client-validation"},
+        "supportStatus": {"const": "experimental-not-supported"},
+        "coreChangeRecommended": {"const": false},
+        "mobileSpecificInterfaceRecommended": {"const": false}
+      }
+    },
+    "artifacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["androidReference", "iosReference", "lifecycle"],
+      "properties": {
+        "androidReference": {"$ref": "#/$defs/artifact"},
+        "iosReference": {"$ref": "#/$defs/artifact"},
+        "lifecycle": {"$ref": "#/$defs/artifact"}
+      }
+    },
+    "identities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["amkernelRevision", "wheel", "scenario", "measurementProtocol", "officialSkill", "fixtures"],
+      "properties": {
+        "amkernelRevision": {"$ref": "#/$defs/gitSha"},
+        "wheel": {"$ref": "#/$defs/wheel"},
+        "scenario": {"$ref": "#/$defs/versionedDefinition"},
+        "measurementProtocol": {"$ref": "#/$defs/versionedDefinition"},
+        "officialSkill": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["repository", "commit", "path"],
+          "properties": {
+            "repository": {"type": "string", "format": "uri"},
+            "commit": {"$ref": "#/$defs/gitSha"},
+            "path": {"type": "string", "minLength": 1}
+          }
+        },
+        "fixtures": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["android", "ios"],
+          "properties": {
+            "android": {"$ref": "#/$defs/fixture"},
+            "ios": {"$ref": "#/$defs/fixture"}
+          }
+        }
+      }
+    },
+    "criteria": {
+      "type": "array",
+      "minItems": 10,
+      "maxItems": 10,
+      "items": {"$ref": "#/$defs/criterion"}
+    },
+    "measurements": {
+      "type": "array",
+      "minItems": 12,
+      "maxItems": 12,
+      "items": {"$ref": "#/$defs/measurement"}
+    },
+    "failures": {
+      "type": "array",
+      "minItems": 19,
+      "maxItems": 19,
+      "items": {"$ref": "#/$defs/failureCase"}
+    },
+    "reviews": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "items": {"$ref": "#/$defs/review"}
+    },
+    "results": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["android", "ios", "lifecycle"],
+      "properties": {
+        "android": {"$ref": "#/$defs/platformResult"},
+        "ios": {"$ref": "#/$defs/platformResult"},
+        "lifecycle": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["occurrenceCount", "bothCaseCount", "sharedCaseCount", "allCleanupObserved", "remainingExternalResources"],
+          "properties": {
+            "occurrenceCount": {"const": 33},
+            "bothCaseCount": {"const": 14},
+            "sharedCaseCount": {"const": 5},
+            "allCleanupObserved": {"const": true},
+            "remainingExternalResources": {"type": "array", "maxItems": 0}
+          }
+        }
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "minItems": 4,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    }
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "gitSha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "relativePath": {"type": "string", "minLength": 1, "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"},
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sizeBytes", "sha256"],
+      "properties": {
+        "path": {"$ref": "#/$defs/relativePath"},
+        "sizeBytes": {"type": "integer", "minimum": 1},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "evidenceArtifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "mimeType", "path", "sizeBytes", "sha256"],
+      "properties": {
+        "kind": {"type": "string", "minLength": 1},
+        "mimeType": {"type": "string", "minLength": 1},
+        "path": {"$ref": "#/$defs/relativePath"},
+        "sizeBytes": {"type": "integer", "minimum": 1},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "wheel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["filename", "sizeBytes", "sha256"],
+      "properties": {
+        "filename": {"type": "string", "pattern": "^[^/]+\\.whl$"},
+        "sizeBytes": {"type": "integer", "minimum": 1},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "versionedDefinition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "sha256"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "fixture": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "commit", "tag", "artifactSha256"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "commit": {"$ref": "#/$defs/gitSha"},
+        "tag": {"type": "string", "minLength": 1},
+        "artifactSha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "reviewIds": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "enum": ["skill", "fixture-contract", "android-reference", "ios-reference", "lifecycle", "graduation"]
+      }
+    },
+    "criterion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "passed", "evidence", "reviews"],
+      "properties": {
+        "id": {
+          "enum": [
+            "retain-appium-driver",
+            "control-android-and-ios",
+            "inspect-and-interact",
+            "deliver-screenshots",
+            "reduce-page-source-locally",
+            "continue-after-ordinary-errors",
+            "distinguish-kernel-lifecycle",
+            "execute-project-automation",
+            "retain-diagnostic-artifacts",
+            "clean-managed-resources"
+          ]
+        },
+        "passed": {"const": true},
+        "evidence": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/relativePath"}
+        },
+        "reviews": {"$ref": "#/$defs/reviewIds"}
+      }
+    },
+    "measurement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "platforms", "reviews"],
+      "properties": {
+        "id": {
+          "enum": [
+            "kernelStartup",
+            "appiumSessionStartup",
+            "idleKernelMemory",
+            "activeDriverMemory",
+            "perCellOverhead",
+            "outputDeliveryLatency",
+            "screenshot",
+            "pageSource",
+            "timeoutToInterrupt",
+            "escalationCleanup",
+            "agentToolCallCount",
+            "contextReduction"
+          ]
+        },
+        "platforms": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["android", "ios"],
+          "properties": {
+            "android": {"$ref": "#/$defs/platformMeasurement"},
+            "ios": {"$ref": "#/$defs/platformMeasurement"}
+          }
+        },
+        "reviews": {"$ref": "#/$defs/reviewIds"}
+      }
+    },
+    "platformMeasurement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evidence", "runOutcome", "cleanupCompleted", "remainingExternalResources", "value"],
+      "properties": {
+        "evidence": {"$ref": "#/$defs/relativePath"},
+        "runOutcome": {"const": "passed"},
+        "cleanupCompleted": {"const": true},
+        "remainingExternalResources": {"type": "array", "maxItems": 0},
+        "value": {"type": "object", "minProperties": 1}
+      }
+    },
+    "failureCase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "coverage", "occurrences", "reviews"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "coverage": {"enum": ["Both", "Shared"]},
+        "occurrences": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 2,
+          "items": {"$ref": "#/$defs/failureOccurrence"}
+        },
+        "reviews": {"$ref": "#/$defs/reviewIds"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"coverage": {"const": "Both"}}},
+          "then": {
+            "properties": {
+              "occurrences": {
+                "minItems": 2,
+                "maxItems": 2,
+                "contains": {"properties": {"platform": {"const": "android"}}, "required": ["platform"]},
+                "minContains": 1,
+                "maxContains": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {"properties": {"coverage": {"const": "Shared"}}},
+          "then": {
+            "properties": {
+              "occurrences": {
+                "minItems": 1,
+                "maxItems": 1,
+                "items": {
+                  "allOf": [
+                    {"$ref": "#/$defs/failureOccurrence"},
+                    {"properties": {"platform": {"const": "android"}}}
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "failureOccurrence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["platform", "injectedAt", "injection", "failure", "transcript"],
+      "properties": {
+        "platform": {"enum": ["android", "ios"]},
+        "injectedAt": {"type": "string", "format": "date-time"},
+        "injection": {"type": "string", "minLength": 1},
+        "failure": {"$ref": "#/$defs/failureOutcome"},
+        "transcript": {"$ref": "#/$defs/evidenceArtifact"}
+      }
+    },
+    "failureOutcome": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "category",
+        "message",
+        "agentObservation",
+        "kernelState",
+        "sessionState",
+        "deviceState",
+        "serverState",
+        "recreationRequired",
+        "recoverableEvidence",
+        "cleanupAttempted",
+        "cleanupObserved",
+        "remainingExternalResources",
+        "lastCompletedStep"
+      ],
+      "properties": {
+        "category": {"enum": ["prerequisite", "fixture", "appium", "driver", "scenario", "amkernel", "measurement", "evidence", "cleanup"]},
+        "message": {"type": "string", "minLength": 1},
+        "agentObservation": {"type": "string", "minLength": 1},
+        "kernelState": {"enum": ["alive", "dead", "unavailable"]},
+        "sessionState": {"enum": ["present", "absent", "unknown"]},
+        "deviceState": {"enum": ["online", "offline", "shutdown", "unavailable"]},
+        "serverState": {"enum": ["online", "offline", "restarted", "unavailable"]},
+        "recreationRequired": {"type": "array", "items": {"enum": ["kernel", "driver", "session", "application", "device", "server"]}, "uniqueItems": true},
+        "recoverableEvidence": {"type": "array", "items": {"$ref": "#/$defs/relativePath"}, "uniqueItems": true},
+        "cleanupAttempted": {"type": "boolean"},
+        "cleanupObserved": {"const": true},
+        "remainingExternalResources": {"type": "array", "maxItems": 0},
+        "lastCompletedStep": {"type": ["string", "null"]}
+      }
+    },
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "reviewer", "recordedBy", "source", "scope", "severity", "disposition"],
+      "properties": {
+        "id": {"enum": ["skill", "fixture-contract", "android-reference", "ios-reference", "lifecycle", "graduation"]},
+        "reviewer": {"type": "string", "minLength": 1},
+        "recordedBy": {"type": "string", "minLength": 1},
+        "source": {"type": "string", "format": "uri"},
+        "scope": {"type": "string", "minLength": 1},
+        "severity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["blocker", "major", "minor"],
+          "properties": {
+            "blocker": {"const": 0},
+            "major": {"const": 0},
+            "minor": {"const": 0}
+          }
+        },
+        "disposition": {"const": "accepted"}
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["minimum", "median", "maximum"],
+      "properties": {
+        "minimum": {"type": "number", "minimum": 0},
+        "median": {"type": "number", "minimum": 0},
+        "maximum": {"type": "number", "minimum": 0}
+      }
+    },
+    "platformResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["outcome", "timing", "size", "localReduction", "errorRecovery", "cleanup"],
+      "properties": {
+        "outcome": {"const": "passed"},
+        "timing": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kernelStartupMs", "appiumSessionStartupMs", "perCellOverheadMs", "outputDeliveryLatencyMs", "timeoutToInterruptMs"],
+          "properties": {
+            "kernelStartupMs": {"$ref": "#/$defs/summary"},
+            "appiumSessionStartupMs": {"$ref": "#/$defs/summary"},
+            "perCellOverheadMs": {"$ref": "#/$defs/summary"},
+            "outputDeliveryLatencyMs": {"$ref": "#/$defs/summary"},
+            "timeoutToInterruptMs": {"$ref": "#/$defs/summary"}
+          }
+        },
+        "size": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["maximumPageSourceBytes", "maximumScreenshotDecodedBytes"],
+          "properties": {
+            "maximumPageSourceBytes": {"type": "integer", "minimum": 1},
+            "maximumScreenshotDecodedBytes": {"type": "integer", "minimum": 1}
+          }
+        },
+        "localReduction": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["minimumRequiredRatio", "observedMinimumRatio", "maximumAfterBytes"],
+          "properties": {
+            "minimumRequiredRatio": {"type": "number", "minimum": 0, "maximum": 1},
+            "observedMinimumRatio": {"type": "number", "minimum": 0, "maximum": 1},
+            "maximumAfterBytes": {"type": "integer", "minimum": 1}
+          }
+        },
+        "errorRecovery": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["continuationVerified", "kernelState"],
+          "properties": {
+            "continuationVerified": {"const": true},
+            "kernelState": {"const": "alive"}
+          }
+        },
+        "cleanup": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["completed", "driverQuit", "sessionAbsent", "deviceUsable", "managedProcessesExited", "remainingExternalResources"],
+          "properties": {
+            "completed": {"const": true},
+            "driverQuit": {"const": "observed"},
+            "sessionAbsent": {"const": "observed"},
+            "deviceUsable": {"const": "observed"},
+            "managedProcessesExited": {"const": "observed"},
+            "remainingExternalResources": {"type": "array", "maxItems": 0}
+          }
+        }
+      }
+    }
+  }
+}

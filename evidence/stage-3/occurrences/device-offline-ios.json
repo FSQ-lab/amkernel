@@ -1,0 +1,45 @@
+{
+  "calls": [
+    {
+      "error": {
+        "message": "cell interrupted by deadline",
+        "traceback": [],
+        "type": "TimeoutError"
+      },
+      "executionCount": 1,
+      "kernelState": "alive",
+      "output": {
+        "discardedBytes": 0,
+        "discardedLines": 0,
+        "limitBytes": 268435456,
+        "limitExceeded": false,
+        "live": "unavailable",
+        "totalBytes": 0,
+        "totalLines": 0,
+        "truncated": false
+      },
+      "result": null,
+      "status": "timed_out"
+    }
+  ],
+  "case": "device-offline",
+  "cleanup": {
+    "deviceOnline": true,
+    "observation": "simulator state is 'Booted'",
+    "observedAt": "2026-10-30T08:10:23.037456Z"
+  },
+  "injection": "requested the isolated target while it was powered off",
+  "observations": {
+    "controlServerState": "online",
+    "deviceAfterFailure": "simulator state is 'Booted'",
+    "deviceBeforeInjection": "simulator state is 'Shutdown'",
+    "kernelAfterRecovery": "alive",
+    "kernelAtFailure": "alive",
+    "managedPids": [],
+    "platformDriverFault": null,
+    "serverAtFailure": "online",
+    "sessionAfterCleanup": "session was not created",
+    "sessionAtFailure": "session was not created"
+  },
+  "platform": "ios"
+}

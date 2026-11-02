@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schemaVersion": 1,
+  "protocolId": "amkernel-mobile-appium-measurement-v1",
+  "status": "frozen-before-platform-runs",
+  "clock": {
+    "latency": "time.monotonic_ns",
+    "wallTime": "UTC RFC 3339 with microseconds",
+    "latencyUnit": "milliseconds",
+    "memoryUnit": "bytes",
+    "sizeUnit": "bytes"
+  },
+  "processes": {
+    "amkernel": "PID of the installed-wheel amkernel stdio server started by the official MCP Python client",
+    "appiumServer": "PID of the Appium 3.7.0 server accepting the configured base URL",
+    "platformDriver": "the UiAutomator2 server PID read from the Android device with adb shell pidof io.appium.uiautomator2.server or the WebDriverAgentRunner PID on the macOS iOS host; PID reuse invalidates the run"
+  },
+  "instruments": {
+    "darwinHost": {
+      "appliesTo": ["amkernel", "appiumServer", "platformDriver on iOS"],
+      "rssBytes": "ps -o rss= -p PID, multiplied by 1024",
+      "openFiles": "count of lsof -Fn -p PID file records",
+      "tasks": "count of ps -M PID thread rows excluding the header",
+      "descendants": "recursive process-tree count from ps -axo pid=,ppid="
+    },
+    "androidDevice": {
+      "appliesTo": ["platformDriver on Android"],
+      "rssBytes": "adb -s DEVICE shell cat /proc/PID/status VmRSS, multiplied by 1024",
+      "openFiles": "count of entries from adb -s DEVICE shell ls /proc/PID/fd",
+      "tasks": "Threads value from adb -s DEVICE shell cat /proc/PID/status",
+      "descendants": "recursive child count from adb -s DEVICE shell ps -A -o PID,PPID"
+    },
+    "artifactIntegrity": "host reads retained bytes, records decoded size, computes SHA-256, and compares both with AMKernel metadata",
+    "encodedScreenshotIntegrity": "when a screenshot crosses JSON as base64, record encoded UTF-8 bytes and require strict base64 decode to equal the retained decoded bytes"
+  },
+  "schedule": {
+    "freshProcessStartupTrials": 3,
+    "warmupIterations": 1,
+    "steadyStateIterations": 10,
+    "processSamplePoints": ["pre-session-idle", "post-session-baseline", "post-warmup", "iteration-1", "iteration-5", "iteration-10"],
+    "latencySummary": ["minimum", "median", "maximum"],
+    "freshProcessDefinition": "terminate the MCP client and AMKernel process, verify their exit, then start a new installed-wheel entry point; create a new Appium session for each session-startup trial",
+    "warmupDefinition": "one complete task, screenshot, and page-source sequence; retain correctness artifacts and the required post-warm-up process sample but exclude warm-up latency from steady-state summaries",
+    "steadyStateDefinition": "ten complete task, screenshot, and page-source sequences in one live kernel and Appium session; sample every process after iterations 1, 5, and 10"
+  },
+  "baselineSubtraction": {
+    "latencyBaseline": "immediately before steady-state measurement, run ten execute calls whose body is pass; use median runner duration as the per-cell baseline",
+    "derivedLatency": "retain raw and baseline values; derived milliseconds equal max(0, raw minus baseline)",
+    "activeDriverMemory": "for AMKernel and Appium Server, subtract the same-PID pre-session-idle RSS from post-session-baseline RSS; the platform driver does not exist pre-session, so use its first stable same-PID post-session-baseline sample and report change from that baseline at iteration 10; retain every raw sample",
+    "contextReduction": "measure identical UTF-8 serialized content immediately before and after deterministic local reduction; derived bytes equal before minus after",
+    "notSubtracted": ["startup", "completed output delivery", "timeout-to-interrupt", "escalation cleanup", "tool-call count", "artifact byte sizes"]
+  },
+  "measurements": [
+    {"id": "kernelStartup", "unit": "milliseconds", "trials": 3, "summary": ["minimum", "median", "maximum"], "ceiling": 10000},
+    {"id": "appiumSessionStartup", "unit": "milliseconds", "trials": 3, "summary": ["minimum", "median", "maximum"], "ceiling": 120000},
+    {"id": "idleKernelMemory", "unit": "bytes", "processes": ["amkernel", "appiumServer"], "samplePoint": "pre-session-idle", "ceiling": 1073741824},
+    {"id": "activeDriverMemory", "unit": "bytes", "processes": ["amkernel", "appiumServer", "platformDriver"], "samplePoint": "post-session-baseline", "ceilingDelta": 1073741824},
+    {"id": "perCellOverhead", "unit": "milliseconds", "iterations": 10, "summary": ["minimum", "median", "maximum"], "ceilingDerived": 2000},
+    {"id": "outputDeliveryLatency", "unit": "milliseconds", "iterations": 10, "summary": ["minimum", "median", "maximum"], "ceiling": 10000},
+    {"id": "screenshot", "units": ["encodedBytes", "decodedBytes", "milliseconds"], "iterations": 10, "maximumDecodedBytes": 16777216, "ceilingDerivedLatency": 15000},
+    {"id": "pageSource", "units": ["bytes", "milliseconds", "nodeCount"], "iterations": 10, "maximumBytes": 16777216, "ceilingDerivedLatency": 15000},
+    {"id": "timeoutToInterrupt", "unit": "milliseconds", "trials": 3, "ceilingAfterDeadline": 5000},
+    {"id": "escalationCleanup", "unit": "milliseconds", "trials": 3, "ceiling": 15000},
+    {"id": "agentToolCallCount", "unit": "calls", "ceiling": 40},
+    {"id": "contextReduction", "units": ["beforeBytes", "afterBytes", "reductionRatio"], "maximumAfterBytes": 32768, "minimumReductionRatio": 0.8}
+  ],
+  "plateau": {
+    "comparison": "sample after iteration 10 minus sample after iteration 5",
+    "processes": ["amkernel", "appiumServer", "platformDriver"],
+    "maximumRssDeltaBytes": 67108864,
+    "maximumOpenFileDelta": 8,
+    "maximumTaskDelta": 4,
+    "maximumDescendantProcessDelta": 0,
+    "passRule": "every metric for every process is at or below its maximum; process replacement or missing same-PID samples fails"
+  },
+  "modelFacingPageSource": {
+    "maximumItems": 200,
+    "maximumUtf8Bytes": 32768,
+    "completeSourcePolicy": "retain only as a bounded AMKernel artifact and workflow artifact; never place complete source in model-facing output"
+  },
+  "passFail": {
+    "latency": "all required trials and iterations exist, each summary is derived from retained raw observations, and every ceiling passes",
+    "resource": "AMKernel and Appium Server have pre-session idle samples; all three process classes have post-session baseline, post-warm-up, and iteration 1, 5, and 10 samples; same-PID active-memory and plateau gates pass",
+    "integrity": "all retained screenshot, source, and log sizes and SHA-256 digests independently match",
+    "unavailable": "fail the run unless the owning platform Issue named the unavailable instrument before execution, justified it, and named an equivalent substitute; record unavailable and substitute observations without null, zero, or inferred values",
+    "reclassification": "thresholds may not be relaxed and failed evidence may not be reclassified after observation without an Issue contract update and independent review followed by a fresh run"
+  }
+}

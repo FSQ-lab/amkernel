@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AppiumAUT>
+  <XCUIElementTypeApplication type="XCUIElementTypeApplication" name="UIKitCatalog" label="UIKitCatalog" enabled="true" visible="true" accessible="false" x="0" y="0" width="402" height="874" index="0" traits="" processId="73892" bundleId="com.example.apple-samplecode.UICatalog">
+    <XCUIElementTypeWindow type="XCUIElementTypeWindow" enabled="true" visible="true" accessible="false" x="0" y="0" width="402" height="874" index="0" traits="">
+      <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="402" height="874" index="0" traits="">
+        <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="402" height="874" index="0" traits="">
+          <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="402" height="874" index="0" traits="">
+            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="402" height="874" index="0" traits="">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="402" height="874" index="0" traits="">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="402" height="874" index="0" traits="">
+                  <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="402" height="874" index="0" traits="">
+                    <XCUIElementTypeNavigationBar type="XCUIElementTypeNavigationBar" name="UIKitCatalog" enabled="true" visible="true" accessible="false" x="0" y="62" width="402" height="54" index="0" traits="">
+                      <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="UIKitCatalog" name="UIKitCatalog" label="UIKitCatalog" enabled="true" visible="true" accessible="true" x="150" y="73" width="102" height="22" index="0" traits="Header"/>
+                    </XCUIElementTypeNavigationBar>
+                    <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="402" height="874" index="1" traits="">
+                      <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="402" height="874" index="0" traits="">
+                        <XCUIElementTypeTable type="XCUIElementTypeTable" enabled="true" visible="true" accessible="false" x="0" y="0" width="402" height="874" index="0" traits="">
+                          <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="true" accessible="false" x="0" y="116" width="402" height="44" index="0" traits="Button">
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="116" width="402" height="44" index="0" traits="">
+                              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="116" width="402" height="44" index="0" traits=""/>
+                            </XCUIElementTypeOther>
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="8" y="159" width="359" height="1" index="1" traits=""/>
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="20" y="116" width="362" height="1" index="2" traits=""/>
+                            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Activity Indicators" name="Activity Indicators" label="Activity Indicators" enabled="true" visible="true" accessible="true" x="20" y="121" width="136" height="21" index="3" traits="StaticText"/>
+                            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="ActivityIndicatorViewController" name="ActivityIndicatorViewController" label="ActivityIndicatorViewController" enabled="true" visible="true" accessible="true" x="20" y="141" width="176" height="15" index="4" traits="StaticText"/>
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="20" y="159" width="362" height="1" index="5" traits=""/>
+                            <XCUIElementTypeButton type="XCUIElementTypeButton" name="chevron" label="chevron" enabled="false" visible="true" accessible="false" x="371" y="131" width="11" height="14" index="6" traits="NotEnabled, Button"/>
+                          </XCUIElementTypeCell>
+                          <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="true" accessible="false" x="0" y="160" width="402" height="44" index="1" traits="Button">
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="160" width="402" height="44" index="0" traits="">
+                              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="160" width="402" height="44" index="0" traits=""/>
+                            </XCUIElementTypeOther>
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="8" y="203" width="359" height="1" index="1" traits=""/>
+                            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Alert Views" name="Alert Views" label="Alert Views" enabled="true" visible="true" accessible="true" x="20" y="165" width="86" height="21" index="2" traits="StaticText"/>
+                            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="AlertControllerViewController" name="AlertControllerViewController" label="AlertControllerViewController" enabled="true" visible="true" accessible="true" x="20" y="185" width="167" height="15" index="3" traits="StaticText"/>
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="20" y="203" width="362" height="1" index="4" traits=""/>
+                            <XCUIElementTypeButton type="XCUIElementTypeButton" name="chevron" label="chevron" enabled="false" visible="true" accessible="false" x="371" y="175" width="11" height="14" index="5" traits="NotEnabled, Button"/>
+                          </XCUIElementTypeCell>
+                          <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="true" accessible="false" x="0" y="204" width="402" height="44" index="2" traits="Button">
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="204" width="402" height="44" index="0" traits="">
+                              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="204" width="402" height="44" index="0" traits=""/>
+                            </XCUIElementTypeOther>
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="8" y="247" width="359" height="1" index="1" traits=""/>
+                            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Buttons" name="Buttons" label="Buttons" enabled="true" visible="true" accessible="true" x="20" y="209" width="60" height="21" index="2" traits="StaticText"/>
+                            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="ButtonViewController" name="ButtonViewController" label="ButtonViewController" enabled="true" visible="true" accessible="true" x="19" y="229" width="122" height="15" index="3" traits="StaticText"/>
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="20" y="247" width="362" height="1" index="4" traits=""/>
+                            <XCUIElementTypeButton type="XCUIElementTypeButton" name="chevron" label="chevron" enabled="false" visible="true" accessible="false" x="371" y="219" width="11" height="14" index="5" traits="NotEnabled, Button"/>
+                          </XCUIElementTypeCell>
+                          <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="true" accessible="false" x="0" y="248" width="402" height="44" index="3" traits="Button">
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="248" width="402" height="44" index="0" traits="">
+                              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="248" width="402" height="44" index="0" traits=""/>
+                            </XCUIElementTypeOther>
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="8" y="291" width="359" height="1" index="1" traits=""/>
+                            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Date Picker" name="Date Picker" label="Date Picker" enabled="true" visible="true" accessible="true" x="20" y="253" width="88" height="21" index="2" traits="StaticText"/>
+                            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="DatePickerController" name="DatePickerController" label="DatePickerController" enabled="true" visible="true" accessible="true" x="20" y="273" width="118" height="15" index="3" traits="StaticText"/>
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="20" y="291" width="362" height="1" index="4" traits=""/>
+                            <XCUIElementTypeButton type="XCUIElementTypeButton" name="chevron" label="chevron" enabled="false" visible="true" accessible="false" x="371" y="263" width="11" height="14" index="5" traits="NotEnabled, Button"/>
+                          </XCUIElementTypeCell>
+                          <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="true" accessible="false" x="0" y="292" width="402" height="44" index="4" traits="Button">
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="292" width="402" height="44" index="0" traits="">
+                              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="292" width="402" height="44" index="0" traits=""/>
+                            </XCUIElementTypeOther>
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="8" y="335" width="359" height="1" index="1" traits=""/>
+                            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Image View" name="Image View" label="Image View" enabled="true" visible="true" accessible="true" x="20" y="297" width="88" height="21" index="2" traits="StaticText"/>
+                            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="ImageViewController" name="ImageViewController" label="ImageViewController" enabled="true" visible="true" accessible="true" x="19" y="317" width="119" height="15" index="3" traits="StaticText"/>
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="20" y="335" width="362" height="1" index="4" traits=""/>
+                            <XCUIElementTypeButton type="XCUIElementTypeButton" name="chevron" label="chevron" enabled="false" visible="true" accessible="false" x="371" y="307" width="11" height="14" index="5" traits="NotEnabled, Button"/>
+                          </XCUIElementTypeCell>
+                          <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="true" accessible="false" x="0" y="336" width="402" height="44" index="5" traits="Button">
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="336" width="402" height="44" index="0" traits="">
+                              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="336" width="402" height="44" index="0" traits=""/>
+                            </XCUIElementTypeOther>
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="8" y="379" width="359" height="1" index="1" traits=""/>
+                            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Page Control" name="Page Control" label="Page Control" enabled="true" visible="true" accessible="true" x="20" y="341" width="99" height="21" index="2" traits="StaticText"/>
+                            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="PageControlViewController" name="PageControlViewController" label="PageControlViewController" enabled="true" visible="true" accessible="true" x="20" y="361" width="153" height="15" index="3" traits="StaticText"/>
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="20" y="379" width="362" height="1" index="4" traits=""/>
+                            <XCUIElementTypeButton type="XCUIElementTypeButton" name="chevron" label="chevron" enabled="false" visible="true" accessible="false" x="371" y="351" width="11" height="14" index="5" traits="NotEnabled, Button"/>
+                          </XCUIElementTypeCell>
+                          <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="true" accessible="false" x="0" y="380" width="402" height="44" index="6" traits="Button">
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="380" width="402" height="44" index="0" traits="">
+                              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="380" width="402" height="44" index="0" traits=""/>
+                            </XCUIElementTypeOther>
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="8" y="423" width="359" height="1" index="1" traits=""/>
+                            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Picker View" name="Picker View" label="Picker View" enabled="true" visible="true" accessible="true" x="19" y="385" width="90" height="21" index="2" traits="StaticText"/>
+                            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="PickerViewController" name="PickerViewController" label="PickerViewController" enabled="true" visible="true" accessible="true" x="19" y="405" width="120" height="15" index="3" traits="StaticText"/>
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="20" y="423" width="362" height="1" index="4" traits=""/>
+                            <XCUIElementTypeButton type="XCUIElementTypeButton" name="chevron" label="chevron" enabled="false" visible="true" accessible="false" x="371" y="395" width="11" height="14" index="5" traits="NotEnabled, Button"/>
+                          </XCUIElementTypeCell>
+                          <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="true" accessible="false" x="0" y="424" width="402" height="44" index="7" traits="Button">
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="424" width="402" height="44" index="0" traits="">
+                              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="424" width="402" height="44" index="0" traits=""/>
+                            </XCUIElementTypeOther>
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="8" y="467" width="359" height="1" index="1" traits=""/>
+                            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Progress Views" name="Progress Views" label="Progress Views" enabled="true" visible="true" accessible="true" x="20" y="429" width="117" height="21" index="2" traits="StaticText"/>
+                            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="ProgressViewController" name="ProgressViewController" label="ProgressViewController" enabled="true" visible="true" accessible="true" x="20" y="449" width="133" height="15" index="3" traits="StaticText"/>
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="20" y="467" width="362" height="1" index="4" traits=""/>
+                            <XCUIElementTypeButton type="XCUIElementTypeButton" name="chevron" label="chevron" enabled="false" visible="true" accessible="false" x="371" y="439" width="11" height="14" index="5" traits="NotEnabled, Button"/>
+                          </XCUIElementTypeCell>
+                          <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="true" accessible="false" x="0" y="468" width="402" height="44" index="8" traits="Button">
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="468" width="402" height="44" index="0" traits="">
+                              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="468" width="402" height="44" index="0" traits=""/>
+                            </XCUIElementTypeOther>
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="8" y="511" width="359" height="1" index="1" traits=""/>
+                            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Search" name="Search" label="Search" enabled="true" visible="true" accessible="true" x="20" y="473" width="54" height="21" index="2" traits="StaticText"/>
+                            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="SearchViewControllers" name="SearchViewControllers" label="SearchViewControllers" enabled="true" visible="true" accessible="true" x="20" y="493" width="129" height="15" index="3" traits="StaticText"/>
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="20" y="511" width="362" height="1" index="4" traits=""/>
+                            <XCUIElementTypeButton type="XCUIElementTypeButton" name="chevron" label="chevron" enabled="false" visible="true" accessible="false" x="371" y="483" width="11" height="14" index="5" traits="NotEnabled, Button"/>
+                          </XCUIElementTypeCell>
+                          <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="true" accessible="false" x="0" y="512" width="402" height="44" index="9" traits="Button">
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="512" width="402" height="44" index="0" traits="">
+                              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="512" width="402" height="44" index="0" traits=""/>
+                            </XCUIElementTypeOther>
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="8" y="555" width="359" height="1" index="1" traits=""/>
+                            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Segmented Controls" name="Segmented Controls" label="Segmented Controls" enabled="true" visible="true" accessible="true" x="20" y="517" width="157" height="21" index="2" traits="StaticText"/>
+                            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="SegmentedControlViewController" name="SegmentedControlViewController" label="SegmentedControlViewController" enabled="true" visible="true" accessible="true" x="20" y="537" width="190" height="15" index="3" traits="StaticText"/>
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="20" y="555" width="362" height="1" index="4" traits=""/>
+                            <XCUIElementTypeButton type="XCUIElementTypeButton" name="chevron" label="chevron" enabled="false" visible="true" accessible="false" x="371" y="527" width="11" height="14" index="5" traits="NotEnabled, Button"/>
+                          </XCUIElementTypeCell>
+                          <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="true" accessible="false" x="0" y="556" width="402" height="44" index="10" traits="Button">
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="556" width="402" height="44" index="0" traits="">
+                              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="556" width="402" height="44" index="0" traits=""/>
+                            </XCUIElementTypeOther>
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="8" y="599" width="359" height="1" index="1" traits=""/>
+                            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Sliders" name="Sliders" label="Sliders" enabled="true" visible="true" accessible="true" x="20" y="561" width="52" height="21" index="2" traits="StaticText"/>
+                            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="SliderViewController" name="SliderViewController" label="SliderViewController" enabled="true" visible="true" accessible="true" x="20" y="581" width="116" height="15" index="3" traits="StaticText"/>
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="20" y="599" width="362" height="1" index="4" traits=""/>
+                            <XCUIElementTypeButton type="XCUIElementTypeButton" name="chevron" label="chevron" enabled="false" visible="true" accessible="false" x="371" y="571" width="11" height="14" index="5" traits="NotEnabled, Button"/>
+                          </XCUIElementTypeCell>
+                          <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="true" accessible="false" x="0" y="600" width="402" height="44" index="11" traits="Button">
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="600" width="402" height="44" index="0" traits="">
+                              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="600" width="402" height="44" index="0" traits=""/>
+                            </XCUIElementTypeOther>
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="8" y="643" width="359" height="1" index="1" traits=""/>
+                            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Stack Views" name="Stack Views" label="Stack Views" enabled="true" visible="true" accessible="true" x="20" y="605" width="93" height="21" index="2" traits="StaticText"/>
+                            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="StackViewController" name="StackViewController" label="StackViewController" enabled="true" visible="true" accessible="true" x="20" y="625" width="115" height="15" index="3" traits="StaticText"/>
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="20" y="643" width="362" height="1" index="4" traits=""/>
+                            <XCUIElementTypeButton type="XCUIElementTypeButton" name="chevron" label="chevron" enabled="false" visible="true" accessible="false" x="371" y="615" width="11" height="14" index="5" traits="NotEnabled, Button"/>
+                          </XCUIElementTypeCell>
+                          <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="true" accessible="false" x="0" y="644" width="402" height="44" index="12" traits="Button">
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="644" width="402" height="44" index="0" traits="">
+                              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="644" width="402" height="44" index="0" traits=""/>
+                            </XCUIElementTypeOther>
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="8" y="687" width="359" height="1" index="1" traits=""/>
+                            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Steppers" name="Steppers" label="Steppers" enabled="true" visible="true" accessible="true" x="20" y="649" width="69" height="21" index="2" traits="StaticText"/>
+                            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="StepperViewController" name="StepperViewController" label="StepperViewController" enabled="true" visible="true" accessible="true" x="20" y="669" width="129" height="15" index="3" traits="StaticText"/>
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="20" y="687" width="362" height="1" index="4" traits=""/>
+                            <XCUIElementTypeButton type="XCUIElementTypeButton" name="chevron" label="chevron" enabled="false" visible="true" accessible="false" x="371" y="659" width="11" height="14" index="5" traits="NotEnabled, Button"/>
+                          </XCUIElementTypeCell>
+                          <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="true" accessible="false" x="0" y="688" width="402" height="44" index="13" traits="Button">
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="688" width="402" height="44" index="0" traits="">
+                              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="688" width="402" height="44" index="0" traits=""/>
+                            </XCUIElementTypeOther>
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="8" y="731" width="359" height="1" index="1" traits=""/>
+                            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Switches" name="Switches" label="Switches" enabled="true" visible="true" accessible="true" x="20" y="693" width="69" height="21" index="2" traits="StaticText"/>
+                            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="SwitchViewController" name="SwitchViewController" label="SwitchViewController" enabled="true" visible="true" accessible="true" x="20" y="713" width="121" height="15" index="3" traits="StaticText"/>
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="20" y="731" width="362" height="1" index="4" traits=""/>
+                            <XCUIElementTypeButton type="XCUIElementTypeButton" name="chevron" label="chevron" enabled="false" visible="true" accessible="false" x="371" y="703" width="11" height="14" index="5" traits="NotEnabled, Button"/>
+                          </XCUIElementTypeCell>
+                          <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="true" accessible="false" x="0" y="732" width="402" height="44" index="14" traits="Button">
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="732" width="402" height="44" index="0" traits="">
+                              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="732" width="402" height="44" index="0" traits=""/>
+                            </XCUIElementTypeOther>
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="8" y="775" width="359" height="1" index="1" traits=""/>
+                            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Text Fields" name="Text Fields" label="Text Fields" enabled="true" visible="true" accessible="true" x="20" y="737" width="81" height="21" index="2" traits="StaticText"/>
+                            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="TextFieldViewController" name="TextFieldViewController" label="TextFieldViewController" enabled="true" visible="true" accessible="true" x="20" y="757" width="135" height="15" index="3" traits="StaticText"/>
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="20" y="775" width="362" height="1" index="4" traits=""/>
+                            <XCUIElementTypeButton type="XCUIElementTypeButton" name="chevron" label="chevron" enabled="false" visible="true" accessible="false" x="371" y="747" width="11" height="14" index="5" traits="NotEnabled, Button"/>
+                          </XCUIElementTypeCell>
+                          <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="true" accessible="false" x="0" y="776" width="402" height="44" index="15" traits="Button">
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="776" width="402" height="44" index="0" traits="">
+                              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="776" width="402" height="44" index="0" traits=""/>
+                            </XCUIElementTypeOther>
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="8" y="819" width="359" height="1" index="1" traits=""/>
+                            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Text View" name="Text View" label="Text View" enabled="true" visible="true" accessible="true" x="20" y="781" width="74" height="21" index="2" traits="StaticText"/>
+                            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="TextViewController" name="TextViewController" label="TextViewController" enabled="true" visible="true" accessible="true" x="20" y="801" width="107" height="15" index="3" traits="StaticText"/>
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="20" y="819" width="362" height="1" index="4" traits=""/>
+                            <XCUIElementTypeButton type="XCUIElementTypeButton" name="chevron" label="chevron" enabled="false" visible="true" accessible="false" x="371" y="791" width="11" height="14" index="5" traits="NotEnabled, Button"/>
+                          </XCUIElementTypeCell>
+                          <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="true" accessible="false" x="0" y="820" width="402" height="44" index="16" traits="Button">
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="820" width="402" height="44" index="0" traits="">
+                              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="820" width="402" height="44" index="0" traits=""/>
+                            </XCUIElementTypeOther>
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="8" y="863" width="359" height="1" index="1" traits=""/>
+                            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Toolbars" name="Toolbars" label="Toolbars" enabled="true" visible="true" accessible="true" x="20" y="825" width="66" height="21" index="2" traits="StaticText"/>
+                            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="ToolbarViewControllers" name="ToolbarViewControllers" label="ToolbarViewControllers" enabled="true" visible="true" accessible="true" x="20" y="845" width="132" height="15" index="3" traits="StaticText"/>
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="20" y="863" width="362" height="1" index="4" traits=""/>
+                            <XCUIElementTypeButton type="XCUIElementTypeButton" name="chevron" label="chevron" enabled="false" visible="true" accessible="false" x="371" y="835" width="11" height="14" index="5" traits="NotEnabled, Button"/>
+                          </XCUIElementTypeCell>
+                          <XCUIElementTypeCell type="XCUIElementTypeCell" enabled="true" visible="true" accessible="false" x="0" y="864" width="402" height="44" index="17" traits="Button">
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="864" width="402" height="44" index="0" traits="">
+                              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="864" width="402" height="44" index="0" traits=""/>
+                            </XCUIElementTypeOther>
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="8" y="907" width="359" height="1" index="1" traits=""/>
+                            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Web View" name="Web View" label="Web View" enabled="true" visible="true" accessible="true" x="20" y="869" width="76" height="21" index="2" traits="StaticText"/>
+                            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="WebViewController" name="WebViewController" label="WebViewController" enabled="true" visible="false" accessible="true" x="20" y="889" width="108" height="15" index="3" traits="StaticText"/>
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="20" y="907" width="362" height="1" index="4" traits=""/>
+                            <XCUIElementTypeButton type="XCUIElementTypeButton" name="chevron" label="chevron" enabled="false" visible="false" accessible="false" x="371" y="879" width="11" height="14" index="5" traits="NotEnabled, Button"/>
+                          </XCUIElementTypeCell>
+                          <XCUIElementTypeOther type="XCUIElementTypeOther" value="0%" name="Vertical scroll bar, 2 pages" label="Vertical scroll bar, 2 pages" enabled="true" visible="false" accessible="false" x="369" y="116" width="30" height="696" index="18" traits="Adjustable">
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="396" y="119" width="3" height="641" index="0" traits=""/>
+                          </XCUIElementTypeOther>
+                          <XCUIElementTypeOther type="XCUIElementTypeOther" value="0%" name="Horizontal scroll bar, 1 page" label="Horizontal scroll bar, 1 page" enabled="true" visible="false" accessible="false" x="62" y="841" width="278" height="30" index="19" traits="Adjustable">
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="65" y="868" width="272" height="3" index="0" traits=""/>
+                          </XCUIElementTypeOther>
+                        </XCUIElementTypeTable>
+                      </XCUIElementTypeOther>
+                    </XCUIElementTypeOther>
+                    <XCUIElementTypeToolbar type="XCUIElementTypeToolbar" name="Toolbar" label="Toolbar" enabled="true" visible="false" accessible="false" x="0" y="0" width="402" height="874" index="2" traits="">
+                      <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="402" height="874" index="0" traits=""/>
+                    </XCUIElementTypeToolbar>
+                  </XCUIElementTypeOther>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeOther>
+            <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="402" height="874" index="1" traits="">
+              <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="402" height="874" index="0" traits=""/>
+            </XCUIElementTypeOther>
+          </XCUIElementTypeOther>
+        </XCUIElementTypeOther>
+      </XCUIElementTypeOther>
+    </XCUIElementTypeWindow>
+  </XCUIElementTypeApplication>
+</AppiumAUT>

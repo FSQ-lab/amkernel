@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "normalizerId": "amkernel-cross-client-normalizer-v1",
+  "encoding": "utf-8",
+  "json": {
+    "sortKeys": true,
+    "separators": [",", ":"],
+    "ensureAscii": false,
+    "allowNan": false
+  },
+  "retainedEventFields": [
+    "index",
+    "direction",
+    "method",
+    "toolName",
+    "requestId",
+    "attemptKind",
+    "requestProjection",
+    "normalizedRequestBytes",
+    "normalizedBytes",
+    "status",
+    "kernelState",
+    "resultSha256",
+    "semanticsSha256",
+    "resourceUriSha256",
+    "resourceScheme",
+    "resourceMimeType",
+    "resourceSizeBytes",
+    "startedAt",
+    "completedAt"
+  ],
+  "excludedFields": [
+    "authorization",
+    "credentials",
+    "environment",
+    "absolutePaths",
+    "modelProse",
+    "chainOfThought",
+    "rawCode",
+    "stdoutBody",
+    "stderrBody",
+    "displayBytes",
+    "artifactBytes",
+    "clientPrivateEnvelope"
+  ],
+  "uriHandling": {
+    "retainScheme": true,
+    "retainMimeType": true,
+    "retainSize": true,
+    "replaceUriWithSha256": true
+  },
+  "contentHandling": {
+    "retainStructuredStatus": true,
+    "retainKernelState": true,
+    "replaceResultWithCanonicalSha256": true,
+    "countCanonicalBytesBeforeReplacement": true
+  },
+  "byteDefinition": "Length of compact canonical UTF-8 JSON after client-private envelope removal and before digest replacement unless the field explicitly says otherwise."
+}
