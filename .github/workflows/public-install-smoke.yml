@@ -1,0 +1,88 @@
+name: Public Install Smoke
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  public-install:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Set up uv
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          version: 0.12.5
+          enable-cache: false
+      - name: Install and exercise public AMKernel 0.1.0
+        run: |
+          uv run --no-project --refresh --with amkernel==0.1.0 python - <<'PY'
+          import asyncio
+          import json
+          import os
+          import subprocess
+          import sys
+          import tempfile
+          from pathlib import Path
+
+          from mcp.client import Client
+          from mcp.client.stdio import StdioServerParameters
+
+          root = Path(tempfile.mkdtemp(prefix="amkernel-public-"))
+          project = root / "project"
+          project.mkdir()
+          environment = os.environ | {
+              "HOME": str(root / "home"),
+              "UV_TOOL_DIR": str(root / "tools"),
+              "UV_TOOL_BIN_DIR": str(root / "bin"),
+          }
+
+          def command(*arguments: str) -> dict[str, object]:
+              completed = subprocess.run(
+                  ["uvx", "--refresh", "--from", "amkernel==0.1.0", "amkernel", *arguments],
+                  check=True,
+                  capture_output=True,
+                  text=True,
+                  env=environment,
+              )
+              return json.loads(completed.stdout)
+
+          installed = command(
+              "install", "--client", "omp", "--project", str(project),
+              "--scope", "project", "--yes", "--json",
+          )
+          status = command(
+              "status", "--client", "omp", "--project", str(project), "--json",
+          )
+          doctor = command(
+              "doctor", "--client", "omp", "--project", str(project), "--json",
+          )
+          for result in (installed, status, doctor):
+              assert result["runtime_installed"] is True, result
+              assert result["skill_installed"] is True, result
+              assert result["mcp_configured"] is True, result
+              assert result["runtime_version"] == "0.1.0", result
+              assert result["skill_version"] == "0.1.0", result
+              assert result["detail"] is None, result
+          assert (project / ".agents/skills/amkernel/SKILL.md").is_file()
+          assert (project / ".omp/mcp.json").is_file()
+
+          async def smoke() -> None:
+              parameters = StdioServerParameters(
+                  command=sys.executable,
+                  args=["-m", "amkernel"],
+                  cwd=project,
+                  env=environment,
+              )
+              async with Client(parameters, read_timeout_seconds=15.0) as client:
+                  tools = await client.list_tools()
+                  assert [tool.name for tool in tools.tools] == ["python_exec"]
+                  result = await client.call_tool("python_exec", {"code": "6 * 7"})
+                  assert result.structured_content["result"] == 42
+                  assert result.structured_content["kernelState"] == "alive"
+
+          asyncio.run(smoke())
+          print(json.dumps({"version": "0.1.0", "install": installed, "mcp": "python_exec=42"}))
+          PY
