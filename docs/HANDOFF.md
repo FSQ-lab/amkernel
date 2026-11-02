@@ -166,7 +166,26 @@ including native Skill/MCP discovery, native loading of the fifth official Skill
 and missing-copy repair, and native MCP coexistence in both existing-file layouts.
 This is installation evidence, not physical Mac2/Android/iOS or Windows qualification.
 Retained installation evidence is `evidence/appium-skill/copilot-install-20261102.json` (#105).
-Next: real Agent behavior verification under #98, before the fixed physical regression order.
+
+#98 now has observed native installed-Skill/MCP behavior for all 16 synthetic
+scenarios through Copilot CLI 1.0.105 / gpt-6.1-sol. Retained evidence is
+`evidence/appium-skill/agent-behavior-20261103.json`; earlier failed runs remain
+unchanged beside it. The initial matrix also exposed a real Mac2 action-limit
+violation hidden by its old oracle: cleanup clicked a second time. Skill guidance
+and the final oracle preserve requested end state and enforce action limits across
+execution and cleanup. Exact report controls replace prose-based status inference;
+ambiguous-submit reconciliation requires a later successful completed/alive call
+observing the actual result. Global cleanup claims are checked against observed
+session, server and restored state. User configuration hashes remained unchanged;
+owned Runner exits are observed without claiming external-session cleanup after
+kernel death or deliberate DELETE failure. Full pytest: 443 passed; final focused
+checks: 38 passed; Ruff, mypy (55 source files), and wheel build passed. These are
+synthetic behavior results, not physical Mac2/Android/iOS or Windows qualification.
+Independent final source/protocol/guidance and all-scenario evidence review found
+0 Blocker / 0 Major / 0 P2; the retained review and source/evidence digests are in
+`evidence/appium-skill/agent-behavior-review-20261103.json`.
+Next: #106 execution-verified environment discovery, then #107 state/conversation
+behavior, before the fixed final real-platform regression order.
 
 Project #2 still lists S4-010 as In Progress and S4-030/#82 as Ready. The current credential has
 `read:project`, not board-write scope; the execution override and dependencies are recorded in

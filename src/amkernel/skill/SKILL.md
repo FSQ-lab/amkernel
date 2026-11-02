@@ -101,6 +101,22 @@ Report platform readiness separately from AMKernel execution readiness. Do not c
 
 When a task benefits from continuity, assign the live client to a top-level `driver` so later `python_exec` calls can reuse it. A persistent Python object does not prove that its external Appium session is still alive; verify with a small relevant live query before acting.
 
+Keep short, continuous, low-risk queries and actions in one `python_exec`. Split preparation,
+long waits, irreversible actions, recovery, and cleanup where they can fail independently;
+do not hide the entire scenario in one long call or split every Appium command into a call.
+Inspect the actual result's `status` and `kernelState` after every segment. After a timeout,
+interruption, or session error, use current external evidence and a small live query if the
+Kernel survived and `driver` exists. A nonempty `session_id` is not liveness evidence;
+missing objects, empty sessions, or failed live queries do not establish resumable state.
+Kernel death loses the persistent Python namespace; do not describe it as recoverable state.
+Near an irreversible action, reconcile the external result before any retry. Restore owned,
+reversible side effects before `driver.quit()` when restoration needs the live session.
+Preserve the user's requested end state; it is not an incidental side effect to undo.
+Explicit action limits cover execution and cleanup together. Restoration does not
+authorize another interaction; if restoring incidental state would exceed a limit,
+stop and obtain approval rather than silently exceeding it.
+No phase object, task-state store, workflow engine, or Appium wrapper is required.
+
 Use explicit waits and semantic locators. Follow the user's scenario and repository fixtures rather than inventing locators or behavior. Render screenshots through AMKernel instead of printing encoded bytes:
 
 ```python
@@ -118,6 +134,7 @@ AMKernel, Appium Server, the platform driver, the target, and an Appium session 
 - A disposable validation session created by this skill is cleaned up after validation. If cleanup raises, report the state as unknown and preserve its identity for reconciliation.
 - A session created for the user's explicit scenario follows that scenario's execution and cleanup requirements; do not add a separate validation session.
 - Report only observed cleanup. Never convert an attempted command into a successful claim.
+- Report task outcome, state restoration, session cleanup, and server cleanup separately; a successful task with failed cleanup is not fully clean.
 
 ## Finish in terms the user understands
 
