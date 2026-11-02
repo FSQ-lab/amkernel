@@ -44,7 +44,7 @@ jobs:
           gh api "repos/$GITHUB_REPOSITORY/actions/runs/$CI_RUN_ID"
           > run.json
       - name: Download exact retained distribution
-        uses: actions/download-artifact@9002e186f0a313241b8e30e384cc088f5bb9a8db # v8.0.2
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
           name: distribution-${{ github.sha }}
           path: candidate
@@ -98,12 +98,12 @@ jobs:
         with:
           fetch-depth: 0
       - name: Download validated wheel
-        uses: actions/download-artifact@9002e186f0a313241b8e30e384cc088f5bb9a8db # v8.0.2
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
           name: release-wheel-${{ github.sha }}-${{ github.run_attempt }}
           path: publish
       - name: Download validated metadata
-        uses: actions/download-artifact@9002e186f0a313241b8e30e384cc088f5bb9a8db # v8.0.2
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
           name: release-metadata-${{ github.sha }}-${{ github.run_attempt }}
           path: release-metadata
@@ -167,7 +167,7 @@ jobs:
       url: https://pypi.org/p/amkernel
     steps:
       - name: Download validated wheel
-        uses: actions/download-artifact@9002e186f0a313241b8e30e384cc088f5bb9a8db # v8.0.2
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
           name: release-wheel-${{ github.sha }}-${{ github.run_attempt }}
           path: publish
