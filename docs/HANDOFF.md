@@ -153,6 +153,20 @@ Both added official files matched the existing pinned source digests. These are 
 checks, not a Calculator session or a platform support claim; that regression remains required
 after the Copilot installation smoke in the owner's fixed final order.
 
+#104 now installs the main Skill, every referenced official Skill, and the complete pinned
+source archive without a development checkout or runtime network fetch. Copilot edits only
+its active project MCP file, preserves unrelated entries, and still requires explicit folder
+trust. Exact archive/source/copy hashes, receipt/runtime version, linked-path rejection,
+transactional upgrades, foreign-file preservation, and rollback file/directory permissions
+are checked. Focused installation/verifier/CLI checks: 59 passed; Ruff, mypy (53 source files),
+and wheel build passed. Final independent review has zero surviving findings. A clean external
+project and actual GitHub Copilot CLI 1.0.105 / gpt-6.1-sol passed 12 installation checks,
+including native Skill/MCP discovery, native loading of the fifth official Skill
+`xcuitest-real-device-config`, two persistent `python_exec` calls, fail-closed tamper
+and missing-copy repair, and native MCP coexistence in both existing-file layouts.
+This is installation evidence, not physical Mac2/Android/iOS or Windows qualification.
+Bounded retained evidence and the external-project contract are the next #105 delivery.
+
 Project #2 still lists S4-010 as In Progress and S4-030/#82 as Ready. The current credential has
 `read:project`, not board-write scope; the execution override and dependencies are recorded in
 Issues #102 and #81 rather than falsely claiming a board update. S4-001/#82 stay frozen and

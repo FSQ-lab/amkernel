@@ -25,14 +25,18 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="command")
     for name in ("install", "status", "doctor", "update"):
         command = subparsers.add_parser(name)
-        command.add_argument("--client", choices=("auto", "omp", "pi", "codex"), default="auto")
+        command.add_argument(
+            "--client", choices=("auto", "omp", "pi", "codex", "copilot"), default="auto"
+        )
         command.add_argument("--project", type=Path, default=Path.cwd())
         command.add_argument("--json", action="store_true")
         if name in {"install", "update"}:
             command.add_argument("--scope", choices=("project",))
             command.add_argument("--yes", action="store_true")
     uninstall = subparsers.add_parser("uninstall")
-    uninstall.add_argument("--client", choices=("auto", "omp", "pi", "codex"), default="auto")
+    uninstall.add_argument(
+        "--client", choices=("auto", "omp", "pi", "codex", "copilot"), default="auto"
+    )
     uninstall.add_argument("--project", type=Path, default=Path.cwd())
     uninstall.add_argument("--scope", choices=("project",))
     uninstall.add_argument("--global", dest="global_scope", action="store_true")
@@ -57,6 +61,14 @@ def _print_status(status: ProjectStatus, as_json: bool) -> None:
         return
     print(f"Runtime installed: {'yes' if status.runtime_installed else 'no'}")
     print(f"Skill installed: {'yes' if status.skill_installed else 'no'}")
+    if status.skill_installed:
+        print(f"Skill provenance: {'verified' if status.skill_provenance else 'unverified'}")
+        print(
+            "Skill content verified: "
+            f"{'yes' if status.skill_content_verified else 'no'}"
+        )
+        if status.skill_commit:
+            print(f"Skill commit: {status.skill_commit}")
     print(f"MCP configured: {'yes' if status.mcp_configured else 'no'}")
     print(f"Project: {status.project}")
     if status.client:
@@ -65,6 +77,8 @@ def _print_status(status: ProjectStatus, as_json: bool) -> None:
         print(f"Runtime version: {status.runtime_version}")
     if status.skill_version:
         print(f"Skill version: {status.skill_version}")
+    if status.notice:
+        print(f"Notice: {status.notice}")
     if status.known_project_references:
         print("Known project references:")
         for project in status.known_project_references:

@@ -40,13 +40,8 @@ Inspect what the host already reveals before asking questions. If one usable tar
 
 Appium's official skills and documentation own Appium setup and troubleshooting procedure. This skill routes to them and adds only AMKernel-specific knowledge.
 
-The reviewed official sources are pinned in `references/official-skills.json`. Generated copies and the complete source checkout are local inputs, not committed source. Before using a generated official skill, acquire it only with the manifest's exact `skillsCli.commands` and `source.acquisitionCommands`, then run:
+The project installer supplies the main Skill, every referenced official Skill, and the complete pinned official source snapshot. Run `python .agents/skills/amkernel/scripts/verify_official_skills.py --project-root .` before using them. The verifier requires the installed ownership/version receipt and exact source/copy hashes. A mismatch or missing dependency is an installation failure; stop and report the exact finding. After approval, repair through the AMKernel installer for the selected client, not an unpinned download or files from the AMKernel development repository. The acquisition commands in the manifest record upstream provenance; they are not permission to bypass managed installation.
 
-```text
-python scripts/verify_official_skills.py --project-root <project>
-```
-
-Stop if verification fails. Do not work around a missing file, extra file, link, changed hash, wrong repository, or wrong commit.
 
 Route the Appium work to the narrowest verified official skill:
 
@@ -54,7 +49,7 @@ Route the Appium work to the narrowest verified official skill:
 - iOS or tvOS setup on macOS, Xcode prerequisites, driver doctor, and server smoke: `.agents/skills/setup-xcuitest/SKILL.md`.
 - Native macOS desktop setup and scenarios, including Calculator: `.agents/skills/setup-mac2/SKILL.md`, then the official Mac2 driver. macOS desktop is not an iOS/XCUITest target.
 - An existing UiAutomator2 or XCUITest session, launch, transport, WebDriverAgent, source, or locator failure: `.agents/skills/appium-troubleshooting/SKILL.md`.
-- iOS real-device trust, signing, provisioning, or WebDriverAgent deployment: follow the XCUITest skill's verified `xcuitest-real-device-config` continuation. Do not present the simulator experiment as real-device validation.
+- iOS real-device trust, signing, provisioning, or WebDriverAgent deployment: after shared XCUITest prerequisites pass, continue to `.agents/skills/xcuitest-real-device-config/SKILL.md`. Do not present the simulator experiment as real-device validation.
 
 Select by both observed host OS and requested target. Windows first-release scope is Android through UiAutomator2 only; explicitly reject Windows desktop, XCUITest, and Mac2 on Windows. Do not silently substitute another driver or target. A missing Mac2 prerequisite on macOS remains a Mac2 blocker, not permission to switch to XCUITest, a mobile flow, or vague generic Appium advice. Existing Mac2 runtime failures use the official Mac2 driver documentation after verified setup; do not misroute them to a mobile-only troubleshooting procedure.
 
