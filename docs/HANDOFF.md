@@ -184,8 +184,27 @@ synthetic behavior results, not physical Mac2/Android/iOS or Windows qualificati
 Independent final source/protocol/guidance and all-scenario evidence review found
 0 Blocker / 0 Major / 0 P2; the retained review and source/evidence digests are in
 `evidence/appium-skill/agent-behavior-review-20261103.json`.
-Next: #106 execution-verified environment discovery, then #107 state/conversation
-behavior, before the fixed final real-platform regression order.
+
+#106 now has four passing native installed-Skill/MCP discovery cases: read-only
+actual-host discovery and synthetic explicit-Java preference, bundled-JBR fallback,
+and missing-capability environments. Final evidence is
+`evidence/appium-skill/environment-discovery-20261103.json`; the first run and the
+second run's two contract/oracle failures remain separately retained. Executable
+journals cross-check candidate existence, exit codes, actual version/home facts,
+and separate physical/simulator inventories against both printed and final facts.
+Approval flags concern the current request; readiness counts concern listed targets,
+so an independently observed empty population permits zero without qualifying the
+host. Nonempty unverified readiness remains unknown. Actual user configuration,
+profiles, active Xcode selection and observed service state remained unchanged;
+owned Runner exits were observed. Full pytest: 469 passed; Ruff, mypy (58 source
+files), and wheel build passed. No Appium session was created, and no physical
+platform or Windows support is established by these discovery results.
+Independent final source and four-case evidence review found 0 Blocker / 0 Major /
+0 P2; exact source/evidence digests and review limits are retained in
+`evidence/appium-skill/environment-discovery-review-20261103.json`.
+
+Next: #107 state/conversation behavior, before the fixed final real-platform
+regression order.
 
 Project #2 still lists S4-010 as In Progress and S4-030/#82 as Ready. The current credential has
 `read:project`, not board-write scope; the execution override and dependencies are recorded in

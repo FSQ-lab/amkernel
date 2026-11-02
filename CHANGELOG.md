@@ -10,6 +10,7 @@ All notable changes to AMKernel are recorded here. Public releases use semantic 
 - Route native macOS automation explicitly to pinned `setup-mac2`/Mac2 guidance, reject unsupported Windows targets without fallback, and resolve official helper paths from the verified source checkout ([#103](https://github.com/FSQ-lab/amkernel/issues/103)).
 - Install the main Skill, every referenced official Appium Skill, and the complete pinned source snapshot for GitHub Copilot CLI. Verify archive, receipt, runtime version, and exact file digests; preserve the active MCP file's unrelated entries, reject linked managed paths, and roll back file/directory-shape upgrades without losing owned or foreign data ([#104](https://github.com/FSQ-lab/amkernel/issues/104)).
 - Keep short Appium flows compact while separating meaningful long-operation, recovery, restoration, and cleanup boundaries. Inspect actual `status`/`kernelState`, verify remote session liveness, and reconcile ambiguous irreversible actions through the existing `python_exec` interface. Preserve the requested end state and respect explicit action limits across execution and cleanup ([#98](https://github.com/FSQ-lab/amkernel/issues/98)).
+- Discover and execution-validate existing Java, Android, and Apple capabilities before repairs; keep selections task-scoped, physical and simulator inventories separate, and development/XCUITest readiness explicit rather than inferred from listings ([#106](https://github.com/FSQ-lab/amkernel/issues/106)).
 
 ## [0.1.0] - 2026-11-02
 

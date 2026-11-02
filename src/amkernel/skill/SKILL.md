@@ -22,6 +22,28 @@ Infer intent from the conversation and available evidence. Do not force the user
 
 Inspect what the host already reveals before asking questions. If one usable target is present, describe and use it when the request permits. If several are present, offer understandable choices such as device model and platform version; include serials or UDIDs only as disambiguating details.
 
+## Discover and reuse before repairing
+
+Discover existing host and target capabilities before recommending installation or
+configuration changes. Reuse only execution-validated candidates; a path, package,
+device listing, or working dependency does not establish whole-platform readiness.
+Read `references/amkernel-appium.md` for candidate order, task-scoped environment
+selection, and separate physical-device/simulator evidence.
+
+Apply approved selections only to this task's Kernel or child-process environment
+(`JAVA_HOME`, `PATH`, `DEVELOPER_DIR`), including externally supervised Appium and
+official helpers. Do not edit profiles, persist variables, switch global
+`xcode-select`, install dependencies, or accept device trust/license prompts as
+discovery. Inspect before using a command that might start a service or alter a
+device; explain any necessary change and obtain approval first. Record candidates,
+executed checks, failures, selected values and selection reasons without dumping
+unrelated environment data or personal device identifiers.
+
+For a discovery-only request, missing capabilities are a result to report, not a
+reason to request approval for hypothetical future installation or validation.
+Approval is required when a state change is necessary for the current request.
+
+
 ## Give the user a simple experience
 
 - Explain the current result in plain language, not as a dump of commands or logs.

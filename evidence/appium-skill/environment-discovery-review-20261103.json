@@ -1,0 +1,39 @@
+{
+  "issue": 106,
+  "scope": "Independent final source and actual-host plus three synthetic native installed-Skill/MCP discovery scenario evidence review",
+  "reviewer": "BehaviorOracleReview",
+  "findings": {
+    "blocker": 0,
+    "major": 0,
+    "p2": 0
+  },
+  "verification": {
+    "pytestPassed": 469,
+    "ruff": "passed",
+    "mypySourceFiles": 58,
+    "wheelBuild": "passed",
+    "nativeScenariosPassed": 4,
+    "nativeScenariosFailed": 0,
+    "nativeScenariosBlocked": 0
+  },
+  "sha256": {
+    "src/amkernel/skill/SKILL.md": "072ee93a94d935b6e471038bd60cd7e0a6b2a0307456770cbf96891bc708972e",
+    "src/amkernel/skill/references/amkernel-appium.md": "45780917f2d264ca9ee688483074b58aaedfda918cbef0b01575bac8cf7fdb18",
+    "tests/e2e/skill_discovery.py": "231a10b6a46986de56d386b0f0762436071ae6f74e33076c21cba51cae5d5de7",
+    "tests/e2e/discovery_fixture.py": "3180a4f44469c5d72ccf88624672f0e4d72e1c60c8b2012c0c07cd3ebbba9c34",
+    "tests/e2e/test_discovery_fixture.py": "1e148a723acccdc3856935eb2211901a054b8ce0c601155f566740fabb22564c",
+    "docs/HANDOFF.md": "965f68c65ae37803b72e29733ffd49b379b9b8af3e7bff3930e7a079079d65d3",
+    "docs/experiments/appium-agent-behavior.md": "87cce96c9ca72e0025ad55d3b6007b9ff728fa4f7a5cf03876128d672a2940f6",
+    "CHANGELOG.md": "bf42cd6c3e926ac391328e9f3e60dbb4d553d8a39e60b782d1e5e100472b675f",
+    "evidence/appium-skill/environment-discovery-first-20261103.json": "44a10194b7f8987439e7d60909225f405c8ffcc36149f534061e4f3b832b0fdc",
+    "evidence/appium-skill/environment-discovery-before-20261103.json": "e8ab2371731f1fc02025ded49c6a947e18cd556f7eb13ddff40091f3a262b551",
+    "evidence/appium-skill/environment-discovery-20261103.json": "5a54fad0b7cce8655e53d253a6c423646d6fe512f79d4fac2ee6cd40e0c9bb63"
+  },
+  "limits": [
+    "Reviewer inspected retained observations; no independent checks/build/native execution or Runner re-probe.",
+    "Synthetic selection/reporting evidence is not physical Appium/driver/Windows qualification.",
+    "Actual-host observations use the test-only task-owned read-only probe; bounded evidence does not reconstruct arbitrary Python actions or prove exhaustive absence of side effects.",
+    "Task-owned execution journals are normal-path observations, not tamper-proof against unrestricted same-user Python writes.",
+    "Earlier first and failed second runs remain unchanged; only the rebuilt-wheel third run is final."
+  ]
+}

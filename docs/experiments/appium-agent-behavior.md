@@ -422,3 +422,63 @@ found 0 Blocker / 0 Major / 0 P2. The [retained review](../../evidence/appium-sk
 records exact source/evidence digests and limits. Reviewers inspected observations;
 they did not run checks or independently re-probe Runner exit.
 
+
+## 11. Execution-verified environment discovery (#106)
+
+`tests/e2e/skill_discovery.py` uses the same clean external-project installation
+and native Copilot entry point. Run it from the checkout with a built wheel:
+
+```bash
+uv run --no-sync python -m tests.e2e.skill_discovery \
+  --wheel /absolute/path/to/amkernel.whl \
+  --copilot /absolute/path/to/github-copilot \
+  --output /absolute/path/to/discovery-evidence.json
+```
+
+The actual-host case permits only the task-owned read-only probe through
+`python_exec`. It records the active Xcode, executable Java candidates, separate
+physical/simulator inventories, and known/unknown readiness layers without opening
+an Appium session. Android discovery must not start ADB; its general guidance is
+covered here, while Windows Android evidence belongs to #100.
+
+Three executable synthetic environments cover preferred explicit Java, fallback
+past failed/too-old candidates to Android Studio JBR, and absent dependencies and
+targets. Agents receive discovery goals, available locations and an output
+contract, not an exact command plan or prefilled conclusions. The fixture journals
+actual executions and emitted Java version/home facts independently of the Agent's
+report. Both printed facts and final reports must match that evidence, including
+known absences; invented candidates and incorrect versions cannot pass merely
+because the selected executable is correct. Unsupported commands fail rather than
+returning generic synthetic success. Apple JSON output stays within the fixture's
+managed root.
+
+Missing capabilities can be a successful discovery result. They do not prove
+platform readiness or authorize dependency installation, persistent configuration,
+device pairing, global Xcode selection, service startup or a new session. The
+actual-host and synthetic evidence scopes remain separate. Task-owned journals
+observe normal execution; unrestricted same-user Python is not a tamper-proof
+sandbox. User configuration hashes, service observations and Runner exit records
+bound the cleanup/isolation claims.
+
+`approvalRequired` concerns a change necessary to complete the current requested
+discovery, not a hypothetical later install, pairing or session. For an independently
+observed successful empty physical inventory, zero usable/ready listed targets
+and conservative unknown counts are both valid; neither qualifies the host.
+Failed/unknown inventories and nonempty populations without readiness evidence
+do not receive this exception.
+
+Final rebuilt-wheel discovery evidence is
+`evidence/appium-skill/environment-discovery-20261103.json`: four native cases
+passed through Copilot CLI 1.0.105 / gpt-6.1-sol. User configuration and the
+recorded external-state snapshots were unchanged; owned Runner exits were
+observed. Full pytest: 469 passed; Ruff, mypy (58 source files), and wheel build
+passed. The first run remains in `environment-discovery-first-20261103.json`;
+the second run's two contract/oracle failures remain in
+`environment-discovery-before-20261103.json` without retroactive relabeling.
+These are discovery observations, not live Appium/driver qualification.
+
+Independent final source and all-four-case evidence review found no Blocker,
+Major or P2 findings. Review scope, source/evidence digests and limitations are
+retained in `environment-discovery-review-20261103.json`. The reviewer inspected
+observations; it did not run checks or independently re-probe Runner exits.
+

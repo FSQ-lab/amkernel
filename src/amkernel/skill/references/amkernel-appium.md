@@ -10,6 +10,62 @@ This reference contains only the AMKernel-specific seam. Platform setup and Appi
 - Keep one top-level `driver` object across calls. Before reuse, require a session ID and one small live query.
 - A kernel reset or death makes external session state unknown. Reconcile it before replacement.
 
+## Task-scoped discovery evidence
+
+Use the requested target and observed host OS to choose relevant checks. Preserve
+existing working installations; discovery is not permission to repair them. Keep
+the following evidence bounded and obtain it in the actual `python_exec`
+environment when it determines Runtime behavior, not an unrelated shell Python.
+
+- **Java:** enumerate explicit `JAVA_HOME`, current `java` on `PATH`, registered
+  macOS JDKs (`/usr/libexec/java_home -V`), then Android Studio bundled JBR in
+  installed application locations. Expand paths and resolve/deduplicate aliases
+  while retaining their origins. Execute every discovered candidate, for example
+  its `bin/java -XshowSettings:properties -version`; record exit status, actual
+  version and `java.home`. A macOS `/usr/bin/java` stub or an existing directory is
+  not a working JDK. Choose the first candidate in that order which actually runs
+  and satisfies the selected driver's observed requirements; record why earlier
+  candidates failed or were unsuitable. Do not declare Java absent after checking
+  only `JAVA_HOME` or `PATH`, and do not install merely because one candidate fails.
+- **Android tools/targets:** inspect explicit SDK settings, executable locations,
+  installed Android Studio SDK locations and conventional user SDK directories.
+  Execute selected `adb`, SDK tools or emulator binaries to verify identity and
+  version; do not infer availability from paths alone. List targets only through
+  an existing authorized ADB service, or request approval to start one first:
+  `adb devices` can start a daemon. Distinguish authorized, offline and unauthorized
+  targets, physical devices and emulators. Never start, unlock, authorize or create
+  a target as a discovery side effect; do not require emulator tools for a physical
+  Android task.
+- **Apple tools/targets:** observe task `DEVELOPER_DIR` and active
+  `xcode-select -p`; execute the selected `xcodebuild -version` and `xcrun` tools.
+  If another installed Xcode is needed, validate it under a task-only
+  `DEVELOPER_DIR`, never `sudo xcode-select --switch`. Use that same selected
+  Xcode's `xcrun devicectl list devices --json-output <task-temporary-file>` for
+  physical Apple devices, and separately `xcrun simctl list devices --json` and
+  runtime inventory for simulators. A simulator entry is never a physical-device
+  discovery result. Inspect the selected tool's help/schema when interpreting its
+  version-specific fields; a listing alone proves neither live connection nor
+  development readiness.
+
+Report physical Apple targets in separate evidence layers: **discovered** (listed),
+**connected** (current transport/connection evidence), **usable-for-development**
+(observed pairing/trust, Developer Mode and required development services), and
+**ready-for-xcuitest** (the selected driver, signing/provisioning and WebDriverAgent
+path verified for that target). Preserve unknown/not-checked states and their
+reasons; never promote an earlier layer into a later one. Do not create a session
+for setup-only discovery, change signing, pair devices or dismiss permission
+prompts to manufacture readiness. Live XCUITest proof belongs to an explicitly
+requested validation/scenario. Keep platform, dependency and Runtime readiness
+separate, and explain multiple-candidate choices before asking only for a material
+target choice that the request and available evidence cannot resolve.
+
+Layer counts describe the listed target population, not host-wide platform
+qualification. After a successful empty inventory, zero usable/ready targets is
+valid; conservatively retaining unknown is also acceptable. A failed or unknown
+inventory, or a nonempty listing without target-specific evidence, must not be
+converted into known readiness counts.
+
+
 ## Connect
 
 Use a reviewed loopback Appium URL without credentials. Populate target and app identifiers from observed state or the user's selection; never invent them.
