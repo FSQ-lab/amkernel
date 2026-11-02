@@ -223,21 +223,33 @@ review limits live in `evidence/appium-skill/conversation-final-20261103.json`,
 native uncertainty case covers coarse timestamps; other temporal/incomplete-search
 branches have regression coverage, not an additional physical-platform claim.
 
-Ordered final platform observations remain **incomplete**, not passed: external
-Copilot installation smoke passed with the same wheel digest; real Calculator /
-Mac2 created no successful session (exact cause unestablished); Android read-only
-discovery found no working Java/SDK/adb and target counts remain unknown; simctl
-returned zero runtimes/devices; devicectl returned zero physical targets. No
-dependency/runtime installation, pairing, permission, signing, simulator boot or
-global Xcode change was silently performed. Windows #100 still lacks a reachable
-host/Android target. These results and the independent review are retained in
-`evidence/appium-skill/final-*-20261103.json`; see
-`docs/experiments/appium-agent-behavior.md` §§12–13 for exact scope and prerequisites.
+The original ordered platform run is retained unchanged: external Copilot
+installation passed; initial Calculator/Mac2 created no successful session;
+Android discovery found no working Java/SDK/adb with unknown target counts;
+simctl returned zero runtimes/devices and devicectl returned zero physical targets.
+No dependency/runtime installation, pairing, permission, signing, simulator boot
+or global Xcode change was silently performed. Windows #100 still lacks a
+reachable host/Android target.
 
-Next: obtain the missing external platform prerequisites and any necessary
-environment/device-change permission, then complete actual platform qualification
-in the fixed order. Do not equate synthetic 18/18 or discovery-only results with
-Appium driver/device readiness. #99 remains post-v1; the only public tool remains
+The owner-authorized Mac2 retry subsequently created one real Calculator/Mac2
+session, observed foreground state `4` and one window, restored the initial
+Calculator/frontmost-app state, deleted the session, observed an empty session
+listing before server shutdown, and observed owned server/group/ports/Runner exit.
+Unchanged retry evidence is `evidence/appium-skill/mac2-retry-20261103.json`.
+Its overall result remains `not-qualified`: the sole false qualification flag,
+`nativeMcpCompletedAlive`, requires every call to complete successfully despite
+observed recovery after preparation errors with live kernels. This verification
+defect is recorded separately in [#108](https://github.com/FSQ-lab/amkernel/issues/108),
+not attributed to Runtime, dependency incompatibility or a tablet. It is not fixed,
+and neither the original evidence nor #103 has been relabeled complete. Previous
+independent reviews do not cover a future oracle correction or this new retry.
+See `docs/experiments/appium-agent-behavior.md` §13 for evidence boundaries.
+
+Next: correct and independently review the recovered-error verification contract
+before formal Calculator qualification, then complete actual platform acceptance
+in the fixed order as external prerequisites and required permissions become
+available. Do not equate synthetic 18/18, discovery or a successful UI subset with
+complete platform qualification. #99 remains post-v1; the only public tool remains
 `python_exec`, with no platform or Gmail semantics added to the core.
 
 Project #2 still lists S4-010 as In Progress and S4-030/#82 as Ready. The current credential has

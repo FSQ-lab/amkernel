@@ -555,7 +555,8 @@ checkout. Evidence files below live in `evidence/appium-skill/`.
 | Step | Retained evidence | Observed result |
 | --- | --- | --- |
 | Copilot installation | `final-install-20261103.json` | Passed installation/discovery, pinned dependency copies, fail-closed tamper handling, MCP coexistence and observed cross-call persistence. |
-| Calculator / Mac2 | `final-mac2-20261103.json` | Not qualified: task-owned server became ready, but no successful actual Mac2 session or required Calculator/window query occurred. |
+| Initial Calculator / Mac2 | `final-mac2-20261103.json` | Not qualified: task-owned server became ready, but no successful actual Mac2 session or required Calculator/window query occurred. |
+| Owner-authorized Calculator / Mac2 retry | `mac2-retry-20261103.json` | Actual Mac2 session, foreground/window queries, restoration and owned cleanup observed; unchanged overall result remains `not-qualified` because of the recovered-error oracle gap in #108. |
 | Android | `final-android-discovery-20261103.json` | Discovery only: Java candidates did not execute successfully; SDK/ADB were not found; target counts remain unknown. |
 | iOS simulator | `final-ios-simulator-discovery-20261103.json` | Discovery only: selected Xcode 27.2, successful parsed simctl inventory, zero available runtimes/devices. |
 | Physical iOS | `final-ios-device-discovery-20261103.json` | Discovery only: selected Xcode 27.2, successful parsed devicectl inventory, zero listed physical targets. |
@@ -565,11 +566,11 @@ creation/boot, pairing/trust, signing, permission or global Xcode change was
 authorized by discovery. Windows Runtime/Android qualification still requires a
 reachable Windows host and target under #100.
 
-Mac2's exact failure cause is not established by the retained error types/hashes.
-The desktop was observed at `loginwindow`; this is not proof of the failure's
-cause. The separate `final-mac2-packages-20261103.json` establishes actual MCP
-package metadata, not dependency incompatibility or a causal diagnosis. Missing
-`packaging` metadata must not be elevated to a proven Appium/Selenium conflict.
+The initial Mac2 failure's exact cause is not established by its retained error
+types/hashes. The desktop was then at `loginwindow`; this is not proof of the
+failure's cause. `final-mac2-packages-20261103.json` establishes actual MCP package
+metadata, not dependency incompatibility or a causal diagnosis. Missing `packaging`
+metadata must not be elevated to a proven Appium/Selenium conflict.
 Mac2 cleanup separately observed task-owned server/process-group/ports and Runner
 exit, removal of its raw log, and matching desktop snapshots; unrelated resources
 are outside that claim.
@@ -588,4 +589,32 @@ The final independent platform-evidence review, artifact digests and qualificati
 limits are retained in `final-platform-review-20261103.json` (0 Blocker / 0 Major /
 0 P2; inspection only). The rebuilt wheel's observed SHA-256 matches the native
 installation record; no rebuild substituted a different wheel for that proof.
+
+
+### Recovered-error classification gap (#108)
+
+The later owner-authorized retry used the same reviewed procedure and actual
+external-project/native client, not a fixture. One actual Mac2/Calculator session
+was created, `queryAppState` returned `4`, and a window query returned one window.
+Session DELETE returned 200; listing was empty before stopping the owned server.
+Calculator was absent before and after; the frontmost bundle was Ghostty at both
+observed instants. Owned server/process-group/ports/Runner exits were observed.
+
+The retry is retained verbatim in `mac2-retry-20261103.json` with SHA-256
+`30dba273f4071e6c821f82ddf6ccc9409696a653ff689ac541d62834fe9f6f5a`.
+Its original overall `not-qualified` result is unchanged. Only
+`nativeMcpCompletedAlive` is false: the historical helper requires **all** payloads
+to have `completed`/`alive`, rejecting the observed later successful execution
+after `ModuleNotFoundError` and `AssertionError` with surviving kernels. Those
+error types do not establish the underlying causes. Filtered `finalStatus` retains
+only `stateRestoration`; it does not establish complete truthful final reporting.
+
+[#108](https://github.com/FSQ-lab/amkernel/issues/108) owns the correction, not
+Runtime or platform setup. Recovery must be proved by relevant later live
+observations and task results, not by ignoring failed calls or trusting a final
+no-op. Required identity/action/restoration/cleanup and report checks remain
+independent. The fix requires negative cases, new actual smoke evidence and
+independent review; none has been performed. Prior review applies only to its
+recorded source/evidence, not to the retry or a future correction. This is a
+verification classification defect, not an observed tablet fault.
 
