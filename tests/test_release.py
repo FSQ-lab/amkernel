@@ -225,7 +225,7 @@ def test_release_workflow_uses_trusted_exact_artifact_path() -> None:
     assert "git -c user.name=github-actions[bot]" in workflow
     assert 'tag --annotate "$TAG"' in workflow
     assert '--jq \'.immutable\')" = "true"' in workflow
-    assert "pypa/gh-action-pypi-publish@724590665d0d9cf2ef8e6f045d5355c6b8273d4f" in pypi_job
+    assert "pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086" in pypi_job
     assert "password:" not in workflow
     assert "uv build" not in workflow
     assert workflow.index("Create or verify immutable GitHub release") < workflow.index(
