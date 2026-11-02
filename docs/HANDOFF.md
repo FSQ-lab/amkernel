@@ -165,7 +165,8 @@ including native Skill/MCP discovery, native loading of the fifth official Skill
 `xcuitest-real-device-config`, two persistent `python_exec` calls, fail-closed tamper
 and missing-copy repair, and native MCP coexistence in both existing-file layouts.
 This is installation evidence, not physical Mac2/Android/iOS or Windows qualification.
-Bounded retained evidence and the external-project contract are the next #105 delivery.
+Retained installation evidence is `evidence/appium-skill/copilot-install-20261102.json` (#105).
+Next: real Agent behavior verification under #98, before the fixed physical regression order.
 
 Project #2 still lists S4-010 as In Progress and S4-030/#82 as Ready. The current credential has
 `read:project`, not board-write scope; the execution override and dependencies are recorded in
