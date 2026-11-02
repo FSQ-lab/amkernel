@@ -64,6 +64,7 @@ def _run(command: list[str], *, cwd: Path = ROOT, env: dict[str, str] | None = N
         )
     return completed.stdout.strip()
 
+
 def _persistent_config() -> dict[str, object]:
     path = Path.home() / ".codex" / "config.toml"
     if not path.exists():
@@ -75,12 +76,18 @@ def _persistent_config() -> dict[str, object]:
     }
 
 
-def _source_snapshot() -> str:
+def _source_snapshot(*excluded_roots: Path) -> str:
     digest = hashlib.sha256()
-    excluded = {".git", ".venv", ".mypy_cache", ".pytest_cache", ".ruff_cache", "evidence"}
+    excluded_names = {".git", ".venv", ".mypy_cache", ".pytest_cache", ".ruff_cache"}
+    resolved_roots = tuple(root.resolve() for root in excluded_roots)
     for path in sorted(ROOT.rglob("*")):
         relative = path.relative_to(ROOT)
-        if not path.is_file() or any(part in excluded for part in relative.parts):
+        resolved = path.resolve()
+        if (
+            not path.is_file()
+            or any(part in excluded_names for part in relative.parts)
+            or any(resolved == root or root in resolved.parents for root in resolved_roots)
+        ):
             continue
         digest.update(relative.as_posix().encode() + b"\0")
         digest.update(path.read_bytes())
@@ -181,7 +188,10 @@ def _codex_command(server: Path, capture: Path, client_dir: Path) -> list[str]:
 def _run_codex(
     prompt: str, server: Path, capture: Path, client_dir: Path, codex_home: Path
 ) -> tuple[list[dict[str, Any]], str, str, str]:
+    client_dir.mkdir(parents=True, exist_ok=False)
+    codex_home.mkdir(parents=True, exist_ok=False)
     env = os.environ.copy()
+    env["CODEX_HOME"] = str(codex_home)
     command = _codex_command(server, capture, client_dir)
     process = subprocess.Popen(
         command,
@@ -266,57 +276,63 @@ def _duration_ms(started: str, completed: str) -> float:
     return (end - start).total_seconds() * 1000
 
 
+def _observed_call_semantics(
+    expected: dict[str, Any], result: dict[str, Any], manifest: dict[str, Any]
+) -> dict[str, Any]:
+    direct_fields = {"status", "kernelState", "result", "stdout", "stderr", "executionCount"}
+    output_fields = {
+        "totalBytes",
+        "totalLines",
+        "discardedBytes",
+        "discardedLines",
+        "truncated",
+        "limitExceeded",
+    }
+    observed: dict[str, Any] = {}
+    displays = result.get("displays")
+    artifacts = result.get("artifacts")
+    for key in expected:
+        if key in direct_fields:
+            observed[key] = result.get(key)
+        elif key == "errorType":
+            error = result.get("error")
+            observed[key] = error.get("type") if isinstance(error, dict) else None
+        elif key in output_fields:
+            output = result.get("output")
+            observed[key] = output.get(key) if isinstance(output, dict) else None
+        elif key in {"displayKind", "width", "height"} or (
+            key == "mimeType" and "displayKind" in expected
+        ):
+            if not isinstance(displays, list) or len(displays) != 1:
+                raise RuntimeError("display metadata missing")
+            display = displays[0]
+            observed[key] = display.get("kind" if key == "displayKind" else key)
+        elif key in {"representation", "sizeBytes", "partCount"} or (
+            key == "mimeType" and "representation" in expected
+        ):
+            if not isinstance(artifacts, list) or len(artifacts) != 1:
+                raise RuntimeError("artifact metadata missing")
+            artifact = artifacts[0]
+            if key == "sizeBytes":
+                observed[key] = artifact.get("size")
+            elif key == "partCount":
+                parts = manifest.get("parts")
+                observed[key] = len(parts) if isinstance(parts, list) else None
+            elif key == "mimeType":
+                observed[key] = artifact.get("declaredMimeType")
+            else:
+                observed[key] = artifact.get(key)
+        else:
+            raise RuntimeError(f"unsupported deterministic expectation: {key}")
+    return observed
+
+
 def _assert_deterministic_results(
     scenario: dict[str, Any],
     calls: list[dict[str, Any]],
     resources: list[dict[str, Any]],
     capture: Path,
-) -> list[dict[str, Any]]:
-    definitions = [step for step in scenario["steps"] if step["action"] == "call-tool"]
-    if len(calls) != len(definitions):
-        raise RuntimeError(f"expected {len(definitions)} tool calls, observed {len(calls)}")
-    results: list[dict[str, Any]] = []
-    for definition, call in zip(definitions, calls, strict=True):
-        item = call["item"]
-        if item.get("server") != "amkernel" or item.get("tool") != "python_exec":
-            raise RuntimeError(
-                f"unexpected tool selection: {item.get('server')}/{item.get('tool')}"
-            )
-        if item.get("arguments") != definition["arguments"]:
-            raise RuntimeError(
-                f"arguments differ for {definition['id']}: {item.get('arguments')!r}"
-            )
-        result = _structured_result(item)
-        expected = definition["expected"]
-        if result.get("status") != expected.get("status", "completed"):
-            raise RuntimeError(f"status differs for {definition['id']}")
-        if result.get("kernelState") != expected.get("kernelState", "alive"):
-            raise RuntimeError(f"kernel state differs for {definition['id']}")
-        if "result" in expected and result.get("result") != expected["result"]:
-            raise RuntimeError(f"result differs for {definition['id']}")
-        if (
-            "executionCount" in expected
-            and result.get("executionCount") != expected["executionCount"]
-        ):
-            raise RuntimeError(f"execution count differs for {definition['id']}")
-        if "display" in expected:
-            displays = result.get("displays")
-            if not isinstance(displays, list) or len(displays) != 1:
-                raise RuntimeError("display metadata missing")
-            observed = displays[0]
-            for key, value in expected["display"].items():
-                if observed.get(key) != value:
-                    raise RuntimeError(f"display {key} differs")
-        if "artifact" in expected:
-            artifacts = result.get("artifacts")
-            if not isinstance(artifacts, list) or len(artifacts) != 1:
-                raise RuntimeError("artifact metadata missing")
-            observed = artifacts[0]
-            for key in ("name", "mimeType", "sizeBytes", "partCount"):
-                if observed.get(key) != expected["artifact"].get(key):
-                    raise RuntimeError(f"artifact {key} differs")
-        results.append(result)
-
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]], dict[str, Any]]:
     manifest_records = []
     for resource in resources:
         payload = (capture / resource["path"]).read_bytes()
@@ -330,15 +346,53 @@ def _assert_deterministic_results(
         raise RuntimeError(f"expected one resource manifest, observed {len(manifest_records)}")
     manifest_resource, manifest = manifest_records[0]
     parts_by_uri = {resource["uri"]: resource for resource in resources}
-    recovered = b"".join(
-        (capture / parts_by_uri[part["uri"]]["path"]).read_bytes() for part in manifest["parts"]
+    part_resources = [parts_by_uri[part["uri"]] for part in manifest["parts"]]
+    recovered = b"".join((capture / resource["path"]).read_bytes() for resource in part_resources)
+    integrity_verified = (
+        len(recovered) == manifest["size"] and _sha256(recovered) == manifest["sha256"]
     )
-    if len(recovered) != manifest["size"] or _sha256(recovered) != manifest["sha256"]:
+    if not integrity_verified:
         raise RuntimeError("artifact resource integrity verification failed")
-    if len(recovered) != 65544 or len(manifest["parts"]) != 2:
-        raise RuntimeError("artifact resource shape differs")
+
+    resource_definition = next(
+        step for step in scenario["steps"] if step["action"] == "read-resources"
+    )
+    resource_expected = resource_definition["expected"]
+    part_mime_types = {resource["mimeType"] for resource in part_resources}
+    resource_semantics = {
+        "manifestMimeType": manifest_resource["mimeType"],
+        "partMimeType": next(iter(part_mime_types)) if len(part_mime_types) == 1 else None,
+        "sizeBytes": len(recovered),
+        "partCount": len(part_resources),
+        "integrityVerified": integrity_verified,
+        "rawBytesInFinalResponse": 0,
+    }
+    if resource_semantics != resource_expected:
+        raise RuntimeError("artifact resource semantics differ")
     manifest_resource["parsed"] = manifest
-    return results
+
+    definitions = [step for step in scenario["steps"] if step["action"] == "call-tool"]
+    if len(calls) != len(definitions):
+        raise RuntimeError(f"expected {len(definitions)} tool calls, observed {len(calls)}")
+    results: list[dict[str, Any]] = []
+    observed_semantics: list[dict[str, Any]] = []
+    for definition, call in zip(definitions, calls, strict=True):
+        item = call["item"]
+        if item.get("server") != "amkernel" or item.get("tool") != "python_exec":
+            raise RuntimeError(
+                f"unexpected tool selection: {item.get('server')}/{item.get('tool')}"
+            )
+        if item.get("arguments") != definition["arguments"]:
+            raise RuntimeError(
+                f"arguments differ for {definition['id']}: {item.get('arguments')!r}"
+            )
+        result = _structured_result(item)
+        observed = _observed_call_semantics(definition["expected"], result, manifest)
+        if observed != definition["expected"]:
+            raise RuntimeError(f"semantics differ for {definition['id']}")
+        results.append(result)
+        observed_semantics.append(observed)
+    return results, observed_semantics, resource_semantics
 
 
 def _artifact_record(kind: str, mime_type: str, path: Path, root: Path) -> dict[str, Any]:
@@ -368,6 +422,8 @@ def _build_deterministic_evidence(
     scenario: dict[str, Any],
     calls: list[dict[str, Any]],
     results: list[dict[str, Any]],
+    call_semantics: list[dict[str, Any]],
+    resource_semantics: dict[str, Any],
     resources: list[dict[str, Any]],
     capture: Path,
     run_started: str,
@@ -384,7 +440,15 @@ def _build_deterministic_evidence(
     resource_bytes = 0
     for definition in scenario["steps"]:
         expected = definition["expected"]
-        semantics_digest = _sha256(canonical_json_bytes(expected))
+        if definition["action"] == "call-tool":
+            semantics = call_semantics[call_index]
+        elif definition["action"] == "read-resources":
+            semantics = resource_semantics
+        else:
+            semantics = expected
+        if semantics != expected:
+            raise RuntimeError(f"evidence semantics differ for {definition['id']}")
+        semantics_digest = _sha256(canonical_json_bytes(semantics))
         if definition["action"] == "call-tool":
             call = calls[call_index]
             result = results[call_index]
@@ -398,15 +462,15 @@ def _build_deterministic_evidence(
                 "attemptKind": "scenario",
                 "requestProjection": projection,
                 "normalizedRequestBytes": normalize_request("python_exec", definition["arguments"]),
-                "normalizedBytes": len(canonical_json_bytes(expected)),
+                "normalizedBytes": len(canonical_json_bytes(semantics)),
                 "status": result["status"],
                 "kernelState": result["kernelState"],
                 "semanticsSha256": semantics_digest,
                 "startedAt": call["startedAt"],
                 "completedAt": call["completedAt"],
             }
-            if "result" in expected:
-                event["resultSha256"] = _sha256(canonical_json_bytes(expected["result"]))
+            if "result" in semantics:
+                event["resultSha256"] = _sha256(canonical_json_bytes(semantics["result"]))
             events.append(event)
             indexes = [call_index]
             normalized_request_bytes = event["normalizedRequestBytes"]
@@ -428,14 +492,14 @@ def _build_deterministic_evidence(
                 started = completed = run_started
             else:
                 started = completed = run_completed
-                resource_bytes = expected["sizeBytes"]
+                resource_bytes = semantics["sizeBytes"]
         steps.append(
             {
                 "id": definition["id"],
                 "action": definition["action"],
                 "outcome": "passed",
                 "contractMatched": True,
-                "semantics": expected,
+                "semantics": semantics,
                 "semanticsSha256": semantics_digest,
                 "startedAt": started,
                 "completedAt": completed,
@@ -443,7 +507,7 @@ def _build_deterministic_evidence(
                 "toolCallIndexes": indexes,
                 "normalizedRequestBytes": normalized_request_bytes,
                 "normalizedResultBytes": normalized_result_bytes,
-                "resourceBytes": expected["sizeBytes"]
+                "resourceBytes": semantics["sizeBytes"]
                 if definition["action"] == "read-resources"
                 else 0,
                 "status": status,
@@ -809,7 +873,7 @@ def run(output: Path) -> None:
         raise FileExistsError(output)
     client_version = _run(["codex", "--version"])
     config_before = _persistent_config()
-    source_before = _source_snapshot()
+    source_before = _source_snapshot(output)
     scenario = load_json(FIXTURES / "scenario.json")
     with tempfile.TemporaryDirectory(prefix="amkernel-codex-") as raw_temp:
         temp = Path(raw_temp)
@@ -829,11 +893,13 @@ def run(output: Path) -> None:
                 + deterministic_stderr[-4000:]
                 + json.dumps(deterministic_events[-10:], ensure_ascii=False)[-8000:]
             )
-        deterministic_resources = cast(
-            list[dict[str, Any]], load_json(resources_path)
-        )
+        deterministic_resources = cast(list[dict[str, Any]], load_json(resources_path))
         deterministic_calls = _tool_calls(deterministic_events)
-        deterministic_results = _assert_deterministic_results(
+        (
+            deterministic_results,
+            deterministic_semantics,
+            resource_semantics,
+        ) = _assert_deterministic_results(
             scenario, deterministic_calls, deterministic_resources, deterministic_capture
         )
         output.mkdir(parents=True)
@@ -842,6 +908,8 @@ def run(output: Path) -> None:
             scenario,
             deterministic_calls,
             deterministic_results,
+            deterministic_semantics,
+            resource_semantics,
             deterministic_resources,
             deterministic_capture,
             started,
@@ -863,7 +931,7 @@ def run(output: Path) -> None:
             list[dict[str, Any]], load_json(natural_capture / "resources.json")
         )
         config_after = _persistent_config()
-        source_after = _source_snapshot()
+        source_after = _source_snapshot(output)
         _build_natural_evidence(
             output / "natural",
             natural_events,

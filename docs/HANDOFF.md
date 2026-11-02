@@ -95,21 +95,6 @@ The formal repository was intentionally created design-only. A sibling spike exi
   complete tool-attempt auditing. An independent oracle verifies graph results and JSON artifacts;
   retained PNG data plus semantic review verify the visible chart. Final independent review found
   0 Blocker / 0 Major / 0 Minor findings.
-- S4-020 GitHub Copilot CLI 1.0.105 / gpt-6.1-sol validation exercised both layers through
-  the installed wheel and ephemeral MCP configuration. The natural Issue #82 investigation passed
-  its independent graph, JSON artifact, and PNG-data checks. The frozen deterministic run failed
-  after ready preflight in both the initial run and focused recurrence: each made 11 `python_exec`
-  calls, completed every behavior except `read-artifact-resources`, and reported the kernel alive
-  with cleanup complete. No wrong-tool selection, schema retry, clarification, persistent-config
-  mutation, or repository mutation was observed. Natural success did not compensate for the failed
-  deterministic gate. The failure seam is confirmed in Copilot CLI rather than AMKernel: upstream
-  `github/copilot-cli#1803` and `#1518` document that Copilot CLI currently supports MCP tools only
-  and lacks `resources/read`; AMKernel emits `ResourceLink`, registers `resources/list` and
-  `resources/read`, and its focused official-client resource contract passes. By explicit product-
-  owner decision, S4-020 is accepted complete with this known exception and Issue #80 is closed.
-  The two deterministic run outcomes remain recorded as failed; no support claim may say Copilot
-  exercised artifact resource recovery. No AMKernel workaround or frozen-scenario relaxation was
-  introduced. Independent diagnosis review found 0 Blocker / 0 Major / 0 Minor findings.
 - Global OMP memory is disabled; this project uses local project-scoped memory.
 - The sibling `/Users/qunmi/Documents/FSQ_LAB/omp` remains untouched as historical discussion/prototype material.
 
@@ -148,8 +133,6 @@ S4-001 and S4-005 are independently accepted. Execute S4-010 next in GitHub Proj
 the frozen deterministic scenario and unchanged Issue #82 through Codex CLI from a clean installed
 wheel, retain bounded auditable evidence, and do not tune either contract for client behavior.
 
-S4-020 is accepted complete by explicit owner exception while retaining its failed resource-read
-evidence and limitation. S4-030 remains the cross-OS lifecycle matrix.
 Preserve the experimental/unsupported mobile scope and keep Appium Server and device supervision
 external.
 

@@ -2,12 +2,14 @@ from __future__ import annotations
 
 import copy
 import hashlib
+import io
 import shutil
 from pathlib import Path
 from typing import Any, cast
 
 import pytest
 
+from tests.e2e.cross_client import codex as codex_runner
 from tests.e2e.cross_client_contract import (
     load_json,
     sha256_file,
@@ -678,3 +680,155 @@ def test_cross_client_evidence_rejects_invalid_contract(tmp_path: Path, mutation
 
     with pytest.raises(ValueError):
         validate_evidence(record, tmp_path, FIXTURES)
+
+
+def test_codex_runner_creates_ephemeral_workspace_and_home(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    captured: dict[str, Any] = {}
+
+    class FakeProcess:
+        def __init__(self) -> None:
+            self.stdin = io.StringIO()
+            self.stdout = io.StringIO()
+            self.stderr = io.StringIO()
+
+        def wait(self, timeout: int) -> int:
+            assert timeout == 600
+            return 0
+
+    def fake_popen(*args: Any, **kwargs: Any) -> FakeProcess:
+        captured.update(kwargs)
+        return FakeProcess()
+
+    monkeypatch.setattr("tests.e2e.cross_client.codex.subprocess.Popen", fake_popen)
+    client_dir = tmp_path / "client"
+    codex_home = tmp_path / "home"
+
+    events, _, _, stderr = codex_runner._run_codex(
+        "prompt", Path("server"), tmp_path / "capture", client_dir, codex_home
+    )
+
+    assert events == []
+    assert stderr == ""
+    assert client_dir.is_dir()
+    assert codex_home.is_dir()
+    assert captured["env"]["CODEX_HOME"] == str(codex_home)
+
+
+@pytest.mark.parametrize(
+    ("expected", "result", "manifest"),
+    [
+        (
+            {"status": "failed", "kernelState": "alive", "errorType": "ValueError"},
+            {
+                "status": "failed",
+                "kernelState": "alive",
+                "error": {"type": "ValueError"},
+                "displays": [],
+                "artifacts": [],
+            },
+            {"parts": []},
+        ),
+        (
+            {
+                "status": "completed",
+                "kernelState": "alive",
+                "result": "output-complete",
+                "stdout": "stdout-marker\n",
+                "stderr": "stderr-marker\n",
+                "totalBytes": 28,
+                "totalLines": 2,
+                "discardedBytes": 0,
+                "discardedLines": 0,
+                "truncated": False,
+                "limitExceeded": False,
+            },
+            {
+                "status": "completed",
+                "kernelState": "alive",
+                "result": "output-complete",
+                "stdout": "stdout-marker\n",
+                "stderr": "stderr-marker\n",
+                "output": {
+                    "totalBytes": 28,
+                    "totalLines": 2,
+                    "discardedBytes": 0,
+                    "discardedLines": 0,
+                    "truncated": False,
+                    "limitExceeded": False,
+                },
+                "displays": [],
+                "artifacts": [],
+            },
+            {"parts": []},
+        ),
+        (
+            {
+                "status": "completed",
+                "kernelState": "alive",
+                "result": "display-complete",
+                "displayKind": "image",
+                "mimeType": "image/png",
+                "width": 2,
+                "height": 3,
+            },
+            {
+                "status": "completed",
+                "kernelState": "alive",
+                "result": "display-complete",
+                "displays": [{"kind": "image", "mimeType": "image/png", "width": 2, "height": 3}],
+                "artifacts": [],
+            },
+            {"parts": []},
+        ),
+        (
+            {
+                "status": "completed",
+                "kernelState": "alive",
+                "result": "artifact-complete",
+                "representation": "manifest",
+                "mimeType": "application/octet-stream",
+                "sizeBytes": 8_388_609,
+                "partCount": 2,
+            },
+            {
+                "status": "completed",
+                "kernelState": "alive",
+                "result": "artifact-complete",
+                "displays": [],
+                "artifacts": [
+                    {
+                        "representation": "manifest",
+                        "declaredMimeType": "application/octet-stream",
+                        "mimeType": "application/vnd.amkernel.artifact-manifest+json",
+                        "size": 8_388_609,
+                    }
+                ],
+            },
+            {"parts": [{}, {}]},
+        ),
+    ],
+)
+def test_codex_runner_derives_semantics_from_observed_results(
+    expected: dict[str, Any], result: dict[str, Any], manifest: dict[str, Any]
+) -> None:
+    assert codex_runner._observed_call_semantics(expected, result, manifest) == expected
+
+
+def test_source_snapshot_includes_evidence_except_selected_output(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(codex_runner, "ROOT", tmp_path)
+    tracked_evidence = tmp_path / "evidence" / "retained.json"
+    tracked_evidence.parent.mkdir()
+    tracked_evidence.write_text("before")
+    before = codex_runner._source_snapshot()
+    tracked_evidence.write_text("after")
+    assert codex_runner._source_snapshot() != before
+
+    output = tmp_path / "evidence" / "generated"
+    excluded_before = codex_runner._source_snapshot(output)
+    output.mkdir()
+    (output / "manifest.json").write_text("generated")
+    assert codex_runner._source_snapshot(output) == excluded_before
