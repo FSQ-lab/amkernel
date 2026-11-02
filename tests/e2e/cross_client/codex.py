@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import base64
 import hashlib
 import json
 import os
@@ -327,11 +328,41 @@ def _observed_call_semantics(
     return observed
 
 
+def _raw_payload_bytes_in_final_response(events: list[dict[str, Any]], payload: bytes) -> int:
+    messages: list[str] = []
+    for event in events:
+        item = event.get("item")
+        if isinstance(item, dict) and item.get("type") == "agent_message":
+            text = item.get("text")
+            if isinstance(text, str):
+                messages.append(text)
+        elif event.get("type") == "agent_message" and isinstance(event.get("text"), str):
+            messages.append(event["text"])
+    if not messages:
+        raise RuntimeError("Codex produced no final agent response")
+    response = messages[-1].encode()
+    compact_response = b"".join(response.split())
+    leaked = 0
+    chunk_size = 96
+    for offset in range(0, len(payload), chunk_size):
+        chunk = payload[offset : offset + chunk_size]
+        if len(chunk) < 32:
+            continue
+        if (
+            chunk in response
+            or base64.b64encode(chunk) in compact_response
+            or chunk.hex().encode() in compact_response
+        ):
+            leaked += len(chunk)
+    return leaked
+
+
 def _assert_deterministic_results(
     scenario: dict[str, Any],
     calls: list[dict[str, Any]],
     resources: list[dict[str, Any]],
     capture: Path,
+    events: list[dict[str, Any]],
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]], dict[str, Any]]:
     manifest_records = []
     for resource in resources:
@@ -365,7 +396,7 @@ def _assert_deterministic_results(
         "sizeBytes": len(recovered),
         "partCount": len(part_resources),
         "integrityVerified": integrity_verified,
-        "rawBytesInFinalResponse": 0,
+        "rawBytesInFinalResponse": _raw_payload_bytes_in_final_response(events, recovered),
     }
     if resource_semantics != resource_expected:
         raise RuntimeError("artifact resource semantics differ")
@@ -900,7 +931,11 @@ def run(output: Path) -> None:
             deterministic_semantics,
             resource_semantics,
         ) = _assert_deterministic_results(
-            scenario, deterministic_calls, deterministic_resources, deterministic_capture
+            scenario,
+            deterministic_calls,
+            deterministic_resources,
+            deterministic_capture,
+            deterministic_events,
         )
         output.mkdir(parents=True)
         _build_deterministic_evidence(

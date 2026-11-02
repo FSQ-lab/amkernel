@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import base64
 import copy
 import hashlib
 import io
@@ -814,6 +815,23 @@ def test_codex_runner_derives_semantics_from_observed_results(
     expected: dict[str, Any], result: dict[str, Any], manifest: dict[str, Any]
 ) -> None:
     assert codex_runner._observed_call_semantics(expected, result, manifest) == expected
+
+
+def test_codex_runner_measures_final_response_payload_leakage() -> None:
+    payload = bytes(range(96)) * 2
+    clean_events = [{"type": "item.completed", "item": {"type": "agent_message", "text": "done"}}]
+    leaking_events = [
+        {
+            "type": "item.completed",
+            "item": {
+                "type": "agent_message",
+                "text": base64.b64encode(payload[:96]).decode(),
+            },
+        }
+    ]
+
+    assert codex_runner._raw_payload_bytes_in_final_response(clean_events, payload) == 0
+    assert codex_runner._raw_payload_bytes_in_final_response(leaking_events, payload) == 192
 
 
 def test_source_snapshot_includes_evidence_except_selected_output(
