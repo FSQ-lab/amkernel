@@ -146,6 +146,13 @@ requirements, no session or dependency mutation. Both baseline and updated audit
 pairing as unverified; this prompt did not reproduce a baseline hard-block. Independent Skill
 review found 0 Blocker/Major/Minor. Three focused provenance-verifier tests and Ruff passed.
 
+#103 adds the pinned Mac2 Skill and explicit host/target routing. Real Copilot route probes in
+`evidence/appium-skill/mac2-routing-20261102.json` chose `setup-mac2`, observed `Mac2Options`
+defaults (`Mac`/`Mac2`) through `python_exec`, and rejected XCUITest fallback and Windows Mac2.
+Both added official files matched the existing pinned source digests. These are route/options
+checks, not a Calculator session or a platform support claim; that regression remains required
+after the Copilot installation smoke in the owner's fixed final order.
+
 Project #2 still lists S4-010 as In Progress and S4-030/#82 as Ready. The current credential has
 `read:project`, not board-write scope; the execution override and dependencies are recorded in
 Issues #102 and #81 rather than falsely claiming a board update. S4-001/#82 stay frozen and

@@ -7,6 +7,7 @@ All notable changes to AMKernel are recorded here. Public releases use semantic 
 ### Fixed
 
 - Classify Appium dependency warnings and unverified matrix coverage separately from proven incompatible constraints, using the actual `python_exec` interpreter and package metadata. Remove the Skill's arbitrary Appium 6.x requirement and scope approved repairs to the observed Runtime ([#102](https://github.com/FSQ-lab/amkernel/issues/102)).
+- Route native macOS automation explicitly to pinned `setup-mac2`/Mac2 guidance, reject unsupported Windows targets without fallback, and resolve official helper paths from the verified source checkout ([#103](https://github.com/FSQ-lab/amkernel/issues/103)).
 
 ## [0.1.0] - 2026-11-02
 

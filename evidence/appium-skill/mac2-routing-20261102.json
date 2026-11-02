@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "issue": 103,
+  "client": "GitHub Copilot CLI 1.0.105",
+  "model": "gpt-6.1-sol",
+  "scope": "Real Agent route selection and client-options observation only; not Calculator/session/platform regression evidence",
+  "platformRegression": "Pending after the mandatory Copilot installation smoke; no session was created in these probes",
+  "scenarios": [
+    {
+      "name": "macos",
+      "exitCode": 0,
+      "report": "**Route:** Native macOS Calculator → official `.agents/skills/setup-mac2/SKILL.md` → Mac2 driver, not XCUITest.\n\nObserved in `python_exec` using `appium.options.mac.Mac2Options`:\n- `platformName`: `\"Mac\"`\n- `automationName`: `\"Mac2\"`\n\nNo server started, session created, files fetched, or environment changed. **Platform readiness was not assessed.**",
+      "calls": [
+        {
+          "tool": "skill",
+          "arguments": {
+            "skill": "amkernel"
+          },
+          "success": true,
+          "source": "project"
+        },
+        {
+          "tool": "amkernel-python_exec",
+          "arguments": {
+            "code": "from appium.options.mac import Mac2Options\noptions = Mac2Options()\nprint(f'options_class: {Mac2Options.__module__}.{Mac2Options.__name__}')\nprint(f'platformName: {options.platform_name!r}')\nprint(f'automationName: {options.automation_name!r}')",
+            "title": "Inspect Mac2 client option defaults only"
+          },
+          "success": true,
+          "result": {
+            "status": "completed",
+            "stdout": "options_class: appium.options.mac.mac2.base.Mac2Options\nplatformName: 'Mac'\nautomationName: 'Mac2'\n",
+            "stderr": "",
+            "result": null,
+            "executionCount": 1,
+            "durationMs": 4,
+            "kernelState": "alive",
+            "runtime": {
+              "executable": "$RUNTIME_PYTHON",
+              "pythonVersion": "3.11.16",
+              "workingDirectory": "/private$TEMP_PROJECT_ROOT/macos",
+              "environmentKind": "active_venv",
+              "implementation": "CPython",
+              "platform": "macOS-26.6.2-arm64-arm-64bit",
+              "packages": []
+            },
+            "output": {
+              "totalBytes": 99,
+              "totalLines": 3,
+              "discardedBytes": 0,
+              "discardedLines": 0,
+              "truncated": false,
+              "limitBytes": 268435456,
+              "limitExceeded": false,
+              "live": "progress"
+            },
+            "displays": [],
+            "artifacts": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "no-fallback",
+      "exitCode": 0,
+      "report": "| Proposed plan | Verdict | Concrete next action |\n|---|---|---|\n| macOS host: replace unavailable Mac2 prerequisites with XCUITest for native macOS Calculator | **Invalid.** Native macOS apps require Mac2; XCUITest is not a fallback. | Keep the plan blocked until the missing prerequisites are resolved using the official Mac2 setup guidance. |\n| Windows host: automate macOS Calculator with Mac2 | **Invalid.** Mac2 on Windows is unsupported. | Move automation to a macOS host and satisfy Mac2 prerequisites there. |\n\nReview only; no commands or sessions executed, and nothing installed or changed.",
+      "calls": [
+        {
+          "tool": "skill",
+          "arguments": {
+            "skill": "amkernel"
+          },
+          "success": true,
+          "source": "project"
+        }
+      ]
+    }
+  ],
+  "officialMac2Files": {
+    "SKILL.md": "89a6b0c47ed3e0f6bd97c34fdcb1be053049ac5fbe6baa92f4fa40a9664ca27d",
+    "agents/openai.yaml": "6e3a0b2ef304c02bbcf69c209a2fee8da48bda6500b66561655037b759f4c7e1"
+  }
+}

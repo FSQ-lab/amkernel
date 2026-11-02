@@ -1,6 +1,6 @@
 ---
 name: amkernel
-description: Help users verify, diagnose, and use AMKernel for local automation through a Coding Agent. Use for AMKernel readiness or MCP connection failures, and for Appium Android or iOS setup, diagnosis, and mobile scenarios that should run through AMKernel.
+description: Help users verify, diagnose, and use AMKernel for local automation through a Coding Agent. Use for AMKernel readiness or MCP connection failures, and for Appium Android, iOS, or macOS Mac2 setup, diagnosis, and scenarios that should run through AMKernel.
 ---
 
 # AMKernel
@@ -52,8 +52,13 @@ Route the Appium work to the narrowest verified official skill:
 
 - Android setup, driver installation, doctor, and server smoke: `.agents/skills/setup-uiautomator2/SKILL.md`.
 - iOS or tvOS setup on macOS, Xcode prerequisites, driver doctor, and server smoke: `.agents/skills/setup-xcuitest/SKILL.md`.
+- Native macOS desktop setup and scenarios, including Calculator: `.agents/skills/setup-mac2/SKILL.md`, then the official Mac2 driver. macOS desktop is not an iOS/XCUITest target.
 - An existing UiAutomator2 or XCUITest session, launch, transport, WebDriverAgent, source, or locator failure: `.agents/skills/appium-troubleshooting/SKILL.md`.
 - iOS real-device trust, signing, provisioning, or WebDriverAgent deployment: follow the XCUITest skill's verified `xcuitest-real-device-config` continuation. Do not present the simulator experiment as real-device validation.
+
+Select by both observed host OS and requested target. Windows first-release scope is Android through UiAutomator2 only; explicitly reject Windows desktop, XCUITest, and Mac2 on Windows. Do not silently substitute another driver or target. A missing Mac2 prerequisite on macOS remains a Mac2 blocker, not permission to switch to XCUITest, a mobile flow, or vague generic Appium advice. Existing Mac2 runtime failures use the official Mac2 driver documentation after verified setup; do not misroute them to a mobile-only troubleshooting procedure.
+
+Resolve the routed skill's contexts and scripts from `source.generatedLocation` in the verified manifest. Execute its relative helper commands with that verified source checkout as working directory, not the user's project or the AMKernel development repository. Preserve task-scoped environment selections when invoking those helpers.
 
 Use those official skills for their checks, installation order, doctor interpretation, and platform-specific fixes, then apply the results to the user's selected target. An authorized physical Android device does not require an emulator binary or AVD inventory; an Android emulator does not require a USB device. Do not turn an irrelevant target-type check into a blocker. Return here after the relevant official procedure passes or produces a truthful blocker.
 
@@ -64,6 +69,7 @@ Primary official documentation:
 - Appium Python Client usage and compatibility: `https://github.com/appium/python-client`
 - UiAutomator2 driver documentation: `https://github.com/appium/appium-uiautomator2-driver`
 - XCUITest driver documentation: `https://appium.github.io/appium-xcuitest-driver/latest/`
+- Mac2 driver documentation: `https://appium.github.io/appium-mac2-driver/latest/`.
 
 Use official documentation for behavior not covered by the verified skills. Community material is a fallback only after its source and applicability are checked.
 
@@ -72,9 +78,9 @@ Use official documentation for behavior not covered by the verified skills. Comm
 Use the selected official setup skill's completion criteria rather than inventing a parallel checklist. In user-facing language, readiness means:
 
 - Appium can start in the selected global or explicitly requested local mode;
-- the correct driver, UiAutomator2 or XCUITest, is installed and its required doctor checks pass;
+- the selected driver, UiAutomator2, XCUITest, or Mac2, is installed and its required doctor checks pass;
 - Appium's status endpoint reports ready;
-- the intended device, emulator, or simulator is visible and usable;
+- the intended Android/iOS device or simulator, or macOS desktop target, is usable for the selected route;
 - AMKernel execution has separately observed Python/client dependency evidence; a warning or an unverified version pairing is not a platform-readiness failure.
 
 Appium is installed separately from its drivers. A running server without the required driver is not ready for that platform. Keep global Appium and explicitly requested project-local Appium modes separate; never let `npx` download an unpinned package implicitly.

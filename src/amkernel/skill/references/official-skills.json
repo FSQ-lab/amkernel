@@ -1,6 +1,6 @@
 {
   "commit": "e907024c210fe024c956ed9c74146fc27b1dd013",
-  "coverage": "Complete pinned repository tree; conservative superset of every path recursively reachable from the three selected skills.",
+  "coverage": "Complete pinned repository tree; conservative superset of every path recursively reachable from the four selected skills.",
   "installedSkills": [
     {
       "cliContentHash": "083f6f9a3217ca9d405a1cb37cf3a221bb793954506c66f32e2fd65cdef6fecf",
@@ -45,6 +45,19 @@
       "sourcePath": "skills/setup-xcuitest"
     },
     {
+      "files": {
+        "SKILL.md": "89a6b0c47ed3e0f6bd97c34fdcb1be053049ac5fbe6baa92f4fa40a9664ca27d",
+        "agents/openai.yaml": "6e3a0b2ef304c02bbcf69c209a2fee8da48bda6500b66561655037b759f4c7e1"
+      },
+      "generatedLocation": ".agents/skills/setup-mac2",
+      "installCommand": "DISABLE_TELEMETRY=1 npx -y skills@1.7.4 add https://github.com/appium/skills/tree/e907024c210fe024c956ed9c74146fc27b1dd013/skills/setup-mac2 --skill setup-mac2 --copy -a claude-code -y",
+      "name": "setup-mac2",
+      "selectedAgent": "claude-code",
+      "selectedAgentLocation": ".claude/skills/setup-mac2",
+      "selectedAgentMode": "copy",
+      "sourcePath": "skills/setup-mac2"
+    },
+    {
       "cliContentHash": "d6dfde9960f17a2be20ce1b65fda89fa88c10352d0db372b034a9907dad09229",
       "files": {
         "SKILL.md": "2814e41699486dbde2519cd559d70913e6321928580fd75bd6397fa4e012598c"
@@ -80,6 +93,7 @@
     "commands": [
       "DISABLE_TELEMETRY=1 npx -y skills@1.7.4 add https://github.com/appium/skills/tree/e907024c210fe024c956ed9c74146fc27b1dd013/skills/setup-uiautomator2 --skill setup-uiautomator2 --copy -a claude-code -y",
       "DISABLE_TELEMETRY=1 npx -y skills@1.7.4 add https://github.com/appium/skills/tree/e907024c210fe024c956ed9c74146fc27b1dd013/skills/setup-xcuitest --skill setup-xcuitest --copy -a claude-code -y",
+      "DISABLE_TELEMETRY=1 npx -y skills@1.7.4 add https://github.com/appium/skills/tree/e907024c210fe024c956ed9c74146fc27b1dd013/skills/setup-mac2 --skill setup-mac2 --copy -a claude-code -y",
       "DISABLE_TELEMETRY=1 npx -y skills@1.7.4 add https://github.com/appium/skills/tree/e907024c210fe024c956ed9c74146fc27b1dd013/skills/appium-troubleshooting --skill appium-troubleshooting --copy -a claude-code -y"
     ],
     "selectedAgent": "claude-code",

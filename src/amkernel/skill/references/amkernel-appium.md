@@ -29,6 +29,8 @@ driver = webdriver.Remote("http://127.0.0.1:4723", options=options)
 
 For iOS, use `XCUITestOptions`, `automationName: XCUITest`, and the observed simulator/device identifier. Follow the official XCUITest procedure for signing and real-device requirements.
 
+For native macOS desktop, use `from appium.options.mac import Mac2Options`, `platformName: Mac`, and `appium:automationName: Mac2`. Observe the requested app's bundle identifier and pass it as `appium:bundleId`; do not invent an iOS UDID or XCUITest capabilities. Record the session's returned platform and automation name, and confirm the requested app with a small live query. If Mac2 cannot start, retain the exact blocker instead of falling back to another driver. The Calculator regression must retain returned Mac2 capability evidence; an app opening alone is not proof of the driver used.
+
 ## Interact and return evidence
 
 Prefer accessibility ID, stable platform ID, iOS predicate/class chain, then XPath. Use explicit waits instead of sleeps. Keep returned values bounded:
