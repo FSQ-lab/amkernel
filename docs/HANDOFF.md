@@ -2,7 +2,7 @@
 
 ## Task
 
-Advance Stage 3 Mobile/Appium experiment work in GitHub Project order without moving Appium, device, or platform semantics into AMKernel core.
+Advance Stage 4 cross-client validation in GitHub Project order while preserving one client-neutral scenario, privacy-safe retained evidence, and AMKernel's existing public interface.
 
 ## Context
 
@@ -63,6 +63,53 @@ The formal repository was intentionally created design-only. A sibling spike exi
 - S2-090 and PR #66 close Stage 2. The final main hosted run passed quality, package-smoke, and Ubuntu/macOS CPython 3.11–3.13 compatibility against retained evidence. M3 and Issues #68–#74 now define the ordered Stage 3 Mobile/Appium experiment; S3-001's plan passed independent review with 0 Blocker / 0 Major / 0 Minor findings.
 - S3-010 pins `appium/skills` commit `e907024c210fe024c956ed9c74146fc27b1dd013` and Skills CLI 1.7.4, verifies the canonical detached Git tree plus `.agents` runtime and `.claude` selected-agent copies, and provides one project-local direct Appium Python procedure. The skill keeps server/device ownership external, reuses one persistent driver, uses explicit waits, bounds status/source/screenshot evidence, fails closed on source drift, prohibits automatic SDK bootstrap/shared ADB resets/unscoped mutations, and preserves cleanup identity until `driver.quit()` succeeds. Focused verification passed 5 tests plus Ruff, mypy, the real 134-file/copy verifier, and local Skills CLI discovery; independent security/workflow review found 0 Blocker / 0 Major / 0 Minor.
 - Issue #88 and ADR-0007 replace the interim separately installed `amkernel-appium` entry with one packaged `amkernel` skill and CLI. `amkernel install` installs or reuses one global uv tool, copies the version-matched skill into the project, writes one native project MCP entry, and records only managed project references. Update, project uninstall, and global uninstall preserve explicit scope, consent, rollback, and ownership.
+- S3-020, S3-030, and S3-040 are complete: frozen fixture/evidence contracts and passing Android
+  and iOS reference records are retained under `evidence/mobile-appium/`. Independent review
+  findings on baseline provenance, fresh-start identities, post-transport kernel state, and portable
+  artifact paths were fixed; both retained records validate in place.
+- S3-050 exercises all 19 frozen lifecycle failures as 33 platform-tagged occurrences. The aggregate
+  `evidence/stage-3/lifecycle.json` validates against the frozen evidence definitions, hash-links every
+  bounded transcript and both platform reference manifests, preserves failure-time state separately
+  from cleanup, and reports no remaining external resources. Exact semantic guards cover live-session
+  Runner death/reset, actual UiAutomator2/WebDriverAgent termination, genuine stale elements, observed
+  offline devices, and injected endpoint state. Focused verification passed 29 tests plus Ruff and
+  mypy; final independent rereview found 0 Blocker / 0 Major / 0 Minor findings. Production
+  `src/amkernel/` remains unchanged.
+- S3-060 graduates the Mobile/Appium experiment through the portable, schema-validated
+  `evidence/stage-3/index.json`. The index hash-links the selected Android, iOS, and lifecycle
+  records; maps all 10 criteria, 12 measurements, 19 failure cases, 33 required occurrences, and
+  6 canonical review dispositions; and rejects missing mappings, modified identities, or lifecycle
+  evidence tied to different platform runs. `evidence/stage-3/decision-report.md` recommends Stage
+  4 cross-client validation while retaining an experimental/unsupported claim, external Appium and
+  device supervision, and no mobile-specific core interface. Focused verification passed 37 tests
+  plus Ruff and mypy; final independent review found 0 Blocker / 0 Major / 0 Minor findings.
+- S4-001 freezes one client-neutral installed-wheel scenario and executable evidence contract under
+  `tests/fixtures/cross_client/` and `tests/e2e/`. The contract binds per-step semantics, request/result
+  measurements, retry attribution, resource reconstruction, readiness/outcome/cleanup truth, and
+  privacy-safe normalized evidence without retaining raw code, model prose, credentials, or local
+  paths. Focused verification passed 39 tests plus Ruff and mypy; final independent review found
+  0 Blocker / 0 Major / 0 Minor findings and certified S4-010, S4-020, and S4-030 Ready.
+- S4-005 adds the independently certified GitHub Issue #82 naturalistic dependency investigation
+  without weakening S4-001. Codex CLI and GitHub Copilot CLI receive identical outcome-based text,
+  choose their own `python_exec` decomposition, and run from empty ephemeral client workspaces with
+  complete tool-attempt auditing. An independent oracle verifies graph results and JSON artifacts;
+  retained PNG data plus semantic review verify the visible chart. Final independent review found
+  0 Blocker / 0 Major / 0 Minor findings.
+- S4-020 GitHub Copilot CLI 1.0.105 / gpt-6.1-sol validation exercised both layers through
+  the installed wheel and ephemeral MCP configuration. The natural Issue #82 investigation passed
+  its independent graph, JSON artifact, and PNG-data checks. The frozen deterministic run failed
+  after ready preflight in both the initial run and focused recurrence: each made 11 `python_exec`
+  calls, completed every behavior except `read-artifact-resources`, and reported the kernel alive
+  with cleanup complete. No wrong-tool selection, schema retry, clarification, persistent-config
+  mutation, or repository mutation was observed. Natural success did not compensate for the failed
+  deterministic gate. The failure seam is confirmed in Copilot CLI rather than AMKernel: upstream
+  `github/copilot-cli#1803` and `#1518` document that Copilot CLI currently supports MCP tools only
+  and lacks `resources/read`; AMKernel emits `ResourceLink`, registers `resources/list` and
+  `resources/read`, and its focused official-client resource contract passes. By explicit product-
+  owner decision, S4-020 is accepted complete with this known exception and Issue #80 is closed.
+  The two deterministic run outcomes remain recorded as failed; no support claim may say Copilot
+  exercised artifact resource recovery. No AMKernel workaround or frozen-scenario relaxation was
+  introduced. Independent diagnosis review found 0 Blocker / 0 Major / 0 Minor findings.
 - Global OMP memory is disabled; this project uses local project-scoped memory.
 - The sibling `/Users/qunmi/Documents/FSQ_LAB/omp` remains untouched as historical discussion/prototype material.
 
@@ -97,22 +144,29 @@ The formal repository was intentionally created design-only. A sibling spike exi
 
 ## Recommended next implementation slice
 
-S3-020 / Issue #73 is the next ordered slice: establish deterministic mobile fixture selection plus the versioned evidence and measurement record contracts. Do not start Android or iOS vertical execution until the fixture gates are Ready.
+S4-001 and S4-005 are independently accepted. Execute S4-010 next in GitHub Project order: run both
+the frozen deterministic scenario and unchanged Issue #82 through Codex CLI from a clean installed
+wheel, retain bounded auditable evidence, and do not tune either contract for client behavior.
 
-Observable contracts:
-
-1. Android and iOS fixtures are deterministic, locally inspectable, and pinned with exact provenance/build/install inputs; dynamic-download or environment-dependent demo targets are rejected.
-2. `docs/experiments/mobile-appium.md`, `tests/fixtures/mobile-appium/`, `tests/e2e/appium/`, and `evidence/mobile-appium/` receive the sole S3-020-owned schemas/templates without Appium semantics entering AMKernel core.
-3. Pre-run feasibility checks record every required environment fact before launch and classify unmet platform prerequisites truthfully as blockers rather than narrowing the experiment.
-4. Sample records are schema-complete, bounded, secret-reviewed, and independently verified before S3-030/S3-040 execution begins.
+S4-020 is accepted complete by explicit owner exception while retaining its failed resource-read
+evidence and limitation. S4-030 remains the cross-OS lifecycle matrix.
+Preserve the experimental/unsupported mobile scope and keep Appium Server and device supervision
+external.
 
 ## Acceptance criteria
 
 - [x] M3 and S3-001 through S3-060 are registered in GitHub Project #2 with exact dependencies and work-item contracts.
 - [x] `docs/stage-3-implementation-plan.md` maps every graduation criterion, all 19 failure cases, all 12 measurements, exact paths/owners, and retained evidence requirements.
 - [x] Independent S3-001 review found 0 Blocker, 0 Major, and 0 Minor findings after synchronizing Issues #71 and #69.
-- [x] S3-010 implements and independently verifies the project-local skill and immutable official-skill handoffs.
-- [ ] S3-020 establishes deterministic Android/iOS fixtures and versioned evidence records before platform execution.
+- [x] S3-010's official Appium inputs are pinned and independently verified before use.
+- [x] S3-020 establishes deterministic Android/iOS fixtures and versioned evidence records before platform execution.
+- [x] S3-030 and S3-040 retain schema-valid passing Android and iOS reference evidence.
+- [x] S3-050 retains all 33 required failure occurrences with explicit lifecycle and cleanup state.
+- [x] S3-060 independently reviews graduation evidence and records the Stage 4 recommendation.
+- [x] S4-001 freezes and independently certifies the client-neutral scenario, normalizer, evidence
+  schema, executable validator, and mutation coverage before either client run begins.
+- [x] S4-005 independently certifies GitHub Issue #82 as the identical, outcome-based naturalistic
+  task for both client runs, with auditable tool restrictions and oracle-verified deliverables.
 
 ## Constraints
 

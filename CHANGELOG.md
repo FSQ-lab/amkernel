@@ -17,6 +17,8 @@ All notable changes to AMKernel are recorded here. Public releases use semantic 
 - Add process-scoped Artifact Store resources with raw or manifest/part recovery, digest verification, whole-bundle quota eviction, tamper detection, and identity-safe cleanup refusal.
 - Extend clean-wheel official-client evidence across CPython 3.11–3.13 on hosted Ubuntu and macOS; CI retains each job's exact wheel hash, dependency set, interpreter/OS identity, scenario output, and lockfile.
 - Install one uv-managed user Runtime, one project-local `amkernel` Agent Skill, and native OMP, Pi, or Codex project MCP configuration through `amkernel install`.
+- Add pinned Android and iOS Appium fixtures, equivalent versioned workflows, a strict evidence schema, and a manual self-hosted mobile-lab runner through AMKernel's public MCP interface.
+- Freeze one client-neutral Codex CLI/GitHub Copilot CLI scenario and executable evidence contract with privacy-safe request projection, exact byte accounting, resource reconstruction, lifecycle truth, and mutation coverage.
 
 ### Changed
 
