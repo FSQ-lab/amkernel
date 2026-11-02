@@ -1,0 +1,325 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fsq-lab.example/amkernel/cross-client-evidence.schema.json",
+  "title": "AMKernel Stage 4 cross-client run evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "runId",
+    "generatedAt",
+    "runStartedAt",
+    "runCompletedAt",
+    "outcome",
+    "client",
+    "host",
+    "mcp",
+    "amkernel",
+    "contracts",
+    "preflight",
+    "configuration",
+    "steps",
+    "context",
+    "artifacts",
+    "cleanup",
+    "review",
+    "limitations"
+  ],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "runId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{5,127}$"},
+    "generatedAt": {"type": "string", "format": "date-time"},
+    "runStartedAt": {"type": "string", "format": "date-time"},
+    "runCompletedAt": {"type": "string", "format": "date-time"},
+    "outcome": {"enum": ["pending", "passed", "failed", "blocked"]},
+    "client": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "executable", "version", "model", "invocationMode", "nonInteractive"],
+      "properties": {
+        "id": {"enum": ["codex", "copilot"]},
+        "executable": {"enum": ["codex", "copilot"]},
+        "version": {"$ref": "#/$defs/safeString"},
+        "model": {"$ref": "#/$defs/safeString"},
+        "invocationMode": {"enum": ["ephemeral-home", "additional-mcp-config"]},
+        "nonInteractive": {"const": true}
+      }
+    },
+    "host": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["system", "release", "architecture", "pythonVersion"],
+      "properties": {
+        "system": {"enum": ["Darwin", "Linux"]},
+        "release": {"$ref": "#/$defs/safeString"},
+        "architecture": {"enum": ["arm64", "x86_64", "aarch64"]},
+        "pythonVersion": {"type": "string", "pattern": "^3\\.(11|12|13|14)(?:\\.[0-9]+)?$"}
+      }
+    },
+    "mcp": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["clientVersion", "protocolVersion"],
+      "properties": {
+        "clientVersion": {"$ref": "#/$defs/safeString"},
+        "protocolVersion": {"$ref": "#/$defs/safeString"}
+      }
+    },
+    "amkernel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["revision", "version", "wheel", "entryPoint", "runnerProtocolVersion"],
+      "properties": {
+        "revision": {"$ref": "#/$defs/gitSha"},
+        "version": {"$ref": "#/$defs/safeString"},
+        "wheel": {"$ref": "#/$defs/artifactIdentity"},
+        "entryPoint": {"const": "amkernel"},
+        "runnerProtocolVersion": {"const": 2}
+      }
+    },
+    "contracts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scenario", "evidenceSchema", "normalizer", "normalizerImplementation"],
+      "properties": {
+        "scenario": {"$ref": "#/$defs/contractIdentity"},
+        "evidenceSchema": {"$ref": "#/$defs/contractIdentity"},
+        "normalizer": {"$ref": "#/$defs/contractIdentity"},
+        "normalizerImplementation": {"$ref": "#/$defs/contractIdentity"}
+      }
+    },
+    "preflight": {"$ref": "#/$defs/preflight"},
+    "configuration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["workspaceIsolation", "persistentMutation", "before", "after", "serverCommand"],
+      "properties": {
+        "workspaceIsolation": {"const": "temporary"},
+        "persistentMutation": {"const": false},
+        "before": {"$ref": "#/$defs/configObservation"},
+        "after": {"$ref": "#/$defs/configObservation"},
+        "serverCommand": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "items": {"$ref": "#/$defs/safeString"}
+        }
+      }
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 13,
+      "items": {"$ref": "#/$defs/step"}
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "publicToolCount",
+        "selectedTool",
+        "toolCallCount",
+        "schemaRetryCount",
+        "wrongToolSelectionCount",
+        "clarificationRequestCount",
+        "normalizedRequestBytes",
+        "normalizedResultBytes",
+        "maximumNormalizedResultBytes",
+        "rawResourceBytes",
+        "resourceReferenceBytes",
+        "contextReductionRatio",
+        "finalResponseBytes",
+        "normalizedEventsBytes",
+        "durationMs"
+      ],
+      "properties": {
+        "publicToolCount": {"const": 1},
+        "selectedTool": {"const": "python_exec"},
+        "toolCallCount": {"type": "integer", "minimum": 0, "maximum": 16},
+        "schemaRetryCount": {"type": "integer", "minimum": 0, "maximum": 2},
+        "wrongToolSelectionCount": {"const": 0},
+        "clarificationRequestCount": {"const": 0},
+        "normalizedRequestBytes": {"type": "integer", "minimum": 0},
+        "normalizedResultBytes": {"type": "integer", "minimum": 0},
+        "maximumNormalizedResultBytes": {"type": "integer", "minimum": 0},
+        "rawResourceBytes": {"type": "integer", "minimum": 0},
+        "resourceReferenceBytes": {"type": "integer", "minimum": 0},
+        "contextReductionRatio": {"type": "number", "minimum": 0, "maximum": 1},
+        "finalResponseBytes": {"type": "integer", "minimum": 0, "maximum": 4096},
+        "normalizedEventsBytes": {"type": "integer", "minimum": 0, "maximum": 1048576},
+        "durationMs": {"type": "number", "minimum": 0}
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 16,
+      "items": {"$ref": "#/$defs/evidenceArtifact"}
+    },
+    "cleanup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["attempted", "completed", "clientExited", "serverExited", "runnerExited", "managedProcessesRemaining", "managedArtifactsRemaining", "remainingExternalResources", "observation"],
+      "properties": {
+        "attempted": {"type": "boolean"},
+        "completed": {"type": "boolean"},
+        "clientExited": {"type": "boolean"},
+        "serverExited": {"type": "boolean"},
+        "runnerExited": {"type": "boolean"},
+        "managedProcessesRemaining": {"type": "integer", "minimum": 0},
+        "managedArtifactsRemaining": {"type": "integer", "minimum": 0},
+        "remainingExternalResources": {"type": "array", "items": {"$ref": "#/$defs/safeString"}, "uniqueItems": true},
+        "observation": {"$ref": "#/$defs/safeString"}
+      }
+    },
+    "review": {"$ref": "#/$defs/review"},
+    "limitations": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/safeString"}
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"outcome": {"const": "passed"}}},
+      "then": {
+        "properties": {
+          "preflight": {"properties": {"clientReady": {"const": true}, "serverReady": {"const": true}, "wheelVerified": {"const": true}, "reason": {"type": "null"}}},
+          "steps": {"minItems": 13, "maxItems": 13},
+          "context": {"properties": {"toolCallCount": {"minimum": 11}, "normalizedRequestBytes": {"minimum": 1}, "normalizedResultBytes": {"minimum": 1}, "maximumNormalizedResultBytes": {"minimum": 1}, "rawResourceBytes": {"minimum": 8388609}, "resourceReferenceBytes": {"minimum": 1}, "contextReductionRatio": {"minimum": 0.8}, "finalResponseBytes": {"minimum": 1}, "normalizedEventsBytes": {"minimum": 1}}},
+          "artifacts": {"minItems": 5},
+          "cleanup": {"properties": {"attempted": {"const": true}, "completed": {"const": true}, "clientExited": {"const": true}, "serverExited": {"const": true}, "runnerExited": {"const": true}, "managedProcessesRemaining": {"const": 0}, "managedArtifactsRemaining": {"const": 0}, "remainingExternalResources": {"maxItems": 0}}},
+          "review": {"properties": {"disposition": {"const": "accepted"}, "blocker": {"const": 0}, "major": {"const": 0}}}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"outcome": {"const": "failed"}}},
+      "then": {"properties": {"preflight": {"properties": {"clientReady": {"const": true}, "serverReady": {"const": true}, "wheelVerified": {"const": true}, "reason": {"type": "null"}}}}}
+    },
+    {
+      "if": {"properties": {"outcome": {"const": "blocked"}}},
+      "then": {
+        "properties": {
+          "preflight": {
+            "properties": {"reason": {"$ref": "#/$defs/safeString"}},
+            "anyOf": [
+              {"properties": {"clientReady": {"const": false}}},
+              {"properties": {"serverReady": {"const": false}}},
+              {"properties": {"wheelVerified": {"const": false}}}
+            ]
+          },
+          "steps": {"maxItems": 0},
+          "context": {"properties": {"toolCallCount": {"const": 0}, "normalizedRequestBytes": {"const": 0}, "normalizedResultBytes": {"const": 0}, "maximumNormalizedResultBytes": {"const": 0}, "rawResourceBytes": {"const": 0}, "resourceReferenceBytes": {"const": 0}, "contextReductionRatio": {"const": 0}, "finalResponseBytes": {"const": 0}, "normalizedEventsBytes": {"const": 0}}},
+          "artifacts": {"maxItems": 0},
+          "cleanup": {"properties": {"attempted": {"const": false}, "completed": {"const": false}, "clientExited": {"const": false}, "serverExited": {"const": false}, "runnerExited": {"const": false}, "managedProcessesRemaining": {"const": 0}, "managedArtifactsRemaining": {"const": 0}, "remainingExternalResources": {"maxItems": 0}}}
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "safeString": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096,
+      "pattern": "^(?!.*(?:/Users/|/home/|Bearer[ ]+[A-Za-z0-9._~-]+|(?:api[_-]?key|token|password|secret)[ ]*[=:][ ]*[^ ,;]+|https?://[^ /:@]+:[^ /@]+@)).*$"
+    },
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "gitSha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "relativePath": {"type": "string", "minLength": 1, "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"},
+    "artifactIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["filename", "sizeBytes", "sha256"],
+      "properties": {
+        "filename": {"type": "string", "pattern": "^[^/]+\\.whl$"},
+        "sizeBytes": {"type": "integer", "minimum": 1},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "contractIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "sha256"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "maxLength": 128},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "preflight": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["clientReady", "serverReady", "wheelVerified", "reason"],
+      "properties": {
+        "clientReady": {"type": "boolean"},
+        "serverReady": {"type": "boolean"},
+        "wheelVerified": {"type": "boolean"},
+        "reason": {"oneOf": [{"$ref": "#/$defs/safeString"}, {"type": "null"}]}
+      }
+    },
+    "configObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scope", "existed", "sha256"],
+      "properties": {
+        "scope": {"enum": ["persistent-client-config", "persistent-mcp-config"]},
+        "existed": {"type": "boolean"},
+        "sha256": {"oneOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]}
+      },
+      "allOf": [
+        {"if": {"properties": {"existed": {"const": true}}}, "then": {"properties": {"sha256": {"$ref": "#/$defs/sha256"}}}},
+        {"if": {"properties": {"existed": {"const": false}}}, "then": {"properties": {"sha256": {"type": "null"}}}}
+      ]
+    },
+    "step": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "action", "outcome", "contractMatched", "semantics", "semanticsSha256", "startedAt", "completedAt", "durationMs", "toolCallIndexes", "normalizedRequestBytes", "normalizedResultBytes", "resourceBytes", "status", "kernelState", "resultSha256", "observation"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z][a-z0-9-]+$"},
+        "action": {"enum": ["discover", "call-tool", "read-resources"]},
+        "outcome": {"enum": ["passed", "failed", "blocked"]},
+        "contractMatched": {"type": "boolean"},
+        "semantics": {"type": "object"},
+        "semanticsSha256": {"$ref": "#/$defs/sha256"},
+        "startedAt": {"type": "string", "format": "date-time"},
+        "completedAt": {"type": "string", "format": "date-time"},
+        "durationMs": {"type": "number", "minimum": 0},
+        "toolCallIndexes": {"type": "array", "maxItems": 3, "items": {"type": "integer", "minimum": 0}, "uniqueItems": true},
+        "normalizedRequestBytes": {"type": "integer", "minimum": 0},
+        "normalizedResultBytes": {"type": "integer", "minimum": 0},
+        "resourceBytes": {"type": "integer", "minimum": 0},
+        "status": {"enum": ["completed", "failed", "timed_out", "kernel_killed", "unavailable"]},
+        "kernelState": {"enum": ["alive", "dead", "unavailable"]},
+        "resultSha256": {"oneOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+        "observation": {"$ref": "#/$defs/safeString"}
+      }
+    },
+    "evidenceArtifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "mimeType", "path", "sizeBytes", "sha256"],
+      "properties": {
+        "kind": {"enum": ["normalized-events", "final-summary", "resource-manifest", "resource-part", "review"]},
+        "mimeType": {"type": "string", "minLength": 1, "maxLength": 128},
+        "path": {"$ref": "#/$defs/relativePath"},
+        "sizeBytes": {"type": "integer", "minimum": 1, "maximum": 16777216},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reviewer", "source", "blocker", "major", "minor", "disposition"],
+      "properties": {
+        "reviewer": {"$ref": "#/$defs/safeString"},
+        "source": {"type": "string", "format": "uri"},
+        "blocker": {"type": "integer", "minimum": 0},
+        "major": {"type": "integer", "minimum": 0},
+        "minor": {"type": "integer", "minimum": 0},
+        "disposition": {"enum": ["pending", "accepted", "rejected"]}
+      }
+    }
+  }
+}

@@ -1,0 +1,184 @@
+{
+  "schemaVersion": 1,
+  "scenarioId": "amkernel-cross-client-v1",
+  "description": "Client-neutral installed-wheel scenario covering discovery clarity, persistent state, recoverable errors, bounded output, structured data, rich display, ephemeral artifact resources, timeout continuation, reset, and cleanup.",
+  "tool": "python_exec",
+  "toolTimeoutSeconds": 60,
+  "thresholds": {
+    "maximumToolCalls": 16,
+    "maximumSchemaRetries": 2,
+    "maximumWrongToolSelections": 0,
+    "maximumClarificationRequests": 0,
+    "maximumNormalizedEventsBytes": 1048576,
+    "maximumFinalResponseBytes": 4096,
+    "maximumArtifactBytes": 16777216,
+    "minimumContextReductionRatio": 0.8
+  },
+  "privacy": {
+    "retainModelProse": false,
+    "retainChainOfThought": false,
+    "retainCredentials": false,
+    "retainAbsoluteHomePaths": false,
+    "retainedContent": [
+      "normalized-mcp-tool-events",
+      "bounded-final-summary",
+      "hash-linked-artifacts",
+      "measurements",
+      "state-and-cleanup-outcomes"
+    ]
+  },
+  "steps": [
+    {
+      "id": "discover-interface",
+      "action": "discover",
+      "expected": {
+        "toolCount": 1,
+        "toolName": "python_exec",
+        "descriptionClauses": [
+          "Calls serialize in FIFO order",
+          "Mutations completed before a Python exception remain",
+          "destructively replace the kernel",
+          "input() is unsupported",
+          "Always inspect status and kernelState",
+          "managed process group",
+          "not a sandbox",
+          "not workspace-confined"
+        ]
+      }
+    },
+    {
+      "id": "initialize-state",
+      "action": "call-tool",
+      "arguments": {"code": "cross_client_state = ['initialized']\nlen(cross_client_state)"},
+      "expected": {"status": "completed", "kernelState": "alive", "result": 1}
+    },
+    {
+      "id": "reuse-state",
+      "action": "call-tool",
+      "arguments": {"code": "cross_client_state.append('reused')\nlist(cross_client_state)"},
+      "expected": {"status": "completed", "kernelState": "alive", "result": ["initialized", "reused"]}
+    },
+    {
+      "id": "ordinary-error",
+      "action": "call-tool",
+      "arguments": {"code": "cross_client_state.append('before-error')\nraise ValueError('expected cross-client failure')"},
+      "expected": {"status": "failed", "kernelState": "alive", "errorType": "ValueError"}
+    },
+    {
+      "id": "continue-after-error",
+      "action": "call-tool",
+      "arguments": {"code": "list(cross_client_state)"},
+      "expected": {"status": "completed", "kernelState": "alive", "result": ["initialized", "reused", "before-error"]}
+    },
+    {
+      "id": "bounded-output",
+      "action": "call-tool",
+      "arguments": {"code": "import sys\nprint('stdout-marker')\nprint('stderr-marker', file=sys.stderr)\n'output-complete'"},
+      "expected": {
+        "status": "completed",
+        "kernelState": "alive",
+        "result": "output-complete",
+        "stdout": "stdout-marker\n",
+        "stderr": "stderr-marker\n",
+        "totalBytes": 28,
+        "totalLines": 2,
+        "discardedBytes": 0,
+        "discardedLines": 0,
+        "truncated": false,
+        "limitExceeded": false
+      }
+    },
+    {
+      "id": "structured-result",
+      "action": "call-tool",
+      "arguments": {"code": "{'answer': 42, 'flags': [True, False], 'nested': {'value': None}}"},
+      "expected": {
+        "status": "completed",
+        "kernelState": "alive",
+        "result": {"answer": 42, "flags": [true, false], "nested": {"value": null}}
+      }
+    },
+    {
+      "id": "rich-display",
+      "action": "call-tool",
+      "arguments": {"code": "import io\nfrom PIL import Image\nbuffer = io.BytesIO()\nImage.new('RGB', (2, 3), 'red').save(buffer, format='PNG')\ndisplay(buffer.getvalue(), mime_type='image/png')\n'display-complete'"},
+      "expected": {
+        "status": "completed",
+        "kernelState": "alive",
+        "result": "display-complete",
+        "displayKind": "image",
+        "mimeType": "image/png",
+        "width": 2,
+        "height": 3
+      }
+    },
+    {
+      "id": "create-artifact",
+      "action": "call-tool",
+      "arguments": {"code": "artifact('cross-client.bin', b'm' * 8388609)\n'artifact-complete'"},
+      "expected": {
+        "status": "completed",
+        "kernelState": "alive",
+        "result": "artifact-complete",
+        "representation": "manifest",
+        "mimeType": "application/octet-stream",
+        "sizeBytes": 8388609,
+        "partCount": 2
+      }
+    },
+    {
+      "id": "read-artifact-resources",
+      "action": "read-resources",
+      "sourceStep": "create-artifact",
+      "expected": {
+        "manifestMimeType": "application/vnd.amkernel.artifact-manifest+json",
+        "partMimeType": "application/octet-stream",
+        "sizeBytes": 8388609,
+        "partCount": 2,
+        "integrityVerified": true,
+        "rawBytesInFinalResponse": 0
+      }
+    },
+    {
+      "id": "timeout-survives",
+      "action": "call-tool",
+      "arguments": {"code": "import time\ntime.sleep(30)", "timeout": 0.05},
+      "expected": {"status": "timed_out", "kernelState": "alive", "errorType": "TimeoutError"}
+    },
+    {
+      "id": "continue-after-timeout",
+      "action": "call-tool",
+      "arguments": {"code": "40 + 2"},
+      "expected": {"status": "completed", "kernelState": "alive", "result": 42}
+    },
+    {
+      "id": "reset-namespace",
+      "action": "call-tool",
+      "arguments": {"code": "'cross_client_state' in globals()", "reset": true},
+      "expected": {"status": "completed", "kernelState": "alive", "result": false}
+    }
+  ],
+  "finalResponse": {
+    "requiredFields": [
+      "scenarioId",
+      "outcome",
+      "completedStepIds",
+      "toolCallCount",
+      "schemaRetryCount",
+      "wrongToolSelectionCount",
+      "clarificationRequestCount",
+      "kernelState",
+      "cleanupCompleted"
+    ],
+    "forbiddenContent": [
+      "code",
+      "stdout-body",
+      "stderr-body",
+      "display-bytes",
+      "artifact-bytes",
+      "credentials",
+      "absolute-home-paths",
+      "chain-of-thought"
+    ]
+  }
+}

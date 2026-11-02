@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "matrixId": "amkernel-cross-os-process-v1",
+  "platforms": ["ubuntu-latest", "macos-latest"],
+  "pythonVersions": ["3.11", "3.13"],
+  "unsupportedPlatforms": [
+    {
+      "platform": "windows",
+      "reason": "AMKernel Runtime is POSIX-only; Windows requires a separate accepted platform decision."
+    }
+  ],
+  "rows": [
+    {
+      "id": "installed-startup",
+      "operation": "Start the installed amkernel entry point and initialize MCP over stdio.",
+      "expected": {"serverState": "ready", "kernelState": "alive", "managedProcesses": 2}
+    },
+    {
+      "id": "normal-shutdown",
+      "operation": "Close the MCP client after one completed execution.",
+      "expected": {"serverState": "exited", "kernelState": "dead", "managedProcessesRemaining": 0}
+    },
+    {
+      "id": "destructive-reset",
+      "operation": "Reset after creating state and compare runner identities.",
+      "expected": {"serverState": "ready", "kernelState": "alive", "runnerReplaced": true, "priorNamespaceAbsent": true}
+    },
+    {
+      "id": "timeout-survives",
+      "operation": "Time out interruptible Python code and execute a continuation call.",
+      "expected": {"status": "timed_out", "kernelState": "alive", "continuationVerified": true}
+    },
+    {
+      "id": "timeout-escalates",
+      "operation": "Time out code that prevents normal interruption and observe escalation.",
+      "expected": {"status": "kernel_killed", "kernelState": "dead", "runnerReplacedImplicitly": false}
+    },
+    {
+      "id": "runner-channel-death",
+      "operation": "Terminate the managed runner while a request is active.",
+      "expected": {"status": "kernel_killed", "kernelState": "dead", "serverState": "ready", "runnerReplacedImplicitly": false}
+    },
+    {
+      "id": "output-limit-drain",
+      "operation": "Cross the output ceiling and confirm stream draining and bounded diagnostics.",
+      "expected": {"status": "failed", "kernelState": "alive", "errorType": "OutputLimitExceeded", "drainCompleted": true, "continuationVerified": true}
+    },
+    {
+      "id": "artifact-integrity-expiry",
+      "operation": "Read a multipart artifact, detect tampering, then force managed-store eviction.",
+      "expected": {"initialRead": "verified", "tamperedRead": "rejected", "expiredRead": "not_found", "remainingManagedBytesWithinCeiling": true}
+    },
+    {
+      "id": "cancellation-cleanup",
+      "operation": "Cancel the server task during an active execution and observe process/resource cleanup.",
+      "expected": {"serverState": "exited", "kernelState": "dead", "managedProcessesRemaining": 0, "managedArtifactsRemaining": 0}
+    }
+  ],
+  "requiredEvidence": [
+    "operating-system-identity",
+    "python-identity",
+    "wheel-identity",
+    "per-row-state-transition",
+    "process-observations",
+    "resource-observations",
+    "cleanup-outcome",
+    "review-disposition"
+  ]
+}
