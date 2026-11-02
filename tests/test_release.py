@@ -221,6 +221,7 @@ def test_release_workflow_uses_trusted_exact_artifact_path() -> None:
     assert "name: distribution-${{ github.sha }}" in workflow
     assert "run-id: ${{ inputs.ci_run_id }}" in workflow
     assert "repos/$GITHUB_REPOSITORY/actions/runs/$CI_RUN_ID" in workflow
+    assert workflow.count("actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333") == 4
     assert '--jq \'.immutable\')" = "true"' in workflow
     assert "pypa/gh-action-pypi-publish@724590665d0d9cf2ef8e6f045d5355c6b8273d4f" in pypi_job
     assert "password:" not in workflow
