@@ -5,10 +5,12 @@ import os
 import tomllib
 from collections.abc import Sequence
 from pathlib import Path
+from types import SimpleNamespace
 from typing import cast
 
 import pytest
 
+from amkernel import __version__
 from amkernel.distribution import Client, CommandResult, DistributionError, DistributionManager
 
 
@@ -27,7 +29,7 @@ def manager(project: Path, bin_dir: Path) -> DistributionManager:
         if values[-3:] == ("tool", "dir", "--bin"):
             return CommandResult(values, 0, f"{bin_dir}\n", "", False)
         if values[-1:] == ("--version",):
-            return CommandResult(values, 0, "amkernel 0.0.0\n", "", False)
+            return CommandResult(values, 0, f"amkernel {__version__}\n", "", False)
         return CommandResult(values, 0, "", "", False)
 
     return DistributionManager(project, runner=run, data_home=project.parent / "data")
@@ -145,6 +147,19 @@ def test_uninstall_removes_only_managed_project_entries(project: Path, tmp_path:
     assert not status.mcp_configured
     assert json.loads(path.read_text())["mcpServers"] == {"other": {"command": "kept"}}
     assert subject.known_projects() == {}
+
+
+def test_package_spec_reuses_local_wheel_or_uses_registry(
+    project: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    subject = manager(project, tmp_path / "bin")
+    local_wheel = "file:///tmp/amkernel-0.1.0-py3-none-any.whl"
+    distribution = SimpleNamespace(read_text=lambda name: json.dumps({"url": local_wheel}))
+    monkeypatch.setattr("amkernel.distribution.metadata.distribution", lambda name: distribution)
+    assert subject._package_spec() == local_wheel
+
+    distribution.read_text = lambda name: None
+    assert subject._package_spec() == "amkernel"
 
 
 def test_install_runtime_uses_uv_tool_and_requires_resulting_executable(

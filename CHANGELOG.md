@@ -4,6 +4,8 @@ All notable changes to AMKernel are recorded here. Public releases use semantic 
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-11-02
+
 ### Breaking
 
 - Replace the Stage 1 execution result with the exact Stage 2 `python_exec` schema and private protocol v2. Callers must consume bounded output metadata, displays, artifacts, and the expanded runtime diagnostics from the new shape; no compatibility alias is retained.
@@ -28,4 +30,4 @@ All notable changes to AMKernel are recorded here. Public releases use semantic 
 - Workspace helpers traverse from pinned descriptors without following symlinks, and Artifact Store reads revalidate identity and content digests.
 - AMKernel remains unrestricted same-user local code execution, not a sandbox. Random resource identifiers do not provide confidentiality or integrity against another same-user process.
 
-Governed by [ADR-0006](docs/decisions/0006-stage-2-output-and-artifact-contract.md), the [Stage 2 implementation plan](docs/stage-2-implementation-plan.md), and [S2-090](https://github.com/FSQ-lab/amkernel/issues/51).
+Governed by [ADR-0006](docs/decisions/0006-stage-2-output-and-artifact-contract.md), [ADR-0007](docs/decisions/0007-global-runtime-project-activation.md), the [Stage 2 implementation plan](docs/stage-2-implementation-plan.md), [S2-090](https://github.com/FSQ-lab/amkernel/issues/51), and [Release #90](https://github.com/FSQ-lab/amkernel/issues/90).

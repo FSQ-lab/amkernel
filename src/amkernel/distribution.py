@@ -248,8 +248,6 @@ class DistributionManager:
         return self.uv_tool_bin() / name
 
     def _package_spec(self) -> str:
-        if __version__ != "0.0.0":
-            return "amkernel"
         direct_url = metadata.distribution("amkernel").read_text("direct_url.json")
         if direct_url:
             try:

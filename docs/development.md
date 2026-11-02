@@ -243,7 +243,15 @@ The Integration Lead may create a release only when all of these facts hold for 
 4. Compute and record the wheel's SHA-256. The release record names the exact commit, workflow run, artifact name, checksum, build Python/OS, verified Python/OS range, delivery stage, and any explicit exclusion.
 5. Create the annotated `v<version>` tag at that exact `main` commit, then create the GitHub Release from the retained wheel and changelog entry. Tags and attached files are immutable after publication.
 
-PyPI publication, when enabled, uses a repository-scoped trusted publisher and a protected GitHub environment—never a long-lived local token. Trusted publishing is not configured yet, so PyPI publication remains blocked until that repository control exists. The first publishing change must upload the exact retained wheel, not another build.
+PyPI publication uses the repository-scoped trusted publisher for `.github/workflows/release.yml` and the protected `pypi` GitHub environment—never a long-lived local token. The Release workflow is manually dispatched from `main` with the authoritative successful main CI run ID. It downloads `distribution-<commit SHA>` directly from that run, validates the run, lock, package-smoke evidence, filename, embedded metadata, and SHA-256, creates or verifies the immutable tag and GitHub Release, and gives only the validated wheel to PyPI's trusted-publishing action. It fails closed on any mismatch and never builds a distribution.
+
+For a release:
+
+1. Merge the version/changelog release pull request and let the resulting `main` CI run finish successfully.
+2. In **Repository Settings → General → Releases**, enable release immutability. This must happen before the release is created because GitHub applies it only to future releases; the workflow verifies the published release reports `immutable: true` before PyPI receives the wheel.
+3. Confirm that the protected `pypi` environment permits the intended maintainers and that PyPI names `FSQ-lab/amkernel`, `.github/workflows/release.yml`, and environment `pypi` as the trusted publisher.
+4. Open **Actions → Release → Run workflow**, select `main`, and enter that successful main CI run ID. Dispatch once.
+5. Verify the completed workflow, GitHub Release asset checksum and attestation, PyPI file checksum and attestation, then exercise the pinned public install from a clean external project.
 
 ### 6.3 Abort, rollback, and yank
 

@@ -1,0 +1,180 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      ci_run_id:
+        description: Successful main CI run retaining the exact release wheel
+        required: true
+        type: string
+
+permissions: {}
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    name: validate tested wheel
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+    outputs:
+      version: ${{ steps.candidate.outputs.version }}
+      tag: ${{ steps.candidate.outputs.tag }}
+      wheel: ${{ steps.candidate.outputs.wheel }}
+      sha256: ${{ steps.candidate.outputs.sha256 }}
+    steps:
+      - name: Check out release commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Set up Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
+        with:
+          python-version-file: .python-version
+      - name: Read authoritative CI provenance
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CI_RUN_ID: ${{ inputs.ci_run_id }}
+        run: >-
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$CI_RUN_ID"
+          > run.json
+      - name: Download exact retained distribution
+        uses: actions/download-artifact@9002e186f0a313241b8e30e384cc088f5bb9a8db # v8.0.2
+        with:
+          name: distribution-${{ github.sha }}
+          path: candidate
+          repository: ${{ github.repository }}
+          run-id: ${{ inputs.ci_run_id }}
+          github-token: ${{ github.token }}
+      - name: Validate candidate and prepare metadata
+        id: candidate
+        env:
+          CI_RUN_ID: ${{ inputs.ci_run_id }}
+        run: |
+          python scripts/prepare_release.py \
+            --artifact-dir candidate \
+            --run-json run.json \
+            --commit "$GITHUB_SHA" \
+            --run-id "$CI_RUN_ID" \
+            --notes-output release-notes.md \
+            --github-output release.outputs
+          cat release.outputs >> "$GITHUB_OUTPUT"
+          . ./release.outputs
+          mkdir publish
+          cp "candidate/dist/$wheel" publish/
+          echo "$sha256  publish/$wheel" | sha256sum --check
+      - name: Retain validated wheel for privileged jobs
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: release-wheel-${{ github.sha }}-${{ github.run_attempt }}
+          path: publish/*.whl
+          if-no-files-found: error
+          retention-days: 1
+      - name: Retain release metadata
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: release-metadata-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            release-notes.md
+            release.outputs
+          if-no-files-found: error
+          retention-days: 1
+
+  github-release:
+    name: create immutable GitHub release
+    needs: prepare
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: write
+    steps:
+      - name: Check out release commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Download validated wheel
+        uses: actions/download-artifact@9002e186f0a313241b8e30e384cc088f5bb9a8db # v8.0.2
+        with:
+          name: release-wheel-${{ github.sha }}-${{ github.run_attempt }}
+          path: publish
+      - name: Download validated metadata
+        uses: actions/download-artifact@9002e186f0a313241b8e30e384cc088f5bb9a8db # v8.0.2
+        with:
+          name: release-metadata-${{ github.sha }}-${{ github.run_attempt }}
+          path: release-metadata
+      - name: Create or verify immutable GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.prepare.outputs.tag }}
+          WHEEL: ${{ needs.prepare.outputs.wheel }}
+          TITLE: AMKernel ${{ needs.prepare.outputs.version }}
+          SHA256: ${{ needs.prepare.outputs.sha256 }}
+        run: |
+          cp release-metadata/release-notes.md release-notes.md
+          echo "$SHA256  publish/$WHEEL" | sha256sum --check
+          git fetch --force --tags origin
+          if git rev-parse --verify --quiet "refs/tags/$TAG"; then
+            test "$(git cat-file -t "$TAG")" = "tag"
+            test "$(git rev-list -n 1 "$TAG")" = "$GITHUB_SHA"
+          else
+            git tag --annotate "$TAG" --message "$TITLE" "$GITHUB_SHA"
+            git push origin "refs/tags/$TAG"
+          fi
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release view "$TAG" \
+              --repo "$GITHUB_REPOSITORY" \
+              --json assets,body,isDraft,isPrerelease,name,tagName \
+              > existing-release.json
+            mkdir existing-release
+            gh release download "$TAG" \
+              --repo "$GITHUB_REPOSITORY" \
+              --pattern "$WHEEL" \
+              --dir existing-release
+            python scripts/verify_github_release.py \
+              --release-json existing-release.json \
+              --notes release-notes.md \
+              --asset-dir existing-release \
+              --tag "$TAG" \
+              --title "$TITLE" \
+              --wheel "$WHEEL" \
+              --sha256 "$SHA256"
+          else
+            gh release create "$TAG" "publish/$WHEEL" \
+              --repo "$GITHUB_REPOSITORY" \
+              --verify-tag \
+              --title "$TITLE" \
+              --notes-file release-notes.md
+          fi
+          test "$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$TAG" \
+            --jq '.immutable')" = "true"
+
+  pypi:
+    name: publish tested wheel to PyPI
+    needs:
+      - prepare
+      - github-release
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      id-token: write
+    environment:
+      name: pypi
+      url: https://pypi.org/p/amkernel
+    steps:
+      - name: Download validated wheel
+        uses: actions/download-artifact@9002e186f0a313241b8e30e384cc088f5bb9a8db # v8.0.2
+        with:
+          name: release-wheel-${{ github.sha }}-${{ github.run_attempt }}
+          path: publish
+      - name: Publish exact tested wheel to PyPI
+        uses: pypa/gh-action-pypi-publish@724590665d0d9cf2ef8e6f045d5355c6b8273d4f # v1.14.3
+        with:
+          packages-dir: publish/
+          verbose: true
+          print-hash: true
+          attestations: true
