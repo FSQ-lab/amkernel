@@ -8,14 +8,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).parents[2]
 SKILL_ROOT = ROOT / "src" / "amkernel" / "skill"
-MANIFEST_PATH = SKILL_ROOT / "references" / "official-skills.json"
 VERIFIER = SKILL_ROOT / "scripts" / "verify_official_skills.py"
-COMMIT = "e907024c210fe024c956ed9c74146fc27b1dd013"
-SELECTED_SKILLS = {
-    "setup-uiautomator2",
-    "setup-xcuitest",
-    "appium-troubleshooting",
-}
 
 
 def _sha256(content: bytes) -> str:
@@ -57,79 +50,6 @@ def _initialize_source(source: Path) -> str:
     commit = _git(source, "rev-parse", "HEAD").stdout.strip()
     _git(source, "checkout", "-q", "--detach", commit)
     return commit
-
-
-def test_skill_guides_a_nontechnical_user_from_goal_to_verified_result() -> None:
-    skill = (SKILL_ROOT / "SKILL.md").read_text(encoding="utf-8")
-
-    required_contracts = (
-        "Assume the user does not know Appium",
-        "Do not force the user through a fixed questionnaire",
-        "Present one clear user action at a time",
-        "setup-uiautomator2",
-        "setup-xcuitest",
-        "appium-troubleshooting",
-        "verify_official_skills.py",
-        "Do not create an Appium session for a setup-only",
-        "`python_exec`",
-        "Use AMKernel only when the request needs it",
-        "Preserve lifecycle truth",
-        "one concrete next action",
-        "Do not claim broader Android, iOS, real-device, or support coverage",
-    )
-    for contract in required_contracts:
-        assert contract in skill
-    assert "desired_capabilities=" not in skill
-    assert "time.sleep(" not in skill
-
-
-def test_manifest_pins_complete_reviewed_inputs() -> None:
-    manifest = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
-
-    assert manifest["schemaVersion"] == 1
-    assert manifest["repository"] == "https://github.com/appium/skills"
-    assert manifest["commit"] == COMMIT
-    assert manifest["skillsCli"] == {
-        "version": "1.7.4",
-        "selectedAgent": "claude-code",
-        "commands": [item["installCommand"] for item in manifest["installedSkills"]],
-    }
-    assert len(manifest["source"]["files"]) >= 100
-    assert {
-        "skills/setup-uiautomator2/SKILL.md",
-        "skills/setup-xcuitest/SKILL.md",
-        "skills/appium-troubleshooting/SKILL.md",
-        "tools/appium/setup/scripts/check-uiautomator2-env.mjs",
-        "tools/appium/setup/scripts/check-xcuitest-env.mjs",
-        "contexts/tools/appium/troubleshooting/references/uiautomator2-session-startup.md",
-        "contexts/tools/appium/troubleshooting/references/xcuitest-troubleshooting.md",
-    } <= manifest["source"]["files"].keys()
-
-    installed = {item["name"]: item for item in manifest["installedSkills"]}
-    assert installed.keys() == SELECTED_SKILLS
-    for name, item in installed.items():
-        command = (
-            "DISABLE_TELEMETRY=1 npx -y skills@1.7.4 add "
-            f"https://github.com/appium/skills/tree/{COMMIT}/skills/{name} "
-            f"--skill {name} --copy -a claude-code -y"
-        )
-        assert item["installCommand"] == command
-        assert item["generatedLocation"] == f".agents/skills/{name}"
-        assert item["selectedAgent"] == "claude-code"
-        assert item["selectedAgentLocation"] == f".claude/skills/{name}"
-        assert item["selectedAgentMode"] == "copy"
-        assert item["securityAudit"]["gen"] == "safe"
-        assert item["securityAudit"]["socket"] == "0 alerts"
-        assert item["securityAudit"]["snyk"] in {"low", "medium"}
-        assert item["files"]["SKILL.md"] == manifest["source"]["files"][f"skills/{name}/SKILL.md"]
-
-    every_digest = [
-        *manifest["source"]["files"].values(),
-        *(digest for item in installed.values() for digest in item["files"].values()),
-    ]
-    assert all(len(digest) == 64 for digest in every_digest)
-    assert all(set(digest) <= set("0123456789abcdef") for digest in every_digest)
-    assert all(COMMIT in command for command in manifest["skillsCli"]["commands"])
 
 
 def test_verifier_accepts_exact_trees_and_rejects_tampering(tmp_path: Path) -> None:

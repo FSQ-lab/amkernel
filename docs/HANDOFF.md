@@ -129,12 +129,29 @@ The formal repository was intentionally created design-only. A sibling spike exi
 
 ## Recommended next implementation slice
 
-S4-001 and S4-005 are independently accepted. Execute S4-010 next in GitHub Project order: run both
-the frozen deterministic scenario and unchanged Issue #82 through Codex CLI from a clean installed
-wheel, retain bounded auditable evidence, and do not tune either contract for client behavior.
+The owner authorized sequential first-release Appium remediation before resuming Stage 4 runs.
+Separate defects own the work: [#102](https://github.com/FSQ-lab/amkernel/issues/102) compatibility,
+[#103](https://github.com/FSQ-lab/amkernel/issues/103) Mac2 routing,
+[#104](https://github.com/FSQ-lab/amkernel/issues/104) complete Copilot installation,
+[#105](https://github.com/FSQ-lab/amkernel/issues/105) external-project installation verification,
+then [#98](https://github.com/FSQ-lab/amkernel/issues/98) real Agent behavior. Environment discovery
+[#106](https://github.com/FSQ-lab/amkernel/issues/106) and owned-state/conversation behavior
+[#107](https://github.com/FSQ-lab/amkernel/issues/107) remain separate contracts. Gmail privacy
+expansion #99 remains post-v1; Windows Android #100 still requires real Windows evidence.
 
-Preserve the experimental/unsupported mobile scope and keep Appium Server and device supervision
-external.
+#102 now distinguishes constraints, tested coverage, observed failures, and proven incompatibility.
+`evidence/appium-skill/compatibility-20261102.json` retains bounded real Copilot CLI 1.0.105 /
+gpt-6.1-sol calls: actual Python 3.11.16, Appium 5.2.5, Selenium 4.52.0, satisfied installed
+requirements, no session or dependency mutation. Both baseline and updated audits classified the
+pairing as unverified; this prompt did not reproduce a baseline hard-block. Independent Skill
+review found 0 Blocker/Major/Minor. Three focused provenance-verifier tests and Ruff passed.
+
+Project #2 still lists S4-010 as In Progress and S4-030/#82 as Ready. The current credential has
+`read:project`, not board-write scope; the execution override and dependencies are recorded in
+Issues #102 and #81 rather than falsely claiming a board update. S4-001/#82 stay frozen and
+evidence-only items do not own these production changes. After remediation, resume S4-010 with
+both client-neutral layers through the installed wheel; preserve the experimental mobile support
+boundary and external Appium/device ownership.
 
 ## Acceptance criteria
 

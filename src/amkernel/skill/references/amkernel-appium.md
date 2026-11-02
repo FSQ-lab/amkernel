@@ -5,7 +5,7 @@ This reference contains only the AMKernel-specific seam. Platform setup and Appi
 ## Runtime contract
 
 - Use `python_exec`; do not add a wrapper, mobile-specific MCP tool, or AMKernel core API.
-- Use Appium Python Client 6.x options classes. Never use removed `desired_capabilities`.
+- Use the official Appium Python Client and its observed platform options classes. Do not require a particular major version without an applicable dependency constraint. Never use removed `desired_capabilities`.
 - The Appium Server, device/simulator, WebDriverAgent, and platform driver are externally owned resources.
 - Keep one top-level `driver` object across calls. Before reuse, require a session ID and one small live query.
 - A kernel reset or death makes external session state unknown. Reconcile it before replacement.

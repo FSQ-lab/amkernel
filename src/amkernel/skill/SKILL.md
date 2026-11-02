@@ -31,8 +31,8 @@ Inspect what the host already reveals before asking questions. If one usable tar
 - Preserve working installations. Prefer the smallest relevant check and one reversible correction.
 - Translate technical blockers into the affected layer and one concrete next action.
 - Do not expose official-skill acquisition, manifests, hashes, or internal handoffs unless verification itself blocks progress.
-- Keep package names, exact versions, compatibility ranges, registry diagnostics, and upgrade or downgrade choices in audit evidence. Tell a novice only that AMKernel's internal connection libraries need a supported pairing. Expose technical details only when the user asks for them or after the user approves a repair and those details are needed to perform it; do not propose a specific upgrade or downgrade before that approval.
-- Before applying an internal dependency repair, explain that its scope is the AMKernel project environment, identify the project files or environment it will change, state that it does not itself alter device or simulator data, and describe rollback in plain language. Then ask approval to apply; keep exact package mechanics in optional technical detail.
+- Keep package versions, active dependency constraints, compatibility-table limits, and repair choices in bounded audit evidence. Explain only the observed issue and its impact to a novice; provide technical evidence when asked. Do not call a warning or an unverified pairing incompatible, or recommend an upgrade/downgrade merely to silence a warning.
+- Before any dependency repair, identify the actual Runtime environment from `python_exec`, disclose the files and environment that would change, effects on other attached projects, and rollback. Obtain approval before mutation. The uv-managed Runtime is not the target project's `.venv`; do not repair an unrelated shell environment or change project dependencies implicitly.
 - Do not surface an unrelated package-registry warning when the installed stack is usable and that warning does not determine the next action.
 - Never invent an application, package, bundle, device, capability, credential, or scenario.
 
@@ -75,7 +75,7 @@ Use the selected official setup skill's completion criteria rather than inventin
 - the correct driver, UiAutomator2 or XCUITest, is installed and its required doctor checks pass;
 - Appium's status endpoint reports ready;
 - the intended device, emulator, or simulator is visible and usable;
-- the Python client and Selenium versions form an officially supported combination when AMKernel execution is requested.
+- AMKernel execution has separately observed Python/client dependency evidence; a warning or an unverified version pairing is not a platform-readiness failure.
 
 Appium is installed separately from its drivers. A running server without the required driver is not ready for that platform. Keep global Appium and explicitly requested project-local Appium modes separate; never let `npx` download an unpinned package implicitly.
 
@@ -89,7 +89,14 @@ After Appium readiness:
 - explicit scenario: use AMKernel MCP to perform that scenario directly;
 - user-requested end-to-end validation without a scenario: create one disposable minimal session, make a harmless live query or screenshot, and clean up that validation session.
 
-When the request needs AMKernel execution, inspect Python, Appium-Python-Client, and Selenium versions inside the actual `python_exec` namespace rather than assuming the shell environment matches it. Compare that observed combination with the official compatibility matrix, and report platform readiness separately from AMKernel execution readiness. Do not create a session with an unsupported combination or change project dependencies without approval. Use Appium's official Python Client directly with current platform options such as `UiAutomator2Options` or `XCUITestOptions`; `desired_capabilities` is removed. Read `references/amkernel-appium.md` for the exact AMKernel connection, retained-state, bounded-output, and cleanup seam.
+When execution is requested, inspect `sys.executable`, Python, Appium-Python-Client, Selenium, `Requires-Python`, and `Requires-Dist` inside the actual `python_exec` namespace. Shell versions are not evidence of the Runtime environment. Evaluate applicable requirement markers for that interpreter and selected extras, and consult the official compatibility matrix without inventing an upper bound. Keep four conclusions distinct:
+
+- **Satisfied constraints:** installed versions satisfy the applicable declared requirements. An applicable official tested range adds support evidence, not a new dependency constraint.
+- **Unverified combination or warning:** missing/stale matrix coverage, an unknown upper bound, or a registry warning is uncertainty, not proven incompatibility. Preserve that limitation and use a bounded, relevant non-mutating check; do not hard-block or force a repair on this basis.
+- **Installed requirement violation or observed failure:** record the exact applicable requirement and installed value, or the actual failing operation. This can prevent that operation from proceeding safely, but does not prove that no compatible environment exists. Do not hide a real import or protocol failure.
+- **Proven incompatible constraints:** hard-block dependency compatibility only when the applicable constraints have no intersection. Show the conflicting requirements and the source of each; do not equate one failed resolution attempt, a tested-range endpoint, or a missing package with proof of an empty intersection.
+
+Report platform readiness separately from AMKernel execution readiness. Do not change dependencies without approval. Use the official Appium Python Client directly with the options classes available in the observed client; no arbitrary major-version requirement and no removed `desired_capabilities`. Read `references/amkernel-appium.md` for the connection, retained-state, bounded-output, and cleanup seam.
 
 When a task benefits from continuity, assign the live client to a top-level `driver` so later `python_exec` calls can reuse it. A persistent Python object does not prove that its external Appium session is still alive; verify with a small relevant live query before acting.
 

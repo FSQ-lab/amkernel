@@ -4,6 +4,10 @@ All notable changes to AMKernel are recorded here. Public releases use semantic 
 
 ## [Unreleased]
 
+### Fixed
+
+- Classify Appium dependency warnings and unverified matrix coverage separately from proven incompatible constraints, using the actual `python_exec` interpreter and package metadata. Remove the Skill's arbitrary Appium 6.x requirement and scope approved repairs to the observed Runtime ([#102](https://github.com/FSQ-lab/amkernel/issues/102)).
+
 ## [0.1.0] - 2026-11-02
 
 ### Breaking
