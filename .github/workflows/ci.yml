@@ -13,10 +13,6 @@ concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  UV_DEFAULT_INDEX: https://pypi.tuna.tsinghua.edu.cn/simple
-  UV_HTTP_RETRIES: "10"
-
 jobs:
   quality:
     name: quality
