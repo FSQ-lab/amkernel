@@ -210,6 +210,7 @@ def test_release_workflow_uses_trusted_exact_artifact_path() -> None:
     ci_workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
     lock = (ROOT / "uv.lock").read_text(encoding="utf-8")
     pypi_job = workflow.split("\n  pypi:\n", 1)[1]
+    github_release_job = workflow.split("\n  github-release:\n", 1)[1].split("\n  pypi:\n", 1)[0]
 
     assert "permissions: {}" in workflow
     assert "UV_DEFAULT_INDEX" not in ci_workflow
@@ -218,7 +219,22 @@ def test_release_workflow_uses_trusted_exact_artifact_path() -> None:
     assert "name: pypi\n      url: https://pypi.org/p/amkernel" in pypi_job
     assert "actions: read\n      id-token: write" in pypi_job
     assert "actions/checkout" not in pypi_job
-    assert "name: distribution-${{ github.sha }}" in workflow
+    assert "name: distribution-${{ steps.release.outputs.commit }}" in workflow
+    assert "commit: ${{ steps.release.outputs.commit }}" in workflow
+    assert "COMMIT: ${{ needs.prepare.outputs.commit }}" in workflow
+    assert 'COMMIT=$(git rev-list -n 1 "$TAG")' in workflow
+    resolved_checkout = 'git checkout --detach "${{ steps.release.outputs.commit }}"'
+    assert resolved_checkout in workflow
+    assert workflow.index(resolved_checkout) < workflow.index("name: Set up Python")
+    assert workflow.index(resolved_checkout) < workflow.index(
+        "Validate candidate and prepare metadata"
+    )
+    release_checkout = 'git checkout --detach "${{ needs.prepare.outputs.commit }}"'
+    assert release_checkout in github_release_job
+    assert github_release_job.index(release_checkout) < github_release_job.index(
+        "scripts/verify_github_release.py"
+    )
+    assert "name: distribution-${{ github.sha }}" not in workflow
     assert "run-id: ${{ inputs.ci_run_id }}" in workflow
     assert "repos/$GITHUB_REPOSITORY/actions/runs/$CI_RUN_ID" in workflow
     assert workflow.count("actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333") == 4
