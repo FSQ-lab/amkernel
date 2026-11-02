@@ -207,9 +207,11 @@ def test_existing_release_must_match_metadata_asset_set_and_digest(tmp_path: Pat
 
 def test_release_workflow_uses_trusted_exact_artifact_path() -> None:
     workflow = (ROOT / ".github" / "workflows" / "release.yml").read_text(encoding="utf-8")
+    ci_workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
     pypi_job = workflow.split("\n  pypi:\n", 1)[1]
 
     assert "permissions: {}" in workflow
+    assert "UV_DEFAULT_INDEX" not in ci_workflow
     assert "name: pypi\n      url: https://pypi.org/p/amkernel" in pypi_job
     assert "actions: read\n      id-token: write" in pypi_job
     assert "actions/checkout" not in pypi_job
