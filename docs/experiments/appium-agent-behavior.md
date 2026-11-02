@@ -618,3 +618,64 @@ independent review; none has been performed. Prior review applies only to its
 recorded source/evidence, not to the retry or a future correction. This is a
 verification classification defect, not an observed tablet fault.
 
+## 14. Focused real macOS application plan (#109)
+
+[#109](https://github.com/FSQ-lab/amkernel/issues/109) records the owner's request
+to decompose more complex Mac behavior. This section is **planning, not execution
+or qualification**. TextEdit and Finder were found at
+`/System/Applications/TextEdit.app` and `/System/Library/CoreServices/Finder.app`;
+their presence does not prove Mac2 automation support.
+
+Use **TextEdit first**, then **Finder**. They expose documents, windows, dialogs,
+local persistent state and dynamic selection without installing a third-party app
+or involving accounts/cloud data. Calculator remains a cheap route/session smoke.
+Do not start with Mail, Notes, browser login flows or global System Settings.
+
+| ID | Application / focus | Acceptance that distinguishes a plausible failure |
+| --- | --- | --- |
+| M0 | Calculator / baseline | Corrected recovery classification plus actual Mac2 identity, one session, foreground/window observations, restoration and owned cleanup; not just a successful constructor. |
+| M1 | TextEdit / multi-window target | Two owned synthetic documents with similar names; verify the selected document/window identity, and leave the distractor unchanged. No fixed position or coordinates as identity. |
+| M2 | TextEdit / edit, save, reopen | Edit a synthetic marker via UI, save in the task directory, reopen via UI, and independently verify expected logical content/format and unchanged distractor. File writes by the harness cannot substitute for the requested UI edit. |
+| M3 | TextEdit / dialogs, collision, cancel | An existing synthetic destination exercises the overwrite boundary; without scoped overwrite approval, cancel and verify the destination is unchanged on disk, not merely that the dialog closed. |
+| M4 | Finder / dynamic relocation | Search only an owned fixture directory with duplicate/similar labels; after fixture insertion/reordering, re-find and verify the destination. Ambiguity or incomplete scope must not become a guessed action or global absence claim. |
+| M5 | Finder + TextEdit / cross-app identity | Open the specified owned document from Finder, verify it in TextEdit before editing, and return to the correct task window; preserve preexisting app/window state. |
+| M6 | TextEdit / interrupted session | Use an isolated owned-session interruption; inspect actual status/kernelState and a relevant live query. Inspect persisted synthetic state before repeating a save; session_id alone is not liveness and a final no-op is not recovery. |
+| M7 | Owned resources / partial success | Observe task, restoration, session and server outcomes separately; restoration precedes quit when it needs the session. Safe isolated fault injection only; failed cleanup stays failed/unknown and shared services stay untouched. |
+
+### Execution order and boundaries
+
+1. Correct #108, independently review it, and obtain new Calculator baseline proof.
+2. M1–M3: identity, document persistence, then dialog/approval boundaries.
+3. M4–M5: dynamic relocation, then cross-application continuity.
+4. M6–M7: controlled interruption, recovery and partial-success reporting.
+
+One main behavior per scenario; deterministic synthetic fixtures and pre-state
+records. Each executed scenario needs actual installed client/Skill/wheel and Mac2
+observations, a focused behavioral check and independent review. The fixed
+cross-platform final sequence is unchanged; this supplement does not replace
+Android/iOS/Windows evidence or turn deferred #97/#99 work into a release gate.
+
+Target UI actions go through Appium and the sole public `python_exec`. The
+external verifier may prepare fixtures and observe the resulting filesystem/app
+state, but may not perform the Agent's requested actions behind the UI. Use
+minimal targeted identity/attributes, not full page source, personal file lists,
+full desktop screenshots or clipboard contents.
+
+Before execution, disclose the exact temporary-file/window changes and obtain
+scoped approval where needed. Automation permission is not blanket overwrite,
+delete, cloud, dependency-installation, accessibility/signing or global-preference
+permission. Touch only task-owned synthetic documents/windows; unexpected personal
+document reopening is a stop condition, not permission to inspect it. Never quit
+Finder or terminate a preexisting TextEdit instance to clean up task windows.
+
+Restore only owned reversible side effects; preserve requested successful output
+artifacts until verified. Record task/restoration/session/server separately and
+do not infer global cleanup. Keep short continuous actions together, with meaningful
+boundaries for preparation, long waits, verification, restoration and cleanup.
+Fault injection must not destabilize a shared desktop; without safe isolation,
+report that case as unexercised rather than claiming pass.
+
+These are Skill/Agent/platform experiment scenarios, not new Runtime modules,
+Appium wrappers, workflows or app-specific core APIs. No new scenario was run as
+part of recording this plan.
+

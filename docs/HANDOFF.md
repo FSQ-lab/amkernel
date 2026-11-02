@@ -245,6 +245,16 @@ and neither the original evidence nor #103 has been relabeled complete. Previous
 independent reviews do not cover a future oracle correction or this new retry.
 See `docs/experiments/appium-agent-behavior.md` §13 for evidence boundaries.
 
+The owner requested more complex Mac scenarios, recorded as planning-only
+[#109](https://github.com/FSQ-lab/amkernel/issues/109): TextEdit first for
+multi-window identity, edit/save/reopen and dialog cancellation; Finder next for
+dynamic relocation and cross-app continuity; isolated interruption/partial-cleanup
+cases last. Both app paths were observed, not automation-qualified. See
+`docs/experiments/appium-agent-behavior.md` §14 for M0–M7, evidence, permissions and
+ownership. No new app scenario or oracle fix has been executed. The original
+cross-platform regression order and deferred #97/#99 boundaries remain unchanged.
+
+
 Next: correct and independently review the recovered-error verification contract
 before formal Calculator qualification, then complete actual platform acceptance
 in the fixed order as external prerequisites and required permissions become
