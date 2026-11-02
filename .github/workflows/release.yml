@@ -122,7 +122,9 @@ jobs:
             test "$(git cat-file -t "$TAG")" = "tag"
             test "$(git rev-list -n 1 "$TAG")" = "$GITHUB_SHA"
           else
-            git tag --annotate "$TAG" --message "$TITLE" "$GITHUB_SHA"
+            git -c user.name=github-actions[bot] \
+              -c user.email=41898282+github-actions[bot]@users.noreply.github.com \
+              tag --annotate "$TAG" --message "$TITLE" "$GITHUB_SHA"
             git push origin "refs/tags/$TAG"
           fi
           if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
