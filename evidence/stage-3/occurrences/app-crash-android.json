@@ -1,0 +1,103 @@
+{
+  "calls": [
+    {
+      "error": null,
+      "executionCount": 1,
+      "kernelState": "alive",
+      "output": {
+        "discardedBytes": 0,
+        "discardedLines": 0,
+        "limitBytes": 268435456,
+        "limitExceeded": false,
+        "live": "unavailable",
+        "totalBytes": 0,
+        "totalLines": 0,
+        "truncated": false
+      },
+      "result": "7989c36e-ac18-42c7-94c1-463c2ffb0cb2",
+      "status": "completed"
+    },
+    {
+      "error": {
+        "message": "fixture app terminated; observed state=1",
+        "traceback": [
+          "Traceback (most recent call last):",
+          "  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell",
+          "    value = _compile_and_execute(code, execution_count, namespace)",
+          "  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 525, in _compile_and_execute",
+          "    exec(prefix_code, namespace, namespace)",
+          "    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+          "  File \"<amkernel-cell-2>\", line 3, in <module>",
+          "RuntimeError: fixture app terminated; observed state=1"
+        ],
+        "type": "RuntimeError"
+      },
+      "executionCount": 2,
+      "kernelState": "alive",
+      "output": {
+        "discardedBytes": 0,
+        "discardedLines": 0,
+        "limitBytes": 268435456,
+        "limitExceeded": false,
+        "live": "unavailable",
+        "totalBytes": 0,
+        "totalLines": 0,
+        "truncated": false
+      },
+      "result": null,
+      "status": "failed"
+    },
+    {
+      "error": null,
+      "executionCount": 3,
+      "kernelState": "alive",
+      "output": {
+        "discardedBytes": 0,
+        "discardedLines": 0,
+        "limitBytes": 268435456,
+        "limitExceeded": false,
+        "live": "unavailable",
+        "totalBytes": 0,
+        "totalLines": 0,
+        "truncated": false
+      },
+      "result": {
+        "kernel": "alive",
+        "sessionId": "7989c36e-ac18-42c7-94c1-463c2ffb0cb2"
+      },
+      "status": "completed"
+    },
+    {
+      "error": null,
+      "executionCount": 4,
+      "kernelState": "alive",
+      "output": {
+        "discardedBytes": 0,
+        "discardedLines": 0,
+        "limitBytes": 268435456,
+        "limitExceeded": false,
+        "live": "unavailable",
+        "totalBytes": 0,
+        "totalLines": 0,
+        "truncated": false
+      },
+      "result": "quit observed",
+      "status": "completed"
+    }
+  ],
+  "case": "app-crash",
+  "injection": "executed app-crash against a live Appium session",
+  "observations": {
+    "controlServerState": "online",
+    "deviceAfterFailure": "device probe returned 'device'",
+    "deviceBeforeInjection": "device probe returned 'device'",
+    "kernelAfterRecovery": "alive",
+    "kernelAtFailure": "alive",
+    "managedPids": [],
+    "platformDriverFault": null,
+    "serverAtFailure": "online",
+    "sessionAfterCleanup": "Appium session 7989c36e-ac18-42c7-94c1-463c2ffb0cb2 is absent",
+    "sessionAtFailure": "Appium session 7989c36e-ac18-42c7-94c1-463c2ffb0cb2 remains active"
+  },
+  "platform": "android"
+}

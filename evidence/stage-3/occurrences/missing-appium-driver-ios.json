@@ -1,0 +1,69 @@
+{
+  "calls": [
+    {
+      "error": {
+        "message": "<custom __str__ omitted for selenium.common.exceptions.WebDriverException>",
+        "traceback": [
+          "Traceback (most recent call last):",
+          "  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 540, in _execute_cell",
+          "    value = _compile_and_execute(code, execution_count, namespace)",
+          "  File \"<venv>/lib/python3.13/site-packages/amkernel/runner.py\", line 525, in _compile_and_execute",
+          "    exec(prefix_code, namespace, namespace)",
+          "    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+          "  File \"<amkernel-cell-1>\", line 9, in <module>",
+          "  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/webdriver.py\", line 249, in __init__",
+          "    super().__init__(",
+          "    ~~~~~~~~~~~~~~~~^",
+          "        command_executor=command_executor,",
+          "        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+          "    ...<3 lines>...",
+          "        client_config=client_config,",
+          "        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+          "    )",
+          "    ^",
+          "  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 356, in __init__",
+          "    self.start_session(capabilities)",
+          "    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^",
+          "  File \"<venv>/lib/python3.13/site-packages/appium/webdriver/webdriver.py\", line 342, in start_session",
+          "    response = self.execute(RemoteCommand.NEW_SESSION, w3c_caps)",
+          "  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py\", line 566, in execute",
+          "    self.error_handler.check_response(response)",
+          "    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^",
+          "  File \"<venv>/lib/python3.13/site-packages/selenium/webdriver/remote/errorhandler.py\", line 234, in check_response",
+          "    raise exception_class(message, screen, stacktrace)",
+          "selenium.common.exceptions.WebDriverException: <custom __str__ omitted for selenium.common.exceptions.WebDriverException>"
+        ],
+        "type": "selenium.common.exceptions.WebDriverException"
+      },
+      "executionCount": 1,
+      "kernelState": "alive",
+      "output": {
+        "discardedBytes": 0,
+        "discardedLines": 0,
+        "limitBytes": 268435456,
+        "limitExceeded": false,
+        "live": "unavailable",
+        "totalBytes": 0,
+        "totalLines": 0,
+        "truncated": false
+      },
+      "result": null,
+      "status": "failed"
+    }
+  ],
+  "case": "missing-appium-driver",
+  "injection": "requested an uninstalled Appium automation driver",
+  "observations": {
+    "controlServerState": "online",
+    "deviceAfterFailure": "simulator state is 'Booted'",
+    "deviceBeforeInjection": "simulator state is 'Booted'",
+    "kernelAfterRecovery": "alive",
+    "kernelAtFailure": "alive",
+    "managedPids": [],
+    "platformDriverFault": null,
+    "serverAtFailure": "online",
+    "sessionAfterCleanup": "session was not created",
+    "sessionAtFailure": "session was not created"
+  },
+  "platform": "ios"
+}

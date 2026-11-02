@@ -1,0 +1,36 @@
+{
+  "calls": [
+    {
+      "error": null,
+      "executionCount": 1,
+      "kernelState": "alive",
+      "output": {
+        "discardedBytes": 0,
+        "discardedLines": 0,
+        "limitBytes": 268435456,
+        "limitExceeded": false,
+        "live": "unavailable",
+        "totalBytes": 0,
+        "totalLines": 0,
+        "truncated": false
+      },
+      "result": "9b1ef995-c114-4c66-9fe2-89bb8653b28f",
+      "status": "completed"
+    }
+  ],
+  "case": "driver-quit-during-kernel-shutdown",
+  "injection": "closed MCP transport while the Appium driver remained live",
+  "observations": {
+    "controlServerState": "online",
+    "deviceAfterFailure": "device probe returned 'device'",
+    "deviceBeforeInjection": "device probe returned 'device'",
+    "kernelAfterRecovery": "dead",
+    "kernelAtFailure": "dead",
+    "managedPids": [],
+    "platformDriverFault": null,
+    "serverAtFailure": "online",
+    "sessionAfterCleanup": "Appium session 9b1ef995-c114-4c66-9fe2-89bb8653b28f remains active; DELETE session returned HTTP 200; Appium session 9b1ef995-c114-4c66-9fe2-89bb8653b28f is absent",
+    "sessionAtFailure": "Appium session 9b1ef995-c114-4c66-9fe2-89bb8653b28f remains active"
+  },
+  "platform": "android"
+}

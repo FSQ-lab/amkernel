@@ -1,0 +1,1602 @@
+{
+  "amkernel": {
+    "calls": 3,
+    "continuationVerified": true,
+    "executionCounts": [
+      1,
+      2,
+      3
+    ],
+    "kernelState": "alive",
+    "outputs": [
+      {
+        "artifactCount": 0,
+        "call": 1,
+        "discardedBytes": 0,
+        "durationMs": 8720,
+        "limitBytes": 268435456,
+        "live": "unavailable",
+        "status": "completed",
+        "stderrStoredBytes": 0,
+        "stdoutStoredBytes": 0,
+        "textSha256": "a0549d4fa2244b63abc703f955ee219dd4fa259bcea041cb172481f7b99af2fe",
+        "totalBytes": 0,
+        "truncated": false
+      },
+      {
+        "artifactCount": 11,
+        "call": 2,
+        "discardedBytes": 0,
+        "durationMs": 22762,
+        "limitBytes": 268435456,
+        "live": "unavailable",
+        "status": "completed",
+        "stderrStoredBytes": 0,
+        "stdoutStoredBytes": 38378,
+        "textSha256": "bab3671862a9db650f0faf836587659f3b377cf0ae91be1d554702260d599fb7",
+        "totalBytes": 38378,
+        "truncated": false
+      },
+      {
+        "artifactCount": 0,
+        "call": 3,
+        "discardedBytes": 0,
+        "durationMs": 3,
+        "limitBytes": 268435456,
+        "live": "unavailable",
+        "status": "completed",
+        "stderrStoredBytes": 0,
+        "stdoutStoredBytes": 0,
+        "textSha256": "ae3f03dcc9aeb785fcad40ba947c67f93b5cd192ed4eac5890734ada08a61870",
+        "totalBytes": 0,
+        "truncated": false
+      }
+    ],
+    "tool": "python_exec"
+  },
+  "artifacts": [
+    {
+      "kind": "screenshot",
+      "mimeType": "image/png",
+      "path": "ios-launch.png",
+      "sha256": "b52fb1a776e859ad2a8a7ceb5a6f7f1daae05de063734fbe8eec7fd6caf3bfde",
+      "sizeBytes": 259504
+    },
+    {
+      "kind": "screenshot",
+      "mimeType": "image/png",
+      "path": "ios-confirm-text.png",
+      "sha256": "125034dcf889da4910da58d4714dbc8d120a150cd3d0b5491264bb8802f13472",
+      "sizeBytes": 150067
+    },
+    {
+      "kind": "screenshot",
+      "mimeType": "image/png",
+      "path": "ios-confirm-modal-dismissed.png",
+      "sha256": "8ecdbba8e5d56fd77057f2c366a6bdddd470c217987ff216d334f866e80f64c5",
+      "sizeBytes": 124758
+    },
+    {
+      "kind": "screenshot",
+      "mimeType": "image/png",
+      "path": "ios-wait-progress-change.png",
+      "sha256": "0e595e1d76196249930c7b45e7133430f496c3f4aeb8d2f60e6d4f950a3171eb",
+      "sizeBytes": 88007
+    },
+    {
+      "kind": "screenshot",
+      "mimeType": "image/png",
+      "path": "ios-confirm-success.png",
+      "sha256": "093f1148d19544f1673b5d87089bf3086cdfc38c9c97f8c840c9296e9cdf8696",
+      "sizeBytes": 257523
+    },
+    {
+      "kind": "page-source",
+      "mimeType": "application/xml",
+      "path": "ios-capture-large-tree.xml",
+      "sha256": "11b24e8f2cf3cdfe3fc46f8c9778f11aad531e374b01e4518e5b4073235bc631",
+      "sizeBytes": 38377
+    },
+    {
+      "call": 2,
+      "kind": "amkernel-artifact",
+      "mimeType": "image/png",
+      "path": "public-call-2-artifact-1.bin",
+      "sequence": 1,
+      "sha256": "b52fb1a776e859ad2a8a7ceb5a6f7f1daae05de063734fbe8eec7fd6caf3bfde",
+      "sizeBytes": 259504,
+      "sourceUri": "amkernel://artifact/0de24442120748d7945bb651834175c7/760eccf96dfc493ca875fff37426105a"
+    },
+    {
+      "call": 2,
+      "kind": "amkernel-artifact",
+      "mimeType": "image/png",
+      "path": "public-call-2-artifact-2.png",
+      "sequence": 2,
+      "sha256": "b52fb1a776e859ad2a8a7ceb5a6f7f1daae05de063734fbe8eec7fd6caf3bfde",
+      "sizeBytes": 259504,
+      "sourceUri": "amkernel://artifact/0de24442120748d7945bb651834175c7/e2b518a93ccd43e2b4eaeb4045fccb54"
+    },
+    {
+      "call": 2,
+      "kind": "amkernel-artifact",
+      "mimeType": "image/png",
+      "path": "public-call-2-artifact-3.bin",
+      "sequence": 3,
+      "sha256": "125034dcf889da4910da58d4714dbc8d120a150cd3d0b5491264bb8802f13472",
+      "sizeBytes": 150067,
+      "sourceUri": "amkernel://artifact/0de24442120748d7945bb651834175c7/cacb1e744f5644ccb05844a7e150bf1c"
+    },
+    {
+      "call": 2,
+      "kind": "amkernel-artifact",
+      "mimeType": "image/png",
+      "path": "public-call-2-artifact-4.png",
+      "sequence": 4,
+      "sha256": "125034dcf889da4910da58d4714dbc8d120a150cd3d0b5491264bb8802f13472",
+      "sizeBytes": 150067,
+      "sourceUri": "amkernel://artifact/0de24442120748d7945bb651834175c7/c726ecb06b39433c838e72b29c612925"
+    },
+    {
+      "call": 2,
+      "kind": "amkernel-artifact",
+      "mimeType": "image/png",
+      "path": "public-call-2-artifact-5.bin",
+      "sequence": 5,
+      "sha256": "8ecdbba8e5d56fd77057f2c366a6bdddd470c217987ff216d334f866e80f64c5",
+      "sizeBytes": 124758,
+      "sourceUri": "amkernel://artifact/0de24442120748d7945bb651834175c7/fc5e25458f7e44cd977d1bb25859eeec"
+    },
+    {
+      "call": 2,
+      "kind": "amkernel-artifact",
+      "mimeType": "image/png",
+      "path": "public-call-2-artifact-6.png",
+      "sequence": 6,
+      "sha256": "8ecdbba8e5d56fd77057f2c366a6bdddd470c217987ff216d334f866e80f64c5",
+      "sizeBytes": 124758,
+      "sourceUri": "amkernel://artifact/0de24442120748d7945bb651834175c7/a7b5b8f38ddf4be9bddf346fdbb4b9db"
+    },
+    {
+      "call": 2,
+      "kind": "amkernel-artifact",
+      "mimeType": "image/png",
+      "path": "public-call-2-artifact-7.bin",
+      "sequence": 7,
+      "sha256": "0e595e1d76196249930c7b45e7133430f496c3f4aeb8d2f60e6d4f950a3171eb",
+      "sizeBytes": 88007,
+      "sourceUri": "amkernel://artifact/0de24442120748d7945bb651834175c7/b78d0ec157a04668a2edf2c418c4c64c"
+    },
+    {
+      "call": 2,
+      "kind": "amkernel-artifact",
+      "mimeType": "image/png",
+      "path": "public-call-2-artifact-8.png",
+      "sequence": 8,
+      "sha256": "0e595e1d76196249930c7b45e7133430f496c3f4aeb8d2f60e6d4f950a3171eb",
+      "sizeBytes": 88007,
+      "sourceUri": "amkernel://artifact/0de24442120748d7945bb651834175c7/908553422a4f49ae956598d97bca59a5"
+    },
+    {
+      "call": 2,
+      "kind": "amkernel-artifact",
+      "mimeType": "image/png",
+      "path": "public-call-2-artifact-9.bin",
+      "sequence": 9,
+      "sha256": "093f1148d19544f1673b5d87089bf3086cdfc38c9c97f8c840c9296e9cdf8696",
+      "sizeBytes": 257523,
+      "sourceUri": "amkernel://artifact/0de24442120748d7945bb651834175c7/4eedcd44e09b4c8abff7cd3bbde7a62d"
+    },
+    {
+      "call": 2,
+      "kind": "amkernel-artifact",
+      "mimeType": "image/png",
+      "path": "public-call-2-artifact-10.png",
+      "sequence": 10,
+      "sha256": "093f1148d19544f1673b5d87089bf3086cdfc38c9c97f8c840c9296e9cdf8696",
+      "sizeBytes": 257523,
+      "sourceUri": "amkernel://artifact/0de24442120748d7945bb651834175c7/a93b58d5e1cc42fd959bd2a8f7663a83"
+    },
+    {
+      "call": 2,
+      "kind": "amkernel-artifact",
+      "mimeType": "application/octet-stream",
+      "path": "public-call-2-artifact-11.xml",
+      "sequence": 11,
+      "sha256": "11b24e8f2cf3cdfe3fc46f8c9778f11aad531e374b01e4518e5b4073235bc631",
+      "sizeBytes": 38377,
+      "sourceUri": "amkernel://artifact/0de24442120748d7945bb651834175c7/34aa3b1516f54adf8eeb3b903db81549"
+    },
+    {
+      "call": 2,
+      "kind": "amkernel-display",
+      "mimeType": "image/png",
+      "path": "public-call-2-display-12.bin",
+      "sequence": 12,
+      "sha256": "b52fb1a776e859ad2a8a7ceb5a6f7f1daae05de063734fbe8eec7fd6caf3bfde",
+      "sizeBytes": 259504,
+      "sourceUri": "amkernel://artifact/0de24442120748d7945bb651834175c7/760eccf96dfc493ca875fff37426105a"
+    },
+    {
+      "call": 2,
+      "kind": "amkernel-display",
+      "mimeType": "image/png",
+      "path": "public-call-2-display-13.bin",
+      "sequence": 13,
+      "sha256": "125034dcf889da4910da58d4714dbc8d120a150cd3d0b5491264bb8802f13472",
+      "sizeBytes": 150067,
+      "sourceUri": "amkernel://artifact/0de24442120748d7945bb651834175c7/cacb1e744f5644ccb05844a7e150bf1c"
+    },
+    {
+      "call": 2,
+      "kind": "amkernel-display",
+      "mimeType": "image/png",
+      "path": "public-call-2-display-14.bin",
+      "sequence": 14,
+      "sha256": "8ecdbba8e5d56fd77057f2c366a6bdddd470c217987ff216d334f866e80f64c5",
+      "sizeBytes": 124758,
+      "sourceUri": "amkernel://artifact/0de24442120748d7945bb651834175c7/fc5e25458f7e44cd977d1bb25859eeec"
+    },
+    {
+      "call": 2,
+      "kind": "amkernel-display",
+      "mimeType": "image/png",
+      "path": "public-call-2-display-15.bin",
+      "sequence": 15,
+      "sha256": "0e595e1d76196249930c7b45e7133430f496c3f4aeb8d2f60e6d4f950a3171eb",
+      "sizeBytes": 88007,
+      "sourceUri": "amkernel://artifact/0de24442120748d7945bb651834175c7/b78d0ec157a04668a2edf2c418c4c64c"
+    },
+    {
+      "call": 2,
+      "kind": "amkernel-display",
+      "mimeType": "image/png",
+      "path": "public-call-2-display-16.bin",
+      "sequence": 16,
+      "sha256": "093f1148d19544f1673b5d87089bf3086cdfc38c9c97f8c840c9296e9cdf8696",
+      "sizeBytes": 257523,
+      "sourceUri": "amkernel://artifact/0de24442120748d7945bb651834175c7/4eedcd44e09b4c8abff7cd3bbde7a62d"
+    },
+    {
+      "kind": "amkernel-result",
+      "mimeType": "application/json",
+      "path": "amkernel-result.json",
+      "sha256": "83e838d93ad08e32364371c378b4379f5193159f1d10bc917efd192749294e14",
+      "sizeBytes": 65179
+    },
+    {
+      "kind": "screenshot",
+      "mimeType": "image/png",
+      "path": "screenshot-01.png",
+      "sha256": "53895d6f5c90e51a48851f053efce2facecb14af7cabe17000368fe1e7bb388f",
+      "sizeBytes": 257981
+    },
+    {
+      "kind": "screenshot",
+      "mimeType": "image/png",
+      "path": "screenshot-02.png",
+      "sha256": "53895d6f5c90e51a48851f053efce2facecb14af7cabe17000368fe1e7bb388f",
+      "sizeBytes": 257981
+    },
+    {
+      "kind": "screenshot",
+      "mimeType": "image/png",
+      "path": "screenshot-03.png",
+      "sha256": "53895d6f5c90e51a48851f053efce2facecb14af7cabe17000368fe1e7bb388f",
+      "sizeBytes": 257981
+    },
+    {
+      "kind": "screenshot",
+      "mimeType": "image/png",
+      "path": "screenshot-04.png",
+      "sha256": "53895d6f5c90e51a48851f053efce2facecb14af7cabe17000368fe1e7bb388f",
+      "sizeBytes": 257981
+    },
+    {
+      "kind": "screenshot",
+      "mimeType": "image/png",
+      "path": "screenshot-05.png",
+      "sha256": "53895d6f5c90e51a48851f053efce2facecb14af7cabe17000368fe1e7bb388f",
+      "sizeBytes": 257981
+    },
+    {
+      "kind": "screenshot",
+      "mimeType": "image/png",
+      "path": "screenshot-06.png",
+      "sha256": "53895d6f5c90e51a48851f053efce2facecb14af7cabe17000368fe1e7bb388f",
+      "sizeBytes": 257981
+    },
+    {
+      "kind": "screenshot",
+      "mimeType": "image/png",
+      "path": "screenshot-07.png",
+      "sha256": "0fc8d8680a6271d837cab789cfbdffa045fbffb0ff81f54d73586ed543c087a8",
+      "sizeBytes": 257092
+    },
+    {
+      "kind": "screenshot",
+      "mimeType": "image/png",
+      "path": "screenshot-08.png",
+      "sha256": "0fc8d8680a6271d837cab789cfbdffa045fbffb0ff81f54d73586ed543c087a8",
+      "sizeBytes": 257092
+    },
+    {
+      "kind": "screenshot",
+      "mimeType": "image/png",
+      "path": "screenshot-09.png",
+      "sha256": "0fc8d8680a6271d837cab789cfbdffa045fbffb0ff81f54d73586ed543c087a8",
+      "sizeBytes": 257092
+    },
+    {
+      "kind": "screenshot",
+      "mimeType": "image/png",
+      "path": "screenshot-10.png",
+      "sha256": "0fc8d8680a6271d837cab789cfbdffa045fbffb0ff81f54d73586ed543c087a8",
+      "sizeBytes": 257092
+    },
+    {
+      "kind": "page-source",
+      "mimeType": "application/xml",
+      "path": "source-01.xml",
+      "sha256": "205d11aee5cce46abcad4299cd337b19bf5df81f3ef339c52507f0862d1764c7",
+      "sizeBytes": 38377
+    },
+    {
+      "kind": "page-source",
+      "mimeType": "application/xml",
+      "path": "source-02.xml",
+      "sha256": "205d11aee5cce46abcad4299cd337b19bf5df81f3ef339c52507f0862d1764c7",
+      "sizeBytes": 38377
+    },
+    {
+      "kind": "page-source",
+      "mimeType": "application/xml",
+      "path": "source-03.xml",
+      "sha256": "205d11aee5cce46abcad4299cd337b19bf5df81f3ef339c52507f0862d1764c7",
+      "sizeBytes": 38377
+    },
+    {
+      "kind": "page-source",
+      "mimeType": "application/xml",
+      "path": "source-04.xml",
+      "sha256": "205d11aee5cce46abcad4299cd337b19bf5df81f3ef339c52507f0862d1764c7",
+      "sizeBytes": 38377
+    },
+    {
+      "kind": "page-source",
+      "mimeType": "application/xml",
+      "path": "source-05.xml",
+      "sha256": "205d11aee5cce46abcad4299cd337b19bf5df81f3ef339c52507f0862d1764c7",
+      "sizeBytes": 38377
+    },
+    {
+      "kind": "page-source",
+      "mimeType": "application/xml",
+      "path": "source-06.xml",
+      "sha256": "205d11aee5cce46abcad4299cd337b19bf5df81f3ef339c52507f0862d1764c7",
+      "sizeBytes": 38377
+    },
+    {
+      "kind": "page-source",
+      "mimeType": "application/xml",
+      "path": "source-07.xml",
+      "sha256": "205d11aee5cce46abcad4299cd337b19bf5df81f3ef339c52507f0862d1764c7",
+      "sizeBytes": 38377
+    },
+    {
+      "kind": "page-source",
+      "mimeType": "application/xml",
+      "path": "source-08.xml",
+      "sha256": "205d11aee5cce46abcad4299cd337b19bf5df81f3ef339c52507f0862d1764c7",
+      "sizeBytes": 38377
+    },
+    {
+      "kind": "page-source",
+      "mimeType": "application/xml",
+      "path": "source-09.xml",
+      "sha256": "205d11aee5cce46abcad4299cd337b19bf5df81f3ef339c52507f0862d1764c7",
+      "sizeBytes": 38377
+    },
+    {
+      "kind": "page-source",
+      "mimeType": "application/xml",
+      "path": "source-10.xml",
+      "sha256": "205d11aee5cce46abcad4299cd337b19bf5df81f3ef339c52507f0862d1764c7",
+      "sizeBytes": 38377
+    },
+    {
+      "kind": "appium-log",
+      "mimeType": "text/plain",
+      "path": "appium.log",
+      "sha256": "fb36482cab7a3498b4b1db2566f487e97a188833f0270571cd9cb1dcef8cf65b",
+      "sizeBytes": 578800
+    },
+    {
+      "kind": "driver-log",
+      "mimeType": "text/plain",
+      "path": "driver.log",
+      "sha256": "80e69a9a4760cf92faba19305b4032a2a6e5caeafd7239f820d5af409d963bcc",
+      "sizeBytes": 474808
+    },
+    {
+      "kind": "device-log",
+      "mimeType": "text/plain",
+      "path": "device.log",
+      "sha256": "3e8e8fa5221fff3e72feda6152009985e62ae62bacef3cab421d1f1ef3abc70f",
+      "sizeBytes": 2371397
+    },
+    {
+      "kind": "amkernel-log",
+      "mimeType": "text/plain",
+      "path": "amkernel.log",
+      "sha256": "e235f8da6f7adf7c8c262a3a2704ab55dbdda5746003d3673db45f25299845d9",
+      "sizeBytes": 27
+    }
+  ],
+  "cleanup": {
+    "applicationStopped": "observed",
+    "attempted": true,
+    "completed": true,
+    "deviceUsable": "observed",
+    "driverQuit": "observed",
+    "managedProcessesExited": "observed",
+    "observation": "application termination and driver quit completed; AMKernel server and runner processes exited; Appium session 05f23d39-7a4a-48b8-ad87-618b8d8fd396 is absent; device probe returned '6784D2B5-9F57-48ED-9254-2733795C5070'",
+    "remainingExternalResources": [],
+    "sessionAbsent": "observed"
+  },
+  "completedAt": "2026-10-30T07:14:43.457366Z",
+  "device": {
+    "id": "6784D2B5-9F57-48ED-9254-2733795C5070",
+    "kind": "ios-simulator",
+    "name": "iPhone 17 Pro",
+    "osVersion": "27.0",
+    "platformDetails": {
+      "deviceTypeIdentifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro",
+      "runtimeBuild": "24A434",
+      "runtimeIdentifier": "com.apple.CoreSimulator.SimRuntime.iOS-27-0",
+      "runtimeVersion": "27.0",
+      "xcodeBuild": "27A9275",
+      "xcodeVersion": "27.1"
+    },
+    "state": "online"
+  },
+  "durationMs": 35248,
+  "environment": {
+    "amkernel": {
+      "revision": "f25a7abdf1dd9dd33e8031961a41143f14d13bc1",
+      "version": "0.0.0",
+      "wheel": {
+        "filename": "amkernel-0.0.0-py3-none-any.whl",
+        "sha256": "40acc828cd8d1181194b1d572c7bc8ce43f866ad8f519490fcdba0a3ba47a15d",
+        "sizeBytes": 67668
+      }
+    },
+    "appium": {
+      "baseUrl": "http://127.0.0.1:4723",
+      "driverName": "xcuitest",
+      "driverVersion": "12.13.2",
+      "pythonClientVersion": "5.2.5",
+      "seleniumVersion": "4.52.0",
+      "serverVersion": "3.7.0"
+    },
+    "capabilities": {
+      "applicationId": "com.example.apple-samplecode.UICatalog",
+      "automationName": "XCUITest",
+      "noReset": true,
+      "platformName": "iOS",
+      "udid": "6784D2B5-9F57-48ED-9254-2733795C5070"
+    },
+    "host": {
+      "architecture": "arm64",
+      "os": "Darwin",
+      "release": "25.6.0"
+    },
+    "mcp": {
+      "clientVersion": "2.3.0",
+      "protocolVersion": "2026-07-28"
+    },
+    "nodeVersion": "26.12.1",
+    "officialSkills": {
+      "appiumPythonPath": "skills/appium-python",
+      "commit": "e907024c210fe024c956ed9c74146fc27b1dd013",
+      "repository": "https://github.com/appium/skills"
+    },
+    "python": {
+      "implementation": "CPython",
+      "version": "3.13.15"
+    }
+  },
+  "experimentId": "S3-mobile-appium",
+  "fixture": {
+    "applicationId": "com.example.apple-samplecode.UICatalog",
+    "artifactName": "UIKitCatalog-iphonesimulator.zip",
+    "artifactSha256": "6708c9cbdf28bf69b45b10b2cfd53e98c998ad011315bb21b1815399f6a8387e",
+    "artifactSizeBytes": 1754445,
+    "buildCommands": [
+      "git clone https://github.com/appium/ios-uicatalog.git ios-uicatalog",
+      "git -C ios-uicatalog checkout --detach 9981bc4c9441f00e77064d85e5552dba72a37bea",
+      "xcodebuild -project ios-uicatalog/UIKitCatalog/UIKitCatalog.xcodeproj -scheme UIKitCatalog -configuration Release -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath ios-uicatalog/build CODE_SIGNING_ALLOWED=NO build"
+    ],
+    "commit": "9981bc4c9441f00e77064d85e5552dba72a37bea",
+    "id": "appium-ios-uicatalog-v4.0.5",
+    "installCommand": "xcrun simctl install $IOS_SIMULATOR_UDID UIKitCatalog-iphonesimulator/UIKitCatalog.app",
+    "license": "Apache-2.0",
+    "redistribution": "Apache-2.0 redistribution permitted with license and notice preservation",
+    "repository": "https://github.com/appium/ios-uicatalog",
+    "tag": "v4.0.5"
+  },
+  "logs": {
+    "amkernel": {
+      "kind": "amkernel-log",
+      "mimeType": "text/plain",
+      "path": "amkernel.log",
+      "sha256": "e235f8da6f7adf7c8c262a3a2704ab55dbdda5746003d3673db45f25299845d9",
+      "sizeBytes": 27
+    },
+    "appiumServer": {
+      "kind": "appium-log",
+      "mimeType": "text/plain",
+      "path": "appium.log",
+      "sha256": "fb36482cab7a3498b4b1db2566f487e97a188833f0270571cd9cb1dcef8cf65b",
+      "sizeBytes": 578800
+    },
+    "device": {
+      "kind": "device-log",
+      "mimeType": "text/plain",
+      "path": "device.log",
+      "sha256": "3e8e8fa5221fff3e72feda6152009985e62ae62bacef3cab421d1f1ef3abc70f",
+      "sizeBytes": 2371397
+    },
+    "platformDriver": {
+      "kind": "driver-log",
+      "mimeType": "text/plain",
+      "path": "driver.log",
+      "sha256": "80e69a9a4760cf92faba19305b4032a2a6e5caeafd7239f820d5af409d963bcc",
+      "sizeBytes": 474808
+    }
+  },
+  "measurementProtocol": {
+    "definitionSha256": "cce69f8edc3f63e88a614eaf83d419440869219a654369df05a78057bb8f3faf",
+    "id": "amkernel-mobile-appium-measurement-v1",
+    "resultsProvenance": {
+      "amkernelRevision": "f25a7abdf1dd9dd33e8031961a41143f14d13bc1",
+      "amkernelWheelSha256": "40acc828cd8d1181194b1d572c7bc8ce43f866ad8f519490fcdba0a3ba47a15d",
+      "completedAt": "2026-10-30T07:11:17.848679Z",
+      "deviceBuild": "24A434",
+      "deviceId": "6784D2B5-9F57-48ED-9254-2733795C5070",
+      "measurementProtocolSha256": "cce69f8edc3f63e88a614eaf83d419440869219a654369df05a78057bb8f3faf",
+      "platform": "ios",
+      "startedAt": "2026-10-30T07:10:03.085015Z"
+    }
+  },
+  "measurements": {
+    "activeDriverMemory": {
+      "baselinePoint": "post-session-baseline",
+      "ceilingDelta": 1073741824,
+      "deltas": {
+        "amkernel": 65536,
+        "appiumServer": 344064,
+        "platformDriver": 21528576
+      },
+      "passed": true,
+      "status": "measured",
+      "unit": "bytes"
+    },
+    "agentToolCallCount": {
+      "ceiling": 40,
+      "passed": true,
+      "samples": [
+        3
+      ],
+      "status": "measured",
+      "summary": {
+        "maximum": 3,
+        "median": 3,
+        "minimum": 3
+      },
+      "unit": "calls"
+    },
+    "appiumSessionStartup": {
+      "ceiling": 120000,
+      "passed": true,
+      "samples": [
+        6003.0605,
+        1373.998792,
+        1377.29775
+      ],
+      "status": "measured",
+      "summary": {
+        "maximum": 6003.0605,
+        "median": 1377.29775,
+        "minimum": 1373.998792
+      },
+      "unit": "milliseconds"
+    },
+    "contextReduction": {
+      "maximumAfterBytes": 32768,
+      "minimumReductionRatio": 0.8,
+      "observations": [
+        {
+          "afterBytes": 899,
+          "beforeBytes": 38377,
+          "reductionRatio": 0.9765745107746827
+        },
+        {
+          "afterBytes": 899,
+          "beforeBytes": 38377,
+          "reductionRatio": 0.9765745107746827
+        },
+        {
+          "afterBytes": 899,
+          "beforeBytes": 38377,
+          "reductionRatio": 0.9765745107746827
+        },
+        {
+          "afterBytes": 899,
+          "beforeBytes": 38377,
+          "reductionRatio": 0.9765745107746827
+        },
+        {
+          "afterBytes": 899,
+          "beforeBytes": 38377,
+          "reductionRatio": 0.9765745107746827
+        },
+        {
+          "afterBytes": 899,
+          "beforeBytes": 38377,
+          "reductionRatio": 0.9765745107746827
+        },
+        {
+          "afterBytes": 899,
+          "beforeBytes": 38377,
+          "reductionRatio": 0.9765745107746827
+        },
+        {
+          "afterBytes": 899,
+          "beforeBytes": 38377,
+          "reductionRatio": 0.9765745107746827
+        },
+        {
+          "afterBytes": 899,
+          "beforeBytes": 38377,
+          "reductionRatio": 0.9765745107746827
+        },
+        {
+          "afterBytes": 899,
+          "beforeBytes": 38377,
+          "reductionRatio": 0.9765745107746827
+        }
+      ],
+      "passed": true,
+      "status": "measured"
+    },
+    "escalationCleanup": {
+      "ceiling": 15000,
+      "passed": true,
+      "samples": [
+        213.801583,
+        216.723166,
+        214.797375
+      ],
+      "status": "measured",
+      "summary": {
+        "maximum": 216.723166,
+        "median": 214.797375,
+        "minimum": 213.801583
+      },
+      "unit": "milliseconds"
+    },
+    "idleKernelMemory": {
+      "ceiling": 1073741824,
+      "observations": {
+        "amkernel": 74465280,
+        "appiumServer": 246317056
+      },
+      "passed": true,
+      "status": "measured",
+      "unit": "bytes"
+    },
+    "kernelStartup": {
+      "ceiling": 10000,
+      "passed": true,
+      "samples": [
+        375.853875,
+        369.650542,
+        361.438875
+      ],
+      "status": "measured",
+      "summary": {
+        "maximum": 375.853875,
+        "median": 369.650542,
+        "minimum": 361.438875
+      },
+      "unit": "milliseconds"
+    },
+    "outputDeliveryLatency": {
+      "ceiling": 10000,
+      "passed": true,
+      "samples": [
+        7.110749999999825,
+        9.044958000000406,
+        8.847541000000092,
+        6.506083999999646,
+        9.9506250000004,
+        7.657291000000441,
+        7.944542000000183,
+        7.980666999999812,
+        7.089041999999608,
+        7.228417000000263
+      ],
+      "status": "measured",
+      "summary": {
+        "maximum": 9.9506250000004,
+        "median": 7.800916500000312,
+        "minimum": 6.506083999999646
+      },
+      "unit": "milliseconds"
+    },
+    "pageSource": {
+      "baseline": 17.238396,
+      "ceilingDerivedLatency": 15000,
+      "derivedLatencySummary": {
+        "maximum": 450.284854,
+        "median": 436.9725834999999,
+        "minimum": 425.623271
+      },
+      "maximumBytes": 16777216,
+      "observations": [
+        {
+          "artifactPath": "source-01.xml",
+          "bytes": 38377,
+          "derivedLatencyMs": 425.623271,
+          "integrityVerified": true,
+          "latencyMs": 442.861667,
+          "nodeCount": 168,
+          "sha256": "205d11aee5cce46abcad4299cd337b19bf5df81f3ef339c52507f0862d1764c7"
+        },
+        {
+          "artifactPath": "source-02.xml",
+          "bytes": 38377,
+          "derivedLatencyMs": 432.630271,
+          "integrityVerified": true,
+          "latencyMs": 449.868667,
+          "nodeCount": 168,
+          "sha256": "205d11aee5cce46abcad4299cd337b19bf5df81f3ef339c52507f0862d1764c7"
+        },
+        {
+          "artifactPath": "source-03.xml",
+          "bytes": 38377,
+          "derivedLatencyMs": 433.071562,
+          "integrityVerified": true,
+          "latencyMs": 450.309958,
+          "nodeCount": 168,
+          "sha256": "205d11aee5cce46abcad4299cd337b19bf5df81f3ef339c52507f0862d1764c7"
+        },
+        {
+          "artifactPath": "source-04.xml",
+          "bytes": 38377,
+          "derivedLatencyMs": 450.284854,
+          "integrityVerified": true,
+          "latencyMs": 467.52325,
+          "nodeCount": 168,
+          "sha256": "205d11aee5cce46abcad4299cd337b19bf5df81f3ef339c52507f0862d1764c7"
+        },
+        {
+          "artifactPath": "source-05.xml",
+          "bytes": 38377,
+          "derivedLatencyMs": 437.71264599999995,
+          "integrityVerified": true,
+          "latencyMs": 454.951042,
+          "nodeCount": 168,
+          "sha256": "205d11aee5cce46abcad4299cd337b19bf5df81f3ef339c52507f0862d1764c7"
+        },
+        {
+          "artifactPath": "source-06.xml",
+          "bytes": 38377,
+          "derivedLatencyMs": 427.059896,
+          "integrityVerified": true,
+          "latencyMs": 444.298292,
+          "nodeCount": 168,
+          "sha256": "205d11aee5cce46abcad4299cd337b19bf5df81f3ef339c52507f0862d1764c7"
+        },
+        {
+          "artifactPath": "source-07.xml",
+          "bytes": 38377,
+          "derivedLatencyMs": 442.931562,
+          "integrityVerified": true,
+          "latencyMs": 460.169958,
+          "nodeCount": 168,
+          "sha256": "205d11aee5cce46abcad4299cd337b19bf5df81f3ef339c52507f0862d1764c7"
+        },
+        {
+          "artifactPath": "source-08.xml",
+          "bytes": 38377,
+          "derivedLatencyMs": 436.23252099999996,
+          "integrityVerified": true,
+          "latencyMs": 453.470917,
+          "nodeCount": 168,
+          "sha256": "205d11aee5cce46abcad4299cd337b19bf5df81f3ef339c52507f0862d1764c7"
+        },
+        {
+          "artifactPath": "source-09.xml",
+          "bytes": 38377,
+          "derivedLatencyMs": 447.886104,
+          "integrityVerified": true,
+          "latencyMs": 465.1245,
+          "nodeCount": 168,
+          "sha256": "205d11aee5cce46abcad4299cd337b19bf5df81f3ef339c52507f0862d1764c7"
+        },
+        {
+          "artifactPath": "source-10.xml",
+          "bytes": 38377,
+          "derivedLatencyMs": 439.42810399999996,
+          "integrityVerified": true,
+          "latencyMs": 456.6665,
+          "nodeCount": 168,
+          "sha256": "205d11aee5cce46abcad4299cd337b19bf5df81f3ef339c52507f0862d1764c7"
+        }
+      ],
+      "passed": true,
+      "status": "measured"
+    },
+    "perCellOverhead": {
+      "baseline": 17.238396,
+      "baselineSamples": [
+        20.872083,
+        27.748542,
+        29.376625,
+        12.819625,
+        20.9935,
+        18.925,
+        15.551792,
+        7.966667,
+        6.315042,
+        4.947666
+      ],
+      "ceilingDerived": 2000,
+      "derivedSamples": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "derivedSummary": {
+        "maximum": 0.0,
+        "median": 0.0,
+        "minimum": 0.0
+      },
+      "passed": true,
+      "rawSamples": [
+        4.77975,
+        4.307042,
+        4.147875,
+        5.401625,
+        4.394958,
+        3.924875,
+        4.520208,
+        4.80375,
+        4.752708,
+        3.948125
+      ],
+      "rawSummary": {
+        "maximum": 5.401625,
+        "median": 4.457583,
+        "minimum": 3.924875
+      },
+      "status": "measured",
+      "unit": "milliseconds"
+    },
+    "resourcePlateau": {
+      "amkernel": {
+        "descendantProcessDelta": 0,
+        "iteration10Pid": 71755,
+        "iteration5Pid": 71755,
+        "openFileDelta": 0,
+        "passed": true,
+        "rssDeltaBytes": 49152,
+        "samePid": true,
+        "taskDelta": 0
+      },
+      "appiumServer": {
+        "descendantProcessDelta": 0,
+        "iteration10Pid": 71231,
+        "iteration5Pid": 71231,
+        "openFileDelta": 0,
+        "passed": true,
+        "rssDeltaBytes": 4259840,
+        "samePid": true,
+        "taskDelta": 0
+      },
+      "platformDriver": {
+        "descendantProcessDelta": 0,
+        "iteration10Pid": 58536,
+        "iteration5Pid": 58536,
+        "openFileDelta": 0,
+        "passed": true,
+        "rssDeltaBytes": 294912,
+        "samePid": true,
+        "taskDelta": 0
+      }
+    },
+    "resourceSamples": [
+      {
+        "amkernel": {
+          "descendants": 1,
+          "openFiles": 29,
+          "pid": 71755,
+          "rssBytes": 74465280,
+          "tasks": 4
+        },
+        "appiumServer": {
+          "descendants": 0,
+          "openFiles": 148,
+          "pid": 71231,
+          "rssBytes": 246317056,
+          "tasks": 14
+        },
+        "point": "pre-session-idle"
+      },
+      {
+        "amkernel": {
+          "descendants": 1,
+          "openFiles": 29,
+          "pid": 71755,
+          "rssBytes": 74530816,
+          "tasks": 4
+        },
+        "appiumServer": {
+          "descendants": 0,
+          "openFiles": 154,
+          "pid": 71231,
+          "rssBytes": 246661120,
+          "tasks": 14
+        },
+        "platformDriver": {
+          "descendants": 0,
+          "openFiles": 167,
+          "pid": 58536,
+          "rssBytes": 479674368,
+          "tasks": 5
+        },
+        "point": "post-session-baseline"
+      },
+      {
+        "amkernel": {
+          "descendants": 1,
+          "openFiles": 29,
+          "pid": 71755,
+          "rssBytes": 74645504,
+          "tasks": 4
+        },
+        "appiumServer": {
+          "descendants": 0,
+          "openFiles": 154,
+          "pid": 71231,
+          "rssBytes": 260440064,
+          "tasks": 12
+        },
+        "platformDriver": {
+          "descendants": 0,
+          "openFiles": 167,
+          "pid": 58536,
+          "rssBytes": 499810304,
+          "tasks": 7
+        },
+        "point": "post-warmup"
+      },
+      {
+        "amkernel": {
+          "descendants": 1,
+          "openFiles": 29,
+          "pid": 71755,
+          "rssBytes": 74645504,
+          "tasks": 4
+        },
+        "appiumServer": {
+          "descendants": 0,
+          "openFiles": 154,
+          "pid": 71231,
+          "rssBytes": 263110656,
+          "tasks": 12
+        },
+        "platformDriver": {
+          "descendants": 0,
+          "openFiles": 167,
+          "pid": 58536,
+          "rssBytes": 500367360,
+          "tasks": 7
+        },
+        "point": "iteration-1"
+      },
+      {
+        "amkernel": {
+          "descendants": 1,
+          "openFiles": 29,
+          "pid": 71755,
+          "rssBytes": 74727424,
+          "tasks": 4
+        },
+        "appiumServer": {
+          "descendants": 0,
+          "openFiles": 154,
+          "pid": 71231,
+          "rssBytes": 266846208,
+          "tasks": 12
+        },
+        "platformDriver": {
+          "descendants": 0,
+          "openFiles": 167,
+          "pid": 58536,
+          "rssBytes": 500908032,
+          "tasks": 7
+        },
+        "point": "iteration-5"
+      },
+      {
+        "amkernel": {
+          "descendants": 1,
+          "openFiles": 29,
+          "pid": 71755,
+          "rssBytes": 74776576,
+          "tasks": 4
+        },
+        "appiumServer": {
+          "descendants": 0,
+          "openFiles": 154,
+          "pid": 71231,
+          "rssBytes": 271106048,
+          "tasks": 12
+        },
+        "platformDriver": {
+          "descendants": 0,
+          "openFiles": 167,
+          "pid": 58536,
+          "rssBytes": 501202944,
+          "tasks": 7
+        },
+        "point": "iteration-10"
+      }
+    ],
+    "screenshot": {
+      "baseline": 17.238396,
+      "ceilingDerivedLatency": 15000,
+      "derivedLatencySummary": {
+        "maximum": 60.437645999999994,
+        "median": 55.6555415,
+        "minimum": 44.47227
+      },
+      "maximumDecodedBytes": 16777216,
+      "observations": [
+        {
+          "artifactPath": "screenshot-01.png",
+          "decodedBytes": 257981,
+          "derivedLatencyMs": 60.033229,
+          "encodedBytes": 343976,
+          "integrityVerified": true,
+          "latencyMs": 77.271625,
+          "sha256": "53895d6f5c90e51a48851f053efce2facecb14af7cabe17000368fe1e7bb388f"
+        },
+        {
+          "artifactPath": "screenshot-02.png",
+          "decodedBytes": 257981,
+          "derivedLatencyMs": 55.866854,
+          "encodedBytes": 343976,
+          "integrityVerified": true,
+          "latencyMs": 73.10525,
+          "sha256": "53895d6f5c90e51a48851f053efce2facecb14af7cabe17000368fe1e7bb388f"
+        },
+        {
+          "artifactPath": "screenshot-03.png",
+          "decodedBytes": 257981,
+          "derivedLatencyMs": 60.437645999999994,
+          "encodedBytes": 343976,
+          "integrityVerified": true,
+          "latencyMs": 77.676042,
+          "sha256": "53895d6f5c90e51a48851f053efce2facecb14af7cabe17000368fe1e7bb388f"
+        },
+        {
+          "artifactPath": "screenshot-04.png",
+          "decodedBytes": 257981,
+          "derivedLatencyMs": 55.444229,
+          "encodedBytes": 343976,
+          "integrityVerified": true,
+          "latencyMs": 72.682625,
+          "sha256": "53895d6f5c90e51a48851f053efce2facecb14af7cabe17000368fe1e7bb388f"
+        },
+        {
+          "artifactPath": "screenshot-05.png",
+          "decodedBytes": 257981,
+          "derivedLatencyMs": 54.663979000000005,
+          "encodedBytes": 343976,
+          "integrityVerified": true,
+          "latencyMs": 71.902375,
+          "sha256": "53895d6f5c90e51a48851f053efce2facecb14af7cabe17000368fe1e7bb388f"
+        },
+        {
+          "artifactPath": "screenshot-06.png",
+          "decodedBytes": 257981,
+          "derivedLatencyMs": 59.646229,
+          "encodedBytes": 343976,
+          "integrityVerified": true,
+          "latencyMs": 76.884625,
+          "sha256": "53895d6f5c90e51a48851f053efce2facecb14af7cabe17000368fe1e7bb388f"
+        },
+        {
+          "artifactPath": "screenshot-07.png",
+          "decodedBytes": 257092,
+          "derivedLatencyMs": 44.47227,
+          "encodedBytes": 342792,
+          "integrityVerified": true,
+          "latencyMs": 61.710666,
+          "sha256": "0fc8d8680a6271d837cab789cfbdffa045fbffb0ff81f54d73586ed543c087a8"
+        },
+        {
+          "artifactPath": "screenshot-08.png",
+          "decodedBytes": 257092,
+          "derivedLatencyMs": 53.768145,
+          "encodedBytes": 342792,
+          "integrityVerified": true,
+          "latencyMs": 71.006541,
+          "sha256": "0fc8d8680a6271d837cab789cfbdffa045fbffb0ff81f54d73586ed543c087a8"
+        },
+        {
+          "artifactPath": "screenshot-09.png",
+          "decodedBytes": 257092,
+          "derivedLatencyMs": 57.205187,
+          "encodedBytes": 342792,
+          "integrityVerified": true,
+          "latencyMs": 74.443583,
+          "sha256": "0fc8d8680a6271d837cab789cfbdffa045fbffb0ff81f54d73586ed543c087a8"
+        },
+        {
+          "artifactPath": "screenshot-10.png",
+          "decodedBytes": 257092,
+          "derivedLatencyMs": 54.178228999999995,
+          "encodedBytes": 342792,
+          "integrityVerified": true,
+          "latencyMs": 71.416625,
+          "sha256": "0fc8d8680a6271d837cab789cfbdffa045fbffb0ff81f54d73586ed543c087a8"
+        }
+      ],
+      "passed": true,
+      "status": "measured"
+    },
+    "startupTrials": [
+      {
+        "appiumSessionStartupMs": 6003.0605,
+        "clientClosed": true,
+        "kernelStartupMs": 375.853875,
+        "managedProcessesExited": true,
+        "runnerPid": 71321,
+        "serverPid": 71318,
+        "sessionAbsent": true,
+        "sessionId": "17ac5a79-574a-48ba-87a5-41664e11ce7d"
+      },
+      {
+        "appiumSessionStartupMs": 1373.998792,
+        "clientClosed": true,
+        "kernelStartupMs": 369.650542,
+        "managedProcessesExited": true,
+        "runnerPid": 71481,
+        "serverPid": 71477,
+        "sessionAbsent": true,
+        "sessionId": "ccdadf20-5850-4df2-9ab5-e337ebde7958"
+      },
+      {
+        "appiumSessionStartupMs": 1377.29775,
+        "clientClosed": true,
+        "kernelStartupMs": 361.438875,
+        "managedProcessesExited": true,
+        "runnerPid": 71621,
+        "serverPid": 71616,
+        "sessionAbsent": true,
+        "sessionId": "fd47148c-e062-4e80-9bd8-c469310c7a48"
+      }
+    ],
+    "timeoutToInterrupt": {
+      "ceiling": 5000,
+      "passed": true,
+      "samples": [
+        17.154833999999994,
+        11.92458400000001,
+        13.331208000000004
+      ],
+      "status": "measured",
+      "summary": {
+        "maximum": 17.154833999999994,
+        "median": 13.331208000000004,
+        "minimum": 11.92458400000001
+      },
+      "unit": "milliseconds"
+    }
+  },
+  "outcome": "passed",
+  "platform": "ios",
+  "preflight": {
+    "checkedAt": "2026-10-30T07:14:08.209723Z",
+    "checks": [
+      {
+        "id": "device-kind",
+        "observation": "ios-simulator selected; frozen contract requires ios-simulator",
+        "status": "passed"
+      },
+      {
+        "id": "amkernel-revision",
+        "observation": "AMKernel revision is a lowercase 40-character commit",
+        "status": "passed"
+      },
+      {
+        "id": "amkernel-entry-point",
+        "observation": "amkernel-entry-point is a readable file",
+        "status": "passed"
+      },
+      {
+        "id": "amkernel-wheel",
+        "observation": "amkernel-wheel is a readable file",
+        "status": "passed"
+      },
+      {
+        "id": "fixture-artifact",
+        "observation": "fixture-artifact is a readable file",
+        "status": "passed"
+      },
+      {
+        "id": "measurement-results",
+        "observation": "measurement-results is a readable file",
+        "status": "passed"
+      },
+      {
+        "id": "appium-log",
+        "observation": "appium-log is a readable file",
+        "status": "passed"
+      },
+      {
+        "id": "fixture-size",
+        "observation": "fixture size is 1754445 bytes",
+        "status": "passed"
+      },
+      {
+        "id": "fixture-sha256",
+        "observation": "fixture SHA-256 is 6708c9cbdf28bf69b45b10b2cfd53e98c998ad011315bb21b1815399f6a8387e",
+        "status": "passed"
+      },
+      {
+        "id": "python-runtime",
+        "observation": "Python runtime is CPython 3.13.15; expected CPython 3.13",
+        "status": "passed"
+      },
+      {
+        "id": "appium-python-client",
+        "observation": "Appium-Python-Client version is 5.2.5; expected 5.2.5",
+        "status": "passed"
+      },
+      {
+        "id": "selenium",
+        "observation": "selenium version is 4.52.0; expected 4.52.0",
+        "status": "passed"
+      },
+      {
+        "id": "driver-version",
+        "observation": "driver version is 12.13.2; expected 12.13.2",
+        "status": "passed"
+      },
+      {
+        "id": "ios-xcodeVersion",
+        "observation": "observed xcodeVersion is '27.1'; expected '27.1'",
+        "status": "passed"
+      },
+      {
+        "id": "ios-xcodeBuild",
+        "observation": "observed xcodeBuild is '27A9275'; expected '27A9275'",
+        "status": "passed"
+      },
+      {
+        "id": "ios-runtimeIdentifier",
+        "observation": "observed runtimeIdentifier is 'com.apple.CoreSimulator.SimRuntime.iOS-27-0'; expected 'com.apple.CoreSimulator.SimRuntime.iOS-27-0'",
+        "status": "passed"
+      },
+      {
+        "id": "ios-runtimeVersion",
+        "observation": "observed runtimeVersion is '27.0'; expected '27.0'",
+        "status": "passed"
+      },
+      {
+        "id": "ios-runtimeBuild",
+        "observation": "observed runtimeBuild is '24A434'; expected '24A434'",
+        "status": "passed"
+      },
+      {
+        "id": "ios-deviceTypeIdentifier",
+        "observation": "observed deviceTypeIdentifier is 'com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro'; expected 'com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro'",
+        "status": "passed"
+      },
+      {
+        "id": "observed-os-version",
+        "observation": "observed OS is '27.0'; dispatch declared '27.0'",
+        "status": "passed"
+      },
+      {
+        "id": "observed-device-name",
+        "observation": "observed device name is 'iPhone 17 Pro'; dispatch declared 'iPhone 17 Pro'",
+        "status": "passed"
+      },
+      {
+        "id": "measurement-shape",
+        "observation": "measurement results match the frozen schema",
+        "status": "passed"
+      },
+      {
+        "id": "node-version",
+        "observation": "Node version is 26.12.1; expected 26.12.1",
+        "status": "passed"
+      },
+      {
+        "id": "appium-server",
+        "observation": "Appium Server version is 3.7.0; expected 3.7.0",
+        "status": "passed"
+      }
+    ],
+    "classification": "ready"
+  },
+  "runId": "ios-20261030t071408z-2ba4fb91",
+  "runState": {
+    "appAfter": "not-running",
+    "appBefore": "unknown",
+    "deviceAfter": "online",
+    "deviceBefore": "online",
+    "kernelAfter": "dead",
+    "kernelBefore": "not-started",
+    "sessionAfter": "absent",
+    "sessionBefore": "absent"
+  },
+  "scenario": {
+    "definitionSha256": "9b26d414042e6d593b0817aa8d4059a113bf0cb5a6fbd814219359e8e13e58a3",
+    "executionCount": 1,
+    "id": "amkernel-mobile-appium-v1"
+  },
+  "schemaVersion": 1,
+  "startedAt": "2026-10-30T07:14:08.209723Z",
+  "steps": [
+    {
+      "action": "waitVisible",
+      "completedAt": "2026-10-30T07:14:17.824463Z",
+      "durationMs": 380,
+      "id": "ios-launch",
+      "locator": {
+        "strategy": "accessibility id",
+        "value": "Text Fields"
+      },
+      "observation": "element became visible",
+      "outcome": "passed",
+      "screenshot": {
+        "kind": "screenshot",
+        "mimeType": "image/png",
+        "path": "ios-launch.png",
+        "sha256": "b52fb1a776e859ad2a8a7ceb5a6f7f1daae05de063734fbe8eec7fd6caf3bfde",
+        "sizeBytes": 259504
+      },
+      "startedAt": "2026-10-30T07:14:17.443527Z"
+    },
+    {
+      "action": "click",
+      "completedAt": "2026-10-30T07:14:18.796454Z",
+      "durationMs": 972,
+      "id": "ios-open-text-fields",
+      "locator": {
+        "strategy": "accessibility id",
+        "value": "Text Fields"
+      },
+      "observation": "element clicked",
+      "outcome": "passed",
+      "startedAt": "2026-10-30T07:14:17.824477Z"
+    },
+    {
+      "action": "type",
+      "completedAt": "2026-10-30T07:14:19.924759Z",
+      "durationMs": 1128,
+      "id": "ios-enter-text",
+      "locator": {
+        "strategy": "class name",
+        "value": "XCUIElementTypeTextField"
+      },
+      "observation": "text entered",
+      "outcome": "passed",
+      "startedAt": "2026-10-30T07:14:18.796472Z"
+    },
+    {
+      "action": "assertText",
+      "completedAt": "2026-10-30T07:14:20.188155Z",
+      "durationMs": 263,
+      "id": "ios-confirm-text",
+      "locator": {
+        "strategy": "class name",
+        "value": "XCUIElementTypeTextField"
+      },
+      "observation": "text value matched",
+      "outcome": "passed",
+      "screenshot": {
+        "kind": "screenshot",
+        "mimeType": "image/png",
+        "path": "ios-confirm-text.png",
+        "sha256": "125034dcf889da4910da58d4714dbc8d120a150cd3d0b5491264bb8802f13472",
+        "sizeBytes": 150067
+      },
+      "startedAt": "2026-10-30T07:14:19.924786Z"
+    },
+    {
+      "action": "relaunch",
+      "completedAt": "2026-10-30T07:14:24.259866Z",
+      "durationMs": 4072,
+      "id": "ios-relaunch",
+      "observation": "application terminated and reactivated",
+      "outcome": "passed",
+      "startedAt": "2026-10-30T07:14:20.188170Z"
+    },
+    {
+      "action": "click",
+      "completedAt": "2026-10-30T07:14:25.447658Z",
+      "durationMs": 1188,
+      "id": "ios-open-alerts",
+      "locator": {
+        "strategy": "accessibility id",
+        "value": "Alert Views"
+      },
+      "observation": "element clicked",
+      "outcome": "passed",
+      "startedAt": "2026-10-30T07:14:24.259887Z"
+    },
+    {
+      "action": "click",
+      "completedAt": "2026-10-30T07:14:26.255368Z",
+      "durationMs": 808,
+      "id": "ios-open-modal",
+      "locator": {
+        "strategy": "accessibility id",
+        "value": "Simple"
+      },
+      "observation": "element clicked",
+      "outcome": "passed",
+      "startedAt": "2026-10-30T07:14:25.447684Z"
+    },
+    {
+      "action": "click",
+      "completedAt": "2026-10-30T07:14:27.023996Z",
+      "durationMs": 769,
+      "id": "ios-dismiss-modal",
+      "locator": {
+        "strategy": "accessibility id",
+        "value": "OK"
+      },
+      "observation": "element clicked",
+      "outcome": "passed",
+      "startedAt": "2026-10-30T07:14:26.255384Z"
+    },
+    {
+      "action": "waitGone",
+      "completedAt": "2026-10-30T07:14:27.182507Z",
+      "durationMs": 159,
+      "id": "ios-confirm-modal-dismissed",
+      "locator": {
+        "strategy": "accessibility id",
+        "value": "OK"
+      },
+      "observation": "element became invisible",
+      "outcome": "passed",
+      "screenshot": {
+        "kind": "screenshot",
+        "mimeType": "image/png",
+        "path": "ios-confirm-modal-dismissed.png",
+        "sha256": "8ecdbba8e5d56fd77057f2c366a6bdddd470c217987ff216d334f866e80f64c5",
+        "sizeBytes": 124758
+      },
+      "startedAt": "2026-10-30T07:14:27.024014Z"
+    },
+    {
+      "action": "relaunch",
+      "completedAt": "2026-10-30T07:14:31.248559Z",
+      "durationMs": 4066,
+      "id": "ios-relaunch-for-progress",
+      "observation": "application terminated and reactivated",
+      "outcome": "passed",
+      "startedAt": "2026-10-30T07:14:27.182522Z"
+    },
+    {
+      "action": "click",
+      "completedAt": "2026-10-30T07:14:32.327937Z",
+      "durationMs": 1079,
+      "id": "ios-open-progress",
+      "locator": {
+        "strategy": "accessibility id",
+        "value": "Progress Views"
+      },
+      "observation": "element clicked",
+      "outcome": "passed",
+      "startedAt": "2026-10-30T07:14:31.248601Z"
+    },
+    {
+      "action": "waitAttributeChange",
+      "completedAt": "2026-10-30T07:14:33.746003Z",
+      "durationMs": 1418,
+      "id": "ios-wait-progress-change",
+      "locator": {
+        "strategy": "class name",
+        "value": "XCUIElementTypeProgressIndicator"
+      },
+      "observation": "value changed from '0%' to '10%'",
+      "outcome": "passed",
+      "screenshot": {
+        "kind": "screenshot",
+        "mimeType": "image/png",
+        "path": "ios-wait-progress-change.png",
+        "sha256": "0e595e1d76196249930c7b45e7133430f496c3f4aeb8d2f60e6d4f950a3171eb",
+        "sizeBytes": 88007
+      },
+      "startedAt": "2026-10-30T07:14:32.327956Z"
+    },
+    {
+      "action": "relaunch",
+      "completedAt": "2026-10-30T07:14:38.159808Z",
+      "durationMs": 4414,
+      "id": "ios-relaunch-for-large-tree",
+      "observation": "application terminated and reactivated",
+      "outcome": "passed",
+      "startedAt": "2026-10-30T07:14:33.746016Z"
+    },
+    {
+      "action": "scrollIntoView",
+      "completedAt": "2026-10-30T07:14:38.402479Z",
+      "durationMs": 243,
+      "id": "ios-scroll-large-tree",
+      "locator": {
+        "strategy": "accessibility id",
+        "value": "Web View"
+      },
+      "observation": "element was scrolled into view",
+      "outcome": "passed",
+      "startedAt": "2026-10-30T07:14:38.159817Z"
+    },
+    {
+      "action": "assertVisible",
+      "completedAt": "2026-10-30T07:14:38.639845Z",
+      "durationMs": 237,
+      "id": "ios-confirm-success",
+      "locator": {
+        "strategy": "accessibility id",
+        "value": "Web View"
+      },
+      "observation": "element was visible",
+      "outcome": "passed",
+      "screenshot": {
+        "kind": "screenshot",
+        "mimeType": "image/png",
+        "path": "ios-confirm-success.png",
+        "sha256": "093f1148d19544f1673b5d87089bf3086cdfc38c9c97f8c840c9296e9cdf8696",
+        "sizeBytes": 257523
+      },
+      "startedAt": "2026-10-30T07:14:38.402490Z"
+    },
+    {
+      "action": "captureSource",
+      "completedAt": "2026-10-30T07:14:39.145016Z",
+      "durationMs": 505,
+      "id": "ios-capture-large-tree",
+      "nodeCount": 168,
+      "observation": "bounded page source captured",
+      "outcome": "passed",
+      "pageSource": {
+        "kind": "page-source",
+        "mimeType": "application/xml",
+        "path": "ios-capture-large-tree.xml",
+        "sha256": "11b24e8f2cf3cdfe3fc46f8c9778f11aad531e374b01e4518e5b4073235bc631",
+        "sizeBytes": 38377
+      },
+      "startedAt": "2026-10-30T07:14:38.639855Z"
+    }
+  ]
+}

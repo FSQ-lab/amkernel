@@ -1,0 +1,70 @@
+{
+  "calls": [
+    {
+      "error": null,
+      "executionCount": 1,
+      "kernelState": "alive",
+      "output": {
+        "discardedBytes": 0,
+        "discardedLines": 0,
+        "limitBytes": 268435456,
+        "limitExceeded": false,
+        "live": "unavailable",
+        "totalBytes": 0,
+        "totalLines": 0,
+        "truncated": false
+      },
+      "result": [
+        4474,
+        4478
+      ],
+      "status": "completed"
+    },
+    {
+      "error": {
+        "message": "AMKernel returned an MCP tool error: python_exec failed internally",
+        "type": "RuntimeError"
+      },
+      "executionCount": null,
+      "kernelState": "alive",
+      "output": null,
+      "result": null,
+      "status": "adapter-error"
+    },
+    {
+      "error": null,
+      "executionCount": 2,
+      "kernelState": "alive",
+      "output": {
+        "discardedBytes": 0,
+        "discardedLines": 0,
+        "limitBytes": 268435456,
+        "limitExceeded": false,
+        "live": "unavailable",
+        "totalBytes": 0,
+        "totalLines": 0,
+        "truncated": false
+      },
+      "result": 42,
+      "status": "completed"
+    }
+  ],
+  "case": "artifact-write-failure",
+  "injection": "removed write permission from the isolated Artifact Store root",
+  "observations": {
+    "controlServerState": "online",
+    "deviceAfterFailure": "device probe returned 'device'",
+    "deviceBeforeInjection": "device probe returned 'device'",
+    "kernelAfterRecovery": "alive",
+    "kernelAtFailure": "alive",
+    "managedPids": [
+      4474,
+      4478
+    ],
+    "platformDriverFault": null,
+    "serverAtFailure": "online",
+    "sessionAfterCleanup": "session was not created",
+    "sessionAtFailure": "session was not created"
+  },
+  "platform": "android"
+}

@@ -79,33 +79,64 @@ The first complete experiment covers:
 
 Real devices are deferred until simulator/emulator behavior is stable.
 
-Record exact versions for every run:
+Record exact versions for every run. The frozen S3-020 environment is CPython 3.13, Node
+26.12.1, Appium Server 3.7.0, Appium Python Client 5.2.5, Selenium 4.52.0,
+UiAutomator2 8.7.0 on Android 16/API 36 `arm64-v8a`, and XCUITest 12.13.2 on the iOS
+27.0 simulator runtime from Xcode 27.1 (build 27A9275). These versions define the two
+reference verticals, not a support matrix. Every record also includes the AMKernel wheel filename,
+size, SHA-256, and revision; negotiated MCP protocol and client versions; platform build/runtime
+identifiers; device identity; redacted capabilities; and fixture application build provenance.
 
-- operating system;
-- Python;
-- AMKernel revision;
-- Appium Server;
-- Appium Python Client;
-- Selenium;
-- XCUITest or UiAutomator2 driver;
-- simulator/emulator OS;
-- fixture application build.
+## 6. Fixture application contract
 
-## 6. Fixture application requirements
+The versioned scenario is `tests/fixtures/mobile_appium/scenario.json`. It pins two small,
+maintained, Apache-2.0 Appium fixtures and their release artifacts:
 
-Use a small application with stable accessibility identifiers and behaviors that exercise the runtime:
+| Platform | Fixture | Source revision | Release artifact |
+| --- | --- | --- | --- |
+| Android | `appium/android-apidemos` v6.0.18 | `3e716ee04ef3390284bfab761e28da8c15c08143` | `ApiDemos-debug.apk`, SHA-256 `a9eecf37b26cd084855c530db81c2bb1b91f4c1b095a04f47aa7c20e2791f686` |
+| iOS Simulator | `appium/ios-uicatalog` v4.0.5 | `9981bc4c9441f00e77064d85e5552dba72a37bea` | `UIKitCatalog-iphonesimulator.zip`, SHA-256 `6708c9cbdf28bf69b45b10b2cfd53e98c998ad011315bb21b1815399f6a8387e` |
 
-- launch screen;
-- button navigation;
-- editable text field;
-- list or scrollable region;
-- delayed state change;
-- modal or alert;
-- deterministic success state;
-- optional WebView/native context transition;
-- a screen with a moderately large element tree.
+The scenario records exact source-build, release acquisition, digest verification, and installation
+commands. It also records the upstream source files that define each application identifier,
+locator, modal, and delayed-state behavior. Android uses source-controlled content descriptions and
+resource IDs. iOS uses source-controlled accessibility labels for navigation and a pinned control
+class for the timer-driven progress view; the immutable source revision fixes that view hierarchy.
 
-The fixture should be simple enough that failures diagnose the automation stack, not application business logic.
+Both platform workflows cover the same observable behavior:
+
+1. launch and wait for a known navigation control;
+2. navigate and enter/verify deterministic text;
+3. open and dismiss a modal;
+4. observe a delayed state with a condition-based wait;
+5. relaunch, scroll to a deterministic success target, and verify it;
+6. capture screenshots and a moderately large page-source tree.
+
+The public-surface harness is `tests/e2e/mobile_appium.py`. It verifies the fixture, frozen
+toolchain, Appium endpoint, evidence inputs, and platform contract before opening AMKernel. An
+unmet prerequisite produces a bounded `preflight.json` blocker instead of silently narrowing the
+run. A ready run uses the official MCP Python client against an installed AMKernel wheel, creates
+the Appium driver in one `python_exec` call, exercises the workflow in a second call, and proves
+namespace continuation with a per-run token and consecutive execution counts.
+
+`tests/fixtures/mobile_appium/evidence.schema.json` is the normative evidence format. It requires
+complete environment and wheel provenance, before/after kernel/session/device/application state,
+bounded output metadata, all four log classes, exact artifact bytes and digests, all twelve
+measurement results, failure observations, and observed cleanup state. Passed records reject any
+unavailable measurement or remaining external resource. Home paths are replaced and secret-like
+capability fields are rejected before retention.
+
+`tests/fixtures/mobile_appium/measurement-protocol.json` freezes clocks, instruments, three
+fresh-process startup trials, one warm-up, ten steady-state iterations, samples after iterations 1,
+5, and 10, baseline subtraction, numeric ceilings, plateau deltas, independent byte/hash checks,
+bounded model-facing source, and fail-closed unavailable-measurement handling. Threshold changes
+after observation require an Issue contract update, independent review, and a fresh run.
+
+`.github/workflows/stage-3-mobile.yml` is manual-only and targets a self-hosted `mobile-lab`
+runner. It verifies the static contracts, builds and installs a clean AMKernel wheel, refuses
+toolchain drift, installs the verified fixture, drives the public stdio MCP interface, and retains
+the complete evidence tree. Appium Server and device supervision remain external; the dispatch
+therefore requires an Appium log and independently collected measurement-protocol results.
 
 ## 7. Core scenarios
 
@@ -322,24 +353,91 @@ For every failure record:
 
 ## 12. Measurements
 
-Collect:
+`tests/fixtures/mobile_appium/measurement-protocol.json` is the sole normative measurement
+contract. It freezes the following twelve result groups before either platform run:
 
-- kernel startup time;
-- Appium session startup time;
-- idle kernel memory;
-- memory with active driver;
-- per-cell overhead;
-- output streaming latency;
-- screenshot transfer size and latency;
-- page-source size and retrieval time;
-- timeout-to-interrupt latency;
-- escalation cleanup time;
-- Agent tool-call count for representative tasks;
-- context size before and after local Python reduction.
+1. kernel startup time;
+2. Appium session startup time;
+3. idle kernel memory;
+4. memory with an active driver;
+5. per-cell overhead;
+6. completed output-delivery latency;
+7. screenshot transfer size and latency;
+8. page-source size, node count, and retrieval time;
+9. timeout-to-interrupt latency;
+10. escalation cleanup time;
+11. Agent tool-call count for representative tasks;
+12. context size before and after local Python reduction.
 
-The measurements inform core decisions such as artifact thresholds, timeout defaults, and whether one kernel remains sufficient.
+Raw observations, baselines, derived values, min/median/max summaries, process samples, and pass
+decisions remain in evidence. The frozen thresholds inform later core decisions; a platform owner
+does not relax them in response to observed data.
 
-## 13. Graduation criteria
+## 13. Reference run results
+
+The 2026-10-30 reference runs exercised the installed wheel through the official MCP Python client,
+retained one Appium driver across setup and workflow calls, and explicitly deleted the external
+session before MCP transport closure. Both evidence records validate against the frozen schema and
+all frozen measurement gates pass.
+
+| Measurement | Android 16 / Pixel 9 / UiAutomator2 8.7.0 | iOS 27.0 / iPhone 17 Pro / XCUITest 12.13.2 |
+| --- | ---: | ---: |
+| Kernel startup, min/median/max | 352.24 / 379.40 / 579.86 ms | 361.44 / 369.65 / 375.85 ms |
+| Appium session startup, min/median/max | 2,017.03 / 2,046.78 / 2,838.00 ms | 1,374.00 / 1,377.30 / 6,003.06 ms |
+| Idle AMKernel / Appium RSS | 73,908,224 / 301,842,432 bytes | 74,465,280 / 246,317,056 bytes |
+| Active AMKernel / Appium / driver RSS delta | 81,920 / 8,126,464 / 18,833,408 bytes | 65,536 / 344,064 / 21,528,576 bytes |
+| Per-cell derived overhead, median/max | 0.00 / 4.84 ms | 0.00 / 0.00 ms |
+| Completed-output delivery, median/max | 5.89 / 8.75 ms | 7.80 / 9.95 ms |
+| Screenshot bytes; derived latency median/max | 69,867; 93.19 / 94.65 ms | 258,472; 55.66 / 60.44 ms |
+| Page source bytes/nodes; derived latency median/max | 13,605 / 21; 4.39 / 5.43 ms | 38,377 / 168; 436.97 / 450.28 ms |
+| Timeout-to-interrupt, median/max | 14.89 / 31.48 ms | 13.33 / 17.15 ms |
+| Escalation cleanup, median/max | 211.88 / 212.09 ms | 214.80 / 216.72 ms |
+| Representative Agent tool calls | 3 | 3 |
+| Minimum local context reduction | 92.88% | 97.66% |
+
+Each startup observation retains distinct server PID, runner PID, and Appium session identity plus
+post-trial client-close, managed-process-exit, and session-absence observations. All ten raw baseline
+calls remain available and their retained median is checked against every derived latency group.
+Iteration-5-to-10 plateau checks passed independently for AMKernel, Appium Server, and each
+platform driver: identities remained stable, descendant counts did not grow, open-file/task deltas
+stayed within bounds, and the largest positive RSS delta was 4,259,840 bytes. Complete raw samples,
+workflow steps, images, page sources, hashes, logs, cleanup observations, and provenance are retained
+under `evidence/mobile-appium/android/reference-20261030/` and
+`evidence/mobile-appium/ios/reference-20261030/`.
+
+Decision: direct Appium Python use through the existing `python_exec` interface is sufficient for
+both reference verticals. No Appium-specific production dependency, action interface, normalized
+mobile tree, device broker, or parallel runtime path is justified. Keep Appium Server and device
+supervision external; keep platform procedures in the skill and experiment harness. The measured
+raw trees fit existing bounds, while local reduction removed at least 92.88% of model-facing bytes,
+so the current artifact-plus-local-parsing seam should remain unchanged. S3-050 may advance to
+independent graduation review; no support claim is made before S3-060 completes.
+
+## 14. Failure lifecycle results
+
+`evidence/stage-3/lifecycle.json` retains 33 schema-valid occurrences: fourteen `Both` cases on
+Android and iOS plus five `Shared` cases on Android. Every occurrence links a bounded transcript and
+states the Agent-visible failure, kernel/session/device/server state, required recreation, cleanup,
+remaining external resources, and recoverable evidence. The record also hash-links the installed
+wheel and both passing reference manifests.
+
+Observed distinctions remained visible rather than normalized away. Failure-time session state is
+recorded separately from the post-cleanup observation: ordinary element, application, command,
+platform-driver, Python, timeout, and transport-closure failures retained a live session at the
+failure seam, while cleanup subsequently removed it. Both stale-element cases invalidate a previously
+valid element through an application relaunch. The platform-driver cases terminate the actual
+UiAutomator2 or WebDriverAgent runner before the Agent-visible call. The unavailable-endpoint records
+mark the injected endpoint offline while preserving the normal control Server's online observation.
+
+Python exceptions and deadlines, ordinary Appium/driver failures, artifact-store write failure, and
+oversized output left the kernel alive. A direct Runner hard kill with a live Appium session produced
+`KernelExited`; explicit `reset=true` created a clean namespace, and the orphaned external session was
+detected and deleted. Appium Server restart invalidated the old session but not the kernel; transport
+closure with a live driver left an external session that the harness likewise detected and deleted.
+Both powered-off device injections retain an offline precondition and a distinct online recovery
+observation. No retained occurrence reports a remaining external resource.
+
+## 15. Graduation criteria
 
 The mobile experiment is successful when one reference Coding Agent host can, through AMKernel:
 

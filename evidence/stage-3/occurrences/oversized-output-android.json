@@ -1,0 +1,66 @@
+{
+  "calls": [
+    {
+      "error": {
+        "message": "output limit exceeded",
+        "traceback": [],
+        "type": "OutputLimitExceeded"
+      },
+      "executionCount": 1,
+      "kernelState": "alive",
+      "output": {
+        "discardedBytes": 589824,
+        "discardedLines": 1,
+        "limitBytes": 268435456,
+        "limitExceeded": true,
+        "live": "unavailable",
+        "stdoutArtifact": {
+          "declaredMimeType": "application/octet-stream",
+          "mimeType": "application/vnd.amkernel.artifact-manifest+json",
+          "name": "stdout",
+          "representation": "manifest",
+          "sha256": "8531f9720e3f5ce15fde831a4c677c501b3ef320d4f156c1248299cd9955392d",
+          "size": 268435456,
+          "uri": "amkernel://artifact/21adf912eafb438d9f6af0121c2af570/92b0ddc221514c1890b9f1088441a942"
+        },
+        "totalBytes": 269025280,
+        "totalLines": 1,
+        "truncated": true
+      },
+      "result": null,
+      "status": "failed"
+    },
+    {
+      "error": null,
+      "executionCount": 2,
+      "kernelState": "alive",
+      "output": {
+        "discardedBytes": 0,
+        "discardedLines": 0,
+        "limitBytes": 268435456,
+        "limitExceeded": false,
+        "live": "unavailable",
+        "totalBytes": 0,
+        "totalLines": 0,
+        "truncated": false
+      },
+      "result": 42,
+      "status": "completed"
+    }
+  ],
+  "case": "oversized-output",
+  "injection": "wrote beyond the frozen per-execution output limit",
+  "observations": {
+    "controlServerState": "online",
+    "deviceAfterFailure": "device probe returned 'device'",
+    "deviceBeforeInjection": "device probe returned 'device'",
+    "kernelAfterRecovery": "alive",
+    "kernelAtFailure": "alive",
+    "managedPids": [],
+    "platformDriverFault": null,
+    "serverAtFailure": "online",
+    "sessionAfterCleanup": "session was not created",
+    "sessionAtFailure": "session was not created"
+  },
+  "platform": "android"
+}

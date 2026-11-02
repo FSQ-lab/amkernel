@@ -1,0 +1,158 @@
+{
+  "schemaVersion": 1,
+  "scenarioId": "amkernel-mobile-appium-v1",
+  "description": "Equivalent Android and iOS workflows covering launch, navigation, text input, modal dismissal, delayed state, scrolling, deterministic success, a moderately large tree, and AMKernel continuation.",
+  "inputText": "amkernel-fixture",
+  "toolTimeoutSeconds": 120,
+  "environmentContract": {
+    "python": "CPython 3.13",
+    "node": "26.12.1",
+    "appiumServer": "3.7.0",
+    "appiumPythonClient": "5.2.5",
+    "selenium": "4.52.0",
+    "officialSkillsCommit": "e907024c210fe024c956ed9c74146fc27b1dd013",
+    "android": {
+      "os": "Android 16",
+      "apiLevel": 36,
+      "abi": "arm64-v8a",
+      "systemImage": "system-images;android-36;google_apis;arm64-v8a",
+      "deviceProfile": "pixel_9",
+      "driver": "uiautomator2",
+      "driverVersion": "8.7.0"
+    },
+    "ios": {
+      "xcode": "27.1",
+      "xcodeBuild": "27A9275",
+      "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-27-0",
+      "runtimeVersion": "27.0",
+      "runtimeBuild": "24A434",
+      "deviceType": "com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro",
+      "driver": "xcuitest",
+      "driverVersion": "12.13.2"
+    }
+  },
+  "fixtures": {
+    "android": {
+      "id": "appium-android-apidemos-v6.0.18",
+      "repository": "https://github.com/appium/android-apidemos",
+      "tag": "v6.0.18",
+      "commit": "3e716ee04ef3390284bfab761e28da8c15c08143",
+      "license": "Apache-2.0",
+      "artifact": {
+        "name": "ApiDemos-debug.apk",
+        "url": "https://github.com/appium/android-apidemos/releases/download/v6.0.18/ApiDemos-debug.apk",
+        "sizeBytes": 6521217,
+        "sha256": "a9eecf37b26cd084855c530db81c2bb1b91f4c1b095a04f47aa7c20e2791f686"
+      },
+      "application": {
+        "id": "io.appium.android.apis",
+        "activity": ".ApiDemos"
+      },
+      "sourceEvidence": [
+        "app/build.gradle",
+        "app/src/main/AndroidManifest.xml",
+        "app/src/main/res/layout/controls_1.xml",
+        "app/src/main/res/layout/alert_dialog.xml",
+        "app/src/main/res/values/strings.xml",
+        "app/src/main/java/io/appium/android/apis/app/AlertDialogSamples.java",
+        "app/src/main/java/io/appium/android/apis/view/ChronometerDemo.java"
+      ],
+      "build": [
+        "git clone https://github.com/appium/android-apidemos.git android-apidemos",
+        "git -C android-apidemos checkout --detach 3e716ee04ef3390284bfab761e28da8c15c08143",
+        "cd android-apidemos && ./gradlew --no-daemon clean assembleDebug"
+      ],
+      "acquire": [
+        "curl --fail --location --output ApiDemos-debug.apk https://github.com/appium/android-apidemos/releases/download/v6.0.18/ApiDemos-debug.apk",
+        "printf '%s  %s\\n' a9eecf37b26cd084855c530db81c2bb1b91f4c1b095a04f47aa7c20e2791f686 ApiDemos-debug.apk | shasum -a 256 --check"
+      ],
+      "install": "adb -s $ANDROID_SERIAL install -r -g ApiDemos-debug.apk"
+    },
+    "ios": {
+      "id": "appium-ios-uicatalog-v4.0.5",
+      "repository": "https://github.com/appium/ios-uicatalog",
+      "tag": "v4.0.5",
+      "commit": "9981bc4c9441f00e77064d85e5552dba72a37bea",
+      "license": "Apache-2.0",
+      "artifact": {
+        "name": "UIKitCatalog-iphonesimulator.zip",
+        "url": "https://github.com/appium/ios-uicatalog/releases/download/v4.0.5/UIKitCatalog-iphonesimulator.zip",
+        "sizeBytes": 1754445,
+        "sha256": "6708c9cbdf28bf69b45b10b2cfd53e98c998ad011315bb21b1815399f6a8387e"
+      },
+      "application": {
+        "id": "com.example.apple-samplecode.UICatalog",
+        "archiveMember": "UIKitCatalog.app"
+      },
+      "sourceEvidence": [
+        "UIKitCatalog/UIKitCatalog.xcodeproj/project.pbxproj",
+        "UIKitCatalog/UIKitCatalog/MasterViewController.swift",
+        "UIKitCatalog/UIKitCatalog/TextFieldViewController.swift",
+        "UIKitCatalog/UIKitCatalog/AlertControllerViewController.swift",
+        "UIKitCatalog/UIKitCatalog/ProgressViewController.swift",
+        "UIKitCatalog/UIKitCatalog/Base.lproj/AlertControllerViewController.storyboard"
+      ],
+      "build": [
+        "git clone https://github.com/appium/ios-uicatalog.git ios-uicatalog",
+        "git -C ios-uicatalog checkout --detach 9981bc4c9441f00e77064d85e5552dba72a37bea",
+        "xcodebuild -project ios-uicatalog/UIKitCatalog/UIKitCatalog.xcodeproj -scheme UIKitCatalog -configuration Release -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath ios-uicatalog/build CODE_SIGNING_ALLOWED=NO build"
+      ],
+      "acquire": [
+        "curl --fail --location --output UIKitCatalog-iphonesimulator.zip https://github.com/appium/ios-uicatalog/releases/download/v4.0.5/UIKitCatalog-iphonesimulator.zip",
+        "printf '%s  %s\\n' 6708c9cbdf28bf69b45b10b2cfd53e98c998ad011315bb21b1815399f6a8387e UIKitCatalog-iphonesimulator.zip | shasum -a 256 --check",
+        "ditto -x -k UIKitCatalog-iphonesimulator.zip UIKitCatalog-iphonesimulator"
+      ],
+      "install": "xcrun simctl install $IOS_SIMULATOR_UDID UIKitCatalog-iphonesimulator/UIKitCatalog.app"
+    }
+  },
+  "platforms": {
+    "android": {
+      "automationName": "UiAutomator2",
+      "workflow": [
+        {"id": "android-launch", "action": "waitVisible", "locator": {"strategy": "accessibility id", "value": "Views"}, "capture": true},
+        {"id": "android-open-views", "action": "click", "locator": {"strategy": "accessibility id", "value": "Views"}},
+        {"id": "android-open-controls", "action": "click", "locator": {"strategy": "accessibility id", "value": "Controls"}},
+        {"id": "android-open-light-controls", "action": "click", "locator": {"strategy": "accessibility id", "value": "1. Light Theme"}},
+        {"id": "android-enter-text", "action": "type", "textFrom": "inputText", "locator": {"strategy": "id", "value": "io.appium.android.apis:id/edit"}},
+        {"id": "android-confirm-text", "action": "assertText", "textFrom": "inputText", "locator": {"strategy": "id", "value": "io.appium.android.apis:id/edit"}, "capture": true},
+        {"id": "android-relaunch", "action": "relaunch"},
+        {"id": "android-open-app", "action": "click", "locator": {"strategy": "accessibility id", "value": "App"}},
+        {"id": "android-open-alerts", "action": "click", "locator": {"strategy": "accessibility id", "value": "Alert Dialogs"}},
+        {"id": "android-open-modal", "action": "click", "locator": {"strategy": "accessibility id", "value": "OK Cancel dialog with a message"}},
+        {"id": "android-dismiss-modal", "action": "click", "locator": {"strategy": "id", "value": "android:id/button1"}},
+        {"id": "android-confirm-modal-dismissed", "action": "waitGone", "locator": {"strategy": "id", "value": "android:id/button1"}, "capture": true},
+        {"id": "android-relaunch-for-delayed-state", "action": "relaunch"},
+        {"id": "android-open-views-for-delayed-state", "action": "click", "locator": {"strategy": "accessibility id", "value": "Views"}},
+        {"id": "android-open-chronometer", "action": "click", "locator": {"strategy": "accessibility id", "value": "Chronometer"}},
+        {"id": "android-start-chronometer", "action": "click", "locator": {"strategy": "id", "value": "io.appium.android.apis:id/start"}},
+        {"id": "android-wait-chronometer-change", "action": "waitAttributeChange", "attribute": "text", "timeoutSeconds": 4, "locator": {"strategy": "id", "value": "io.appium.android.apis:id/chronometer"}, "capture": true},
+        {"id": "android-relaunch-for-large-tree", "action": "relaunch"},
+        {"id": "android-open-views-for-large-tree", "action": "click", "locator": {"strategy": "accessibility id", "value": "Views"}},
+        {"id": "android-scroll-large-tree", "action": "scrollIntoView", "locator": {"strategy": "-android uiautomator", "value": "new UiScrollable(new UiSelector().scrollable(true)).scrollIntoView(new UiSelector().description(\"WebView3\"))"}},
+        {"id": "android-confirm-success", "action": "assertVisible", "locator": {"strategy": "accessibility id", "value": "WebView3"}, "capture": true},
+        {"id": "android-capture-large-tree", "action": "captureSource", "minimumNodes": 20}
+      ]
+    },
+    "ios": {
+      "automationName": "XCUITest",
+      "workflow": [
+        {"id": "ios-launch", "action": "waitVisible", "locator": {"strategy": "accessibility id", "value": "Text Fields"}, "capture": true},
+        {"id": "ios-open-text-fields", "action": "click", "locator": {"strategy": "accessibility id", "value": "Text Fields"}},
+        {"id": "ios-enter-text", "action": "type", "textFrom": "inputText", "locator": {"strategy": "class name", "value": "XCUIElementTypeTextField"}},
+        {"id": "ios-confirm-text", "action": "assertText", "textFrom": "inputText", "locator": {"strategy": "class name", "value": "XCUIElementTypeTextField"}, "capture": true},
+        {"id": "ios-relaunch", "action": "relaunch"},
+        {"id": "ios-open-alerts", "action": "click", "locator": {"strategy": "accessibility id", "value": "Alert Views"}},
+        {"id": "ios-open-modal", "action": "click", "locator": {"strategy": "accessibility id", "value": "Simple"}},
+        {"id": "ios-dismiss-modal", "action": "click", "locator": {"strategy": "accessibility id", "value": "OK"}},
+        {"id": "ios-confirm-modal-dismissed", "action": "waitGone", "locator": {"strategy": "accessibility id", "value": "OK"}, "capture": true},
+        {"id": "ios-relaunch-for-progress", "action": "relaunch"},
+        {"id": "ios-open-progress", "action": "click", "locator": {"strategy": "accessibility id", "value": "Progress Views"}},
+        {"id": "ios-wait-progress-change", "action": "waitAttributeChange", "attribute": "value", "timeoutSeconds": 4, "locator": {"strategy": "class name", "value": "XCUIElementTypeProgressIndicator"}, "capture": true},
+        {"id": "ios-relaunch-for-large-tree", "action": "relaunch"},
+        {"id": "ios-scroll-large-tree", "action": "scrollIntoView", "direction": "down", "locator": {"strategy": "accessibility id", "value": "Web View"}},
+        {"id": "ios-confirm-success", "action": "assertVisible", "locator": {"strategy": "accessibility id", "value": "Web View"}, "capture": true},
+        {"id": "ios-capture-large-tree", "action": "captureSource", "minimumNodes": 20}
+      ]
+    }
+  }
+}
