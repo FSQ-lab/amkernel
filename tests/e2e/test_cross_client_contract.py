@@ -944,7 +944,8 @@ def test_codex_runner_detects_execution_beyond_retained_event_limit(
     assert attempt["eventCount"] == 400
     assert attempt["parsedEventCount"] == 801
     assert attempt["execution"] == "completed mcp_tool_call"
-    assert attempt["diagnostics"] == []
+    assert len(attempt["diagnostics"]) == 400
+    assert attempt["diagnostics"][0]["tool"] == "python_exec"
     assert len(attempt["toolDiagnostics"]) == 400
     assert attempt["toolDiagnosticsDropped"] == 1
     assert attempt["toolDiagnostics"][0]["tool"] == "python_exec"
