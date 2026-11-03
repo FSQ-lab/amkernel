@@ -12,6 +12,10 @@ on:
         description: SHA-256 of the optional supplied wheel.
         required: false
         type: string
+      wheel_source_revision:
+        description: Commit SHA of the optional supplied wheel source; required with wheel_url.
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -26,9 +30,13 @@ jobs:
     name: build-wheel
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    outputs:
+      wheel_sha256: ${{ steps.materialize.outputs.wheel_sha256 }}
+      wheel_source_revision: ${{ steps.materialize.outputs.wheel_source_revision }}
     env:
       WHEEL_URL_INPUT: ${{ inputs.wheel_url }}
       WHEEL_SHA256_INPUT: ${{ inputs.wheel_sha256 }}
+      WHEEL_SOURCE_REVISION_INPUT: ${{ inputs.wheel_source_revision }}
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -42,15 +50,22 @@ jobs:
           version: 0.12.5
           enable-cache: true
       - name: Materialize wheel
+        id: materialize
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p process-wheel
+          source_revision="$GITHUB_SHA"
           if [ -n "$WHEEL_URL_INPUT" ]; then
             if [ -z "$WHEEL_SHA256_INPUT" ]; then
               echo "wheel_sha256 is required when wheel_url is supplied" >&2
               exit 1
             fi
+            if ! [[ "$WHEEL_SOURCE_REVISION_INPUT" =~ ^[0-9a-f]{40}$ ]]; then
+              echo "wheel_source_revision must be a 40-character commit SHA when wheel_url is supplied" >&2
+              exit 1
+            fi
+            source_revision="$WHEEL_SOURCE_REVISION_INPUT"
             wheel_name=$(basename "$WHEEL_URL_INPUT")
             case "$wheel_name" in
               amkernel-*-py3-none-any.whl) ;;
@@ -75,7 +90,9 @@ jobs:
             echo "wheel SHA-256 does not match the supplied value" >&2
             exit 1
           fi
-          echo "wheel=$wheelfile sha256=$actual_sha256"
+          echo "wheel_sha256=$actual_sha256" >> "$GITHUB_OUTPUT"
+          echo "wheel_source_revision=$source_revision" >> "$GITHUB_OUTPUT"
+          echo "wheel=$wheelfile sha256=$actual_sha256 source_revision=$source_revision"
       - name: Upload wheel
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
@@ -98,6 +115,11 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Check out pinned wheel source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.build-wheel.outputs.wheel_source_revision }}
+          path: wheel-source
       - name: Set up Python ${{ matrix.python }}
         uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
         with:
@@ -151,10 +173,13 @@ jobs:
             --workspace "$RUNNER_TEMP/process-workspace" \
             --matrix tests/fixtures/cross_client/process-matrix.json \
             --source-root . \
+            --wheel-source-root wheel-source \
+            --wheel-source-revision "${{ needs.build-wheel.outputs.wheel_source_revision }}" \
             --wheel "$WHEEL" \
             --platform "${{ matrix.platform }}" \
             --output "process-evidence/process-evidence-${{ matrix.platform }}-cpython-${{ matrix.python }}.json"
       - name: Validate retained evidence
+        if: always() && hashFiles(format('process-evidence/process-evidence-{0}-cpython-{1}.json', matrix.platform, matrix.python)) != ''
         shell: bash
         run: |
           set -euo pipefail
@@ -162,9 +187,19 @@ jobs:
             --evidence "process-evidence/process-evidence-${{ matrix.platform }}-cpython-${{ matrix.python }}.json" \
             --matrix tests/fixtures/cross_client/process-matrix.json \
             --source-root . \
+            --wheel-source-root wheel-source \
             --wheel "$WHEEL" \
-            --require-hosted
+            --require-hosted \
+            --expected-repository "${{ github.repository }}" \
+            --expected-workflow "${{ github.workflow }}" \
+            --expected-workflow-ref "${{ github.workflow_ref }}" \
+            --expected-run-id "${{ github.run_id }}" \
+            --expected-run-attempt "${{ github.run_attempt }}" \
+            --expected-sha "${{ github.sha }}" \
+            --expected-wheel-sha256 "${{ needs.build-wheel.outputs.wheel_sha256 }}" \
+            --expected-wheel-source-revision "${{ needs.build-wheel.outputs.wheel_source_revision }}"
       - name: Upload evidence
+        if: always() && hashFiles(format('process-evidence/process-evidence-{0}-cpython-{1}.json', matrix.platform, matrix.python)) != ''
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: process-evidence-${{ matrix.platform }}-cpython-${{ matrix.python }}
@@ -175,13 +210,18 @@ jobs:
 
   combine-evidence:
     name: combine-evidence
-    needs: process-matrix
+    needs: [build-wheel, process-matrix]
     if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Check out pinned wheel source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.build-wheel.outputs.wheel_source_revision }}
+          path: wheel-source
       - name: Set up Python
         uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
         with:
@@ -197,11 +237,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          ls -l process-evidence
+          mkdir -p process-evidence
+          ls -l process-evidence || true
           python tests/e2e/cross_os_process_evidence.py combine \
             --evidence-dir process-evidence \
             --matrix tests/fixtures/cross_client/process-matrix.json \
             --source-root . \
+            --wheel-source-root wheel-source \
+            --expected-wheel-sha256 "${{ needs.build-wheel.outputs.wheel_sha256 }}" \
+            --expected-wheel-source-revision "${{ needs.build-wheel.outputs.wheel_source_revision }}" \
             --expected-repository "${{ github.repository }}" \
             --expected-workflow "${{ github.workflow }}" \
             --expected-workflow-ref "${{ github.workflow_ref }}" \
@@ -210,6 +254,7 @@ jobs:
             --expected-sha "${{ github.sha }}" \
             --output process-evidence-index/process-evidence-index.json
       - name: Upload combined index
+        if: always() && hashFiles('process-evidence-index/process-evidence-index.json') != ''
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: process-evidence-index

@@ -154,6 +154,47 @@ MATRIX_HEADER_KEYS = {
     "requiredEvidence",
     "unsupportedPlatforms",
 }
+ROW_TRANSITION_STATES = {
+    "installed-startup": {"after-mcp-initialize": ("ready", "alive")},
+    "normal-shutdown": {
+        "before-shutdown": ("ready", "alive"),
+        "client-closed": ("exited", "dead"),
+    },
+    "destructive-reset": {
+        "before-reset": ("ready", "alive"),
+        "after-reset": ("ready", "alive"),
+    },
+    "timeout-survives": {"after-timeout": ("ready", "alive")},
+    "timeout-escalates": {"after-escalation": ("ready", "dead")},
+    "runner-channel-death": {"after-runner-death": ("ready", "dead")},
+    "output-limit-drain": {"after-output-limit": ("ready", "alive")},
+    "artifact-integrity-expiry": {"after-expiry": ("ready", "alive")},
+    "cancellation-cleanup": {
+        "active-execution": ("ready", "alive"),
+        "client-closed-during-active-execution": ("exited", "dead"),
+    },
+}
+ROW_TRANSITION_PROCESS_PHASE = {
+    "installed-startup": {"after-mcp-initialize": "after-identity"},
+    "normal-shutdown": {"before-shutdown": "after-identity"},
+    "destructive-reset": {"before-reset": "after-identity", "after-reset": "after-reset"},
+    "timeout-survives": {"after-timeout": "after-continuation"},
+    "timeout-escalates": {"after-escalation": "after-escalation"},
+    "runner-channel-death": {"after-runner-death": "after-runner-death"},
+    "output-limit-drain": {"after-output-limit": "after-output-limit"},
+    "artifact-integrity-expiry": {"after-expiry": "after-expiry"},
+    "cancellation-cleanup": {"active-execution": "active-execution"},
+}
+WHEEL_SOURCE_KEYS = {
+    "filename",
+    "sha256",
+    "sizeBytes",
+    "packageFileCount",
+    "packageSha256",
+    "sourceRevision",
+    "sourceRootKind",
+}
+
 CELL_KEYS = {
     "id",
     "operation",
@@ -268,16 +309,18 @@ def load_matrix(path: Path) -> dict[str, Any]:
 
 
 def source_hashes(source_root: Path) -> dict[str, Any]:
-    package = package_identity(package_tree_hashes(source_root / "src" / "amkernel"))
     return {
-        "matrix": sha256_path(source_root / MATRIX_PATH),
-        "harness": sha256_path(source_root / HARNESS_PATH),
+        "matrix": {"path": MATRIX_PATH, "sha256": sha256_path(source_root / MATRIX_PATH)},
+        "harness": {"path": HARNESS_PATH, "sha256": sha256_path(source_root / HARNESS_PATH)},
         "contracts": [
             {"path": path, "sha256": sha256_path(source_root / path)} for path in CONTRACT_PATHS
         ],
-        "lock": sha256_path(source_root / "uv.lock"),
-        "wheel": package,
+        "lock": {"path": "uv.lock", "sha256": sha256_path(source_root / "uv.lock")},
     }
+
+
+def wheel_source_hashes(wheel_source_root: Path) -> dict[str, Any]:
+    return package_identity(package_tree_hashes(wheel_source_root / "src" / "amkernel"))
 
 
 def check_privacy(record: dict[str, Any]) -> None:
@@ -287,27 +330,49 @@ def check_privacy(record: dict[str, Any]) -> None:
         require(match is None, f"evidence contains a private path or credential-shaped value: {pattern.pattern}")
 
 
-def check_sources(record: dict[str, Any], source_root: Path) -> None:
+def check_sources(record: dict[str, Any], source_root: Path, wheel_source_root: Path) -> None:
     expected = source_hashes(source_root)
+    expected_wheel = wheel_source_hashes(wheel_source_root)
     sources = record.get("sources")
     require_exact_keys(sources, {"matrix", "harness", "contracts", "lock", "wheel"}, "sources")
     require(sources["matrix"]["path"] == MATRIX_PATH, "matrix source path is not frozen")
-    require(sources["matrix"]["sha256"] == expected["matrix"], "matrix hash does not match the checkout")
+    require(sources["matrix"]["sha256"] == expected["matrix"]["sha256"], "matrix hash does not match the checkout")
     require(sources["harness"]["path"] == HARNESS_PATH, "harness path is not frozen")
-    require(sources["harness"]["sha256"] == expected["harness"], "harness hash does not match the checkout")
+    require(sources["harness"]["sha256"] == expected["harness"]["sha256"], "harness hash does not match the checkout")
     require(sources["lock"]["path"] == "uv.lock", "lock path is not frozen")
-    require(sources["lock"]["sha256"] == expected["lock"], "lock hash does not match the checkout")
+    require(sources["lock"]["sha256"] == expected["lock"]["sha256"], "lock hash does not match the checkout")
     contracts = sources.get("contracts")
     require(isinstance(contracts, list) and len(contracts) == len(CONTRACT_PATHS), "contract sources are incomplete")
     for actual, expected_contract in zip(contracts, expected["contracts"]):
         require(actual == expected_contract, "contract hash does not match the checkout")
     wheel = sources.get("wheel")
-    require(isinstance(wheel, dict), "wheel identity is missing")
+    require_exact_keys(wheel, WHEEL_SOURCE_KEYS, "sources.wheel")
     require(isinstance(wheel.get("filename"), str) and wheel["filename"], "wheel filename is missing")
     require(SHA256_RE.fullmatch(str(wheel.get("sha256"))) is not None, "wheel hash is malformed")
     require(isinstance(wheel.get("sizeBytes"), int) and wheel["sizeBytes"] > 0, "wheel size is missing")
-    require(wheel.get("packageFileCount") == expected["wheel"]["packageFileCount"], "wheel package file count does not match src/amkernel")
-    require(wheel.get("packageSha256") == expected["wheel"]["packageSha256"], "wheel package aggregate does not match src/amkernel")
+    require(wheel.get("packageFileCount") == expected_wheel["packageFileCount"], "wheel package file count does not match the pinned wheel source")
+    require(wheel.get("packageSha256") == expected_wheel["packageSha256"], "wheel package aggregate does not match the pinned wheel source")
+    require(isinstance(wheel.get("sourceRevision"), str) and wheel["sourceRevision"], "wheel source revision is missing")
+    require(wheel.get("sourceRootKind") in {"current-checkout", "pinned-release-source"}, "wheel source root kind is invalid")
+
+
+def check_environment_wheel_identity(record: dict[str, Any]) -> None:
+    source_wheel = record["sources"]["wheel"]
+    environment_wheel = record["environment"]["wheel"]
+    require(isinstance(environment_wheel, dict), "environment wheel identity is missing")
+    for key in ("filename", "sha256", "sizeBytes"):
+        require(
+            environment_wheel.get(key) == source_wheel.get(key),
+            f"environment wheel {key} disagrees with sources.wheel",
+        )
+
+
+def check_expected_wheel(record: dict[str, Any], expected_sha256: str | None, expected_revision: str | None) -> None:
+    wheel = record["sources"]["wheel"]
+    if expected_sha256 is not None:
+        require(wheel["sha256"] == expected_sha256, "wheel hash does not match the trusted expected wheel")
+    if expected_revision is not None:
+        require(wheel["sourceRevision"] == expected_revision, "wheel source revision does not match the trusted expected revision")
 
 
 def check_wheel_file(record: dict[str, Any], wheel_path: Path) -> None:
@@ -465,6 +530,22 @@ def check_transitions(cell: dict[str, Any], row_id: str, passed: bool) -> None:
             require_int(transition["executionCount"], f"{row_id}: transition.executionCount", minimum=0)
         if "status" in transition:
             require(transition["status"] in ALLOWED_STATUSES, f"{row_id}: transition.status is invalid")
+    if passed:
+        expected_states = ROW_TRANSITION_STATES[row_id]
+        for transition in transitions:
+            expected_server, expected_kernel = expected_states[transition["phase"]]
+            require(transition["serverState"] == expected_server, f"{row_id}: {transition['phase']} serverState is {transition['serverState']!r}, expected {expected_server!r}")
+            require(transition["kernelState"] == expected_kernel, f"{row_id}: {transition['phase']} kernelState is {transition['kernelState']!r}, expected {expected_kernel!r}")
+            if (row_id, transition["phase"]) in {
+                ("normal-shutdown", "client-closed"),
+                ("cancellation-cleanup", "client-closed-during-active-execution"),
+            }:
+                require(transition["executionCount"] == 1, f"{row_id}: {transition['phase']} executionCount must be the exact observed count 1")
+        last = transitions[-1]
+        if "serverState" in cell["observed"]:
+            require(last["serverState"] == cell["observed"]["serverState"], f"{row_id}: final serverState disagrees with observed")
+        if "kernelState" in cell["observed"]:
+            require(last["kernelState"] == cell["observed"]["kernelState"], f"{row_id}: final kernelState disagrees with observed")
 
 
 def check_process_observations(cell: dict[str, Any], row_id: str, passed: bool) -> None:
@@ -594,6 +675,30 @@ def check_resources(cell: dict[str, Any], row_id: str, observations: list[dict[s
         require(any(process["role"] == "child" and process["alive"] for observation in observations for process in observation["processes"]), f"{row_id}: active descendant was not observed")
 
 
+
+
+def check_transition_process_agreement(cell: dict[str, Any], row_id: str) -> None:
+    if cell["outcome"] != "passed":
+        return
+    transitions = cell["stateTransition"]
+    phase_map = ROW_TRANSITION_PROCESS_PHASE[row_id]
+    observations = {observation["phase"]: observation for observation in cell["processObservations"]}
+    for transition in transitions:
+        process_phase = phase_map.get(transition["phase"])
+        if process_phase is None:
+            continue
+        require(process_phase in observations, f"{row_id}: {transition['phase']} has no matching process observation")
+        observation = observations[process_phase]
+        processes = {process["role"]: process["alive"] for process in observation["processes"]}
+        if transition["serverState"] in {"ready", "running"}:
+            require(processes.get("server") is True, f"{row_id}: {transition['phase']} claims a live server without process proof")
+        elif transition["serverState"] == "exited":
+            require(processes.get("server") is False, f"{row_id}: {transition['phase']} claims an exited server without process proof")
+        if transition["kernelState"] == "alive":
+            require(processes.get("runner") is True, f"{row_id}: {transition['phase']} claims a live runner without process proof")
+        elif transition["kernelState"] == "dead":
+            require(processes.get("runner") is False, f"{row_id}: {transition['phase']} claims a dead runner without process proof")
+
 def validate_cell(cell: dict[str, Any], row: dict[str, Any]) -> list[str]:
     row_id = row["id"]
     require(isinstance(cell, dict), "cell is not a mapping")
@@ -625,6 +730,7 @@ def validate_cell(cell: dict[str, Any], row: dict[str, Any]) -> list[str]:
     check_cleanup(cell, require_complete=passed)
     check_transitions(cell, row_id, passed)
     check_process_observations(cell, row_id, passed)
+    check_transition_process_agreement(cell, row_id)
     if passed:
         check_resources(cell, row_id, cell["processObservations"])
     check_checks(cell, row, passed)
@@ -660,8 +766,11 @@ def validate_record(
     source_root: Path,
     *,
     require_hosted: bool,
+    wheel_source_root: Path | None = None,
     wheel_path: Path | None = None,
     expected_invocation: dict[str, Any] | None = None,
+    expected_wheel_sha256: str | None = None,
+    expected_wheel_source_revision: str | None = None,
 ) -> list[str]:
     require_exact_keys(record, RECORD_KEYS, "record")
     require(record.get("schemaVersion") == SCHEMA_VERSION, "schema version is unsupported")
@@ -669,12 +778,17 @@ def validate_record(
     require(isinstance(record.get("recordId"), str) and record["recordId"], "record id is missing")
     require(isinstance(record.get("createdAt"), str) and record["createdAt"].endswith("Z"), "creation time is missing")
     check_hosted_dispatch(record, require_hosted)
+    if require_hosted:
+        require(expected_invocation is not None, "hosted validation requires the exact expected invocation")
+        require(expected_wheel_sha256 is not None, "hosted validation requires the expected wheel hash")
+        require(expected_wheel_source_revision is not None, "hosted validation requires the expected wheel source revision")
     check_expected_invocation(record, expected_invocation)
-    check_sources(record, source_root)
+    check_sources(record, source_root, wheel_source_root or source_root)
+    check_expected_wheel(record, expected_wheel_sha256, expected_wheel_source_revision)
+    check_environment(record, matrix)
+    check_environment_wheel_identity(record)
     if wheel_path is not None:
         check_wheel_file(record, wheel_path)
-    check_matrix_header(record, matrix)
-    check_environment(record, matrix)
     cells = record.get("cells")
     require(isinstance(cells, list), "cells are missing")
     require(
@@ -712,6 +826,10 @@ def combine(
     matrix: dict[str, Any],
     source_root: Path,
     expected_invocation: dict[str, Any],
+    *,
+    wheel_source_root: Path,
+    expected_wheel_sha256: str,
+    expected_wheel_source_revision: str,
 ) -> dict[str, Any]:
     require(records, "no evidence records were supplied")
     expected_sources = source_hashes(source_root)
@@ -725,8 +843,11 @@ def combine(
             matrix,
             source_root,
             require_hosted=True,
+            wheel_source_root=wheel_source_root,
             wheel_path=None,
             expected_invocation=expected_invocation,
+            expected_wheel_sha256=expected_wheel_sha256,
+            expected_wheel_source_revision=expected_wheel_source_revision,
         )
         failures.extend(record_failures)
         environment = record["environment"]
@@ -736,7 +857,7 @@ def combine(
         sources = record["sources"]
         for name in ("matrix", "harness", "lock"):
             require(
-                sources[name]["sha256"] == expected_sources[name],
+                sources[name]["sha256"] == expected_sources[name]["sha256"],
                 f"{path.name}: {name} source differs from the combined checkout",
             )
         require(
@@ -745,7 +866,15 @@ def combine(
         )
         wheel = sources["wheel"]
         wheel_identities.add(
-            (wheel["filename"], wheel["sha256"], wheel["sizeBytes"], wheel["packageFileCount"], wheel["packageSha256"])
+            (
+                wheel["filename"],
+                wheel["sha256"],
+                wheel["sizeBytes"],
+                wheel["packageFileCount"],
+                wheel["packageSha256"],
+                wheel["sourceRevision"],
+                wheel["sourceRootKind"],
+            )
         )
         cells = [
             {
@@ -804,7 +933,7 @@ def combine(
         "indexKind": "amkernel-cross-os-process-matrix-index",
         "matrix": {
             "id": matrix["matrixId"],
-            "sha256": expected_sources["matrix"],
+            "sha256": expected_sources["matrix"]["sha256"],
             "platforms": matrix["platforms"],
             "pythonVersions": matrix["pythonVersions"],
             "rowIds": [row["id"] for row in matrix["rows"]],
@@ -812,9 +941,9 @@ def combine(
         },
         "invocation": expected_invocation,
         "sources": {
-            "harnessSha256": expected_sources["harness"],
+            "harnessSha256": expected_sources["harness"]["sha256"],
             "contracts": expected_sources["contracts"],
-            "lockSha256": expected_sources["lock"],
+            "lockSha256": expected_sources["lock"]["sha256"],
             "sourceRoot": "checkout",
         },
         "wheel": {
@@ -823,6 +952,8 @@ def combine(
             "sizeBytes": wheel[2],
             "packageFileCount": wheel[3],
             "packageSha256": wheel[4],
+            "sourceRevision": wheel[5],
+            "sourceRootKind": wheel[6],
         },
         "environments": environments,
         "totals": {
@@ -869,14 +1000,26 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     validate.add_argument("--evidence", required=True)
     validate.add_argument("--matrix", required=True)
     validate.add_argument("--source-root", required=True)
+    validate.add_argument("--wheel-source-root")
     validate.add_argument("--wheel")
     validate.add_argument("--require-hosted", action="store_true")
+    validate.add_argument("--expected-wheel-sha256")
+    validate.add_argument("--expected-wheel-source-revision")
+    validate.add_argument("--expected-repository")
+    validate.add_argument("--expected-workflow")
+    validate.add_argument("--expected-workflow-ref")
+    validate.add_argument("--expected-run-id")
+    validate.add_argument("--expected-run-attempt")
+    validate.add_argument("--expected-sha")
     validate.add_argument("--summary")
 
     combined = subparsers.add_parser("combine", help="combine hosted records into one index")
     combined.add_argument("--evidence-dir", required=True)
     combined.add_argument("--matrix", required=True)
     combined.add_argument("--source-root", required=True)
+    combined.add_argument("--wheel-source-root", required=True)
+    combined.add_argument("--expected-wheel-sha256", required=True)
+    combined.add_argument("--expected-wheel-source-revision", required=True)
     combined.add_argument("--output", required=True)
     combined.add_argument("--expected-repository", required=True)
     combined.add_argument("--expected-workflow", required=True)
@@ -894,12 +1037,28 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "validate":
         evidence_path = Path(args.evidence)
         record = json.loads(evidence_path.read_text(encoding="utf-8"))
+        expected_invocation = None
+        invocation_args = (
+            args.expected_repository,
+            args.expected_workflow,
+            args.expected_workflow_ref,
+            args.expected_run_id,
+            args.expected_run_attempt,
+            args.expected_sha,
+        )
+        if args.require_hosted or any(value is not None for value in invocation_args):
+            expected_invocation = expected_invocation_from_args(args)
+        wheel_source_root = Path(args.wheel_source_root).resolve() if args.wheel_source_root else source_root
         problems = validate_record(
             record,
             matrix,
             source_root,
             require_hosted=args.require_hosted,
+            wheel_source_root=wheel_source_root,
             wheel_path=Path(args.wheel) if args.wheel else None,
+            expected_invocation=expected_invocation,
+            expected_wheel_sha256=args.expected_wheel_sha256,
+            expected_wheel_source_revision=args.expected_wheel_source_revision,
         )
         summary = {
             "evidence": evidence_path.name,
@@ -919,7 +1078,15 @@ def main(argv: list[str] | None = None) -> int:
         for path in evidence_files(Path(args.evidence_dir))
     ]
     expected_invocation = expected_invocation_from_args(args)
-    index = combine(records, matrix, source_root, expected_invocation)
+    index = combine(
+        records,
+        matrix,
+        source_root,
+        expected_invocation,
+        wheel_source_root=Path(args.wheel_source_root).resolve(),
+        expected_wheel_sha256=args.expected_wheel_sha256,
+        expected_wheel_source_revision=args.expected_wheel_source_revision,
+    )
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(index, indent=2, sort_keys=True) + "\n", encoding="utf-8")

@@ -923,6 +923,7 @@ async def row_cancellation_cleanup(ctx: RowContext, cell: RowCell) -> None:
                     aborted = safe_error_type(error)
     cell.transition(
         "client-closed-during-active-execution",
+        executionCount=1,
         serverState="exited"
         if ctx.managed.server is not None and not pid_exists(ctx.managed.server)
         else "running",
@@ -1040,18 +1041,28 @@ def discover_wheel_version(wheel: Path) -> str:
     return match.group(1)
 
 
-def build_sources(source_root: Path, matrix_path: Path, wheel: Path, harness: Path) -> dict[str, Any]:
+def build_sources(
+    source_root: Path,
+    matrix_path: Path,
+    wheel: Path,
+    harness: Path,
+    *,
+    wheel_source_root: Path,
+    wheel_source_revision: str,
+) -> dict[str, Any]:
     contracts = [
         "docs/decisions/0003-stage-1-execution-contract.md",
         "docs/decisions/0004-stage-1-runner-protocol.md",
         "docs/decisions/0005-stage-1-runtime-lifecycle.md",
         "docs/decisions/0006-stage-2-output-and-artifact-contract.md",
     ]
-    source_package = package_tree_hashes(source_root / "src" / "amkernel")
+    if not wheel_source_revision:
+        raise RuntimeError("wheel source revision is required")
+    wheel_source_package = package_tree_hashes(wheel_source_root / "src" / "amkernel")
     wheel_package = wheel_package_hashes(wheel)
-    if source_package != wheel_package:
-        raise RuntimeError("wheel package files do not match src/amkernel")
-    package = package_identity(source_package)
+    if wheel_source_package != wheel_package:
+        raise RuntimeError("wheel package files do not match the pinned wheel source")
+    package = package_identity(wheel_source_package)
     return {
         "matrix": {
             "path": "tests/fixtures/cross_client/process-matrix.json",
@@ -1070,6 +1081,12 @@ def build_sources(source_root: Path, matrix_path: Path, wheel: Path, harness: Pa
             "sha256": sha256_path(wheel),
             "sizeBytes": wheel.stat().st_size,
             **package,
+            "sourceRevision": wheel_source_revision,
+            "sourceRootKind": (
+                "current-checkout"
+                if wheel_source_root == source_root
+                else "pinned-release-source"
+            ),
         },
     }
 
@@ -1146,6 +1163,8 @@ def build_record(
     declared_platform: str,
     cells: list[dict[str, Any]],
     run_id: str,
+    wheel_source_root: Path,
+    wheel_source_revision: str,
 ) -> dict[str, Any]:
     environment = build_environment(entry_point, python, wheel, declared_platform)
     record: dict[str, Any] = {
@@ -1154,7 +1173,14 @@ def build_record(
         "recordId": run_id,
         "executionContext": "hosted" if HOSTED else "local",
         "dispatch": build_dispatch(),
-        "sources": build_sources(source_root, matrix_path, wheel, harness),
+        "sources": build_sources(
+            source_root,
+            matrix_path,
+            wheel,
+            harness,
+            wheel_source_root=wheel_source_root,
+            wheel_source_revision=wheel_source_revision,
+        ),
         "matrix": {
             "id": matrix["matrixId"],
             "platforms": matrix["platforms"],
@@ -1190,6 +1216,10 @@ def build_record(
 
 async def run(args: argparse.Namespace) -> int:
     source_root = Path(args.source_root).resolve()
+    wheel_source_root = (
+        Path(args.wheel_source_root).resolve() if args.wheel_source_root else source_root
+    )
+    wheel_source_revision = args.wheel_source_revision or "local-unpinned"
     matrix_path = Path(args.matrix).resolve()
     wheel = Path(args.wheel).resolve()
     harness = Path(__file__).resolve()
@@ -1246,6 +1276,8 @@ async def run(args: argparse.Namespace) -> int:
         declared_platform=args.platform,
         cells=cells,
         run_id=f"{matrix['matrixId']}-{uuid.uuid4().hex}",
+        wheel_source_root=wheel_source_root,
+        wheel_source_revision=wheel_source_revision,
     )
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -1262,6 +1294,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--workspace", required=True)
     parser.add_argument("--matrix", required=True)
     parser.add_argument("--source-root", required=True)
+    parser.add_argument("--wheel-source-root")
+    parser.add_argument("--wheel-source-revision")
     parser.add_argument("--wheel", required=True)
     parser.add_argument("--platform", required=True)
     parser.add_argument("--output", required=True)
