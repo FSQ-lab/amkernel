@@ -318,6 +318,9 @@ def _attempt_signal(attempt: dict[str, Any]) -> str:
 
 
 _EXECUTION_ITEM_TYPES = frozenset({"agent_message", "mcp_tool_call", "command_execution"})
+_TOOL_ITEM_TYPES = frozenset(
+    {"mcp_tool_call", "command_execution", "file_change", "web_search", "local_shell_call"}
+)
 
 
 def _execution_signal(events: list[dict[str, Any]]) -> str | None:
@@ -345,7 +348,7 @@ def _diagnostic_event(event: dict[str, Any]) -> dict[str, Any] | None:
         if not isinstance(item_type, str):
             return None
         diagnostic: dict[str, Any] = {"type": event_type, "itemType": item_type[:80]}
-        for key in ("id", "callId", "name", "server", "status"):
+        for key in ("id", "callId", "name", "server", "tool", "status"):
             value = item.get(key)
             if isinstance(value, bool) or isinstance(value, (int, float)):
                 diagnostic[key] = value
@@ -1260,6 +1263,8 @@ def _attempt_codex_launch(
     execution: str | None = None
     parsed_event_count = 0
     diagnostics: list[dict[str, Any]] = []
+    tool_diagnostics: list[dict[str, Any]] = []
+    tool_diagnostics_dropped = 0
     for line in stdout.splitlines():
         try:
             event = json.loads(line)
@@ -1270,10 +1275,15 @@ def _attempt_codex_launch(
         parsed_event_count += 1
         if execution is None:
             execution = _execution_signal([event])
-        if len(diagnostics) < ATTEMPT_EVENT_LIMIT:
-            diagnostic = _diagnostic_event(event)
-            if diagnostic is not None:
+        diagnostic = _diagnostic_event(event)
+        if diagnostic is not None:
+            if len(diagnostics) < ATTEMPT_EVENT_LIMIT:
                 diagnostics.append(diagnostic)
+            if diagnostic.get("itemType") in _TOOL_ITEM_TYPES:
+                if len(tool_diagnostics) < ATTEMPT_EVENT_LIMIT:
+                    tool_diagnostics.append(diagnostic)
+                else:
+                    tool_diagnostics_dropped += 1
         if len(events) < ATTEMPT_EVENT_LIMIT:
             events.append(event)
     return {
@@ -1287,6 +1297,8 @@ def _attempt_codex_launch(
         "parsedEventCount": parsed_event_count,
         "events": events,
         "diagnostics": diagnostics,
+        "toolDiagnostics": tool_diagnostics,
+        "toolDiagnosticsDropped": tool_diagnostics_dropped,
         "stderr": _bounded(stderr),
     }
 
@@ -1315,7 +1327,7 @@ def _write_attempt(output: Path, index: int, attempt: dict[str, Any]) -> None:
     summary = {
         key: value
         for key, value in attempt.items()
-        if key not in {"events", "diagnostics"}
+        if key not in {"events", "diagnostics", "toolDiagnostics"}
     }
     _write_json(directory / f"launch-{index:02d}.json", summary)
 
@@ -1366,6 +1378,25 @@ def _launch_supplementary_attempts(
     return attempts, None
 
 
+def _diagnostic_lines(diagnostics: list[dict[str, Any]]) -> list[str]:
+    lines = []
+    for diagnostic in diagnostics:
+        redacted = _bound_structure(_redact_structure(diagnostic))
+        line = json.dumps(redacted, ensure_ascii=False, sort_keys=True)
+        if len(line) > 2048:
+            line = json.dumps(
+                {
+                    "type": redacted.get("type") if isinstance(redacted, dict) else None,
+                    "truncated": True,
+                    "originalBytes": len(line),
+                    "sha256": _sha256(line.encode()),
+                },
+                sort_keys=True,
+            )
+        lines.append(line)
+    return lines
+
+
 def _write_execution_supplement(
     output: Path,
     *,
@@ -1376,6 +1407,9 @@ def _write_execution_supplement(
     wheel: Path,
     probe_detail: str,
     config: dict[str, object],
+    config_changed: bool,
+    source_changed: bool,
+    tool_audit_incomplete: bool,
 ) -> None:
     directory = output / "supplementary"
     directory.mkdir(parents=True, exist_ok=True)
@@ -1399,6 +1433,9 @@ def _write_execution_supplement(
             "probeDetail": _redact(probe_detail)[:1000],
             "observedExecution": True,
             "persistentConfiguration": config,
+            "persistentConfigurationChanged": config_changed,
+            "repositorySourceChanged": source_changed,
+            "toolAuditIncomplete": tool_audit_incomplete,
             "frozenLayersEntered": False,
             "requiresReview": True,
             "attempts": len(attempts),
@@ -1407,25 +1444,17 @@ def _write_execution_supplement(
     for index, attempt in enumerate(attempts, start=1):
         attempt_dir = directory / f"attempt-{index:02d}"
         attempt_dir.mkdir()
-        lines = []
-        for diagnostic in cast(list[dict[str, Any]], attempt.get("diagnostics", [])):
-            redacted = _bound_structure(_redact_structure(diagnostic))
-            line = json.dumps(redacted, ensure_ascii=False, sort_keys=True)
-            if len(line) > 2048:
-                line = json.dumps(
-                    {
-                        "type": redacted.get("type")
-                        if isinstance(redacted, dict)
-                        else None,
-                        "truncated": True,
-                        "originalBytes": len(line),
-                        "sha256": _sha256(line.encode()),
-                    },
-                    sort_keys=True,
-                )
-            lines.append(line)
+        lines = _diagnostic_lines(
+            cast(list[dict[str, Any]], attempt.get("diagnostics", []))
+        )
+        tool_lines = _diagnostic_lines(
+            cast(list[dict[str, Any]], attempt.get("toolDiagnostics", []))
+        )
         (attempt_dir / "diagnostics.jsonl").write_text(
             "\n".join(lines) + ("\n" if lines else "")
+        )
+        (attempt_dir / "tool-events.jsonl").write_text(
+            "\n".join(tool_lines) + ("\n" if tool_lines else "")
         )
         (attempt_dir / "stderr.txt").write_text(
             _bounded(cast(str, attempt.get("stderr", "")))
@@ -1447,7 +1476,7 @@ def _write_execution_supplement(
         metadata = {
             key: value
             for key, value in attempt.items()
-            if key not in {"events", "diagnostics", "stderr"}
+            if key not in {"events", "diagnostics", "toolDiagnostics", "stderr"}
         }
         metadata["capture"] = capture
         _write_json(attempt_dir / "metadata.json", metadata)
@@ -1647,16 +1676,11 @@ def run(output: Path, wheel_path: Path | None = None) -> None:
                 _deterministic_prompt(scenario), server, temp, executable
             )
             if executed is not None:
-                if _persistent_config() != config_before:
-                    raise RuntimeError(
-                        "persistent Codex configuration changed during the supplementary "
-                        "attempts; review required"
-                    )
-                if _source_snapshot(output) != source_before:
-                    raise RuntimeError(
-                        "repository source snapshot changed during the supplementary "
-                        "attempts; review required"
-                    )
+                config_changed = _persistent_config() != config_before
+                source_changed = _source_snapshot(output) != source_before
+                dropped = sum(
+                    int(attempt.get("toolDiagnosticsDropped", 0)) for attempt in attempts
+                )
                 _write_execution_supplement(
                     output,
                     attempts=attempts,
@@ -1666,7 +1690,29 @@ def run(output: Path, wheel_path: Path | None = None) -> None:
                     wheel=wheel,
                     probe_detail=detail,
                     config=config_before,
+                    config_changed=config_changed,
+                    source_changed=source_changed,
+                    tool_audit_incomplete=dropped > 0,
                 )
+                if dropped:
+                    raise RuntimeError(
+                        "a supplementary client launch produced observed execution after the "
+                        "model-provider probe failed and the bounded tool-event audit was "
+                        f"exceeded ({dropped} tool events dropped); the run stopped before the "
+                        "frozen layers and retained bounded redacted diagnostics under "
+                        "output/supplementary. Review required."
+                    )
+                if config_changed:
+                    raise RuntimeError(
+                        "persistent Codex configuration changed during the supplementary "
+                        "attempts; diagnostics retained under output/supplementary. Review "
+                        "required."
+                    )
+                if source_changed:
+                    raise RuntimeError(
+                        "repository source snapshot changed during the supplementary attempts; "
+                        "diagnostics retained under output/supplementary. Review required."
+                    )
                 raise RuntimeError(
                     "a supplementary client launch produced observed execution after the "
                     "model-provider probe failed; the run stopped before the frozen layers "

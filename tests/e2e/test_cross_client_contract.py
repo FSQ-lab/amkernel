@@ -888,9 +888,17 @@ def test_codex_runner_detects_execution_beyond_retained_event_limit(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     retained = [{"type": "item.started", "item": {"type": "reasoning"}}] * 400
-    stdout = "\n".join(
-        json.dumps(event) for event in [*retained, {"type": "turn.completed"}]
-    )
+    tool_calls = [
+        {
+            "type": "item.completed",
+            "item": {
+                "type": "mcp_tool_call",
+                "server": "amkernel",
+                "tool": "python_exec",
+            },
+        }
+    ] * 401
+    stdout = "\n".join(json.dumps(event) for event in [*retained, *tool_calls])
 
     def fake_run(*args: Any, **kwargs: Any) -> types.SimpleNamespace:
         assert kwargs["timeout"] == 180
@@ -908,8 +916,11 @@ def test_codex_runner_detects_execution_beyond_retained_event_limit(
     )
 
     assert attempt["eventCount"] == 400
-    assert attempt["parsedEventCount"] == 401
-    assert attempt["execution"] == "completed model turn"
+    assert attempt["parsedEventCount"] == 801
+    assert attempt["execution"] == "completed mcp_tool_call"
+    assert len(attempt["toolDiagnostics"]) == 400
+    assert attempt["toolDiagnosticsDropped"] == 1
+    assert attempt["toolDiagnostics"][0]["tool"] == "python_exec"
     assert codex_runner._attempt_executed(attempt)
 
 
@@ -983,6 +994,12 @@ def _synthetic_attempt(
         "parsedEventCount": len(observed),
         "events": observed,
         "diagnostics": diagnostics,
+        "toolDiagnostics": [
+            diagnostic
+            for diagnostic in diagnostics
+            if diagnostic.get("itemType") in codex_runner._TOOL_ITEM_TYPES
+        ],
+        "toolDiagnosticsDropped": 0,
         "stderr": "",
     }
 
@@ -1022,7 +1039,7 @@ def test_codex_runner_stops_supplementary_launches_after_execution(
 
 def test_codex_runner_retains_prose_free_execution_supplement(tmp_path: Path) -> None:
     temp = tmp_path / "temp"
-    capture = temp / "attempt-01-capture"
+    capture = temp / "attempt-1-capture"
     capture.mkdir(parents=True)
     (capture / "resources.json").write_text(
         '{"resource": "/Users/private/secret.txt", "note": "TOKEN=abcdef123456"}'
@@ -1036,6 +1053,8 @@ def test_codex_runner_retains_prose_free_execution_supplement(tmp_path: Path) ->
             "type": "item.started",
             "item": {
                 "type": "mcp_tool_call",
+                "server": "amkernel",
+                "tool": "python_exec",
                 "name": "python_exec",
                 "arguments": "PRIVATE ARGUMENTS",
             },
@@ -1056,6 +1075,9 @@ def test_codex_runner_retains_prose_free_execution_supplement(tmp_path: Path) ->
         wheel=wheel,
         probe_detail="URLError on direct connection",
         config={"model_provider": "agent-maestro"},
+        config_changed=True,
+        source_changed=False,
+        tool_audit_incomplete=False,
     )
 
     root = tmp_path / "out" / "supplementary"
@@ -1066,6 +1088,9 @@ def test_codex_runner_retains_prose_free_execution_supplement(tmp_path: Path) ->
     assert environment["publishedSourceRevision"] == (
         "e16f42727b32a30fd431e4504712a5f31c28b408"
     )
+    assert environment["persistentConfigurationChanged"] is True
+    assert environment["repositorySourceChanged"] is False
+    assert environment["toolAuditIncomplete"] is False
 
     lines = (root / "attempt-01" / "diagnostics.jsonl").read_text().splitlines()
     diagnostics = [json.loads(line) for line in lines]
@@ -1075,6 +1100,7 @@ def test_codex_runner_retains_prose_free_execution_supplement(tmp_path: Path) ->
         "reasoning",
     ]
     tool_event = diagnostics[0]
+    assert tool_event["tool"] == "python_exec"
     assert tool_event["name"] == "python_exec"
     assert tool_event["argumentsBytes"] == len("PRIVATE ARGUMENTS")
     assert "textBytes" not in tool_event
@@ -1091,7 +1117,10 @@ def test_codex_runner_retains_prose_free_execution_supplement(tmp_path: Path) ->
         + retained_capture.read_text()
         + json.dumps(environment)
     )
+    tool_lines = (root / "attempt-01" / "tool-events.jsonl").read_text()
+    assert "python_exec" in tool_lines
     for forbidden in ("MODEL PROSE", "HIDDEN THOUGHTS", "PRIVATE ARGUMENTS"):
         assert forbidden not in retention_text
+        assert forbidden not in tool_lines
     assert "/Users/" not in retention_text
     assert "abcdef123456" not in retention_text
