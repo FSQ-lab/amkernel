@@ -4,6 +4,10 @@ All notable changes to AMKernel are recorded here. Public releases use semantic 
 
 ## [Unreleased]
 
+### Fixed
+
+- Make ready-stream settlement cancellation-safe so a queued zero-delay timer cannot raise an unhandled `InvalidStateError` after its waiter is cancelled. Preserve terminal ordering, cancellation propagation and storage-failure cleanup ([#114](https://github.com/FSQ-lab/amkernel/issues/114)).
+
 ## [0.1.1] - 2026-11-03
 
 Backward-compatible Skill, installation and evaluation corrections from

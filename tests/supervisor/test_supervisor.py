@@ -954,3 +954,33 @@ async def test_output_store_failure_kills_runner_and_reports_stable_error(
     assert result.error.message == "execution output storage failed"
     assert result.output.discarded_bytes == 0
     assert result.output.discarded_lines == 0
+
+
+async def test_ready_reader_cancellation_does_not_escape_to_event_loop(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    loop = asyncio.get_running_loop()
+    original_call_later = loop.call_later
+    original_handler = loop.get_exception_handler()
+    errors: list[dict[str, object]] = []
+
+    def cancel_before_timer(
+        delay: float, callback: Callable[..., object], *args: object
+    ) -> asyncio.TimerHandle:
+        handle = original_call_later(delay, callback, *args)
+        task = asyncio.current_task()
+        assert task is not None
+        loop.call_soon(task.cancel)
+        return handle
+
+    loop.set_exception_handler(lambda _loop, context: errors.append(context))
+    try:
+        with monkeypatch.context() as patch:
+            patch.setattr(loop, "call_later", cancel_before_timer)
+            settling = asyncio.create_task(supervisor_module._settle_ready_stream_readers())
+            with pytest.raises(asyncio.CancelledError):
+                await settling
+        assert settling.cancelled()
+        assert errors == []
+    finally:
+        loop.set_exception_handler(original_handler)
