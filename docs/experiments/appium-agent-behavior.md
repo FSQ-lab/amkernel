@@ -641,11 +641,18 @@ identity and verified installed-project provenance. Desktop and cleanup limits
 remain those in the evidence; unrelated apps/services, complex-app scenarios,
 Android/iOS/Windows support and tablet compatibility are not qualified by M0.
 
-## 14. Focused real macOS application scenarios (#109)
+## 14. Deferred complex macOS evaluation scenarios (#109)
 
-[#109](https://github.com/FSQ-lab/amkernel/issues/109) records the owner's request
-to decompose more complex Mac behavior. M0 is now qualified separately under
-#108; M1–M7 remain unexecuted pending corrected, independently reviewed procedures.
+The owner's latest decision supersedes the earlier execution authorization:
+**defer M1–M7 and their verifier development to later evaluation**. Mac is not the
+highest current priority; focus on ordinary app opening, locating, clicking,
+input and simple visible-result checks. These complex scenarios are not current
+delivery gates and must not block ordinary Appium work. No deadline or post-v1
+release assignment is inferred from this deferral.
+
+[#109](https://github.com/FSQ-lab/amkernel/issues/109) retains the future evaluation
+plan and historical observations. M0 remains qualified separately under #108.
+All three M1 attempts remain not-qualified; M2–M7 are unexecuted.
 TextEdit and Finder were found at `/System/Applications/TextEdit.app` and
 `/System/Library/CoreServices/Finder.app`; presence does not prove Mac2 automation.
 
@@ -665,7 +672,7 @@ Do not start with Mail, Notes, browser login flows or global System Settings.
 | M6 | TextEdit / interrupted session | Use an isolated owned-session interruption; inspect actual status/kernelState and a relevant live query. Inspect persisted synthetic state before repeating a save; session_id alone is not liveness and a final no-op is not recovery. |
 | M7 | Owned resources / partial success | Observe task, restoration, session and server outcomes separately; restoration precedes quit when it needs the session. Safe isolated fault injection only; failed cleanup stays failed/unknown and shared services stay untouched. |
 
-### Execution order and boundaries
+### Future evaluation order and boundaries (deferred)
 
 1. Correct #108, independently review it, and obtain new Calculator baseline proof.
 2. M1–M3: identity, document persistence, then dialog/approval boundaries.
@@ -699,6 +706,160 @@ Fault injection must not destabilize a shared desktop; without safe isolation,
 report that case as unexercised rather than claiming pass.
 
 These are Skill/Agent/platform experiment scenarios, not new Runtime modules,
-Appium wrappers, workflows or app-specific core APIs. No new scenario was run as
-part of recording this plan.
+Appium wrappers, workflows or app-specific core APIs. The original plan itself
+performed no execution; the subsequently authorized observations follow below.
 
+### Observed M1 attempts and corrected procedure
+
+The original M1 result remains unchanged in `mac2-m1-20261103.json` and remains
+not-qualified. The separate `mac2-textedit-diagnostic-20261103.json` is diagnostic
+evidence, not a passing recovery or substitute M1. Initial source remains in
+`mac2-applications-initial-source-20261103.json`.
+
+The corrected experiment procedure distinguishes actual actions from observed
+labels, counts literal save invocations, binds title/content observations to their
+session/window and ordering, requires observed collision-dialog type, and only
+relinquishes session ownership after a successful root DELETE. Finder ownership
+uses direct window-title observations, unambiguous creation and preserved baseline
+digests across fresh queries, not assumed stable WDA UUIDs. Emergency restoration
+preserves unknown/preexisting windows; fixture-only TextEdit termination requires
+an absent baseline instance plus live title and synthetic-content or task-path
+proof. M4 explicitly observes the still-open owned window after selection and
+separately verifies baseline-only windows after closing it.
+
+Earlier assigned independent source review found 0 Blocker / Major / Minor
+findings after repairs, and 57 unique throwaway behavioral boundary checks passed
+without UI execution. The later owner-observed retry below exposed a new Major
+verifier defect; those checks and the earlier review were insufficient to prove
+M1 readiness. Current procedure and review are retained in
+`mac2-applications-source-20261103.json` and `mac2-applications-review-20261103.json`.
+
+The exact new actual native Copilot/Mac2 attempt is retained in
+`mac2-m1-retry-20261103.json`, with the pre-run source snapshot in
+`mac2-m1-retry-source-20261103.json`. Its result is **not-qualified**, with final
+report `blocked/restored/cleaned/not-owned`. It created one actual TextEdit/Mac2
+session and submitted the synthetic target deep link, but every window query
+returned zero windows. Initial and final foreground were `com.apple.loginwindow`.
+The 14 native Python executions all reported `kernelState=alive`; the failed
+derived history/aliveness predicate does not establish a dead kernel. Failed and
+timed-out executions remain in the evidence. All synthetic files were unchanged;
+the desktop pre-state, successful session deletion, empty session listing before
+stop, owned server/group/ports exit and Runner exit were observed. This does not
+prove global application-history or unrelated-resource cleanup.
+Independent actual-evidence review found 0 Blocker / Major / Minor findings in
+this failed classification and observed cleanup, not a passing M1. Its record is
+included in `mac2-applications-review-20261103.json`. The frozen experimental
+parser rejects `timed_out`, invalidating aggregate history and attribution even
+when the recorded kernel survives; those original flags remain unchanged. The
+reviewer inspected frozen source but did not independently attest executed source
+bytes or recompute hashes.
+
+A read-only post-run `CoreGraphics.CGSessionCopyCurrentDictionary` query returned
+`screenLocked=true`, `onConsole=true`, and `loginDone=true`, retained in
+`mac2-desktop-prerequisite-20261103.json`. This records that post-run moment,
+not the lock duration or established cause of the earlier empty-window failure.
+No unlock, credential, permission or global-preference operation was attempted.
+The owner subsequently reported disabling lock and requested one visible rerun.
+
+### Owner-observed unchanged-procedure M1 retry
+
+`mac2-m1-visible-source-20261103.json` records preflight with Ghostty foreground,
+an active console, no TextEdit instance and no returned lock key; absence is not
+an explicit false. The unchanged-procedure actual result is retained in
+`mac2-m1-visible-20261103.json` and remains **not-qualified**, notwithstanding
+the native client's final `completed/restored/cleaned/not-owned` report.
+
+Actual Appium/Mac2 evidence includes title-observed window clicks followed by
+scoped descendant-content reads: target at protocol 52/55/57/58, distractor at
+71/72/74/75, and target after re-query at 78/81/83/84. The selection phase actually
+clicked three same-title target windows, then the distractor, then three target
+windows again. This is stronger evidence than session creation, but not proof
+that one intended task document/window was revisited.
+
+Independent review (`mac2-m1-visible-review-20261103.json`) found **0 Blocker /
+1 Major / 0 Minor** in the verifier. Four failed flags share `_m1_ordered_sequence`,
+which requires the same target element ID before and after fresh window queries;
+the actual queries returned new IDs. Scoped-query parent associations are present
+and correctly consumed: missing descendant causality is not the immediate cause.
+Correct query-local identity handling only with independently proved logical
+document/window continuity; merging solely by equal title would be unsafe.
+
+Startup already exposed two target-title windows before the explicit target
+deepLink, and later queries exposed three target-title windows plus a distractor.
+All target windows returned the same synthetic text. Paths, startup origin and
+cross-query physical/logical identity remain unestablished. Do not infer personal
+contents, task ownership, or a passing M1 from those facts.
+
+All 16 executions reported live kernels and all fixture hashes stayed unchanged.
+Final query 124 returned zero windows; observed app/foreground restoration preceded
+successful session DELETE 129; discovery 133 returned no sessions. TextEdit was
+absent and Ghostty foreground afterward; owned server/group/ports/Runner exit was
+observed. These observations do not prove preservation of unrecorded application
+history or ownership of all startup windows. M2–M7 remain unexercised. This visible
+rerun changed no source or acceptance rules. The verifier and identity issues
+remain unresolved; under the subsequent owner deferral they are future evaluation
+work, not prerequisites to ordinary app operations. Follow-on per-launch isolation
+and identity drafts were stopped without another UI run or qualification. Resume
+this complex supplement only when it is explicitly reprioritized.
+
+## 15. Owner-supervised ordinary mobile app observations (2026-11-03)
+
+After the owner deferred the complex Mac supplement, ordinary Android and physical
+iPhone scenarios were exercised through the installed external-project client and
+AMKernel's existing `python_exec` interface. These are conversationally observed
+functional results, not a new retained raw-evidence bundle, an independent mobile
+acceptance review, or completion of the fixed platform regression sequence. Raw
+mobile transcripts are not published: some early UI queries included unrelated
+tab titles or history suggestions, and personal device identifiers remain local.
+
+| Target | Calculator | Clock | Notes | Edge |
+| --- | --- | --- | --- | --- |
+| Pixel 6, Android 17 / API 37, UiAutomator2 | Observed `12 + 7 = 19` | Created an owned test alarm, verified off, deleted and checked absence | Skipped by the owner's explicit choice; not passed | Searched Baidu, opened and read accessible body paragraphs of two articles; closed owned tabs and preserved original tabs |
+| iPhone 14 Pro, iOS 26.7.1, XCUITest / preinstalled WDA | Observed `12 + 7 = 19` | Created an owned test alarm at a verified non-imminent time, verified off, deleted and checked absence | Created synthetic text, reopened and read it back; permanently deleted only the owned note from Recently Deleted and checked absence | Searched Baidu, read accessible body paragraphs of two articles; closed owned tabs and verified original tab count, identity and selection |
+
+### Preparation and recovery limits
+
+- Android reused the discovered adb/aapt2 toolchain. The missing Temurin JDK 17
+  was installed with the owner's approval and its archive SHA-256 verified;
+  selection remained task-scoped, without changing the system's default Java.
+  The approved temporary `hidden_api_policy*` values were checked against their
+  original values after session exit. Existing helper packages were preserved.
+- The iPhone was initially discovered but unpaired/disconnected. After the owner
+  completed computer trust, connection, pairing, developer mode and DDI readiness
+  were observed separately. No developer-mode change was performed by the Agent.
+- Installing XCUITest into the existing Appium home failed with npm ERESOLVE in
+  its Mac2 dependency tree. This was not classified as proven incompatible
+  version constraints. XCUITest 12.22.8 was installed in a task-local Appium home,
+  with Appium 3.8.0 retained and zero required doctor fixes; the working Mac2 and
+  UiAutomator2 installations were not replaced.
+- Without the RemoteXPC registry, preinstalled-WDA startup fell back to
+  `devicectl`, but its HTTP service did not become ready. A direct launch created
+  a process without an explicit signing/trust error; this did not prove WDA
+  readiness. The owner then explicitly approved and started the official
+  single-device RemoteXPC tunnel using administrator authentication in their own
+  terminal. With task-local registry metadata, real XCUITest sessions succeeded.
+  The existing WDA installation was preserved; no certificate, WDA rebuild or
+  phone-app deployment was needed.
+- The owner manually handled Clock's wireless-data prompt. The stalled session
+  was live-queried before continuation; no permission choice was made by the
+  Agent. Notes' deletion-information acknowledgement and cancellation of Edge's
+  single external-app navigation were kept distinct from persistent permissions.
+  These recoveries are not an error-free-run claim or formal behavior evaluation.
+
+### Final state and cleanup boundaries
+
+Owned alarms, synthetic note and browser tabs were removed. Known sessions were
+checked invalid after deletion; WDA process absence and retained installation
+were observed before the owned Appium server was stopped. After the owner stopped
+the privileged tunnel, local ports 50719, 50721 and 42314 were checked closed;
+the task-created `utun5` interface and its associated IPv6 routes were absent.
+The temporary tunnel launcher was removed. Installed toolchains, the isolated
+driver directory, existing WDA, approved pairing and the owner's permission choice
+were retained; this was not restoration of the entire host or device environment.
+
+Original Android tab selection was not established for the initial attempt, and
+the original iOS Settings foreground was not verified restored; the last observed
+iOS foreground was Edge. Search/visit history was not cleared. Some article dates
+lacked a year and were not promoted to confirmed current-year news. These limits,
+early data-minimization defects and recovery steps remain part of the result.
+No Runtime behavior, public tool, platform-support claim or Project gate changed.

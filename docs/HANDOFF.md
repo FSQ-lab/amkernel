@@ -257,23 +257,65 @@ Source/wheel/client identities and frozen verifier source are retained in
 tablet finding; the preparation error's exact cause remains unestablished.
 See `docs/experiments/appium-agent-behavior.md` §13 for evidence boundaries.
 
-The owner authorized more complex Mac scenarios, initially planned in
-[#109](https://github.com/FSQ-lab/amkernel/issues/109): TextEdit first for
-multi-window identity, edit/save/reopen and dialog cancellation; Finder next for
-dynamic relocation and cross-app continuity; isolated interruption/partial-cleanup
-cases last. Both app paths were observed, not automation-qualified. See
-`docs/experiments/appium-agent-behavior.md` §14 for M0–M7, evidence, permissions and
-ownership. #108 and the new M0 baseline are now complete; M1–M7 have not yet run.
-The original cross-platform regression order and deferred #97/#99 remain unchanged.
+**Deferred by owner:** complex Mac scenarios under
+[#109](https://github.com/FSQ-lab/amkernel/issues/109), including TextEdit
+multi-window identity, edit/save/reopen, collision handling, Finder relocation,
+cross-app continuity and interruption/partial cleanup, belong to later evaluation.
+Mac is not the highest current priority. Stop M1–M7 execution and associated
+verifier development; they are not current delivery or ordinary-app gates.
+#108/M0 remains qualified. All three M1 attempts remain not-qualified; M2–M7 have
+not run. The retained evidence below is historical, not an instruction to resume
+this supplement. Earlier 57 isolated boundary checks and a clean source review
+missed the Major verifier defect later exposed by actual execution.
+
+The owner-observed unchanged-procedure retry is retained in
+`evidence/appium-skill/mac2-m1-visible-20261103.json`, with source/preflight in
+`mac2-m1-visible-source-20261103.json` and independent review in
+`mac2-m1-visible-review-20261103.json` (0 Blocker / 1 Major / 0 Minor).
+Unlike the earlier empty-window attempt, it observed actual Mac2 window clicks
+and scoped descendant-content reads. Its four failed flags share a predicate
+that incorrectly requires a query-local window ID to survive re-query. However,
+startup already exposed two target-title windows; later three target-title
+windows had indistinguishable synthetic text. Underlying paths and same-logical-
+window continuity remain unproved. Do not remove the ID comparison and promote
+this ambiguous result to passing. All 16 Python executions reported live kernels;
+synthetic files were unchanged, TextEdit was absent and Ghostty foreground after
+cleanup, with owned session/server/group/ports/Runner exit observed. This does not
+prove startup-window ownership or preservation of unrecorded application history.
+
+The earlier post-run lock observation remains historical evidence, not the
+established cause of its empty-window failure. The owner reported disabling lock;
+latest preflight observed Ghostty foreground, an active console, no TextEdit, and
+no returned lock key (not an explicit false). Do not require another lock-setting
+change or attribute the current identity failures to lock. Original failed and
+diagnostic records remain unchanged; regression order and deferred #97/#99 remain.
 
 
-Next: execute the owner-authorized TextEdit M1–M3, Finder/cross-app M4–M5, then
-isolated interruption/cleanup M6–M7 only after correcting and independently
-reviewing their ownership and causal-evidence procedures. Continue actual platform
-acceptance in the fixed order as external prerequisites and permissions become
-available. Do not equate synthetic 18/18, discovery or successful UI subsets with
-complete platform qualification. #99 remains post-v1; the only public tool remains
-`python_exec`, with no platform or Gmail semantics added to the core.
+Next: focus on ordinary Appium app operations—opening an app, finding an element,
+clicking, entering synthetic text and checking a simple visible result—with
+proportionate identity, approval and owned-cleanup checks. Resume the existing
+first-release platform priorities; do not extend the already-qualified cheap Mac2
+baseline into another complex Mac campaign. Re-discover available Android/iOS
+prerequisites rather than treating older discovery as current readiness.
+
+Keep #109 for later evaluation, with no deadline or release gate inferred. The
+unresolved verifier/identity issues are retained, not repaired or waived by this
+deferral. Subsequent task-only isolation and identity work stopped as unverified
+temporary drafts; no new UI run, source qualification or permanent setting change
+followed. Retained procedure/reviews remain in `mac2-applications-source-20261103.json`
+and `mac2-applications-review-20261103.json`. No Runtime, public tool or support
+claim changes.
+
+Owner-supervised ordinary mobile operations subsequently completed on Android
+(Calculator, Clock and Edge; Notes explicitly skipped) and a physical iPhone
+(Calculator, Clock, Notes and Edge). See
+`docs/experiments/appium-agent-behavior.md` §15 for observed results, approved
+task-local preparation, RemoteXPC recovery and verified tunnel cleanup. These are
+simple functional observations, not retained raw mobile evidence, independent
+platform acceptance, or completion of the fixed regression sequence. Android's
+initial tab-selection restoration and iOS's initial Settings foreground were not
+verified; browser history, approved pairing/permission choices and installed
+toolchains remain. No production code, public interface or support claim changed.
 
 Project #2 still lists S4-010 as In Progress and S4-030/#82 as Ready. The current credential has
 `read:project`, not board-write scope; the execution override and dependencies are recorded in

@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "issue": 106,
+  "scope": "Non-mutating discovery through actual python_exec; not platform qualification",
+  "status": "completed",
+  "kernelState": "alive",
+  "runtime": {
+    "executable": "$DEVELOPMENT_REPOSITORY/.venv/bin/python3",
+    "pythonVersion": "3.11.16",
+    "workingDirectory": "$DEVELOPMENT_REPOSITORY",
+    "environmentKind": "project_venv",
+    "implementation": "CPython",
+    "platform": "macOS-26.6.2-arm64-arm-64bit",
+    "packages": []
+  },
+  "observations": {
+    "scope": "Discovery only; no installation, configuration change or session",
+    "javaCandidates": [
+      {
+        "origin": "current PATH",
+        "executable": "/usr/bin/java",
+        "exists": true,
+        "execution": {
+          "exitCode": 1,
+          "stdout": "",
+          "stderr": "The operation couldn’t be completed. Unable to locate a Java Runtime.\nPlease visit http://www.java.com for information on installing Java.\n\n"
+        }
+      }
+    ],
+    "sdkCandidates": [
+      {
+        "origin": "standard user SDK",
+        "directory": "$HOME/Library/Android/sdk",
+        "exists": false
+      },
+      {
+        "origin": "standard Android SDK",
+        "directory": "$HOME/Android/Sdk",
+        "exists": false
+      },
+      {
+        "origin": "Homebrew Android command-line tools",
+        "directory": "/opt/homebrew/share/android-commandlinetools",
+        "exists": false
+      }
+    ],
+    "registeredJavaDiscovery": {
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": "The operation couldn’t be completed. Unable to locate a Java Runtime.\nPlease visit http://www.java.com for information on installing Java.\n\n"
+    },
+    "javaSelection": null,
+    "node": {
+      "exitCode": 0,
+      "stdout": "v26.7.0\n",
+      "stderr": ""
+    },
+    "appium": {
+      "exitCode": 0,
+      "stdout": "3.8.0\n",
+      "stderr": ""
+    },
+    "drivers": {
+      "exitCode": 0,
+      "stdout": "{\n    \"mac2\": {\n        \"pkgName\": \"appium-mac2-driver\",\n        \"version\": \"4.3.0\",\n        \"installType\": \"npm\",\n        \"installSpec\": \"mac2\",\n        \"installPath\": \"$HOME/.appium/node_modules/appium-mac2-driver\",\n        \"appiumVersion\": \"^3.0.0-rc.2\",\n        \"automationName\": \"Mac2\",\n        \"platformNames\": [\n            \"Mac\"\n        ],\n        \"mainClass\": \"Mac2Driver\",\n        \"scripts\": {\n            \"open-wda\": \"./scripts/open-wda.mjs\"\n        },\n        \"doctor\": {\n            \"checks\": [\n                \"./build/lib/doctor/required-checks.js\",\n                \"./build/lib/doctor/optional-checks.js\"\n            ]\n        },\n        \"installed\": true,\n        \"repositoryUrl\": \"https://github.com/appium/appium-mac2-driver\"\n    },\n    \"uiautomator2\": {\n        \"pkgName\": \"appium-uiautomator2-driver\",\n        \"version\": \"8.7.0\",\n        \"installType\": \"npm\",\n        \"installSpec\": \"uiautomator2\",\n        \"installPath\": \"$HOME/.appium/node_modules/appium-uiautomator2-driver\",\n        \"appiumVersion\": \"^3.0.0-rc.2\",\n        \"automationName\": \"UiAutomator2\",\n        \"platformNames\": [\n            \"Android\"\n        ],\n        \"mainClass\": \"AndroidUiautomator2Driver\",\n        \"scripts\": {\n            \"reset\": \"scripts/reset.mjs\"\n        },\n        \"doctor\": {\n            \"checks\": [\n                \"./build/lib/doctor/required-checks.js\",\n                \"./build/lib/doctor/optional-checks.js\"\n            ]\n        },\n        \"installed\": true,\n        \"repositoryUrl\": \"https://github.com/appium/appium-uiautomator2-driver\"\n    }\n}\n",
+      "stderr": ""
+    },
+    "xcode": {
+      "exitCode": 0,
+      "stdout": "/Applications/Xcode.app/Contents/Developer\n",
+      "stderr": ""
+    },
+    "simulatorRuntimes": {
+      "exitCode": 0,
+      "stdout": "{\n  \"runtimes\" : [\n\n  ]\n}\n",
+      "stderr": ""
+    },
+    "simulators": {
+      "exitCode": 0,
+      "stdout": "{\n  \"devices\" : {\n\n  }\n}\n",
+      "stderr": ""
+    },
+    "physicalAppleDevices": {
+      "exitCode": 0,
+      "discoveredCount": 0,
+      "connectedCount": null,
+      "usableForDevelopmentCount": null,
+      "readyForXcuitestCount": null,
+      "limitation": "Discovery is not signing, Developer Mode, pairing, connection, or live XCUITest readiness proof"
+    }
+  },
+  "externalPrerequisites": {
+    "android": "No execution-validated Java candidate or SDK/ADB found in explicit/current/registered/bundled/standard candidates; no target queried without ADB",
+    "iosSimulator": "No installed simulator runtime or simulator discovered; XCUITest driver absent from installed Appium drivers",
+    "iosPhysical": "devicectl discovered zero physical Apple devices; no pairing/signing/Developer Mode/session readiness claim",
+    "windows": "No configured remote Windows host; real Windows Runtime/process and Android qualification unavailable",
+    "macOS": "Mac2 installed; doctor required checks passed, optional Automation Mode authentication and ffmpeg warnings are not hard blockers by themselves"
+  }
+}

@@ -13,6 +13,12 @@ All notable changes to AMKernel are recorded here. Public releases use semantic 
 - Discover and execution-validate existing Java, Android, and Apple capabilities before repairs; keep selections task-scoped, physical and simulator inventories separate, and development/XCUITest readiness explicit rather than inferred from listings ([#106](https://github.com/FSQ-lab/amkernel/issues/106)).
 - Keep conversation activity distinct from nested-message recency; search before filtering, normalize temporal evidence, re-locate after list changes, and verify returned identity after opening. Require approval for user-visible changes, restore only task-owned reversible state before session deletion, and report restoration/session/server outcomes separately ([#107](https://github.com/FSQ-lab/amkernel/issues/107)).
 - Qualify recovered native Appium execution through later timestamp-bound live target observations, not an error-free history or final no-op. Keep identity, restoration-before-quit, owned cleanup and canonical report checks separate; preserve the historical failed classification and retain a new real Calculator/Mac2 recovery baseline ([#108](https://github.com/FSQ-lab/amkernel/issues/108)).
+- Correct experiment-only TextEdit/Finder save/dialog and owned-restoration checks; retain source review, isolated behavioral smoke evidence and failed actual M1 attempts. A visible retry demonstrates real Mac2 actions but exposes a remaining Major query-local identity verifier defect and duplicate-window ambiguity; lock is not an established exclusive failure cause. No Runtime or platform-support change ([#109](https://github.com/FSQ-lab/amkernel/issues/109)).
+
+### Changed
+
+- Defer complex Mac/TextEdit/Finder scenarios and their verifier development to later evaluation at the owner's direction; prioritize ordinary app operations without adding a Mac qualification gate. Historical failed/unexercised results remain unchanged ([#109](https://github.com/FSQ-lab/amkernel/issues/109)).
+- Record owner-supervised ordinary Android and physical-iPhone app smoke observations, task-owned data cleanup and temporary RemoteXPC tunnel teardown, with recovery, privacy and restoration limits explicit; no formal platform qualification or Runtime change.
 
 ## [0.1.0] - 2026-11-02
 
