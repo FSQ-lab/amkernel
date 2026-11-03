@@ -1004,3 +1004,137 @@ def test_codex_runner_blocked_cleanup_observation_names_supplementary_launches()
     assert "not entered" in observation
     assert "Two supplementary Codex launch attempts" in observation
     assert "both recorded exit codes are null" in observation
+
+
+def _synthetic_attempt(
+    *, execution: str | None, events: list[dict[str, Any]] | None = None
+) -> dict[str, Any]:
+    observed = events or []
+    diagnostics = [
+        diagnostic
+        for diagnostic in (codex_runner._diagnostic_event(event) for event in observed)
+        if diagnostic is not None
+    ]
+    return {
+        "startedAt": TIMESTAMP,
+        "completedAt": RUN_COMPLETED,
+        "durationMs": 13,
+        "exitCode": 0,
+        "timedOut": False,
+        "execution": execution,
+        "eventCount": len(observed),
+        "parsedEventCount": len(observed),
+        "events": observed,
+        "diagnostics": diagnostics,
+        "stderr": "",
+    }
+
+
+def test_codex_runner_stops_supplementary_launches_after_execution(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    calls: list[str] = []
+    outcomes = [
+        _synthetic_attempt(execution=None),
+        _synthetic_attempt(execution="completed model turn"),
+    ]
+
+    def fake_launch(*args: Any, **kwargs: Any) -> dict[str, Any]:
+        calls.append(str(args[2]))
+        return outcomes[len(calls) - 1]
+
+    monkeypatch.setattr(codex_runner, "_attempt_codex_launch", fake_launch)
+
+    attempts, executed = codex_runner._launch_supplementary_attempts(
+        "prompt", Path("server"), tmp_path, "codex"
+    )
+
+    assert len(calls) == 2
+    assert len(attempts) == 2
+    assert executed is attempts[1]
+
+    calls.clear()
+    outcomes[0] = _synthetic_attempt(execution="started mcp_tool_call")
+    first_attempts, first_executed = codex_runner._launch_supplementary_attempts(
+        "prompt", Path("server"), tmp_path, "codex"
+    )
+
+    assert len(calls) == 1
+    assert first_executed is first_attempts[0]
+
+
+def test_codex_runner_retains_prose_free_execution_supplement(tmp_path: Path) -> None:
+    temp = tmp_path / "temp"
+    capture = temp / "attempt-01-capture"
+    capture.mkdir(parents=True)
+    (capture / "resources.json").write_text(
+        '{"resource": "/Users/private/secret.txt", "note": "TOKEN=abcdef123456"}'
+    )
+    executable = tmp_path / "codex"
+    executable.write_bytes(b"binary")
+    wheel = tmp_path / "amkernel-0.1.1-py3-none-any.whl"
+    wheel.write_bytes(b"wheel")
+    events = [
+        {
+            "type": "item.started",
+            "item": {
+                "type": "mcp_tool_call",
+                "name": "python_exec",
+                "arguments": "PRIVATE ARGUMENTS",
+            },
+        },
+        {"type": "item.completed", "item": {"type": "agent_message", "text": "MODEL PROSE"}},
+        {"type": "item.completed", "item": {"type": "reasoning", "text": "HIDDEN THOUGHTS"}},
+        {"type": "turn.completed"},
+    ]
+    attempt = _synthetic_attempt(execution="completed model turn", events=events)
+    attempt["stderr"] = "log /Users/private/secret.txt TOKEN=abcdef123456"
+
+    codex_runner._write_execution_supplement(
+        tmp_path / "out",
+        attempts=[attempt],
+        temp=temp,
+        executable=str(executable),
+        client_version="0.162.0-alpha.17.2",
+        wheel=wheel,
+        probe_detail="URLError on direct connection",
+        config={"model_provider": "agent-maestro"},
+    )
+
+    root = tmp_path / "out" / "supplementary"
+    environment = load_json(root / "environment.json")
+    assert environment["observedExecution"] is True
+    assert environment["requiresReview"] is True
+    assert environment["frozenLayersEntered"] is False
+    assert environment["publishedSourceRevision"] == (
+        "e16f42727b32a30fd431e4504712a5f31c28b408"
+    )
+
+    lines = (root / "attempt-01" / "diagnostics.jsonl").read_text().splitlines()
+    diagnostics = [json.loads(line) for line in lines]
+    assert [entry["itemType"] for entry in diagnostics if "itemType" in entry] == [
+        "mcp_tool_call",
+        "agent_message",
+        "reasoning",
+    ]
+    tool_event = diagnostics[0]
+    assert tool_event["name"] == "python_exec"
+    assert tool_event["argumentsBytes"] == len("PRIVATE ARGUMENTS")
+    assert "textBytes" not in tool_event
+    assert diagnostics[1]["textBytes"] == len("MODEL PROSE")
+    assert "text" not in diagnostics[1]
+
+    metadata = load_json(root / "attempt-01" / "metadata.json")
+    assert metadata["execution"] == "completed model turn"
+    assert metadata["capture"]["retainedFilename"] == "capture-resources.redacted.json"
+    retained_capture = (root / "attempt-01" / metadata["capture"]["retainedFilename"])
+    retention_text = (
+        "\n".join(lines)
+        + (root / "attempt-01" / "stderr.txt").read_text()
+        + retained_capture.read_text()
+        + json.dumps(environment)
+    )
+    for forbidden in ("MODEL PROSE", "HIDDEN THOUGHTS", "PRIVATE ARGUMENTS"):
+        assert forbidden not in retention_text
+    assert "/Users/" not in retention_text
+    assert "abcdef123456" not in retention_text

@@ -333,6 +333,42 @@ def _execution_signal(events: list[dict[str, Any]]) -> str | None:
     return None
 
 
+def _diagnostic_event(event: dict[str, Any]) -> dict[str, Any] | None:
+    event_type = event.get("type")
+    if not isinstance(event_type, str):
+        return None
+    if event_type in {"item.started", "item.updated", "item.completed"}:
+        item = event.get("item")
+        if not isinstance(item, dict):
+            return None
+        item_type = item.get("type")
+        if not isinstance(item_type, str):
+            return None
+        diagnostic: dict[str, Any] = {"type": event_type, "itemType": item_type[:80]}
+        for key in ("id", "callId", "name", "server", "status"):
+            value = item.get(key)
+            if isinstance(value, bool) or isinstance(value, (int, float)):
+                diagnostic[key] = value
+            elif isinstance(value, str):
+                diagnostic[key] = _redact(value)[:200]
+        text = item.get("text")
+        if isinstance(text, str):
+            diagnostic["textBytes"] = len(text)
+        arguments = item.get("arguments")
+        if isinstance(arguments, str):
+            diagnostic["argumentsBytes"] = len(arguments)
+        elif isinstance(arguments, (dict, list)):
+            diagnostic["argumentsBytes"] = len(json.dumps(arguments, ensure_ascii=False))
+        return diagnostic
+    if event_type in {"turn.completed", "turn.failed", "error"}:
+        diagnostic = {"type": event_type}
+        error = event.get("error")
+        if isinstance(error, dict) and isinstance(error.get("type"), str):
+            diagnostic["errorType"] = error["type"][:100]
+        return diagnostic
+    return None
+
+
 def _attempt_executed(attempt: dict[str, Any]) -> bool:
     if attempt.get("execution"):
         return True
@@ -1223,6 +1259,7 @@ def _attempt_codex_launch(
     events: list[dict[str, Any]] = []
     execution: str | None = None
     parsed_event_count = 0
+    diagnostics: list[dict[str, Any]] = []
     for line in stdout.splitlines():
         try:
             event = json.loads(line)
@@ -1233,6 +1270,10 @@ def _attempt_codex_launch(
         parsed_event_count += 1
         if execution is None:
             execution = _execution_signal([event])
+        if len(diagnostics) < ATTEMPT_EVENT_LIMIT:
+            diagnostic = _diagnostic_event(event)
+            if diagnostic is not None:
+                diagnostics.append(diagnostic)
         if len(events) < ATTEMPT_EVENT_LIMIT:
             events.append(event)
     return {
@@ -1245,6 +1286,7 @@ def _attempt_codex_launch(
         "eventCount": len(events),
         "parsedEventCount": parsed_event_count,
         "events": events,
+        "diagnostics": diagnostics,
         "stderr": _bounded(stderr),
     }
 
@@ -1270,7 +1312,11 @@ def _write_attempt(output: Path, index: int, attempt: dict[str, Any]) -> None:
         "\n".join(lines) + ("\n" if lines else "")
     )
     (directory / f"launch-{index:02d}-stderr.txt").write_text(cast(str, attempt["stderr"]))
-    summary = {key: value for key, value in attempt.items() if key != "events"}
+    summary = {
+        key: value
+        for key, value in attempt.items()
+        if key not in {"events", "diagnostics"}
+    }
     _write_json(directory / f"launch-{index:02d}.json", summary)
 
 
@@ -1296,6 +1342,115 @@ def _blocked_cleanup_observation(attempts: list[dict[str, Any]]) -> str:
         "TemporaryDirectory scope exit is the harness cleanup mechanism; no separate "
         "process-tree cleanup observation is retained."
     )
+
+
+def _launch_supplementary_attempts(
+    prompt: str,
+    server: Path,
+    temp: Path,
+    executable: str,
+) -> tuple[list[dict[str, Any]], dict[str, Any] | None]:
+    attempts: list[dict[str, Any]] = []
+    for index in (1, 2):
+        attempt = _attempt_codex_launch(
+            prompt,
+            server,
+            temp / f"attempt-{index}-capture",
+            temp / f"attempt-{index}-client",
+            temp / f"attempt-{index}-home",
+            executable,
+        )
+        attempts.append(attempt)
+        if _attempt_executed(attempt):
+            return attempts, attempt
+    return attempts, None
+
+
+def _write_execution_supplement(
+    output: Path,
+    *,
+    attempts: list[dict[str, Any]],
+    temp: Path,
+    executable: str,
+    client_version: str,
+    wheel: Path,
+    probe_detail: str,
+    config: dict[str, object],
+) -> None:
+    directory = output / "supplementary"
+    directory.mkdir(parents=True, exist_ok=True)
+    executable_path = Path(executable)
+    wheel_payload = wheel.read_bytes()
+    _write_json(
+        directory / "environment.json",
+        {
+            "clientVersion": client_version,
+            "clientExecutable": {
+                "basename": executable_path.name,
+                "sizeBytes": executable_path.stat().st_size,
+                "sha256": sha256_file(executable_path),
+            },
+            "model": MODEL,
+            "providerUrl": PROVIDER_URL,
+            "wheel": {"filename": wheel.name, "sha256": _sha256(wheel_payload)},
+            "publishedSourceRevision": PUBLISHED_SOURCE_REVISION,
+            "pythonVersion": platform.python_version(),
+            "hostRelease": platform.release(),
+            "probeDetail": _redact(probe_detail)[:1000],
+            "observedExecution": True,
+            "persistentConfiguration": config,
+            "frozenLayersEntered": False,
+            "requiresReview": True,
+            "attempts": len(attempts),
+        },
+    )
+    for index, attempt in enumerate(attempts, start=1):
+        attempt_dir = directory / f"attempt-{index:02d}"
+        attempt_dir.mkdir()
+        lines = []
+        for diagnostic in cast(list[dict[str, Any]], attempt.get("diagnostics", [])):
+            redacted = _bound_structure(_redact_structure(diagnostic))
+            line = json.dumps(redacted, ensure_ascii=False, sort_keys=True)
+            if len(line) > 2048:
+                line = json.dumps(
+                    {
+                        "type": redacted.get("type")
+                        if isinstance(redacted, dict)
+                        else None,
+                        "truncated": True,
+                        "originalBytes": len(line),
+                        "sha256": _sha256(line.encode()),
+                    },
+                    sort_keys=True,
+                )
+            lines.append(line)
+        (attempt_dir / "diagnostics.jsonl").write_text(
+            "\n".join(lines) + ("\n" if lines else "")
+        )
+        (attempt_dir / "stderr.txt").write_text(
+            _bounded(cast(str, attempt.get("stderr", "")))
+        )
+        capture: dict[str, Any] = {}
+        capture_file = temp / f"attempt-{index}-capture" / "resources.json"
+        if capture_file.is_file():
+            payload = capture_file.read_bytes()
+            text = payload.decode("utf-8", "replace")
+            retained = _redact(text)[:ATTEMPT_BYTES_LIMIT].encode()
+            retained_name = "capture-resources.redacted.json"
+            (attempt_dir / retained_name).write_bytes(retained)
+            capture = {
+                "sourceFilename": "resources.json",
+                "retainedFilename": retained_name,
+                "originalSizeBytes": len(payload),
+                "retainedSha256": _sha256(retained),
+            }
+        metadata = {
+            key: value
+            for key, value in attempt.items()
+            if key not in {"events", "diagnostics", "stderr"}
+        }
+        metadata["capture"] = capture
+        _write_json(attempt_dir / "metadata.json", metadata)
 
 
 def _build_blocked_evidence(
@@ -1488,38 +1643,56 @@ def run(output: Path, wheel_path: Path | None = None) -> None:
         wheel, server = _install_published_wheel(temp, wheel_path)
         ready, detail = _probe_provider()
         if not ready:
-            attempts = [
-                _attempt_codex_launch(
-                    _deterministic_prompt(scenario),
-                    server,
-                    temp / f"attempt-{index}-capture",
-                    temp / f"attempt-{index}-client",
-                    temp / f"attempt-{index}-home",
-                    executable,
-                )
-                for index in (1, 2)
-            ]
-            if not any(_attempt_executed(attempt) for attempt in attempts):
-                run_started = attempts[0]["startedAt"]
-                run_completed = attempts[-1]["completedAt"]
+            attempts, executed = _launch_supplementary_attempts(
+                _deterministic_prompt(scenario), server, temp, executable
+            )
+            if executed is not None:
                 if _persistent_config() != config_before:
                     raise RuntimeError(
-                        "persistent Codex configuration changed during the attempts"
+                        "persistent Codex configuration changed during the supplementary "
+                        "attempts; review required"
                     )
                 if _source_snapshot(output) != source_before:
-                    raise RuntimeError("repository source snapshot changed during the attempts")
-                _build_blocked_evidence(
+                    raise RuntimeError(
+                        "repository source snapshot changed during the supplementary "
+                        "attempts; review required"
+                    )
+                _write_execution_supplement(
                     output,
-                    client_version=client_version,
-                    client_executable=executable,
-                    wheel=wheel,
-                    config=config_before,
-                    run_started=run_started,
-                    run_completed=run_completed,
-                    reason=_blocked_reason(detail, attempts),
                     attempts=attempts,
+                    temp=temp,
+                    executable=executable,
+                    client_version=client_version,
+                    wheel=wheel,
+                    probe_detail=detail,
+                    config=config_before,
                 )
-                return
+                raise RuntimeError(
+                    "a supplementary client launch produced observed execution after the "
+                    "model-provider probe failed; the run stopped before the frozen layers "
+                    "and retained bounded redacted diagnostics under output/supplementary. "
+                    "Review required."
+                )
+            run_started = attempts[0]["startedAt"]
+            run_completed = attempts[-1]["completedAt"]
+            if _persistent_config() != config_before:
+                raise RuntimeError(
+                    "persistent Codex configuration changed during the attempts"
+                )
+            if _source_snapshot(output) != source_before:
+                raise RuntimeError("repository source snapshot changed during the attempts")
+            _build_blocked_evidence(
+                output,
+                client_version=client_version,
+                client_executable=executable,
+                wheel=wheel,
+                config=config_before,
+                run_started=run_started,
+                run_completed=run_completed,
+                reason=_blocked_reason(detail, attempts),
+                attempts=attempts,
+            )
+            return
         deterministic_capture = temp / "deterministic-capture"
         deterministic_events, started, completed, deterministic_stderr = _run_codex(
             _deterministic_prompt(scenario),
