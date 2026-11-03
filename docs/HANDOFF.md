@@ -168,7 +168,21 @@ smoke first returned 42, then an injected Store failure returned
 `kernel_killed/dead` with `ArtifactStoreError`, no active artifact references,
 successful shutdown cleanup and no event-loop errors. Independent source/test
 review found 0 Blocker/Major/Minor findings. The fix is unreleased and still needs
-protected CI; #115 remains a separate verification defect under investigation.
+protected CI.
+
+#115 replaces the scheduling-dependent 32 MiB/1 ms test with two controlled
+real transaction-boundary cases. Cooperative interruption must report
+`timed_out/alive` and retain both complete artifacts; forced termination must
+report `kernel_killed/dead`, discard the incomplete transaction, preserve the
+earlier complete artifact and reject subsequent execution without replacement.
+Both cases passed; exact bytes, sizes and SHA-256 digests are checked through
+consumer resource reads. A separate actual stdio MCP smoke from a temporary
+external workspace observed the same outcomes with natural one-second deadlines,
+including a live subsequent result of 42 versus `KernelUnavailable` after death.
+Independent source/test review found 0 Blocker/Major/Minor findings. This is
+transaction atomicity/lifecycle evidence, not wall-clock deadline accuracy or
+published-wheel/platform qualification. The change is unreleased and still
+needs protected CI.
 
 ## What was tried
 
