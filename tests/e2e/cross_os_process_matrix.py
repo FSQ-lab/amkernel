@@ -23,6 +23,7 @@ import subprocess
 import sys
 import time
 import uuid
+import zipfile
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
@@ -56,7 +57,7 @@ IDENTITY_CODE = (
     "{'runner': os.getpid(), 'server': os.getppid(), 'group': os.getpgrp()}\n"
 )
 
-STUBBORN_CHILD_CODE = """import os, signal, subprocess, sys, time
+STUBBORN_CHILD_CODE = """import json, os, signal, subprocess, sys, time
 
 def ignore(signum, frame):
     pass
@@ -70,17 +71,27 @@ child = subprocess.Popen(
      "def ignore(signum, frame): pass\\n"
      "signal.signal(signal.SIGINT, ignore)\\n"
      "signal.signal(signal.SIGTERM, ignore)\\n"
-     "while True: time.sleep(0.2)"]
+     "print('ready', flush=True)\\n"
+     "while True: time.sleep(0.2)"],
+    stdout=subprocess.PIPE,
+    text=True,
 )
-with open("active-identity.json", "w", encoding="utf-8") as handle:
-    import json
+ready = child.stdout.readline()
+if ready.strip() != "ready":
+    raise SystemExit("stubborn child did not install handlers")
+child.stdout.close()
+with open("active-identity.tmp", "w", encoding="utf-8") as handle:
     handle.write(json.dumps({
         "server": os.getppid(),
         "runner": os.getpid(),
         "group": os.getpgrp(),
         "child": child.pid,
         "childGroup": os.getpgid(child.pid),
+        "childReady": True,
     }))
+    handle.flush()
+    os.fsync(handle.fileno())
+os.replace("active-identity.tmp", "active-identity.json")
 while True:
     time.sleep(0.2)
 """
@@ -104,6 +115,33 @@ def sha256_path(path: Path) -> str:
         for chunk in iter(lambda: handle.read(1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def package_tree_hashes(root: Path) -> dict[str, str]:
+    hashes: dict[str, str] = {}
+    for path in sorted(root.rglob("*")):
+        if not path.is_file() or "__pycache__" in path.parts or path.suffix == ".pyc":
+            continue
+        hashes[str(path.relative_to(root))] = sha256_path(path)
+    return hashes
+
+
+def wheel_package_hashes(wheel: Path) -> dict[str, str]:
+    hashes: dict[str, str] = {}
+    with zipfile.ZipFile(wheel) as archive:
+        for name in sorted(archive.namelist()):
+            if not name.startswith("amkernel/") or name.endswith("/"):
+                continue
+            hashes[name[len("amkernel/"):]] = hashlib.sha256(archive.read(name)).hexdigest()
+    return hashes
+
+
+def package_identity(hashes: dict[str, str]) -> dict[str, Any]:
+    body = "\n".join(f"{name}\0{digest}" for name, digest in sorted(hashes.items()))
+    return {
+        "packageFileCount": len(hashes),
+        "packageSha256": hashlib.sha256(body.encode()).hexdigest(),
+    }
 
 
 def read_protocol_constant(source_root: Path, name: str) -> int:
@@ -448,8 +486,8 @@ async def row_installed_startup(ctx: RowContext, cell: RowCell) -> None:
         }
         cell.evidence_check(
             "runnerGroupMatchesRunner",
-            ctx.managed.token("group", cast(int, identity["group"])),
-            snapshot["processGroup"]["token"],
+            True,
+            cast(int, identity["runner"]) == cast(int, identity["group"]),
         )
         cell.evidence_check("executionCount", 1, value["executionCount"])
     ctx.managed.register({"server": ctx.managed.server, "runner": ctx.managed.runner, "group": ctx.managed.group})
@@ -474,8 +512,13 @@ async def row_normal_shutdown(ctx: RowContext, cell: RowCell) -> None:
             "storeRootsBeforeShutdown": len(store_roots(ctx.tmpdir)),
             "runnerGroupToken": ctx.managed.token("group", cast(int, identity["group"])),
         }
+        shutdown_started = time.monotonic()
+    shutdown_elapsed = time.monotonic() - shutdown_started
+    cell.evidence_check("unforcedShutdown", True, shutdown_elapsed < 1.5)
+    cell.resource_observations["shutdownElapsedSeconds"] = round(shutdown_elapsed, 3)
     cell.transition(
         "client-closed",
+        executionCount=1,
         serverState="exited"
         if ctx.managed.server is not None and not pid_exists(ctx.managed.server)
         else "running",
@@ -777,8 +820,9 @@ async def row_artifact_integrity_expiry(ctx: RowContext, cell: RowCell) -> None:
             1,
             -(-(quota - reservation - source_size) // filler_bytes) + 1,
         )
+        last_filler: dict[str, Any] | None = None
         for _ in range(filler_count):
-            filler = await call_exec(
+            last_filler = await call_exec(
                 client,
                 (
                     "import os\n"
@@ -787,8 +831,17 @@ async def row_artifact_integrity_expiry(ctx: RowContext, cell: RowCell) -> None:
                 ),
                 timeout=30.0,
             )
-            if filler["status"] != "completed" or filler["output"]["totalBytes"] != filler_bytes:
+            if (
+                last_filler["status"] != "completed"
+                or last_filler["output"]["totalBytes"] != filler_bytes
+            ):
                 raise AssertionError("quota pressure filler did not complete as expected")
+        if last_filler is None:
+            raise AssertionError("quota pressure produced no filler execution")
+        expected_expiry_count = 3 + filler_count
+        cell.evidence_check(
+            "expiryExecutionCount", expected_expiry_count, last_filler["executionCount"]
+        )
         expired_read = "still_available"
         try:
             await client.read_resource(cast(str, record["uri"]))
@@ -808,10 +861,10 @@ async def row_artifact_integrity_expiry(ctx: RowContext, cell: RowCell) -> None:
         cell.evidence_check("managedBytesCeiling", True, within)
         cell.transition(
             "after-expiry",
-            status=created["status"],
+            status=last_filler["status"],
             serverState="ready",
-            kernelState="alive",
-            executionCount=1,
+            kernelState=last_filler["kernelState"],
+            executionCount=last_filler["executionCount"],
         )
         cell.observe_processes(ctx.managed, "after-expiry")
         cell.resource_observations = {
@@ -844,6 +897,8 @@ async def row_cancellation_cleanup(ctx: RowContext, cell: RowCell) -> None:
         )
         await wait_for_path(identity_path, timeout=15.0)
         identity = cast(dict[str, Any], json.loads(identity_path.read_text(encoding="utf-8")))
+        if identity.get("childReady") is not True:
+            raise AssertionError("active execution identity was not published after child readiness")
         ctx.managed.register(identity)
         child_pid = cast(int, identity.get("child"))
         cell.observe_processes(ctx.managed, "active-execution")
@@ -898,6 +953,16 @@ HANDLERS: dict[str, Handler] = {
 
 
 def finalize_observed_from_cleanup(cell: RowCell) -> None:
+    if cell.row["id"] == "destructive-reset":
+        cell.limitations.append(
+            "Reset observes replacement runner identity, namespace loss, and prior runner death; "
+            "it does not prove old process-group descendant cleanup or replacement ordering."
+        )
+    elif cell.row["id"] == "runner-channel-death":
+        cell.limitations.append(
+            "This row terminates the runner process; it does not exercise a live but malformed "
+            "private-control protocol."
+        )
     if cell.row["id"] == "normal-shutdown":
         cell.observed["serverState"] = "exited" if cell.cleanup.get("serverExited") else "unknown"
         cell.observed["kernelState"] = "dead" if cell.cleanup.get("runnerExited") else "unknown"
@@ -972,6 +1037,11 @@ def build_sources(source_root: Path, matrix_path: Path, wheel: Path, harness: Pa
         "docs/decisions/0005-stage-1-runtime-lifecycle.md",
         "docs/decisions/0006-stage-2-output-and-artifact-contract.md",
     ]
+    source_package = package_tree_hashes(source_root / "src" / "amkernel")
+    wheel_package = wheel_package_hashes(wheel)
+    if source_package != wheel_package:
+        raise RuntimeError("wheel package files do not match src/amkernel")
+    package = package_identity(source_package)
     return {
         "matrix": {
             "path": "tests/fixtures/cross_client/process-matrix.json",
@@ -989,6 +1059,7 @@ def build_sources(source_root: Path, matrix_path: Path, wheel: Path, harness: Pa
             "filename": wheel.name,
             "sha256": sha256_path(wheel),
             "sizeBytes": wheel.stat().st_size,
+            **package,
         },
     }
 

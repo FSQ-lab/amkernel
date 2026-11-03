@@ -12,6 +12,8 @@ import hashlib
 import json
 import re
 import sys
+import zipfile
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -34,6 +36,119 @@ PRIVATE_PATTERNS = (
     re.compile(r"(?i)(authorization|bearer)\s*[:=]\s*\S+"),
     re.compile(r"(?i)(password|secret|token)\s*[:=]\s*[^\s,}\"]+"),
 )
+TOKEN_RE = re.compile(r"[0-9a-f]{8,64}")
+SHA256_RE = re.compile(r"[0-9a-f]{64}")
+ALLOWED_SERVER_STATES = {"ready", "running", "exited", "unknown"}
+ALLOWED_KERNEL_STATES = {"alive", "dead", "unknown"}
+ALLOWED_STATUSES = {"completed", "timed_out", "failed", "kernel_killed"}
+TOKEN_KEYS = {
+    "runnerGroupToken",
+    "previousRunnerToken",
+    "replacementRunnerToken",
+    "runnerToken",
+    "continuationRunnerToken",
+}
+SHA256_KEYS = {
+    "stdoutArtifactSha256",
+    "tamperedPartSha256",
+}
+BOOL_KEYS = {
+    "processGroupExistsAfterEscalation",
+    "processGroupExistsAfterDeath",
+}
+INT_KEYS = {
+    "observedManagedProcesses",
+    "storeRoots",
+    "storeRootsBeforeShutdown",
+    "stdoutArtifactSize",
+    "stdoutManifestPartCount",
+    "manifestVerifiedBytes",
+    "multipartBytes",
+    "manifestPartCount",
+    "tamperedPartIndex",
+    "storeCeilingBytes",
+    "fillerBytesPerExecution",
+    "fillerExecutions",
+}
+STORE_KEYS = {"artifactRoots", "artifactFiles", "managedBytes", "artifactRootRemoved"}
+TERMINATION_GRACE_SECONDS = 1.5
+ROW_TRANSITIONS = {
+    "installed-startup": ["after-mcp-initialize"],
+    "normal-shutdown": ["before-shutdown", "client-closed"],
+    "destructive-reset": ["before-reset", "after-reset"],
+    "timeout-survives": ["after-timeout"],
+    "timeout-escalates": ["after-escalation"],
+    "runner-channel-death": ["after-runner-death"],
+    "output-limit-drain": ["after-output-limit"],
+    "artifact-integrity-expiry": ["after-expiry"],
+    "cancellation-cleanup": ["active-execution", "client-closed-during-active-execution"],
+}
+ROW_PROCESS_PHASES = {
+    "installed-startup": ["after-identity"],
+    "normal-shutdown": ["after-identity"],
+    "destructive-reset": ["after-identity", "after-reset"],
+    "timeout-survives": ["after-identity", "after-continuation"],
+    "timeout-escalates": ["after-identity", "after-escalation"],
+    "runner-channel-death": ["after-identity", "after-runner-death"],
+    "output-limit-drain": ["after-identity", "after-output-limit"],
+    "artifact-integrity-expiry": ["after-identity", "after-expiry"],
+    "cancellation-cleanup": ["active-execution"],
+}
+ROW_RESOURCES = {
+    "installed-startup": {"observedManagedProcesses", "storeRoots"},
+    "normal-shutdown": {"runnerGroupToken", "storeRootsBeforeShutdown", "shutdownElapsedSeconds"},
+    "destructive-reset": {"previousRunnerToken", "replacementRunnerToken"},
+    "timeout-survives": {"runnerToken", "continuationRunnerToken"},
+    "timeout-escalates": {"runnerToken", "processGroupExistsAfterEscalation"},
+    "runner-channel-death": {"runnerToken", "processGroupExistsAfterDeath"},
+    "output-limit-drain": {
+        "stdoutArtifactSize",
+        "stdoutArtifactSha256",
+        "stdoutManifestPartCount",
+        "manifestVerifiedBytes",
+        "store",
+    },
+    "artifact-integrity-expiry": {
+        "multipartBytes",
+        "manifestPartCount",
+        "tamperedPartIndex",
+        "tamperedPartSha256",
+        "storeAfterEviction",
+        "storeCeilingBytes",
+        "fillerBytesPerExecution",
+        "fillerExecutions",
+    },
+    "cancellation-cleanup": {"activeExecutionAborted", "runnerGroupToken"},
+}
+CELL_KEYS = {
+    "id",
+    "operation",
+    "expected",
+    "expectedSha256",
+    "observed",
+    "checks",
+    "outcome",
+    "errorType",
+    "stateTransition",
+    "processObservations",
+    "resourceObservations",
+    "cleanup",
+    "durationMs",
+    "limitations",
+    "cellSha256",
+}
+CHECK_KEYS = {"name", "expected", "observed", "passed"}
+CLEANUP_KEYS = {
+    "attempted",
+    "completed",
+    "serverExited",
+    "runnerExited",
+    "processGroupRemoved",
+    "managedProcessesRemaining",
+    "managedArtifactsRemaining",
+    "artifactRootRemoved",
+    "forcedCleanup",
+}
 
 
 class EvidenceError(Exception):
@@ -56,9 +171,59 @@ def sha256_path(path: Path) -> str:
     return digest.hexdigest()
 
 
+def package_tree_hashes(root: Path) -> dict[str, str]:
+    hashes: dict[str, str] = {}
+    for path in sorted(root.rglob("*")):
+        if not path.is_file() or "__pycache__" in path.parts or path.suffix == ".pyc":
+            continue
+        hashes[str(path.relative_to(root))] = sha256_path(path)
+    return hashes
+
+
+def wheel_package_hashes(wheel: Path) -> dict[str, str]:
+    hashes: dict[str, str] = {}
+    try:
+        with zipfile.ZipFile(wheel) as archive:
+            for name in sorted(archive.namelist()):
+                if not name.startswith("amkernel/") or name.endswith("/"):
+                    continue
+                hashes[name[len("amkernel/"):]] = hashlib.sha256(archive.read(name)).hexdigest()
+    except zipfile.BadZipFile as error:
+        raise EvidenceError(f"wheel is not a valid zip archive: {wheel.name}") from error
+    return hashes
+
+
+def package_identity(hashes: dict[str, str]) -> dict[str, Any]:
+    body = "\n".join(f"{name}\0{digest}" for name, digest in sorted(hashes.items()))
+    return {
+        "packageFileCount": len(hashes),
+        "packageSha256": hashlib.sha256(body.encode()).hexdigest(),
+    }
+
+
 def require(condition: bool, message: str) -> None:
     if not condition:
         raise EvidenceError(message)
+
+
+def require_exact_keys(value: Any, keys: set[str], context: str) -> None:
+    require(isinstance(value, dict), f"{context} must be a mapping")
+    actual = set(value)
+    require(actual == keys, f"{context} keys are {sorted(actual)}, expected {sorted(keys)}")
+
+
+def require_int(value: Any, context: str, *, minimum: int = 0) -> None:
+    require(isinstance(value, int) and not isinstance(value, bool) and value >= minimum, f"{context} is not an integer >= {minimum}")
+
+
+def require_bool(value: Any, context: str) -> None:
+    require(isinstance(value, bool), f"{context} is not a boolean")
+
+
+def require_iso_time(value: Any, context: str) -> None:
+    require(isinstance(value, str) and value.endswith("Z"), f"{context} is not a UTC timestamp")
+    parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    require(parsed.tzinfo is not None, f"{context} lacks a timezone")
 
 
 def load_matrix(path: Path) -> dict[str, Any]:
@@ -69,6 +234,7 @@ def load_matrix(path: Path) -> dict[str, Any]:
 
 
 def source_hashes(source_root: Path) -> dict[str, Any]:
+    package = package_identity(package_tree_hashes(source_root / "src" / "amkernel"))
     return {
         "matrix": sha256_path(source_root / MATRIX_PATH),
         "harness": sha256_path(source_root / HARNESS_PATH),
@@ -76,6 +242,7 @@ def source_hashes(source_root: Path) -> dict[str, Any]:
             {"path": path, "sha256": sha256_path(source_root / path)} for path in CONTRACT_PATHS
         ],
         "lock": sha256_path(source_root / "uv.lock"),
+        "wheel": package,
     }
 
 
@@ -103,8 +270,10 @@ def check_sources(record: dict[str, Any], source_root: Path) -> None:
     wheel = sources.get("wheel")
     require(isinstance(wheel, dict), "wheel identity is missing")
     require(isinstance(wheel.get("filename"), str) and wheel["filename"], "wheel filename is missing")
-    require(re.fullmatch(r"[0-9a-f]{64}", str(wheel.get("sha256"))), "wheel hash is malformed")
+    require(SHA256_RE.fullmatch(str(wheel.get("sha256"))) is not None, "wheel hash is malformed")
     require(isinstance(wheel.get("sizeBytes"), int) and wheel["sizeBytes"] > 0, "wheel size is missing")
+    require(wheel.get("packageFileCount") == expected["wheel"]["packageFileCount"], "wheel package file count does not match src/amkernel")
+    require(wheel.get("packageSha256") == expected["wheel"]["packageSha256"], "wheel package aggregate does not match src/amkernel")
 
 
 def check_wheel_file(record: dict[str, Any], wheel_path: Path) -> None:
@@ -112,6 +281,9 @@ def check_wheel_file(record: dict[str, Any], wheel_path: Path) -> None:
     require(wheel_path.is_file(), "supplied wheel is missing")
     require(wheel_path.stat().st_size == wheel["sizeBytes"], "wheel size does not match evidence")
     require(sha256_path(wheel_path) == wheel["sha256"], "wheel hash does not match evidence")
+    package = package_identity(wheel_package_hashes(wheel_path))
+    require(wheel["packageFileCount"] == package["packageFileCount"], "wheel package file count disagrees")
+    require(wheel["packageSha256"] == package["packageSha256"], "wheel package aggregate disagrees")
     environment_wheel = record["environment"]["wheel"]
     require(environment_wheel["filename"] == wheel_path.name, "environment wheel filename disagrees")
     require(environment_wheel["sha256"] == wheel["sha256"], "environment wheel hash disagrees")
@@ -155,11 +327,32 @@ def check_hosted_dispatch(record: dict[str, Any], require_hosted: bool) -> None:
         require(context == "hosted", "record is not from a hosted workflow")
         dispatch = record.get("dispatch")
         require(isinstance(dispatch, dict), "hosted dispatch identity is missing")
-        require(re.fullmatch(r"\d+", str(dispatch.get("runId"))), "hosted run id is missing")
-        require(re.fullmatch(r"\d+", str(dispatch.get("runAttempt"))), "hosted run attempt is missing")
-        require(re.fullmatch(r"[0-9a-f]{40}", str(dispatch.get("sha"))), "hosted commit identity is missing")
+        require(re.fullmatch(r"\d+", str(dispatch.get("runId"))) is not None, "hosted run id is missing")
+        require(re.fullmatch(r"\d+", str(dispatch.get("runAttempt"))) is not None, "hosted run attempt is missing")
+        require(re.fullmatch(r"[0-9a-f]{40}", str(dispatch.get("sha"))) is not None, "hosted commit identity is missing")
         require(isinstance(dispatch.get("job"), str) and dispatch["job"], "hosted job identity is missing")
         require(isinstance(dispatch.get("workflow"), str) and dispatch["workflow"], "hosted workflow identity is missing")
+        require(isinstance(dispatch.get("workflowRef"), str) and dispatch["workflowRef"], "hosted workflow ref is missing")
+        require(isinstance(dispatch.get("repository"), str) and dispatch["repository"], "hosted repository identity is missing")
+
+
+def check_expected_invocation(record: dict[str, Any], expected: dict[str, Any] | None) -> None:
+    if expected is None:
+        return
+    dispatch = record.get("dispatch")
+    require(isinstance(dispatch, dict), "record dispatch is missing")
+    mapping = {
+        "repository": "repository",
+        "workflow": "workflow",
+        "workflowRef": "workflowRef",
+        "runId": "runId",
+        "runAttempt": "runAttempt",
+        "sha": "sha",
+    }
+    for expected_key, dispatch_key in mapping.items():
+        value = expected.get(expected_key)
+        require(isinstance(value, str) and value, f"expected invocation {expected_key} is missing")
+        require(str(dispatch.get(dispatch_key)) == value, f"record dispatch {dispatch_key} does not match the combined invocation")
 
 
 def check_matrix_header(record: dict[str, Any], matrix: dict[str, Any]) -> None:
@@ -179,61 +372,242 @@ def check_matrix_header(record: dict[str, Any], matrix: dict[str, Any]) -> None:
     )
 
 
-def check_cleanup(cell: dict[str, Any]) -> None:
+def check_store(value: Any, context: str) -> None:
+    require_exact_keys(value, STORE_KEYS, context)
+    for key in ("artifactRoots", "artifactFiles", "managedBytes"):
+        require_int(value[key], f"{context}.{key}")
+    require_bool(value["artifactRootRemoved"], f"{context}.artifactRootRemoved")
+
+
+def check_cleanup(cell: dict[str, Any], require_complete: bool) -> None:
     cleanup = cell.get("cleanup")
     require(isinstance(cleanup, dict), f"{cell['id']}: cleanup outcome is missing")
-    require(cleanup.get("attempted") is True, f"{cell['id']}: cleanup was not attempted")
-    for key in ("completed", "serverExited", "runnerExited", "processGroupRemoved", "artifactRootRemoved"):
-        require(cleanup.get(key) is True, f"{cell['id']}: cleanup field {key} is not true")
-    require(cleanup.get("managedProcessesRemaining") == 0, f"{cell['id']}: managed processes remain")
-    require(cleanup.get("managedArtifactsRemaining") == 0, f"{cell['id']}: managed artifacts remain")
-    require(cleanup.get("forcedCleanup") is False, f"{cell['id']}: cleanup required forced teardown")
+    require_exact_keys(cleanup, CLEANUP_KEYS, f"{cell['id']}: cleanup")
+    for key in ("attempted", "completed", "serverExited", "runnerExited", "processGroupRemoved", "artifactRootRemoved", "forcedCleanup"):
+        require_bool(cleanup[key], f"{cell['id']}: cleanup.{key}")
+    require_int(cleanup["managedProcessesRemaining"], f"{cell['id']}: cleanup.managedProcessesRemaining")
+    require_int(cleanup["managedArtifactsRemaining"], f"{cell['id']}: cleanup.managedArtifactsRemaining")
+    computed_complete = (
+        cleanup["serverExited"]
+        and cleanup["runnerExited"]
+        and cleanup["processGroupRemoved"]
+        and cleanup["managedProcessesRemaining"] == 0
+        and cleanup["artifactRootRemoved"]
+        and cleanup["managedArtifactsRemaining"] == 0
+        and not cleanup["forcedCleanup"]
+    )
+    require(cleanup["completed"] == computed_complete, f"{cell['id']}: cleanup completion is contradictory")
+    if require_complete:
+        require(cleanup["attempted"] is True, f"{cell['id']}: cleanup was not attempted")
+        for key in ("completed", "serverExited", "runnerExited", "processGroupRemoved", "artifactRootRemoved"):
+            require(cleanup.get(key) is True, f"{cell['id']}: cleanup field {key} is not true")
+        require(cleanup.get("managedProcessesRemaining") == 0, f"{cell['id']}: managed processes remain")
+        require(cleanup.get("managedArtifactsRemaining") == 0, f"{cell['id']}: managed artifacts remain")
+        require(cleanup.get("forcedCleanup") is False, f"{cell['id']}: cleanup required forced teardown")
+
+
+def check_transitions(cell: dict[str, Any], row_id: str, passed: bool) -> None:
+    transitions = cell["stateTransition"]
+    require(isinstance(transitions, list) and transitions, f"{row_id}: state transitions are missing")
+    required_phase = ROW_TRANSITIONS[row_id]
+    observed_phases = [transition.get("phase") for transition in transitions]
+    if passed:
+        require(observed_phases == required_phase, f"{row_id}: transition phases are {observed_phases}, expected {required_phase}")
+    else:
+        require(all(phase in required_phase or phase == "row-aborted" for phase in observed_phases), f"{row_id}: unknown transition phase")
+    allowed_keys = {"at", "phase", "serverState", "kernelState", "executionCount", "status"}
+    for transition in transitions:
+        require(isinstance(transition, dict), f"{row_id}: transition is not a mapping")
+        require(set(transition) <= allowed_keys, f"{row_id}: transition has unknown keys")
+        require({"at", "phase", "serverState", "kernelState", "executionCount"} <= set(transition), f"{row_id}: transition is incomplete")
+        require_iso_time(transition["at"], f"{row_id}: transition.at")
+        require(isinstance(transition["phase"], str) and transition["phase"], f"{row_id}: transition.phase is invalid")
+        require(transition["serverState"] in ALLOWED_SERVER_STATES, f"{row_id}: transition.serverState is invalid")
+        require(transition["kernelState"] in ALLOWED_KERNEL_STATES, f"{row_id}: transition.kernelState is invalid")
+        if transition["executionCount"] is not None:
+            require_int(transition["executionCount"], f"{row_id}: transition.executionCount", minimum=0)
+        if "status" in transition:
+            require(transition["status"] in ALLOWED_STATUSES, f"{row_id}: transition.status is invalid")
+
+
+def check_process_observations(cell: dict[str, Any], row_id: str, passed: bool) -> None:
+    observations = cell["processObservations"]
+    require(isinstance(observations, list) and observations, f"{row_id}: process observations are missing")
+    required_phases = ROW_PROCESS_PHASES[row_id]
+    phases = [observation.get("phase") for observation in observations]
+    if passed:
+        require(phases == required_phases, f"{row_id}: process phases are {phases}, expected {required_phases}")
+    snapshot_keys = {"at", "phase", "managedProcessCount", "serverDescendantCount", "processGroup", "processes"}
+    group_keys = {"token", "exists"}
+    process_keys = {"role", "token", "alive"}
+    seen_roles: set[str] = set()
+    for observation in observations:
+        require_exact_keys(observation, snapshot_keys, f"{row_id}: process snapshot")
+        require_iso_time(observation["at"], f"{row_id}: process snapshot.at")
+        require(isinstance(observation["phase"], str) and observation["phase"], f"{row_id}: process snapshot.phase is invalid")
+        require_int(observation["managedProcessCount"], f"{row_id}: managedProcessCount")
+        require_int(observation["serverDescendantCount"], f"{row_id}: serverDescendantCount")
+        require_exact_keys(observation["processGroup"], group_keys, f"{row_id}: processGroup")
+        require(isinstance(observation["processGroup"]["token"], str) and TOKEN_RE.fullmatch(observation["processGroup"]["token"]), f"{row_id}: processGroup token is invalid")
+        require_bool(observation["processGroup"]["exists"], f"{row_id}: processGroup.exists")
+        processes = observation["processes"]
+        require(isinstance(processes, list) and processes, f"{row_id}: processes are missing")
+        roles: set[str] = set()
+        alive = 0
+        server_alive = False
+        for process in processes:
+            require_exact_keys(process, process_keys, f"{row_id}: process")
+            require(process["role"] in {"server", "runner", "child"}, f"{row_id}: process role is invalid")
+            require(process["role"] not in roles, f"{row_id}: duplicate process role")
+            roles.add(process["role"])
+            require(isinstance(process["token"], str) and TOKEN_RE.fullmatch(process["token"]), f"{row_id}: process token is invalid")
+            require_bool(process["alive"], f"{row_id}: process.alive")
+            if process["alive"]:
+                alive += 1
+            if process["role"] == "server" and process["alive"]:
+                server_alive = True
+        require(observation["managedProcessCount"] == alive, f"{row_id}: managedProcessCount disagrees with live roles")
+        expected_descendants = (alive - 1) if server_alive else 0
+        require(observation["serverDescendantCount"] == expected_descendants, f"{row_id}: serverDescendantCount disagrees with live roles")
+        seen_roles.update(roles)
+    if passed:
+        require({"server", "runner"} <= seen_roles, f"{row_id}: server and runner were not both observed alive")
+
+
+def check_resources(cell: dict[str, Any], row_id: str, observations: list[dict[str, Any]]) -> None:
+    resources = cell["resourceObservations"]
+    require_exact_keys(resources, ROW_RESOURCES[row_id], f"{row_id}: resourceObservations")
+    for key in ("storeRoots", "storeRootsBeforeShutdown"):
+        if key in resources:
+            require_int(resources[key], f"{row_id}: {key}", minimum=1)
+    if "observedManagedProcesses" in resources:
+        require_int(resources["observedManagedProcesses"], f"{row_id}: observedManagedProcesses")
+    if "shutdownElapsedSeconds" in resources:
+        value = resources["shutdownElapsedSeconds"]
+        require(isinstance(value, (int, float)) and not isinstance(value, bool) and value >= 0, f"{row_id}: shutdownElapsedSeconds is invalid")
+        require(value < TERMINATION_GRACE_SECONDS, f"{row_id}: SDK termination window was required before the server exited")
+    for key in TOKEN_KEYS:
+        if key in resources:
+            require(isinstance(resources[key], str) and TOKEN_RE.fullmatch(resources[key]), f"{row_id}: {key} is not a token")
+    for key in SHA256_KEYS:
+        if key in resources:
+            require(isinstance(resources[key], str) and SHA256_RE.fullmatch(resources[key]), f"{row_id}: {key} is not a SHA-256 digest")
+    for key in BOOL_KEYS:
+        if key in resources:
+            require_bool(resources[key], f"{row_id}: {key}")
+    for key in INT_KEYS:
+        if key in resources:
+            minimum = 0 if key in {"tamperedPartIndex"} else 1
+            require_int(resources[key], f"{row_id}: {key}", minimum=minimum)
+    if "store" in resources:
+        check_store(resources["store"], f"{row_id}: store")
+    if "storeAfterEviction" in resources:
+        check_store(resources["storeAfterEviction"], f"{row_id}: storeAfterEviction")
+    if "activeExecutionAborted" in resources:
+        require(isinstance(resources["activeExecutionAborted"], str) and resources["activeExecutionAborted"], f"{row_id}: activeExecutionAborted is missing")
+        require(resources["activeExecutionAborted"] != "not_finished", f"{row_id}: active execution did not abort")
+    group_tokens = {observation["processGroup"]["token"] for observation in observations}
+    process_tokens = {process["token"] for observation in observations for process in observation["processes"]}
+    if "runnerGroupToken" in resources:
+        require(resources["runnerGroupToken"] in group_tokens, f"{row_id}: runnerGroupToken was not observed")
+    if row_id == "destructive-reset":
+        require(resources["previousRunnerToken"] != resources["replacementRunnerToken"], f"{row_id}: reset did not replace the runner")
+        require(resources["previousRunnerToken"] in process_tokens, f"{row_id}: previous runner was not observed")
+        require(resources["replacementRunnerToken"] in process_tokens, f"{row_id}: replacement runner was not observed")
+        final_runner = next(process for process in observations[-1]["processes"] if process["role"] == "runner")
+        require(final_runner["token"] == resources["replacementRunnerToken"], f"{row_id}: replacement runner token disagrees with the final snapshot")
+    if row_id == "timeout-survives":
+        require(resources["runnerToken"] == resources["continuationRunnerToken"], f"{row_id}: continuation did not use the same runner")
+        require(resources["runnerToken"] in process_tokens, f"{row_id}: runner token was not observed")
+    if row_id in {"timeout-escalates", "runner-channel-death"}:
+        final = observations[-1]
+        key = "processGroupExistsAfterEscalation" if row_id == "timeout-escalates" else "processGroupExistsAfterDeath"
+        require(resources[key] == final["processGroup"]["exists"], f"{row_id}: process-group result disagrees with the final snapshot")
+        require(resources["runnerToken"] in process_tokens, f"{row_id}: runner token was not observed")
+        runner = next(process for process in final["processes"] if process["role"] == "runner")
+        require(runner["alive"] is False, f"{row_id}: final runner is still alive")
+    if row_id == "output-limit-drain":
+        require(resources["manifestVerifiedBytes"] == resources["stdoutArtifactSize"], f"{row_id}: manifest bytes disagree with artifact size")
+        require(resources["store"]["managedBytes"] >= resources["stdoutArtifactSize"], f"{row_id}: store does not contain the artifact bytes")
+        require(resources["store"]["artifactRoots"] >= 1, f"{row_id}: artifact store root was not observed")
+    if row_id == "artifact-integrity-expiry":
+        require(resources["tamperedPartIndex"] < resources["manifestPartCount"], f"{row_id}: tampered part index is outside the manifest")
+        require(resources["storeAfterEviction"]["managedBytes"] <= resources["storeCeilingBytes"], f"{row_id}: managed bytes exceed the ceiling")
+        require(resources["storeAfterEviction"]["artifactRoots"] >= 1, f"{row_id}: artifact store root was not observed")
+    if row_id == "installed-startup":
+        require(resources["observedManagedProcesses"] == observations[0]["managedProcessCount"], f"{row_id}: managed process count disagrees with the snapshot")
+    if row_id == "normal-shutdown":
+        check = next((item for item in cell["checks"] if item["name"] == "unforcedShutdown"), None)
+        require(check is not None and check["passed"] is True and check["observed"] is True, f"{row_id}: unforced shutdown was not established")
+        require(cell["stateTransition"][-1]["serverState"] == cell["observed"]["serverState"], f"{row_id}: final server state disagrees with the transition")
+        require(cell["stateTransition"][-1]["kernelState"] == cell["observed"]["kernelState"], f"{row_id}: final kernel state disagrees with the transition")
+        require(cell["cleanup"]["serverExited"] is (cell["observed"]["serverState"] == "exited"), f"{row_id}: cleanup does not support server exit")
+        require(cell["cleanup"]["runnerExited"] is (cell["observed"]["kernelState"] == "dead"), f"{row_id}: cleanup does not support runner death")
+    if row_id == "cancellation-cleanup":
+        require(cell["stateTransition"][-1]["serverState"] == cell["observed"]["serverState"], f"{row_id}: final server state disagrees with the transition")
+        require(cell["stateTransition"][-1]["kernelState"] == cell["observed"]["kernelState"], f"{row_id}: final kernel state disagrees with the transition")
+        require(cell["cleanup"]["serverExited"] is (cell["observed"]["serverState"] == "exited"), f"{row_id}: cleanup does not support server exit")
+        require(cell["cleanup"]["runnerExited"] is (cell["observed"]["kernelState"] == "dead"), f"{row_id}: cleanup does not support runner death")
+        require(any(process["role"] == "child" and process["alive"] for observation in observations for process in observation["processes"]), f"{row_id}: active descendant was not observed")
 
 
 def validate_cell(cell: dict[str, Any], row: dict[str, Any]) -> list[str]:
-    problems: list[str] = []
-    require(cell.get("id") == row["id"], "cell id does not match the matrix row")
-    require(cell.get("operation") == row["operation"], f"{row['id']}: operation does not match the matrix")
-    require(cell.get("expected") == row["expected"], f"{row['id']}: expected values were altered")
+    row_id = row["id"]
+    require(isinstance(cell, dict), "cell is not a mapping")
+    require_exact_keys(cell, CELL_KEYS, f"{row_id}: cell")
+    require(cell.get("id") == row_id, "cell id does not match the matrix row")
+    require(cell.get("operation") == row["operation"], f"{row_id}: operation does not match the matrix")
+    require(cell.get("expected") == row["expected"], f"{row_id}: expected values were altered")
     require(
         cell.get("expectedSha256") == sha256_text(canonical_json_bytes(row["expected"]).decode()),
-        f"{row['id']}: expected-value hash does not match the matrix",
+        f"{row_id}: expected-value hash does not match the matrix",
     )
-    require(isinstance(cell.get("observed"), dict), f"{row['id']}: observed mapping is missing")
-    for key in row["expected"]:
-        require(key in cell["observed"], f"{row['id']}: expected key {key} was not observed")
-    require(isinstance(cell.get("stateTransition"), list) and cell["stateTransition"], f"{row['id']}: state transitions are missing")
-    require(
-        isinstance(cell.get("processObservations"), list) and cell["processObservations"],
-        f"{row['id']}: process observations are missing",
-    )
-    require(
-        isinstance(cell.get("resourceObservations"), dict) and cell["resourceObservations"],
-        f"{row['id']}: resource observations are missing",
-    )
-    require(isinstance(cell.get("checks"), list) and cell["checks"], f"{row['id']}: checks are missing")
-    require(isinstance(cell.get("durationMs"), int) and cell["durationMs"] >= 0, f"{row['id']}: duration is invalid")
-    require(isinstance(cell.get("limitations"), list), f"{row['id']}: limitations are missing")
-    if cell.get("outcome") == "passed":
-        require(cell.get("errorType") is None, f"{row['id']}: passed cell retained an error")
-        check_cleanup(cell)
+    require(isinstance(cell.get("observed"), dict), f"{row_id}: observed mapping is missing")
+    require(set(cell["observed"]) == set(row["expected"]), f"{row_id}: observed keys do not match the matrix")
+    require(isinstance(cell.get("stateTransition"), list) and cell["stateTransition"], f"{row_id}: state transitions are missing")
+    require(isinstance(cell.get("processObservations"), list) and cell["processObservations"], f"{row_id}: process observations are missing")
+    require(isinstance(cell.get("resourceObservations"), dict) and cell["resourceObservations"], f"{row_id}: resource observations are missing")
+    require(isinstance(cell.get("checks"), list) and cell["checks"], f"{row_id}: checks are missing")
+    require_int(cell.get("durationMs"), f"{row_id}: duration")
+    require(isinstance(cell.get("limitations"), list) and all(isinstance(item, str) for item in cell["limitations"]), f"{row_id}: limitations are invalid")
+    require(cell.get("outcome") in {"passed", "failed"}, f"{row_id}: outcome is invalid")
+    require(cell.get("errorType") is None or isinstance(cell.get("errorType"), str), f"{row_id}: errorType is invalid")
+    passed = cell["outcome"] == "passed"
+    if passed:
+        require(cell.get("errorType") is None, f"{row_id}: passed cell retained an error")
         for key, expected in row["expected"].items():
-            require(
-                cell["observed"].get(key) == expected,
-                f"{row['id']}: passed cell observed {key}={cell['observed'].get(key)!r}, expected {expected!r}",
-            )
-        for check in cell["checks"]:
-            require(check.get("passed") is True, f"{row['id']}: check {check.get('name')} did not pass")
+            require(cell["observed"].get(key) == expected, f"{row_id}: passed cell observed {key}={cell['observed'].get(key)!r}, expected {expected!r}")
     else:
-        problems.append(f"{row['id']}: outcome is {cell.get('outcome')!r} (errorType={cell.get('errorType')!r})")
-    recorded = {check.get("name"): check for check in cell["checks"]}
+        require(cell.get("errorType") is not None or any(check.get("passed") is not True for check in cell["checks"]), f"{row_id}: failed cell has no failure reason")
+    check_cleanup(cell, require_complete=passed)
+    check_transitions(cell, row_id, passed)
+    check_process_observations(cell, row_id, passed)
+    check_resources(cell, row_id, cell["processObservations"])
+    check_checks(cell, row, passed)
+    return [] if passed else [f"{row_id}: outcome is {cell['outcome']!r} (errorType={cell['errorType']!r})"]
+
+
+def check_checks(cell: dict[str, Any], row: dict[str, Any], passed: bool) -> None:
+    row_id = row["id"]
+    recorded: dict[str, dict[str, Any]] = {}
+    for check in cell["checks"]:
+        require_exact_keys(check, CHECK_KEYS, f"{row_id}: check")
+        require(isinstance(check["name"], str) and check["name"], f"{row_id}: check name is invalid")
+        require(check["name"] not in recorded, f"{row_id}: duplicate check {check['name']}")
+        require_bool(check["passed"], f"{row_id}: check {check['name']}.passed is invalid")
+        require(check["passed"] == (check["expected"] == check["observed"]), f"{row_id}: check {check['name']} is contradictory")
+        recorded[check["name"]] = check
     for key in row["expected"]:
-        require(key in recorded, f"{row['id']}: expected key {key} has no recorded check")
-        require(
-            recorded[key].get("expected") == row["expected"][key],
-            f"{row['id']}: check {key} expected value was altered",
-        )
-    return problems
+        require(key in recorded, f"{row_id}: expected key {key} has no recorded check")
+        require(recorded[key]["expected"] == row["expected"][key], f"{row_id}: check {key} expected value was altered")
+        if passed:
+            require(recorded[key]["passed"] is True, f"{row_id}: expected check {key} did not pass")
+    computed_passed = (
+        cell["errorType"] is None
+        and all(check["passed"] for check in cell["checks"])
+        and len(cell["observed"]) >= len(row["expected"])
+    )
+    require(passed == computed_passed, f"{row_id}: outcome contradicts its checks or error state")
 
 
 def validate_record(
@@ -243,12 +617,14 @@ def validate_record(
     *,
     require_hosted: bool,
     wheel_path: Path | None = None,
+    expected_invocation: dict[str, Any] | None = None,
 ) -> list[str]:
     require(record.get("schemaVersion") == SCHEMA_VERSION, "schema version is unsupported")
     require(record.get("recordKind") == "amkernel-cross-os-process-matrix", "record kind is unsupported")
     require(isinstance(record.get("recordId"), str) and record["recordId"], "record id is missing")
     require(isinstance(record.get("createdAt"), str) and record["createdAt"].endswith("Z"), "creation time is missing")
     check_hosted_dispatch(record, require_hosted)
+    check_expected_invocation(record, expected_invocation)
     check_sources(record, source_root)
     if wheel_path is not None:
         check_wheel_file(record, wheel_path)
@@ -290,15 +666,22 @@ def combine(
     records: list[tuple[Path, dict[str, Any]]],
     matrix: dict[str, Any],
     source_root: Path,
+    expected_invocation: dict[str, Any],
 ) -> dict[str, Any]:
     require(records, "no evidence records were supplied")
     expected_sources = source_hashes(source_root)
     environments: list[dict[str, Any]] = []
     seen: set[tuple[str, str]] = set()
     failures: list[str] = []
+    wheel_identities: set[tuple[Any, ...]] = set()
     for path, record in records:
         record_failures = validate_record(
-            record, matrix, source_root, require_hosted=True, wheel_path=None
+            record,
+            matrix,
+            source_root,
+            require_hosted=True,
+            wheel_path=None,
+            expected_invocation=expected_invocation,
         )
         failures.extend(record_failures)
         environment = record["environment"]
@@ -314,6 +697,10 @@ def combine(
         require(
             sources["contracts"] == expected_sources["contracts"],
             f"{path.name}: contract sources differ from the combined checkout",
+        )
+        wheel = sources["wheel"]
+        wheel_identities.add(
+            (wheel["filename"], wheel["sha256"], wheel["sizeBytes"], wheel["packageFileCount"], wheel["packageSha256"])
         )
         cells = [
             {
@@ -342,8 +729,7 @@ def combine(
                 "cells": cells,
             }
         )
-    wheel_hashes = {environment["wheel"]["sha256"] for environment in environments}
-    require(len(wheel_hashes) == 1, "evidence environments used different wheels")
+    require(len(wheel_identities) == 1, "evidence environments used different wheel identities")
     dispatch_shas = {record["dispatch"]["sha"] for _path, record in records}
     require(len(dispatch_shas) == 1, "evidence environments came from different commits")
     required = {
@@ -367,6 +753,7 @@ def combine(
         if cell["outcome"] == "passed"
     )
     total_cells = sum(len(environment["cells"]) for environment in environments)
+    wheel = next(iter(wheel_identities))
     index: dict[str, Any] = {
         "schemaVersion": SCHEMA_VERSION,
         "indexKind": "amkernel-cross-os-process-matrix-index",
@@ -378,11 +765,19 @@ def combine(
             "rowIds": [row["id"] for row in matrix["rows"]],
             "unsupportedPlatforms": matrix["unsupportedPlatforms"],
         },
+        "invocation": expected_invocation,
         "sources": {
             "harnessSha256": expected_sources["harness"],
             "contracts": expected_sources["contracts"],
             "lockSha256": expected_sources["lock"],
             "sourceRoot": "checkout",
+        },
+        "wheel": {
+            "filename": wheel[0],
+            "sha256": wheel[1],
+            "sizeBytes": wheel[2],
+            "packageFileCount": wheel[3],
+            "packageSha256": wheel[4],
         },
         "environments": environments,
         "totals": {
@@ -408,6 +803,19 @@ def combine(
     return index
 
 
+def expected_invocation_from_args(args: argparse.Namespace) -> dict[str, Any]:
+    values = {
+        "repository": args.expected_repository,
+        "workflow": args.expected_workflow,
+        "workflowRef": args.expected_workflow_ref,
+        "runId": args.expected_run_id,
+        "runAttempt": args.expected_run_attempt,
+        "sha": args.expected_sha,
+    }
+    require(all(isinstance(value, str) and value for value in values.values()), "every expected invocation value is required")
+    return values
+
+
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -425,6 +833,12 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     combined.add_argument("--matrix", required=True)
     combined.add_argument("--source-root", required=True)
     combined.add_argument("--output", required=True)
+    combined.add_argument("--expected-repository", required=True)
+    combined.add_argument("--expected-workflow", required=True)
+    combined.add_argument("--expected-workflow-ref", required=True)
+    combined.add_argument("--expected-run-id", required=True)
+    combined.add_argument("--expected-run-attempt", required=True)
+    combined.add_argument("--expected-sha", required=True)
     return parser.parse_args(argv)
 
 
@@ -459,7 +873,8 @@ def main(argv: list[str] | None = None) -> int:
         (path, json.loads(path.read_text(encoding="utf-8")))
         for path in evidence_files(Path(args.evidence_dir))
     ]
-    index = combine(records, matrix, source_root)
+    expected_invocation = expected_invocation_from_args(args)
+    index = combine(records, matrix, source_root, expected_invocation)
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(index, indent=2, sort_keys=True) + "\n", encoding="utf-8")

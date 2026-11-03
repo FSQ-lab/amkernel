@@ -202,6 +202,12 @@ jobs:
             --evidence-dir process-evidence \
             --matrix tests/fixtures/cross_client/process-matrix.json \
             --source-root . \
+            --expected-repository "${{ github.repository }}" \
+            --expected-workflow "${{ github.workflow }}" \
+            --expected-workflow-ref "${{ github.workflow_ref }}" \
+            --expected-run-id "${{ github.run_id }}" \
+            --expected-run-attempt "${{ github.run_attempt }}" \
+            --expected-sha "${{ github.sha }}" \
             --output process-evidence-index/process-evidence-index.json
       - name: Upload combined index
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
