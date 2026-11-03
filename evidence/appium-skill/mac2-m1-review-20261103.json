@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "scope": "Independent review of the original actual M1 result; not a passing recovery or global cleanup claim.",
+  "reviewer": "MacScenariosReview",
+  "evidence": "evidence/appium-skill/mac2-m1-20261103.json",
+  "sha256": "31c70bfc61b5d69e2231b84ca4a50fd9dc302ec14f15547c883e1b1ef5e99dba",
+  "disposition": "not-qualified",
+  "rootCause": "unestablished",
+  "observations": {
+    "protocolTransactions": 43,
+    "successfulMac2TextEditSessionCreations": 4,
+    "pythonExecutions": 28,
+    "failedPythonExecutions": 7,
+    "failedExecutionKernels": "alive",
+    "failedQualificationChecks": [
+      "canonicalTaskReport",
+      "distinctWindowsObserved",
+      "targetThenDistractorThenTarget",
+      "targetSelectedByObservedName",
+      "distractorSelectedByObservedName",
+      "targetReselectedByObservedName"
+    ],
+    "unchangedFixtureFiles": 11,
+    "successfulOwnedSessionRootDeletes": 4,
+    "sessionListingBeforeServerStop": 0,
+    "emergencyRestorationInvoked": false
+  },
+  "cleanup": "Independent external desktop observations, successful final app termination/activation, session deletions and owned server/group/ports/Runner exits support bounded cleanup. Earlier failed control/cleanup operations remain retained.",
+  "limits": [
+    "No two-window target/distractor sequence established.",
+    "Unchanged fixture hashes do not exclude transient UI actions.",
+    "No permission, driver incompatibility or Runtime diagnosis established.",
+    "Dependent TextEdit scenarios require actual identity/control proof; alternative-path diagnostics are not formal M1 qualification.",
+    "No reviewer UI, commands, tests, builds or formatters."
+  ]
+}

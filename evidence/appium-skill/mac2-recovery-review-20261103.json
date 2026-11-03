@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "reviewer": "RecoveryOracleReview",
+  "scope": "Independent read-only recovery-oracle, regression and frozen Calculator procedure review, followed by independent actual M0 observation review; reviewer ran no commands or UI.",
+  "findings": {
+    "blocker": 0,
+    "major": 0,
+    "minor": 0
+  },
+  "resolvedFindings": [
+    "Successful windowElements no longer masks later valid windowHandles; each candidate independently satisfies post-failure execution/lifecycle causality."
+  ],
+  "evidenceSha256": {
+    "evidence/appium-skill/mac2-m0-20261103.json": "9b470b0973cc56ef7da0bb64bb79dfbc28156a57fb5b752a7e7ece755390accb"
+  },
+  "sourceSha256": {
+    "tests/e2e/native_client.py": "c5ddcdaf493f5ffdd79b88b755532282d4feeb8a49192d3fda0fbe580d7b604c",
+    "tests/e2e/native_mac2_oracle.py": "c820a227e6df4e0e8000d6a1071458cf13dc2036d79a56c88b1ddfcb168c615a",
+    "tests/e2e/test_native_mac2_oracle.py": "f8ce75b38b04c01d6e7bf8a824ea10d93875559ed0caf527182b3e03be4a854b",
+    "calculator.py": "3bb77ca02aa627e63fdc9a60ee5f07466369dc87221bff4ede323a8a72c957d2"
+  },
+  "observations": [
+    "Failed/alive execution 2 retained; both later actual live target queries are inside successful execution 6.",
+    "Exactly one real Mac2/Calculator session, foreground state 4 and nonempty window response observed.",
+    "Restoration completed before HTTP-200 DELETE; listing empty before owned-server shutdown.",
+    "All 24 qualification flags and four canonical task/restoration/session/server report values are consistent with actual observations."
+  ],
+  "parentVerification": {
+    "focusedPytestPassed": 79,
+    "fullPytestPassed": 593,
+    "ruff": "passed",
+    "mypy": "passed (63 files)",
+    "actualM0": "qualified"
+  },
+  "limits": [
+    "Review is source/retained-evidence inspection, not independent UI execution or reviewer digest recomputation.",
+    "Underlying preparation error cause is unestablished.",
+    "No broader desktop, Android/iOS/Windows or tablet qualification."
+  ]
+}

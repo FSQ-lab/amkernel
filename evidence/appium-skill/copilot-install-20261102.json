@@ -1,0 +1,791 @@
+{
+  "schemaVersion": 1,
+  "issue": 105,
+  "implementationCommit": "0cadc58",
+  "status": "passed",
+  "scope": "Real native GitHub Copilot CLI external-project installation; not physical platform qualification",
+  "client": "GitHub Copilot CLI 1.0.105",
+  "model": "gpt-6.1-sol",
+  "wheelSha256": "0c31bdf742f81de8f305b9793142ae033c291fc5595f9a0367f326c708844463",
+  "sourceCommit": "e907024c210fe024c956ed9c74146fc27b1dd013",
+  "sourceFileCount": 134,
+  "installedOfficialSkills": [
+    "setup-uiautomator2",
+    "setup-xcuitest",
+    "setup-mac2",
+    "xcuitest-real-device-config",
+    "appium-troubleshooting"
+  ],
+  "checks": [
+    "clean-installed-wheel",
+    "no-project-git-or-python-environment-mutation",
+    "complete-pinned-source-and-every-skill-copy",
+    "installed-standalone-verifier",
+    "native-client-skills-and-workspace-mcp-discovery",
+    "real-native-client-project-skill-and-persistent-python-exec",
+    "native-real-device-continuation-skill-loaded",
+    "source-tamper-fails-closed",
+    "owned-source-repaired-by-installer",
+    "missing-official-copy-fails-closed-and-repairs",
+    "native-active-config-coexistence-github-only",
+    "native-active-config-coexistence-both-present"
+  ],
+  "nativeSkillDiscovery": [
+    {
+      "name": "amkernel",
+      "description": "Help users verify, diagnose, and use AMKernel for local automation through a Coding Agent. Use for AMKernel readiness or MCP connection failures, and for Appium Android, iOS, or macOS Mac2 setup, diagnosis, and scenarios that should run through AMKernel.",
+      "source": "project",
+      "path": "$TEMP_ROOT/project/.agents/skills/amkernel",
+      "enabled": true
+    },
+    {
+      "name": "appium-troubleshooting",
+      "description": "Diagnose existing UiAutomator2 session-startup, app-activity, adb transport, helper-server, native or hybrid locator failures, and XCUITest WebDriverAgent, session-startup, app install or launch, device or simulator state, alert, element-source, or locator failures. Use when a session or command under one of those drivers already fails. Do not use for first-time setup, pre-failure real-device provisioning, or Espresso, Chromium, Gecko, Safari, or Mac2 failures.",
+      "source": "project",
+      "path": "$TEMP_ROOT/project/.agents/skills/appium-troubleshooting",
+      "enabled": true
+    },
+    {
+      "name": "setup-mac2",
+      "description": "Prepare and verify Appium Mac2 for native macOS automation by validating Node/Appium, macOS and Xcode tooling, driver installation, doctor output, privacy authorization boundaries, and server smoke evidence. Use after the setup Skill selects Mac2. Do not use for an existing Mac2 runtime failure after prerequisites pass.",
+      "source": "project",
+      "path": "$TEMP_ROOT/project/.agents/skills/setup-mac2",
+      "enabled": true
+    },
+    {
+      "name": "setup-uiautomator2",
+      "description": "Prepare and verify Appium UiAutomator2 by validating Node/Appium, Android SDK and Java prerequisites, driver installation, doctor output, and server smoke evidence. Use after the setup Skill selects UiAutomator2 or appium-troubleshooting hands off a UiAutomator2 prerequisite or doctor failure. Do not use for an existing runtime failure after prerequisites pass.",
+      "source": "project",
+      "path": "$TEMP_ROOT/project/.agents/skills/setup-uiautomator2",
+      "enabled": true
+    },
+    {
+      "name": "setup-xcuitest",
+      "description": "Prepare and verify Appium XCUITest for iOS or tvOS on macOS by validating Node/Appium, Xcode, driver installation, doctor output, simulator or shared real-device prerequisites, and server smoke evidence. Use when the setup Skill selects XCUITest or appium-troubleshooting hands off an XCUITest prerequisite or doctor failure. For a real device, continue to xcuitest-real-device-config after this Skill passes. Do not use for real-device signing, provisioning, or WebDriverAgent deployment.",
+      "source": "project",
+      "path": "$TEMP_ROOT/project/.agents/skills/setup-xcuitest",
+      "enabled": true
+    },
+    {
+      "name": "xcuitest-real-device-config",
+      "description": "Prepare real iOS or tvOS devices for Appium XCUITest by validating readiness, provisioning, signing, WebDriverAgent deployment, and connectivity. Use only after setup-xcuitest completes shared XCUITest prerequisites and continues to this Skill for a real-device target. Do not use for general XCUITest setup or later runtime failures unrelated to signing or WebDriverAgent deployment.",
+      "source": "project",
+      "path": "$TEMP_ROOT/project/.agents/skills/xcuitest-real-device-config",
+      "enabled": true
+    },
+    {
+      "name": "customize-cloud-agent",
+      "description": "Skill for customizing the Copilot cloud agent (formerly known as Copilot coding agent) environment, including copilot-setup-steps.yml configuration, preinstalling tools and dependencies, runners, and settings. Use when the user mentions copilot-setup-steps, copilot setup steps, or wants to configure the cloud agent environment.",
+      "source": "builtin",
+      "path": "$HOME/Library/Caches/copilot/pkg/darwin-arm64/1.0.105/builtin/customize-cloud-agent",
+      "enabled": true
+    },
+    {
+      "name": "github-pr-media",
+      "description": "Upload an image or video to GitHub's user attachments API and embed it in a pull request description or comment. Use when asked to add screenshots, diagrams, recordings, or other media to a PR or GitHub comment.",
+      "source": "builtin",
+      "path": "$HOME/Library/Caches/copilot/pkg/darwin-arm64/1.0.105/builtin/github-pr-media",
+      "enabled": true
+    }
+  ],
+  "nativeMcpDiscovery": {
+    "amkernel": {
+      "tools": [
+        "*"
+      ],
+      "type": "stdio",
+      "command": "$TEMP_ROOT/bin/amkernel",
+      "args": [],
+      "cwd": "$TEMP_ROOT/project",
+      "source": "workspace",
+      "sourcePath": "$TEMP_ROOT/project/.mcp.json",
+      "enabled": true
+    }
+  },
+  "agentCalls": [
+    {
+      "tool": "skill",
+      "mcpConfigSource": null,
+      "arguments": {
+        "skill": "amkernel"
+      }
+    },
+    {
+      "tool": "view",
+      "mcpConfigSource": null,
+      "arguments": {
+        "path": "$TEMP_ROOT/project/.agents/skills/amkernel/scripts/verify_official_skills.py"
+      }
+    },
+    {
+      "tool": "view",
+      "mcpConfigSource": null,
+      "arguments": {
+        "path": "$TEMP_ROOT/project/.agents/skills/amkernel/references/official-skills.json"
+      }
+    },
+    {
+      "tool": "amkernel-python_exec",
+      "mcpConfigSource": "workspace",
+      "arguments": {
+        "code": "verification_state = {'nonce': '21d1ae42cb45ff94', 'value': 41}\nimport sys, os, subprocess, json\nfrom pathlib import Path\nproject_root = Path('$TEMP_ROOT/project')\nverification = subprocess.run([sys.executable, '-B', str(project_root / '.agents/skills/amkernel/scripts/verify_official_skills.py'), '--project-root', str(project_root)], capture_output=True, text=True, check=True)\nprint(verification.stdout.strip())\nmanifest = json.loads((project_root / '.agents/skills/amkernel/references/official-skills.json').read_text())\nprint('official_source_path:', project_root / manifest['source']['generatedLocation'])\nprint('official_skill:', next(entry for entry in manifest['installedSkills'] if entry['name'] == 'xcuitest-real-device-config')['generatedLocation'])\nprint('created:', verification_state)",
+        "title": "Create retained state and verify installed skill integrity"
+      }
+    },
+    {
+      "tool": "skill",
+      "mcpConfigSource": null,
+      "arguments": {
+        "skill": "xcuitest-real-device-config"
+      }
+    },
+    {
+      "tool": "amkernel-python_exec",
+      "mcpConfigSource": "workspace",
+      "arguments": {
+        "code": "verification_state['value'] += 1\nassert verification_state == {'nonce': '21d1ae42cb45ff94', 'value': 42}\nprint(json.dumps({'nonce': verification_state['nonce'], 'value': verification_state['value'], 'interpreter': sys.executable, 'cwd': os.getcwd(), 'namespace_persisted': True}, indent=2))\nreference_path = project_root / manifest['source']['generatedLocation'] / 'contexts/tools/appium/real-device/xcuitest-readiness.md'\nprint('official_reference_path:', reference_path)\nprint('official_reference_exists:', reference_path.is_file())",
+        "title": "Verify namespace persistence and report actual runtime"
+      }
+    }
+  ],
+  "agentResults": [
+    {
+      "status": "completed",
+      "stdout": "Pinned Appium source and installed skill copies verified.\nofficial_source_path: $TEMP_ROOT/project/.agents/vendor/appium-skills/e907024c210fe024c956ed9c74146fc27b1dd013\nofficial_skill: .agents/skills/xcuitest-real-device-config\ncreated: {'nonce': '21d1ae42cb45ff94', 'value': 41}\n",
+      "stderr": "",
+      "result": null,
+      "executionCount": 1,
+      "durationMs": 28,
+      "kernelState": "alive",
+      "runtime": {
+        "executable": "$TEMP_ROOT/tools/amkernel/bin/python",
+        "pythonVersion": "3.11.16",
+        "workingDirectory": "$TEMP_ROOT/project",
+        "environmentKind": "active_venv",
+        "implementation": "CPython",
+        "platform": "macOS-26.6.2-arm64-arm-64bit",
+        "packages": []
+      },
+      "output": {
+        "totalBytes": 361,
+        "totalLines": 4,
+        "discardedBytes": 0,
+        "discardedLines": 0,
+        "truncated": false,
+        "limitBytes": 268435456,
+        "limitExceeded": false,
+        "live": "progress"
+      },
+      "displays": [],
+      "artifacts": []
+    },
+    {
+      "status": "completed",
+      "stdout": "{\n  \"nonce\": \"21d1ae42cb45ff94\",\n  \"value\": 42,\n  \"interpreter\": \"$TEMP_ROOT/tools/amkernel/bin/python\",\n  \"cwd\": \"$TEMP_ROOT/project\",\n  \"namespace_persisted\": true\n}\nofficial_reference_path: $TEMP_ROOT/project/.agents/vendor/appium-skills/e907024c210fe024c956ed9c74146fc27b1dd013/contexts/tools/appium/real-device/xcuitest-readiness.md\nofficial_reference_exists: True\n",
+      "stderr": "",
+      "result": null,
+      "executionCount": 2,
+      "durationMs": 2,
+      "kernelState": "alive",
+      "runtime": {
+        "executable": "$TEMP_ROOT/tools/amkernel/bin/python",
+        "pythonVersion": "3.11.16",
+        "workingDirectory": "$TEMP_ROOT/project",
+        "environmentKind": "active_venv",
+        "implementation": "CPython",
+        "platform": "macOS-26.6.2-arm64-arm-64bit",
+        "packages": []
+      },
+      "output": {
+        "totalBytes": 605,
+        "totalLines": 9,
+        "discardedBytes": 0,
+        "discardedLines": 0,
+        "truncated": false,
+        "limitBytes": 268435456,
+        "limitExceeded": false,
+        "live": "progress"
+      },
+      "displays": [],
+      "artifacts": []
+    }
+  ],
+  "commands": [
+    {
+      "argv": [
+        "uvx",
+        "--from",
+        "/private$TASK_TOOLS/dist/amkernel-0.1.0-py3-none-any.whl",
+        "amkernel",
+        "install",
+        "--client",
+        "copilot",
+        "--project",
+        "$TEMP_ROOT/project",
+        "--scope",
+        "project",
+        "--yes",
+        "--json"
+      ],
+      "cwd": "$TEMP_ROOT/project",
+      "exit": 0,
+      "stdoutSha256": "55fa795cbd5411eb5b54c795b8f8944a958df428f27b17953b5f85ad3029766d",
+      "stderrSha256": "f543619db94ab5a42e065c116508a719e38752a36de0aa9959bfe88a96be2dd3",
+      "observedJson": {
+        "client": "copilot",
+        "detail": null,
+        "known_project_references": [],
+        "mcp_configured": true,
+        "notice": "Copilot loads project MCP servers only after you trust this project folder; confirm the trust prompt before treating the setup as ready.",
+        "project": "$TEMP_ROOT/project",
+        "references_truncated": false,
+        "restart_required": true,
+        "runtime_executable": "$TEMP_ROOT/bin/amkernel",
+        "runtime_installed": true,
+        "runtime_version": "0.1.0",
+        "skill_commit": "e907024c210fe024c956ed9c74146fc27b1dd013",
+        "skill_content_verified": true,
+        "skill_installed": true,
+        "skill_provenance": true,
+        "skill_version": "0.1.0"
+      }
+    },
+    {
+      "argv": [
+        "$HOME/Documents/FSQ_LAB/amkernel/.venv/bin/python3",
+        "$TEMP_ROOT/project/.agents/skills/amkernel/scripts/verify_official_skills.py",
+        "--project-root",
+        "$TEMP_ROOT/project"
+      ],
+      "cwd": "$TEMP_ROOT/project",
+      "exit": 0,
+      "stdoutSha256": "d27fa5c307109f994fad6d66df4d1fa116cf0dd2cf60e0d192e843ec909b6b4d",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observedText": "Pinned Appium source and installed skill copies verified.\n"
+    },
+    {
+      "argv": [
+        "uvx",
+        "--from",
+        "/private$TASK_TOOLS/dist/amkernel-0.1.0-py3-none-any.whl",
+        "amkernel",
+        "doctor",
+        "--project",
+        "$TEMP_ROOT/project",
+        "--json"
+      ],
+      "cwd": "$TEMP_ROOT/project",
+      "exit": 0,
+      "stdoutSha256": "55fa795cbd5411eb5b54c795b8f8944a958df428f27b17953b5f85ad3029766d",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observedJson": {
+        "client": "copilot",
+        "detail": null,
+        "known_project_references": [],
+        "mcp_configured": true,
+        "notice": "Copilot loads project MCP servers only after you trust this project folder; confirm the trust prompt before treating the setup as ready.",
+        "project": "$TEMP_ROOT/project",
+        "references_truncated": false,
+        "restart_required": true,
+        "runtime_executable": "$TEMP_ROOT/bin/amkernel",
+        "runtime_installed": true,
+        "runtime_version": "0.1.0",
+        "skill_commit": "e907024c210fe024c956ed9c74146fc27b1dd013",
+        "skill_content_verified": true,
+        "skill_installed": true,
+        "skill_provenance": true,
+        "skill_version": "0.1.0"
+      }
+    },
+    {
+      "argv": [
+        "$TASK_TOOLS/node_modules/.bin/copilot",
+        "--version"
+      ],
+      "cwd": "$TEMP_ROOT/project",
+      "exit": 0,
+      "stdoutSha256": "3696964b10cc5113d5195f7f61fa27935bbe62aa38adf429797c29613116c247",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observedText": "GitHub Copilot CLI 1.0.105.\nRun 'copilot update' to check for updates.\n"
+    },
+    {
+      "argv": [
+        "$TASK_TOOLS/node_modules/.bin/copilot",
+        "skill",
+        "list",
+        "--json"
+      ],
+      "cwd": "$TEMP_ROOT/project",
+      "exit": 0,
+      "stdoutSha256": "50d9d354571c46bbd309f9e605a337c24ea225e420b6e2812b9fb128e1accc6a",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observedJson": [
+        {
+          "name": "amkernel",
+          "description": "Help users verify, diagnose, and use AMKernel for local automation through a Coding Agent. Use for AMKernel readiness or MCP connection failures, and for Appium Android, iOS, or macOS Mac2 setup, diagnosis, and scenarios that should run through AMKernel.",
+          "source": "project",
+          "path": "$TEMP_ROOT/project/.agents/skills/amkernel",
+          "enabled": true
+        },
+        {
+          "name": "appium-troubleshooting",
+          "description": "Diagnose existing UiAutomator2 session-startup, app-activity, adb transport, helper-server, native or hybrid locator failures, and XCUITest WebDriverAgent, session-startup, app install or launch, device or simulator state, alert, element-source, or locator failures. Use when a session or command under one of those drivers already fails. Do not use for first-time setup, pre-failure real-device provisioning, or Espresso, Chromium, Gecko, Safari, or Mac2 failures.",
+          "source": "project",
+          "path": "$TEMP_ROOT/project/.agents/skills/appium-troubleshooting",
+          "enabled": true
+        },
+        {
+          "name": "setup-mac2",
+          "description": "Prepare and verify Appium Mac2 for native macOS automation by validating Node/Appium, macOS and Xcode tooling, driver installation, doctor output, privacy authorization boundaries, and server smoke evidence. Use after the setup Skill selects Mac2. Do not use for an existing Mac2 runtime failure after prerequisites pass.",
+          "source": "project",
+          "path": "$TEMP_ROOT/project/.agents/skills/setup-mac2",
+          "enabled": true
+        },
+        {
+          "name": "setup-uiautomator2",
+          "description": "Prepare and verify Appium UiAutomator2 by validating Node/Appium, Android SDK and Java prerequisites, driver installation, doctor output, and server smoke evidence. Use after the setup Skill selects UiAutomator2 or appium-troubleshooting hands off a UiAutomator2 prerequisite or doctor failure. Do not use for an existing runtime failure after prerequisites pass.",
+          "source": "project",
+          "path": "$TEMP_ROOT/project/.agents/skills/setup-uiautomator2",
+          "enabled": true
+        },
+        {
+          "name": "setup-xcuitest",
+          "description": "Prepare and verify Appium XCUITest for iOS or tvOS on macOS by validating Node/Appium, Xcode, driver installation, doctor output, simulator or shared real-device prerequisites, and server smoke evidence. Use when the setup Skill selects XCUITest or appium-troubleshooting hands off an XCUITest prerequisite or doctor failure. For a real device, continue to xcuitest-real-device-config after this Skill passes. Do not use for real-device signing, provisioning, or WebDriverAgent deployment.",
+          "source": "project",
+          "path": "$TEMP_ROOT/project/.agents/skills/setup-xcuitest",
+          "enabled": true
+        },
+        {
+          "name": "xcuitest-real-device-config",
+          "description": "Prepare real iOS or tvOS devices for Appium XCUITest by validating readiness, provisioning, signing, WebDriverAgent deployment, and connectivity. Use only after setup-xcuitest completes shared XCUITest prerequisites and continues to this Skill for a real-device target. Do not use for general XCUITest setup or later runtime failures unrelated to signing or WebDriverAgent deployment.",
+          "source": "project",
+          "path": "$TEMP_ROOT/project/.agents/skills/xcuitest-real-device-config",
+          "enabled": true
+        },
+        {
+          "name": "customize-cloud-agent",
+          "description": "Skill for customizing the Copilot cloud agent (formerly known as Copilot coding agent) environment, including copilot-setup-steps.yml configuration, preinstalling tools and dependencies, runners, and settings. Use when the user mentions copilot-setup-steps, copilot setup steps, or wants to configure the cloud agent environment.",
+          "source": "builtin",
+          "path": "$HOME/Library/Caches/copilot/pkg/darwin-arm64/1.0.105/builtin/customize-cloud-agent",
+          "enabled": true
+        },
+        {
+          "name": "github-pr-media",
+          "description": "Upload an image or video to GitHub's user attachments API and embed it in a pull request description or comment. Use when asked to add screenshots, diagrams, recordings, or other media to a PR or GitHub comment.",
+          "source": "builtin",
+          "path": "$HOME/Library/Caches/copilot/pkg/darwin-arm64/1.0.105/builtin/github-pr-media",
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "argv": [
+        "$TASK_TOOLS/node_modules/.bin/copilot",
+        "mcp",
+        "get",
+        "amkernel",
+        "--json"
+      ],
+      "cwd": "$TEMP_ROOT/project",
+      "exit": 0,
+      "stdoutSha256": "a6a8a48b1135b8e9c0bcade6e205062d65a03b0fbb3bc54d6f07a682e3c5a4f7",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observedJson": {
+        "amkernel": {
+          "tools": [
+            "*"
+          ],
+          "type": "stdio",
+          "command": "$TEMP_ROOT/bin/amkernel",
+          "args": [],
+          "cwd": "$TEMP_ROOT/project",
+          "source": "workspace",
+          "sourcePath": "$TEMP_ROOT/project/.mcp.json",
+          "enabled": true
+        }
+      }
+    },
+    {
+      "argv": [
+        "$TASK_TOOLS/node_modules/.bin/copilot",
+        "--no-auto-update",
+        "--disable-client-telemetry",
+        "--sync-session=off",
+        "--no-custom-instructions",
+        "--disable-builtin-mcps",
+        "--trust-folder",
+        "--output-format",
+        "json",
+        "--no-color",
+        "--model",
+        "gpt-6.1-sol",
+        "--available-tools",
+        "amkernel",
+        "skill",
+        "view",
+        "read_file",
+        "--allow-tool",
+        "amkernel",
+        "--allow-tool",
+        "skill",
+        "--allow-tool",
+        "view",
+        "--allow-tool",
+        "read_file",
+        "--secret-env-vars",
+        "COPILOT_GITHUB_TOKEN",
+        "-p",
+        "Use the installed amkernel Skill. Verify this clean external project installation only. Through python_exec create a Python variable holding the nonce '21d1ae42cb45ff94' and integer 41, then in a separate python_exec increment that value and report the same nonce, resulting value, actual interpreter and current working directory. Do not start Appium or any device/session, change files or install anything. Report observed values and whether the namespace persisted. Also load the installed official xcuitest-real-device-config Skill to verify its discovery and reference path only; do not perform device preparation."
+      ],
+      "cwd": "$TEMP_ROOT/project",
+      "exit": 0,
+      "stdoutSha256": "e1f93c8d3d01fa3498271ea54e3408a007e811cdbde846c6e1cb37c5c7d612ad",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "uvx",
+        "--from",
+        "/private$TASK_TOOLS/dist/amkernel-0.1.0-py3-none-any.whl",
+        "amkernel",
+        "doctor",
+        "--project",
+        "$TEMP_ROOT/project",
+        "--json"
+      ],
+      "cwd": "$TEMP_ROOT/project",
+      "exit": 1,
+      "stdoutSha256": "7c4a833697b46a4ad63992d5901e19eea1fbd86195798a7bc3815ccad9c4142d",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observedJson": {
+        "client": "copilot",
+        "detail": "run `amkernel install` to repair Runtime, Skill, or MCP drift",
+        "known_project_references": [],
+        "mcp_configured": true,
+        "notice": "Copilot loads project MCP servers only after you trust this project folder; confirm the trust prompt before treating the setup as ready.",
+        "project": "$TEMP_ROOT/project",
+        "references_truncated": false,
+        "restart_required": false,
+        "runtime_executable": "$TEMP_ROOT/bin/amkernel",
+        "runtime_installed": true,
+        "runtime_version": "0.1.0",
+        "skill_commit": "e907024c210fe024c956ed9c74146fc27b1dd013",
+        "skill_content_verified": false,
+        "skill_installed": true,
+        "skill_provenance": false,
+        "skill_version": "0.1.0"
+      }
+    },
+    {
+      "argv": [
+        "uvx",
+        "--from",
+        "/private$TASK_TOOLS/dist/amkernel-0.1.0-py3-none-any.whl",
+        "amkernel",
+        "install",
+        "--client",
+        "copilot",
+        "--project",
+        "$TEMP_ROOT/project",
+        "--scope",
+        "project",
+        "--yes",
+        "--json"
+      ],
+      "cwd": "$TEMP_ROOT/project",
+      "exit": 0,
+      "stdoutSha256": "55fa795cbd5411eb5b54c795b8f8944a958df428f27b17953b5f85ad3029766d",
+      "stderrSha256": "c5c36bd73e3e03b8b7cd6ffc626f6f49256746665ed7784248ccb843cdee06f6",
+      "observedJson": {
+        "client": "copilot",
+        "detail": null,
+        "known_project_references": [],
+        "mcp_configured": true,
+        "notice": "Copilot loads project MCP servers only after you trust this project folder; confirm the trust prompt before treating the setup as ready.",
+        "project": "$TEMP_ROOT/project",
+        "references_truncated": false,
+        "restart_required": true,
+        "runtime_executable": "$TEMP_ROOT/bin/amkernel",
+        "runtime_installed": true,
+        "runtime_version": "0.1.0",
+        "skill_commit": "e907024c210fe024c956ed9c74146fc27b1dd013",
+        "skill_content_verified": true,
+        "skill_installed": true,
+        "skill_provenance": true,
+        "skill_version": "0.1.0"
+      }
+    },
+    {
+      "argv": [
+        "uvx",
+        "--from",
+        "/private$TASK_TOOLS/dist/amkernel-0.1.0-py3-none-any.whl",
+        "amkernel",
+        "doctor",
+        "--project",
+        "$TEMP_ROOT/project",
+        "--json"
+      ],
+      "cwd": "$TEMP_ROOT/project",
+      "exit": 1,
+      "stdoutSha256": "7c4a833697b46a4ad63992d5901e19eea1fbd86195798a7bc3815ccad9c4142d",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observedJson": {
+        "client": "copilot",
+        "detail": "run `amkernel install` to repair Runtime, Skill, or MCP drift",
+        "known_project_references": [],
+        "mcp_configured": true,
+        "notice": "Copilot loads project MCP servers only after you trust this project folder; confirm the trust prompt before treating the setup as ready.",
+        "project": "$TEMP_ROOT/project",
+        "references_truncated": false,
+        "restart_required": false,
+        "runtime_executable": "$TEMP_ROOT/bin/amkernel",
+        "runtime_installed": true,
+        "runtime_version": "0.1.0",
+        "skill_commit": "e907024c210fe024c956ed9c74146fc27b1dd013",
+        "skill_content_verified": false,
+        "skill_installed": true,
+        "skill_provenance": false,
+        "skill_version": "0.1.0"
+      }
+    },
+    {
+      "argv": [
+        "uvx",
+        "--from",
+        "/private$TASK_TOOLS/dist/amkernel-0.1.0-py3-none-any.whl",
+        "amkernel",
+        "install",
+        "--client",
+        "copilot",
+        "--project",
+        "$TEMP_ROOT/project",
+        "--scope",
+        "project",
+        "--yes",
+        "--json"
+      ],
+      "cwd": "$TEMP_ROOT/project",
+      "exit": 0,
+      "stdoutSha256": "55fa795cbd5411eb5b54c795b8f8944a958df428f27b17953b5f85ad3029766d",
+      "stderrSha256": "c5c36bd73e3e03b8b7cd6ffc626f6f49256746665ed7784248ccb843cdee06f6",
+      "observedJson": {
+        "client": "copilot",
+        "detail": null,
+        "known_project_references": [],
+        "mcp_configured": true,
+        "notice": "Copilot loads project MCP servers only after you trust this project folder; confirm the trust prompt before treating the setup as ready.",
+        "project": "$TEMP_ROOT/project",
+        "references_truncated": false,
+        "restart_required": true,
+        "runtime_executable": "$TEMP_ROOT/bin/amkernel",
+        "runtime_installed": true,
+        "runtime_version": "0.1.0",
+        "skill_commit": "e907024c210fe024c956ed9c74146fc27b1dd013",
+        "skill_content_verified": true,
+        "skill_installed": true,
+        "skill_provenance": true,
+        "skill_version": "0.1.0"
+      }
+    },
+    {
+      "argv": [
+        "uvx",
+        "--from",
+        "/private$TASK_TOOLS/dist/amkernel-0.1.0-py3-none-any.whl",
+        "amkernel",
+        "install",
+        "--client",
+        "copilot",
+        "--project",
+        "$TEMP_ROOT/github-only",
+        "--scope",
+        "project",
+        "--yes",
+        "--json"
+      ],
+      "cwd": "$TEMP_ROOT/github-only",
+      "exit": 0,
+      "stdoutSha256": "813012b0fa3d0888056f301d62318cacf6fce268ca2f38f37eabb6e9986a75ac",
+      "stderrSha256": "1b749c7a6e82baa39310e32574371054188f0b4f8a75a422eff4b5f9c8842417",
+      "observedJson": {
+        "client": "copilot",
+        "detail": null,
+        "known_project_references": [],
+        "mcp_configured": true,
+        "notice": "Copilot loads project MCP servers only after you trust this project folder; confirm the trust prompt before treating the setup as ready.",
+        "project": "$TEMP_ROOT/github-only",
+        "references_truncated": false,
+        "restart_required": true,
+        "runtime_executable": "$TEMP_ROOT/bin/amkernel",
+        "runtime_installed": true,
+        "runtime_version": "0.1.0",
+        "skill_commit": "e907024c210fe024c956ed9c74146fc27b1dd013",
+        "skill_content_verified": true,
+        "skill_installed": true,
+        "skill_provenance": true,
+        "skill_version": "0.1.0"
+      }
+    },
+    {
+      "argv": [
+        "$TASK_TOOLS/node_modules/.bin/copilot",
+        "--no-auto-update",
+        "mcp",
+        "get",
+        "kept",
+        "--json"
+      ],
+      "cwd": "$TEMP_ROOT/github-only",
+      "exit": 0,
+      "stdoutSha256": "9e9aaefc326aa0c5fb0e749e3e2fecb7e14b7e8c9cc75ad1c762a6060cb8b93b",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observedJson": {
+        "kept": {
+          "tools": [
+            "*"
+          ],
+          "type": "stdio",
+          "command": "$HOME/Documents/FSQ_LAB/amkernel/.venv/bin/python3",
+          "args": [
+            "-c",
+            "pass"
+          ],
+          "source": "workspace",
+          "sourcePath": "$TEMP_ROOT/github-only/.github/mcp.json",
+          "enabled": true
+        }
+      }
+    },
+    {
+      "argv": [
+        "$TASK_TOOLS/node_modules/.bin/copilot",
+        "--no-auto-update",
+        "mcp",
+        "get",
+        "amkernel",
+        "--json"
+      ],
+      "cwd": "$TEMP_ROOT/github-only",
+      "exit": 0,
+      "stdoutSha256": "85bca2702fa114d38b2bcb7c05940879d9fb50871e9dd4fbce83ad0c46860ef9",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observedJson": {
+        "amkernel": {
+          "tools": [
+            "*"
+          ],
+          "type": "stdio",
+          "command": "$TEMP_ROOT/bin/amkernel",
+          "args": [],
+          "cwd": "$TEMP_ROOT/github-only",
+          "source": "workspace",
+          "sourcePath": "$TEMP_ROOT/github-only/.github/mcp.json",
+          "enabled": true
+        }
+      }
+    },
+    {
+      "argv": [
+        "uvx",
+        "--from",
+        "/private$TASK_TOOLS/dist/amkernel-0.1.0-py3-none-any.whl",
+        "amkernel",
+        "install",
+        "--client",
+        "copilot",
+        "--project",
+        "$TEMP_ROOT/both-present",
+        "--scope",
+        "project",
+        "--yes",
+        "--json"
+      ],
+      "cwd": "$TEMP_ROOT/both-present",
+      "exit": 0,
+      "stdoutSha256": "a10c13e9a4103a0a8cbe40a469cdf9a16a597b6e97fe246daf5ba0252ca1693d",
+      "stderrSha256": "619a20095f518291c2b5b27453502e94f4569ba8e4ffa5f0353956803a923ae4",
+      "observedJson": {
+        "client": "copilot",
+        "detail": null,
+        "known_project_references": [],
+        "mcp_configured": true,
+        "notice": "Copilot loads project MCP servers only after you trust this project folder; confirm the trust prompt before treating the setup as ready.",
+        "project": "$TEMP_ROOT/both-present",
+        "references_truncated": false,
+        "restart_required": true,
+        "runtime_executable": "$TEMP_ROOT/bin/amkernel",
+        "runtime_installed": true,
+        "runtime_version": "0.1.0",
+        "skill_commit": "e907024c210fe024c956ed9c74146fc27b1dd013",
+        "skill_content_verified": true,
+        "skill_installed": true,
+        "skill_provenance": true,
+        "skill_version": "0.1.0"
+      }
+    },
+    {
+      "argv": [
+        "$TASK_TOOLS/node_modules/.bin/copilot",
+        "--no-auto-update",
+        "mcp",
+        "get",
+        "kept",
+        "--json"
+      ],
+      "cwd": "$TEMP_ROOT/both-present",
+      "exit": 0,
+      "stdoutSha256": "daaecbe62c421132247f251605d066503f7f8e21fc48850c6fb0d782923e8ee2",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observedJson": {
+        "kept": {
+          "tools": [
+            "*"
+          ],
+          "type": "stdio",
+          "command": "$HOME/Documents/FSQ_LAB/amkernel/.venv/bin/python3",
+          "args": [
+            "-c",
+            "pass"
+          ],
+          "source": "workspace",
+          "sourcePath": "$TEMP_ROOT/both-present/.mcp.json",
+          "enabled": true
+        }
+      }
+    },
+    {
+      "argv": [
+        "$TASK_TOOLS/node_modules/.bin/copilot",
+        "--no-auto-update",
+        "mcp",
+        "get",
+        "amkernel",
+        "--json"
+      ],
+      "cwd": "$TEMP_ROOT/both-present",
+      "exit": 0,
+      "stdoutSha256": "a70c6e41eedd7d8e8a2f2ed3cf453a665b7ef4ee888425fbbf54eef9d659b42c",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observedJson": {
+        "amkernel": {
+          "tools": [
+            "*"
+          ],
+          "type": "stdio",
+          "command": "$TEMP_ROOT/bin/amkernel",
+          "args": [],
+          "cwd": "$TEMP_ROOT/both-present",
+          "source": "workspace",
+          "sourcePath": "$TEMP_ROOT/both-present/.mcp.json",
+          "enabled": true
+        }
+      }
+    }
+  ],
+  "limits": [
+    "Only task-generated nonce and integer probe data; no personal device or Appium session exercised.",
+    "Ephemeral installation paths normalized; output hashes provide integrity, not anonymity.",
+    "Runtime readiness is evidenced by successful observed python_exec results, not native config discovery alone."
+  ]
+}

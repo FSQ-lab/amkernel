@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "scope": "Read-only post-M1 desktop prerequisite observation; no unlocking or authentication attempted.",
+  "observedAt": "2026-11-03T03:28:59.179198+00:00",
+  "api": "CoreGraphics.CGSessionCopyCurrentDictionary",
+  "screenLocked": true,
+  "onConsole": true,
+  "loginDone": true,
+  "relatedEvidence": "mac2-m1-retry-20261103.json",
+  "relatedEvidenceSha256": "d7eb8a92f0ba07f19273ea65c9d3823594b7169c7daa62d76fa842ae0180b9de",
+  "duringRunFacts": {
+    "initialFrontmostBundleId": "com.apple.loginwindow",
+    "finalFrontmostBundleId": "com.apple.loginwindow",
+    "actualMac2Identity": true,
+    "allWindowQueriesEmpty": true,
+    "nativeCalls": 14,
+    "allObservedKernelStatesAlive": true,
+    "finalStatus": {
+      "taskOutcome": "blocked",
+      "stateRestoration": "restored",
+      "sessionCleanup": "cleaned",
+      "serverCleanup": "not-owned"
+    }
+  },
+  "limits": [
+    "The lock API was queried after the run; it does not establish lock duration or exclusive cause of every failed call.",
+    "The derived allKernelsObservedAlive check also depends on execution-history validity; its false value is not observed kernel death.",
+    "Original M1 and diagnostic evidence remain unchanged.",
+    "M2–M7 remain unexercised, gated on a qualified M1 and usable unlocked desktop."
+  ]
+}

@@ -1,0 +1,3086 @@
+{
+  "bootstrapInstall": {
+    "agentPlatformDependencyInstallation": "prohibited: no Java, Android SDK, Xcode, Appium driver, device profile, or platform service may be installed or changed by the Agent; missing platform prerequisites are reported as discovery facts",
+    "installedBeforeScenarios": {
+      "runtime_version": "0.1.0",
+      "skill_commit": "e907024c210fe024c956ed9c74146fc27b1dd013",
+      "skill_version": "0.1.0"
+    },
+    "performedBy": "harness preflight with the product installer",
+    "scope": "task-temporary isolated uv tool directory, client HOME, project, and per-scenario task-only MCP environment; the AMKernel wheel and its declared Runtime/Skill content are installed there only, and no environment change is persisted",
+    "verifiedBeforeScenarios": {
+      "commit": "e907024c210fe024c956ed9c74146fc27b1dd013",
+      "officialSkills": [
+        "setup-uiautomator2",
+        "setup-xcuitest",
+        "setup-mac2",
+        "xcuitest-real-device-config",
+        "appium-troubleshooting"
+      ],
+      "runtimeVersion": "0.1.0",
+      "sourceTreeSha256": "45fc0591ac419127aa2ae9418f08258cea2974ac90fc4fdcba299e04a369739c"
+    }
+  },
+  "client": {
+    "executableSha256": "9164c999c36e12cc95881d7f366696f8ca38d5e6fc3da0353f9e6b27c9981b26",
+    "version": "GitHub Copilot CLI 1.0.105.\nRun 'copilot update' to check for updates."
+  },
+  "completedAt": "2026-11-02T17:50:28.691756Z",
+  "externalState": {
+    "after": {
+      "activeXcodeSelect": "/Applications/Xcode.app/Contents/Developer",
+      "androidRepositoriesConfig": null,
+      "appiumPackageConfig": "286cbde80128640fa3b7b870e20b09923229478946a1df4d9e03631bcb9ebbea",
+      "shellProfiles": {
+        ".bash_profile": null,
+        ".bashrc": null,
+        ".profile": null,
+        ".zprofile": null,
+        ".zshrc": "8b66f84c11d49c4dc2182bacfbff400f8c6b28d5458dc1fdf90efb3363313b59"
+      }
+    },
+    "before": {
+      "activeXcodeSelect": "/Applications/Xcode.app/Contents/Developer",
+      "androidRepositoriesConfig": null,
+      "appiumPackageConfig": "286cbde80128640fa3b7b870e20b09923229478946a1df4d9e03631bcb9ebbea",
+      "shellProfiles": {
+        ".bash_profile": null,
+        ".bashrc": null,
+        ".profile": null,
+        ".zprofile": null,
+        ".zshrc": "8b66f84c11d49c4dc2182bacfbff400f8c6b28d5458dc1fdf90efb3363313b59"
+      }
+    },
+    "checked": true,
+    "unchanged": true
+  },
+  "isolation": {
+    "after": {
+      "copilotConfig": "14c648f7d34cdeb934a4cc3997766ddb6c230824147f5d28da35028444af30cd",
+      "copilotMcpConfig": null,
+      "copilotSettings": null,
+      "userAgentsSkills": null
+    },
+    "before": {
+      "copilotConfig": "14c648f7d34cdeb934a4cc3997766ddb6c230824147f5d28da35028444af30cd",
+      "copilotMcpConfig": null,
+      "copilotSettings": null,
+      "userAgentsSkills": null
+    },
+    "unchanged": true
+  },
+  "issue": 106,
+  "limitations": [
+    "Synthetic fixture candidates and Apple inventories are simulated facts.",
+    "The actual-host case performs read-only discovery only; it does not qualify a device, simulator, driver, or session readiness.",
+    "No dependency installation, profile edit, global xcode-select change, device trust, service start, or Appium session is authorized.",
+    "The harness does not modify or clean external host resources and makes no external cleanup claim.",
+    "External host config, shell-profile, and active xcode-selection state are compared only when the host scenario is selected.",
+    "The actual-host MCP process receives a task-scoped real-HOME/PATH environment so installed host tools remain visible; client HOME remains isolated and no shell profile or global environment is edited.",
+    "Actual-host Java, Apple, and readiness facts are derived from the task-owned read-only probe journal, not the final prose or a second model self-report.",
+    "Final report JSON is cross-checked against native tool events, python_exec outputs, the fixture journal, and the host probe journal; wording is not graded.",
+    "No raw Copilot transcript, executable Python code, device serial, UDID, or full inventory is retained."
+  ],
+  "model": "gpt-6.1-sol",
+  "nativeEvidence": {
+    "clientConfig": {
+      "allowedHostPaths": [
+        "$HOME",
+        "/Applications",
+        "/Library/Java",
+        "/opt/homebrew",
+        "/usr/local",
+        "/usr/libexec",
+        "/usr/bin"
+      ],
+      "scope": "isolated client HOME; task-only host read paths"
+    },
+    "install": {
+      "runtime_version": "0.1.0",
+      "skill_commit": "e907024c210fe024c956ed9c74146fc27b1dd013",
+      "skill_version": "0.1.0"
+    },
+    "installStatus": {
+      "client": "copilot",
+      "mcp_configured": true,
+      "project": "$TEMP_ROOT/project",
+      "restart_required": true,
+      "runtime_executable": "$TEMP_ROOT/bin/amkernel",
+      "runtime_installed": true,
+      "runtime_version": "0.1.0",
+      "skill_commit": "e907024c210fe024c956ed9c74146fc27b1dd013",
+      "skill_content_verified": true,
+      "skill_installed": true,
+      "skill_provenance": true,
+      "skill_version": "0.1.0"
+    },
+    "nativeDiscovery": {
+      "archive": {
+        "path": "references/appium-skills-e907024c210fe024c956ed9c74146fc27b1dd013.tar.gz",
+        "sha256": "9ce21bc92e94614fd65cf932e7951d07e40b0ce4749403479000b99b7d8b8bd2"
+      },
+      "mcp": {
+        "cwd": "$TEMP_ROOT/project",
+        "enabled": true,
+        "source": "workspace",
+        "sourcePath": "$TEMP_ROOT/project/.mcp.json",
+        "tools": [
+          "*"
+        ]
+      },
+      "runtimeVersion": "0.1.0",
+      "skillFiles": {
+        "appium-troubleshooting": {
+          "fileCount": 1,
+          "treeSha256": "b112f189759102011a067207f17ff33ca77643ca71468ce17babd082b6c90f91"
+        },
+        "setup-mac2": {
+          "fileCount": 2,
+          "treeSha256": "963d83563b672f78c955517d2ced3c65ae80cc4a7f9a287eee267da1084ca3b6"
+        },
+        "setup-uiautomator2": {
+          "fileCount": 2,
+          "treeSha256": "9fd8898cbccbf6868468908aabbaf6720dc7cfd2446a6daec2eef8b7e51fad39"
+        },
+        "setup-xcuitest": {
+          "fileCount": 2,
+          "treeSha256": "227b512c48042ccd50bd33395dcb9de824a78e5a355dd0ed9a094aea20ea1bb0"
+        },
+        "xcuitest-real-device-config": {
+          "fileCount": 1,
+          "treeSha256": "0499102e06733d24a6f4659c5fa6db8ae17bfa9a44dca761925a533efe2dc82e"
+        }
+      },
+      "skills": [
+        {
+          "name": "amkernel",
+          "source": "project"
+        },
+        {
+          "name": "setup-uiautomator2",
+          "source": "project"
+        },
+        {
+          "name": "setup-xcuitest",
+          "source": "project"
+        },
+        {
+          "name": "setup-mac2",
+          "source": "project"
+        },
+        {
+          "name": "xcuitest-real-device-config",
+          "source": "project"
+        },
+        {
+          "name": "appium-troubleshooting",
+          "source": "project"
+        }
+      ],
+      "sourceCommit": "e907024c210fe024c956ed9c74146fc27b1dd013",
+      "sourceFileCount": 134,
+      "sourcePath": ".agents/vendor/appium-skills/e907024c210fe024c956ed9c74146fc27b1dd013",
+      "sourceRepository": "https://github.com/appium/skills",
+      "sourceTreeSha256": "45fc0591ac419127aa2ae9418f08258cea2974ac90fc4fdcba299e04a369739c"
+    },
+    "verified": {
+      "commit": "e907024c210fe024c956ed9c74146fc27b1dd013",
+      "officialSkills": [
+        "setup-uiautomator2",
+        "setup-xcuitest",
+        "setup-mac2",
+        "xcuitest-real-device-config",
+        "appium-troubleshooting"
+      ],
+      "runtimeVersion": "0.1.0",
+      "sourceTreeSha256": "45fc0591ac419127aa2ae9418f08258cea2974ac90fc4fdcba299e04a369739c"
+    },
+    "verifierExecution": {
+      "environment": "installed-runtime",
+      "python": "$HOME/.local/share/uv/python/cpython-3.11.16-macos-aarch64-none/bin/python3.11",
+      "scope": "content/provenance verification; not installed-runtime behavior evidence"
+    }
+  },
+  "preflight": {
+    "checks": [
+      {
+        "detail": "GitHub Copilot CLI 1.0.105.\nRun 'copilot update' to check for updates.",
+        "id": "client-identity",
+        "ok": true
+      },
+      {
+        "detail": "uvx is required",
+        "id": "uvx-present",
+        "ok": true
+      },
+      {
+        "detail": "/tmp/amkernel-remediation-tools/dist/amkernel-0.1.0-py3-none-any.whl",
+        "id": "wheel-present",
+        "ok": true
+      },
+      {
+        "detail": "Copilot token is available in memory only.",
+        "id": "token-present",
+        "ok": true
+      },
+      {
+        "detail": "Temporary project is outside the AMKernel repository.",
+        "id": "not-development-project",
+        "ok": true
+      },
+      {
+        "detail": "Installer and post-install status are healthy.",
+        "id": "product-install",
+        "ok": true
+      },
+      {
+        "detail": "Verified e907024c210fe024c956ed9c74146fc27b1dd013 and 5 official Skills.",
+        "id": "installed-provenance-and-content",
+        "ok": true
+      }
+    ],
+    "ok": true
+  },
+  "scenarios": [
+    {
+      "checks": [
+        {
+          "detail": "Copilot exit=0, timedOut=False",
+          "id": "process-finished",
+          "ok": true
+        },
+        {
+          "detail": "Final assistant response contained a parseable JSON report.",
+          "id": "final-json-present",
+          "ok": true
+        },
+        {
+          "detail": "scope/platformEvidence='actual-host-read-only'/'actual-host-discovery-only'",
+          "id": "final-scope",
+          "ok": true
+        },
+        {
+          "detail": "Final report controls match the prompted shape.",
+          "evidence": [],
+          "id": "final-report-shape",
+          "ok": true
+        },
+        {
+          "detail": "Discovery completed, blocked, or requested approval instead of failing itself.",
+          "id": "discovery-not-declared-failed",
+          "ok": true
+        },
+        {
+          "detail": "Successful amkernel skill loads: 1",
+          "id": "installed-amkernel-skill-loaded",
+          "ok": true
+        },
+        {
+          "detail": "Workspace MCP servers: amkernel:connected",
+          "id": "one-workspace-mcp-server",
+          "ok": true
+        },
+        {
+          "detail": "All MCP calls resolved to workspace amkernel/python_exec.",
+          "id": "mcp-calls-resolve-to-python-exec",
+          "ok": true
+        },
+        {
+          "detail": "Only skill/view and amkernel python_exec tools were executed.",
+          "id": "no-shell-write-other-tools",
+          "ok": true
+        },
+        {
+          "detail": "Completed python_exec calls with a live kernel: 1",
+          "id": "python-exec-completed",
+          "ok": true
+        },
+        {
+          "detail": "Observed kernel states: alive",
+          "id": "no-kernel-death",
+          "ok": true
+        },
+        {
+          "detail": "No python_exec requested dependency packages.",
+          "id": "no-package-installs",
+          "ok": true
+        },
+        {
+          "detail": "python_exec output observations retained: 1",
+          "id": "execution-evidence-captured",
+          "ok": true
+        },
+        {
+          "detail": "The task-owned probe journal independently supports every host claim.",
+          "evidence": [],
+          "id": "probe-journal-backed-discovery",
+          "ok": true
+        },
+        {
+          "detail": "Physical layers remain unknown where target-specific evidence is absent.",
+          "evidence": [],
+          "id": "physical-layers-no-overclaim",
+          "ok": true
+        },
+        {
+          "detail": "Simulator/runtime counts preserve unknown states.",
+          "evidence": [],
+          "id": "simulator-counts-no-overclaim",
+          "ok": true
+        },
+        {
+          "detail": "No new ADB daemon, Appium, or WebDriverAgent process was observed.",
+          "evidence": {
+            "after": {
+              "adbServer": 0,
+              "appium": 0,
+              "webdriverAgent": 0,
+              "xcodebuild": 0
+            },
+            "before": {
+              "adbServer": 0,
+              "appium": 0,
+              "webdriverAgent": 0,
+              "xcodebuild": 0
+            }
+          },
+          "id": "no-adb-daemon-or-session-service-startup",
+          "ok": true
+        },
+        {
+          "detail": "Host discovery claims no session or persistent environment change.",
+          "id": "read-only-no-session-no-persistence",
+          "ok": true
+        }
+      ],
+      "clientHomeIsolated": true,
+      "completedAt": "2026-11-02T17:48:27.793955Z",
+      "durationMs": 16521,
+      "executionObservations": [
+        {
+          "callIndex": 2,
+          "durationMs": 295,
+          "errorType": null,
+          "executionCount": 1,
+          "factObjects": [
+            {
+              "javaCandidates": [
+                {
+                  "eligible": false,
+                  "executable": "/usr/bin/java",
+                  "executed": true,
+                  "exists": true,
+                  "exitCode": 1,
+                  "javaHome": null,
+                  "major": null,
+                  "origin": "PATH",
+                  "version": null
+                },
+                {
+                  "executable": "/Applications/Android Studio.app/Contents/jbr/Contents/Home/bin/java",
+                  "executed": false,
+                  "exists": false,
+                  "exitCode": null,
+                  "origin": "Android Studio JBR"
+                },
+                {
+                  "executable": "$HOME/Applications/Android Studio.app/Contents/jbr/Contents/Home/bin/java",
+                  "executed": false,
+                  "exists": false,
+                  "exitCode": null,
+                  "origin": "Android Studio JBR"
+                }
+              ],
+              "physical": {
+                "connected": 0,
+                "connectedUnknown": false,
+                "discovered": 0,
+                "discoveredUnknown": false
+              },
+              "runtimeHome": "$HOME",
+              "runtimePython": "$TEMP_ROOT/tools/amkernel/bin/python",
+              "simulators": {
+                "discovered": 0,
+                "discoveredUnknown": false,
+                "runtimeCount": 0,
+                "runtimeCountUnknown": false
+              }
+            }
+          ],
+          "kernelState": "alive",
+          "outputTruncated": false,
+          "runtime": {
+            "environmentKind": "active_venv",
+            "executable": "$TEMP_ROOT/tools/amkernel/bin/python",
+            "implementation": "CPython",
+            "platform": "macOS-26.6.2-arm64-arm-64bit",
+            "pythonVersion": "3.11.16",
+            "workingDirectory": "$TEMP_ROOT/project"
+          },
+          "status": "completed",
+          "stderrBytes": 0,
+          "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdoutBytes": 1138,
+          "stdoutLineCount": 2,
+          "stdoutSha256": "a75523619759976a3edda8d0185a97f2d0988d42ee8515b3721b8c9aca72223c"
+        }
+      ],
+      "finalJson": {
+        "approvalRequired": false,
+        "environmentPersisted": false,
+        "javaCandidates": [
+          {
+            "eligible": false,
+            "executable": "/usr/bin/java",
+            "executed": true,
+            "exists": true,
+            "exitCode": 1,
+            "javaHome": null,
+            "major": null,
+            "origin": "PATH",
+            "version": null
+          },
+          {
+            "eligible": false,
+            "executable": "/Applications/Android Studio.app/Contents/jbr/Contents/Home/bin/java",
+            "executed": false,
+            "exists": false,
+            "exitCode": null,
+            "javaHome": null,
+            "major": null,
+            "origin": "Android Studio JBR",
+            "version": null
+          },
+          {
+            "eligible": false,
+            "executable": "$HOME/Applications/Android Studio.app/Contents/jbr/Contents/Home/bin/java",
+            "executed": false,
+            "exists": false,
+            "exitCode": null,
+            "javaHome": null,
+            "major": null,
+            "origin": "Android Studio JBR",
+            "version": null
+          }
+        ],
+        "kernelState": "alive",
+        "physical": {
+          "connected": 0,
+          "connectedUnknown": false,
+          "discovered": 0,
+          "discoveredUnknown": false,
+          "readyForXcuitest": null,
+          "readyForXcuitestUnknown": true,
+          "usableForDevelopment": null,
+          "usableForDevelopmentUnknown": true
+        },
+        "platformEvidence": "actual-host-discovery-only",
+        "scope": "actual-host-read-only",
+        "selectedJava": {
+          "executable": null,
+          "reason": "No candidate exists and executed successfully with Java major >= 21; PATH Java exited with code 1 and both Android Studio candidates were absent."
+        },
+        "sessionStarted": false,
+        "simulators": {
+          "discovered": 0,
+          "discoveredUnknown": false,
+          "runtimeCount": 0,
+          "runtimeCountUnknown": false
+        },
+        "taskOutcome": "completed"
+      },
+      "finalResponseBytes": 1729,
+      "finalResponseSha256": "cea557b2154de1be4006a7b2d29470bbcf08ccfe84209c0b4de31adef352f1e4",
+      "id": "host",
+      "mcpEnvironmentKeys": [
+        "HOME",
+        "PATH"
+      ],
+      "mcpServers": [
+        {
+          "name": "WorkIQ",
+          "source": null,
+          "status": "disabled"
+        },
+        {
+          "name": "amkernel",
+          "source": "workspace",
+          "status": "connected"
+        },
+        {
+          "name": "browser-use",
+          "source": null,
+          "status": "disabled"
+        },
+        {
+          "name": "github-copilot-browser",
+          "source": null,
+          "status": "disabled"
+        },
+        {
+          "name": "github-mcp-server",
+          "source": "builtin",
+          "status": "disabled"
+        },
+        {
+          "name": "githubiq",
+          "source": null,
+          "status": "disabled"
+        }
+      ],
+      "observed": {
+        "kernelStates": [
+          "alive"
+        ],
+        "mcp": [
+          {
+            "name": "WorkIQ",
+            "source": null,
+            "status": "disabled"
+          },
+          {
+            "name": "amkernel",
+            "source": "workspace",
+            "status": "connected"
+          },
+          {
+            "name": "browser-use",
+            "source": null,
+            "status": "disabled"
+          },
+          {
+            "name": "github-copilot-browser",
+            "source": null,
+            "status": "disabled"
+          },
+          {
+            "name": "github-mcp-server",
+            "source": "builtin",
+            "status": "disabled"
+          },
+          {
+            "name": "githubiq",
+            "source": null,
+            "status": "disabled"
+          }
+        ],
+        "pythonCallStatuses": [
+          {
+            "index": 2,
+            "kernelState": "alive",
+            "status": "completed"
+          }
+        ]
+      },
+      "platformEvidence": "actual-host-discovery-only",
+      "probe": {
+        "journalEntries": 12,
+        "name": "discovery_probe.py"
+      },
+      "probeJournal": [
+        {
+          "event": "probe-start",
+          "home": "$HOME",
+          "probeVersion": 1,
+          "python": "$TEMP_ROOT/tools/amkernel/bin/python"
+        },
+        {
+          "argv": [
+            "/usr/libexec/java_home",
+            "-V"
+          ],
+          "event": "command",
+          "exitCode": 1,
+          "facts": {
+            "errorClass": null,
+            "registeredHomes": []
+          },
+          "kind": "java-inventory"
+        },
+        {
+          "event": "inventory",
+          "facts": {
+            "candidates": [
+              {
+                "executable": "/usr/bin/java",
+                "exists": true,
+                "origin": "PATH"
+              },
+              {
+                "executable": "/Applications/Android Studio.app/Contents/jbr/Contents/Home/bin/java",
+                "exists": false,
+                "origin": "Android Studio JBR"
+              },
+              {
+                "executable": "$HOME/Applications/Android Studio.app/Contents/jbr/Contents/Home/bin/java",
+                "exists": false,
+                "origin": "Android Studio JBR"
+              }
+            ],
+            "registeredHomes": []
+          },
+          "kind": "java-inventory"
+        },
+        {
+          "argv": [
+            "/usr/bin/java",
+            "-XshowSettings:properties",
+            "-version"
+          ],
+          "event": "command",
+          "executable": "/usr/bin/java",
+          "exitCode": 1,
+          "facts": {
+            "eligible": false,
+            "executed": true,
+            "exitCode": 1,
+            "javaHome": null,
+            "major": null,
+            "version": null
+          },
+          "kind": "java-verify",
+          "origin": "PATH"
+        },
+        {
+          "event": "candidate",
+          "executable": "/Applications/Android Studio.app/Contents/jbr/Contents/Home/bin/java",
+          "executed": false,
+          "exists": false,
+          "kind": "java-verify",
+          "origin": "Android Studio JBR"
+        },
+        {
+          "event": "candidate",
+          "executable": "$HOME/Applications/Android Studio.app/Contents/jbr/Contents/Home/bin/java",
+          "executed": false,
+          "exists": false,
+          "kind": "java-verify",
+          "origin": "Android Studio JBR"
+        },
+        {
+          "argv": [
+            "xcode-select",
+            "-p"
+          ],
+          "event": "command",
+          "exitCode": 0,
+          "facts": {
+            "path": "/Applications/Xcode.app/Contents/Developer"
+          },
+          "kind": "xcode-select"
+        },
+        {
+          "argv": [
+            "xcodebuild",
+            "-version"
+          ],
+          "event": "command",
+          "exitCode": 0,
+          "facts": {
+            "version": "Xcode 27.2"
+          },
+          "kind": "xcodebuild-version"
+        },
+        {
+          "argv": [
+            "/usr/bin/xcrun",
+            "devicectl",
+            "list",
+            "devices",
+            "--json-output",
+            "$TEMP_ROOT/tmp/amkernel-devicectl-f_zp5njb/devices.json"
+          ],
+          "event": "command",
+          "exitCode": 0,
+          "facts": {
+            "connected": 0,
+            "connectedUnknown": false,
+            "discovered": 0,
+            "discoveredUnknown": false
+          },
+          "kind": "apple-physical"
+        },
+        {
+          "argv": [
+            "/usr/bin/xcrun",
+            "simctl",
+            "list",
+            "devices",
+            "--json"
+          ],
+          "event": "command",
+          "exitCode": 0,
+          "facts": {
+            "discovered": 0,
+            "discoveredUnknown": false
+          },
+          "kind": "apple-simulators"
+        },
+        {
+          "argv": [
+            "/usr/bin/xcrun",
+            "simctl",
+            "list",
+            "runtimes",
+            "--json"
+          ],
+          "event": "command",
+          "exitCode": 0,
+          "facts": {
+            "runtimeCount": 0,
+            "runtimeCountUnknown": false
+          },
+          "kind": "apple-runtimes"
+        },
+        {
+          "event": "summary",
+          "facts": {
+            "android": {
+              "adbPresent": false,
+              "connected": null,
+              "devices": null,
+              "serverObserved": false,
+              "unknown": true
+            },
+            "javaCandidates": [
+              {
+                "eligible": false,
+                "executable": "/usr/bin/java",
+                "executed": true,
+                "exists": true,
+                "exitCode": 1,
+                "javaHome": null,
+                "major": null,
+                "origin": "PATH",
+                "version": null
+              },
+              {
+                "executable": "/Applications/Android Studio.app/Contents/jbr/Contents/Home/bin/java",
+                "executed": false,
+                "exists": false,
+                "exitCode": null,
+                "origin": "Android Studio JBR"
+              },
+              {
+                "executable": "$HOME/Applications/Android Studio.app/Contents/jbr/Contents/Home/bin/java",
+                "executed": false,
+                "exists": false,
+                "exitCode": null,
+                "origin": "Android Studio JBR"
+              }
+            ],
+            "physical": {
+              "connected": 0,
+              "connectedUnknown": false,
+              "discovered": 0,
+              "discoveredUnknown": false
+            },
+            "runtimeHome": "$HOME",
+            "runtimePython": "$TEMP_ROOT/tools/amkernel/bin/python",
+            "simulators": {
+              "discovered": 0,
+              "discoveredUnknown": false,
+              "runtimeCount": 0,
+              "runtimeCountUnknown": false
+            },
+            "tools": {
+              "xcodeSelect": "/Applications/Xcode.app/Contents/Developer",
+              "xcodebuild": "Xcode 27.2"
+            }
+          }
+        }
+      ],
+      "process": {
+        "durationMs": 16474,
+        "eventCount": 650,
+        "exitCode": 0,
+        "malformedEventLines": 0,
+        "runnerCleanup": [
+          {
+            "observedExit": true,
+            "reason": "process-exit",
+            "runnerPid": 28428
+          }
+        ],
+        "timedOut": false
+      },
+      "promptBytes": 3641,
+      "promptSha256": "06c2c5085f6e974284efcbb4d1d377810bd479c611d67be3c3666155254b3e7c",
+      "scope": "actual-host-read-only",
+      "selectionEvidence": {
+        "expectedJava": null,
+        "expectedMatch": true,
+        "minimumJavaMajor": 21,
+        "probeCommands": [
+          "java-inventory",
+          "java-verify",
+          "xcode-select",
+          "xcodebuild-version",
+          "apple-physical",
+          "apple-simulators",
+          "apple-runtimes"
+        ],
+        "probeSummary": {
+          "android": {
+            "adbPresent": false,
+            "connected": null,
+            "devices": null,
+            "serverObserved": false,
+            "unknown": true
+          },
+          "javaCandidates": [
+            {
+              "eligible": false,
+              "executable": "/usr/bin/java",
+              "executed": true,
+              "exists": true,
+              "exitCode": 1,
+              "javaHome": null,
+              "major": null,
+              "origin": "PATH",
+              "version": null
+            },
+            {
+              "executable": "/Applications/Android Studio.app/Contents/jbr/Contents/Home/bin/java",
+              "executed": false,
+              "exists": false,
+              "exitCode": null,
+              "origin": "Android Studio JBR"
+            },
+            {
+              "executable": "$HOME/Applications/Android Studio.app/Contents/jbr/Contents/Home/bin/java",
+              "executed": false,
+              "exists": false,
+              "exitCode": null,
+              "origin": "Android Studio JBR"
+            }
+          ],
+          "physical": {
+            "connected": 0,
+            "connectedUnknown": false,
+            "discovered": 0,
+            "discoveredUnknown": false
+          },
+          "runtimeHome": "$HOME",
+          "runtimePython": "$TEMP_ROOT/tools/amkernel/bin/python",
+          "simulators": {
+            "discovered": 0,
+            "discoveredUnknown": false,
+            "runtimeCount": 0,
+            "runtimeCountUnknown": false
+          },
+          "tools": {
+            "xcodeSelect": "/Applications/Xcode.app/Contents/Developer",
+            "xcodebuild": "Xcode 27.2"
+          }
+        },
+        "reportedJava": null
+      },
+      "serviceProcesses": {
+        "after": {
+          "adbServer": 0,
+          "appium": 0,
+          "webdriverAgent": 0,
+          "xcodebuild": 0
+        },
+        "before": {
+          "adbServer": 0,
+          "appium": 0,
+          "webdriverAgent": 0,
+          "xcodebuild": 0
+        }
+      },
+      "startedAt": "2026-11-02T17:48:11.272490Z",
+      "status": "passed",
+      "stderr": "",
+      "title": "read-only discovery of the actual macOS host",
+      "toolCalls": [
+        {
+          "arguments": {
+            "keys": [
+              "skill"
+            ],
+            "skill": "amkernel"
+          },
+          "completedAt": "2026-11-02T17:48:18.862Z",
+          "index": 1,
+          "startedAt": "2026-11-02T17:48:18.860Z",
+          "success": true,
+          "toolName": "skill"
+        },
+        {
+          "arguments": {
+            "keys": [
+              "codeBytes",
+              "codeSha256"
+            ]
+          },
+          "completedAt": "2026-11-02T17:48:21.641Z",
+          "executionCount": 1,
+          "executionObservation": {
+            "durationMs": 295,
+            "errorType": null,
+            "executionCount": 1,
+            "factObjects": [
+              {
+                "javaCandidates": [
+                  {
+                    "eligible": false,
+                    "executable": "/usr/bin/java",
+                    "executed": true,
+                    "exists": true,
+                    "exitCode": 1,
+                    "javaHome": null,
+                    "major": null,
+                    "origin": "PATH",
+                    "version": null
+                  },
+                  {
+                    "executable": "/Applications/Android Studio.app/Contents/jbr/Contents/Home/bin/java",
+                    "executed": false,
+                    "exists": false,
+                    "exitCode": null,
+                    "origin": "Android Studio JBR"
+                  },
+                  {
+                    "executable": "$HOME/Applications/Android Studio.app/Contents/jbr/Contents/Home/bin/java",
+                    "executed": false,
+                    "exists": false,
+                    "exitCode": null,
+                    "origin": "Android Studio JBR"
+                  }
+                ],
+                "physical": {
+                  "connected": 0,
+                  "connectedUnknown": false,
+                  "discovered": 0,
+                  "discoveredUnknown": false
+                },
+                "runtimeHome": "$HOME",
+                "runtimePython": "$TEMP_ROOT/tools/amkernel/bin/python",
+                "simulators": {
+                  "discovered": 0,
+                  "discoveredUnknown": false,
+                  "runtimeCount": 0,
+                  "runtimeCountUnknown": false
+                }
+              }
+            ],
+            "kernelState": "alive",
+            "outputTruncated": false,
+            "runtime": {
+              "environmentKind": "active_venv",
+              "executable": "$TEMP_ROOT/tools/amkernel/bin/python",
+              "implementation": "CPython",
+              "platform": "macOS-26.6.2-arm64-arm-64bit",
+              "pythonVersion": "3.11.16",
+              "workingDirectory": "$TEMP_ROOT/project"
+            },
+            "status": "completed",
+            "stderrBytes": 0,
+            "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdoutBytes": 1138,
+            "stdoutLineCount": 2,
+            "stdoutSha256": "a75523619759976a3edda8d0185a97f2d0988d42ee8515b3721b8c9aca72223c"
+          },
+          "index": 2,
+          "kernelState": "alive",
+          "mcpConfigServerName": "amkernel",
+          "mcpConfigSource": "workspace",
+          "mcpServerName": "amkernel",
+          "mcpToolName": "python_exec",
+          "mcpTransport": "stdio",
+          "observedStatus": "completed",
+          "outputTruncated": false,
+          "startedAt": "2026-11-02T17:48:21.277Z",
+          "success": true,
+          "toolName": "amkernel-python_exec"
+        }
+      ]
+    },
+    {
+      "checks": [
+        {
+          "detail": "Copilot exit=0, timedOut=False",
+          "id": "process-finished",
+          "ok": true
+        },
+        {
+          "detail": "Final assistant response contained a parseable JSON report.",
+          "id": "final-json-present",
+          "ok": true
+        },
+        {
+          "detail": "scope/platformEvidence='synthetic-fixture'/'synthetic-fixture'",
+          "id": "final-scope",
+          "ok": true
+        },
+        {
+          "detail": "Final report controls match the prompted shape.",
+          "evidence": [],
+          "id": "final-report-shape",
+          "ok": true
+        },
+        {
+          "detail": "Discovery completed, blocked, or requested approval instead of failing itself.",
+          "id": "discovery-not-declared-failed",
+          "ok": true
+        },
+        {
+          "detail": "Successful amkernel skill loads: 1",
+          "id": "installed-amkernel-skill-loaded",
+          "ok": true
+        },
+        {
+          "detail": "Workspace MCP servers: amkernel:connected",
+          "id": "one-workspace-mcp-server",
+          "ok": true
+        },
+        {
+          "detail": "All MCP calls resolved to workspace amkernel/python_exec.",
+          "id": "mcp-calls-resolve-to-python-exec",
+          "ok": true
+        },
+        {
+          "detail": "Only skill/view and amkernel python_exec tools were executed.",
+          "id": "no-shell-write-other-tools",
+          "ok": true
+        },
+        {
+          "detail": "Completed python_exec calls with a live kernel: 1",
+          "id": "python-exec-completed",
+          "ok": true
+        },
+        {
+          "detail": "Observed kernel states: alive",
+          "id": "no-kernel-death",
+          "ok": true
+        },
+        {
+          "detail": "No python_exec requested dependency packages.",
+          "id": "no-package-installs",
+          "ok": true
+        },
+        {
+          "detail": "python_exec output observations retained: 1",
+          "id": "execution-evidence-captured",
+          "ok": true
+        },
+        {
+          "detail": "Every required discovery capability has independently observed execution.",
+          "evidence": [],
+          "id": "discovery-capabilities-executed",
+          "ok": true
+        },
+        {
+          "detail": "Apple physical, simulator, and runtime inventories were separate commands.",
+          "id": "apple-physical-and-simulators-separate",
+          "ok": true
+        },
+        {
+          "detail": "Physical and simulator inventories used distinct commands.",
+          "id": "physical-command-not-simulator-command",
+          "ok": true
+        },
+        {
+          "detail": "Journal contains only supplied discovery commands.",
+          "evidence": [],
+          "id": "only-read-only-discovery-commands",
+          "ok": true
+        },
+        {
+          "detail": "Every reported candidate matches the discovered inventory, including absences.",
+          "id": "candidate-facts-present",
+          "ok": true
+        },
+        {
+          "detail": "selectedJava=$TEMP_ROOT/fixtures/prefer-explicit/host/jdks/explicit-primary/bin/java, expected=$TEMP_ROOT/fixtures/prefer-explicit/host/jdks/explicit-primary/bin/java",
+          "id": "selected-java-expected",
+          "ok": true
+        },
+        {
+          "detail": "Selected candidate was executed successfully and meets the driver minimum.",
+          "id": "selected-java-executed",
+          "ok": true
+        },
+        {
+          "detail": "Earlier candidates were actually rejected by execution or the Java minimum.",
+          "id": "selection-rejects-earlier-or-ineligible-candidates",
+          "ok": true
+        },
+        {
+          "detail": "Every existing Java candidate was executed and its actual exit code reported.",
+          "id": "all-existing-java-candidates-executed",
+          "ok": true
+        },
+        {
+          "detail": "Physical layers match the synthetic listing and remain unknown below connection.",
+          "id": "physical-layers-truthful",
+          "ok": true
+        },
+        {
+          "detail": "Simulator/runtime counts match the separate synthetic inventories.",
+          "id": "simulator-runtime-counts-truthful",
+          "ok": true
+        },
+        {
+          "detail": "Actual python_exec output facts cover every existing candidate and Apple counts.",
+          "id": "python-output-candidate-execution",
+          "ok": true
+        },
+        {
+          "detail": "Synthetic discovery made no session, install, or persistence claim.",
+          "id": "read-only-no-session-no-persistence",
+          "ok": true
+        }
+      ],
+      "clientHomeIsolated": true,
+      "completedAt": "2026-11-02T17:49:04.332000Z",
+      "durationMs": 36537,
+      "executionObservations": [
+        {
+          "callIndex": 3,
+          "durationMs": 2645,
+          "errorType": null,
+          "executionCount": 1,
+          "factObjects": [
+            {
+              "approvalRequired": false,
+              "javaCandidates": [
+                {
+                  "eligible": true,
+                  "executable": "$TEMP_ROOT/fixtures/prefer-explicit/host/jdks/explicit-primary/bin/java",
+                  "executed": true,
+                  "exists": true,
+                  "exitCode": 0,
+                  "javaHome": "$TEMP_ROOT/fixtures/prefer-explicit/host/jdks/explicit-primary",
+                  "major": 21,
+                  "origin": "JAVA_HOME",
+                  "version": "21.0.6"
+                },
+                {
+                  "eligible": false,
+                  "executable": "$TEMP_ROOT/fixtures/prefer-explicit/tools/java",
+                  "executed": true,
+                  "exists": true,
+                  "exitCode": 0,
+                  "javaHome": "$TEMP_ROOT/fixtures/prefer-explicit/tools",
+                  "major": 17,
+                  "origin": "PATH",
+                  "version": "17.0.15"
+                },
+                {
+                  "eligible": false,
+                  "executable": "$TEMP_ROOT/fixtures/prefer-explicit/host/Library/Java/JavaVirtualMachines/registered-primary.jdk/Contents/Home/bin/java",
+                  "executed": true,
+                  "exists": true,
+                  "exitCode": 0,
+                  "javaHome": "$TEMP_ROOT/fixtures/prefer-explicit/host/Library/Java/JavaVirtualMachines/registered-primary.jdk/Contents/Home",
+                  "major": 11,
+                  "origin": "java_home -V",
+                  "version": "11.0.27"
+                },
+                {
+                  "eligible": true,
+                  "executable": "$TEMP_ROOT/fixtures/prefer-explicit/host/Applications/Android Studio.app/Contents/jbr/Contents/Home/bin/java",
+                  "executed": true,
+                  "exists": true,
+                  "exitCode": 0,
+                  "javaHome": "$TEMP_ROOT/fixtures/prefer-explicit/host/Applications/Android Studio.app/Contents/jbr/Contents/Home",
+                  "major": 21,
+                  "origin": "Android Studio JBR",
+                  "version": "21.0.6"
+                }
+              ],
+              "physical": {
+                "connected": 1,
+                "connectedUnknown": false,
+                "discovered": 1,
+                "discoveredUnknown": false,
+                "readyForXcuitest": null,
+                "readyForXcuitestUnknown": true,
+                "usableForDevelopment": null,
+                "usableForDevelopmentUnknown": true
+              },
+              "simulators": {
+                "discovered": 1,
+                "discoveredUnknown": false,
+                "runtimeCount": 1,
+                "runtimeCountUnknown": false
+              }
+            }
+          ],
+          "kernelState": "alive",
+          "outputTruncated": false,
+          "runtime": {
+            "environmentKind": "active_venv",
+            "executable": "$TEMP_ROOT/tools/amkernel/bin/python",
+            "implementation": "CPython",
+            "platform": "macOS-26.6.2-arm64-64bit",
+            "pythonVersion": "3.11.16",
+            "workingDirectory": "$TEMP_ROOT/project"
+          },
+          "status": "completed",
+          "stderrBytes": 0,
+          "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdoutBytes": 2316,
+          "stdoutLineCount": 1,
+          "stdoutSha256": "31478898c0d54f073b0a61815f049abcead8cf00d554a9b641d25979b07e89d4"
+        }
+      ],
+      "expectedJava": "$TEMP_ROOT/fixtures/prefer-explicit/host/jdks/explicit-primary/bin/java",
+      "finalJson": {
+        "approvalRequired": false,
+        "environmentPersisted": false,
+        "javaCandidates": [
+          {
+            "eligible": true,
+            "executable": "$TEMP_ROOT/fixtures/prefer-explicit/host/jdks/explicit-primary/bin/java",
+            "executed": true,
+            "exists": true,
+            "exitCode": 0,
+            "javaHome": "$TEMP_ROOT/fixtures/prefer-explicit/host/jdks/explicit-primary",
+            "major": 21,
+            "origin": "JAVA_HOME",
+            "version": "21.0.6"
+          },
+          {
+            "eligible": false,
+            "executable": "$TEMP_ROOT/fixtures/prefer-explicit/tools/java",
+            "executed": true,
+            "exists": true,
+            "exitCode": 0,
+            "javaHome": "$TEMP_ROOT/fixtures/prefer-explicit/tools",
+            "major": 17,
+            "origin": "PATH",
+            "version": "17.0.15"
+          },
+          {
+            "eligible": false,
+            "executable": "$TEMP_ROOT/fixtures/prefer-explicit/host/Library/Java/JavaVirtualMachines/registered-primary.jdk/Contents/Home/bin/java",
+            "executed": true,
+            "exists": true,
+            "exitCode": 0,
+            "javaHome": "$TEMP_ROOT/fixtures/prefer-explicit/host/Library/Java/JavaVirtualMachines/registered-primary.jdk/Contents/Home",
+            "major": 11,
+            "origin": "java_home -V",
+            "version": "11.0.27"
+          },
+          {
+            "eligible": true,
+            "executable": "$TEMP_ROOT/fixtures/prefer-explicit/host/Applications/Android Studio.app/Contents/jbr/Contents/Home/bin/java",
+            "executed": true,
+            "exists": true,
+            "exitCode": 0,
+            "javaHome": "$TEMP_ROOT/fixtures/prefer-explicit/host/Applications/Android Studio.app/Contents/jbr/Contents/Home",
+            "major": 21,
+            "origin": "Android Studio JBR",
+            "version": "21.0.6"
+          }
+        ],
+        "kernelState": "alive",
+        "physical": {
+          "connected": 1,
+          "connectedUnknown": false,
+          "discovered": 1,
+          "discoveredUnknown": false,
+          "readyForXcuitest": null,
+          "readyForXcuitestUnknown": true,
+          "usableForDevelopment": null,
+          "usableForDevelopmentUnknown": true
+        },
+        "platformEvidence": "synthetic-fixture",
+        "scope": "synthetic-fixture",
+        "selectedJava": {
+          "executable": "$TEMP_ROOT/fixtures/prefer-explicit/host/jdks/explicit-primary/bin/java",
+          "reason": "Explicit JAVA_HOME candidate executed successfully with Java 21.0.6, satisfying the driver's minimum major 21 and taking precedence over the eligible bundled JBR."
+        },
+        "sessionStarted": false,
+        "simulators": {
+          "discovered": 1,
+          "discoveredUnknown": false,
+          "runtimeCount": 1,
+          "runtimeCountUnknown": false
+        },
+        "taskOutcome": "completed"
+      },
+      "finalResponseBytes": 3181,
+      "finalResponseSha256": "bdad75a4aa7e0c20860addf7d773ef939c93687dc4ee1556bae9f6d0339cabb8",
+      "fixtureJournal": {
+        "commands": [
+          {
+            "argv": [
+              "$TEMP_ROOT/fixtures/prefer-explicit/tools/java_home",
+              "-V"
+            ],
+            "exitCode": 0,
+            "kind": "java-inventory"
+          },
+          {
+            "argv": [
+              "$TEMP_ROOT/fixtures/prefer-explicit/host/jdks/explicit-primary/bin/java",
+              "-XshowSettings:properties",
+              "-version"
+            ],
+            "exitCode": 0,
+            "javaHome": "$TEMP_ROOT/fixtures/prefer-explicit/host/jdks/explicit-primary",
+            "kind": "java-explicit",
+            "major": 21,
+            "version": "21.0.6"
+          },
+          {
+            "argv": [
+              "$TEMP_ROOT/fixtures/prefer-explicit/tools/java",
+              "-XshowSettings:properties",
+              "-version"
+            ],
+            "exitCode": 0,
+            "javaHome": "$TEMP_ROOT/fixtures/prefer-explicit/tools",
+            "kind": "java-current",
+            "major": 17,
+            "version": "17.0.15"
+          },
+          {
+            "argv": [
+              "$TEMP_ROOT/fixtures/prefer-explicit/host/Library/Java/JavaVirtualMachines/registered-primary.jdk/Contents/Home/bin/java",
+              "-XshowSettings:properties",
+              "-version"
+            ],
+            "exitCode": 0,
+            "javaHome": "$TEMP_ROOT/fixtures/prefer-explicit/host/Library/Java/JavaVirtualMachines/registered-primary.jdk/Contents/Home",
+            "kind": "java-registered",
+            "major": 11,
+            "version": "11.0.27"
+          },
+          {
+            "argv": [
+              "$TEMP_ROOT/fixtures/prefer-explicit/host/Applications/Android Studio.app/Contents/jbr/Contents/Home/bin/java",
+              "-XshowSettings:properties",
+              "-version"
+            ],
+            "exitCode": 0,
+            "javaHome": "$TEMP_ROOT/fixtures/prefer-explicit/host/Applications/Android Studio.app/Contents/jbr/Contents/Home",
+            "kind": "java-bundled",
+            "major": 21,
+            "version": "21.0.6"
+          },
+          {
+            "argv": [
+              "$TEMP_ROOT/fixtures/prefer-explicit/tools/devicectl",
+              "list",
+              "devices",
+              "--json-output",
+              "$TEMP_ROOT/fixtures/prefer-explicit/out/devicectl-devices.json"
+            ],
+            "exitCode": 0,
+            "kind": "apple-physical"
+          },
+          {
+            "argv": [
+              "$TEMP_ROOT/fixtures/prefer-explicit/tools/simctl",
+              "list",
+              "devices",
+              "--json"
+            ],
+            "exitCode": 0,
+            "kind": "apple-simulators"
+          },
+          {
+            "argv": [
+              "$TEMP_ROOT/fixtures/prefer-explicit/tools/simctl",
+              "list",
+              "runtimes",
+              "--json"
+            ],
+            "exitCode": 0,
+            "kind": "apple-runtimes"
+          }
+        ]
+      },
+      "id": "prefer-explicit",
+      "mcpEnvironmentKeys": [
+        "ANDROID_AVD_HOME",
+        "ANDROID_HOME",
+        "ANDROID_SDK_ROOT",
+        "DEVELOPER_DIR",
+        "HOME",
+        "JAVA_HOME",
+        "PATH"
+      ],
+      "mcpServers": [
+        {
+          "name": "WorkIQ",
+          "source": null,
+          "status": "disabled"
+        },
+        {
+          "name": "amkernel",
+          "source": "workspace",
+          "status": "connected"
+        },
+        {
+          "name": "browser-use",
+          "source": null,
+          "status": "disabled"
+        },
+        {
+          "name": "github-copilot-browser",
+          "source": null,
+          "status": "disabled"
+        },
+        {
+          "name": "github-mcp-server",
+          "source": "builtin",
+          "status": "disabled"
+        },
+        {
+          "name": "githubiq",
+          "source": null,
+          "status": "disabled"
+        }
+      ],
+      "observed": {
+        "kernelStates": [
+          "alive"
+        ],
+        "mcp": [
+          {
+            "name": "WorkIQ",
+            "source": null,
+            "status": "disabled"
+          },
+          {
+            "name": "amkernel",
+            "source": "workspace",
+            "status": "connected"
+          },
+          {
+            "name": "browser-use",
+            "source": null,
+            "status": "disabled"
+          },
+          {
+            "name": "github-copilot-browser",
+            "source": null,
+            "status": "disabled"
+          },
+          {
+            "name": "github-mcp-server",
+            "source": "builtin",
+            "status": "disabled"
+          },
+          {
+            "name": "githubiq",
+            "source": null,
+            "status": "disabled"
+          }
+        ],
+        "pythonCallStatuses": [
+          {
+            "index": 3,
+            "kernelState": "alive",
+            "status": "completed"
+          }
+        ]
+      },
+      "platformEvidence": "synthetic-fixture",
+      "probe": null,
+      "probeJournal": null,
+      "process": {
+        "durationMs": 36528,
+        "eventCount": 2507,
+        "exitCode": 0,
+        "malformedEventLines": 0,
+        "runnerCleanup": [
+          {
+            "observedExit": true,
+            "reason": "process-exit",
+            "runnerPid": 28693
+          }
+        ],
+        "timedOut": false
+      },
+      "promptBytes": 12563,
+      "promptSha256": "33b06a999d8b8ad7be9c67d41c788c10f59bf60172e9deb7960619196150b056",
+      "scope": "synthetic-fixture",
+      "selectionEvidence": {
+        "expectedJava": "$TEMP_ROOT/fixtures/prefer-explicit/host/jdks/explicit-primary/bin/java",
+        "expectedMatch": true,
+        "journalKinds": [
+          "java-inventory",
+          "java-explicit",
+          "java-current",
+          "java-registered",
+          "java-bundled",
+          "apple-physical",
+          "apple-simulators",
+          "apple-runtimes"
+        ],
+        "minimumJavaMajor": 21,
+        "physicalExpectation": {
+          "connected": 1,
+          "connectedUnknown": false,
+          "discovered": 1,
+          "discoveredUnknown": false,
+          "readyForXcuitest": null,
+          "readyForXcuitestUnknown": true,
+          "usableForDevelopment": null,
+          "usableForDevelopmentUnknown": true
+        },
+        "reportedJava": "$TEMP_ROOT/fixtures/prefer-explicit/host/jdks/explicit-primary/bin/java",
+        "simulatorExpectation": {
+          "discovered": 1,
+          "discoveredUnknown": false,
+          "runtimeCount": 1,
+          "runtimeCountUnknown": false
+        }
+      },
+      "startedAt": "2026-11-02T17:48:27.794100Z",
+      "status": "passed",
+      "stderr": "",
+      "title": "synthetic host prefers an explicit JAVA_HOME candidate",
+      "toolCalls": [
+        {
+          "arguments": {
+            "keys": [
+              "skill"
+            ],
+            "skill": "amkernel"
+          },
+          "completedAt": "2026-11-02T17:48:34.835Z",
+          "index": 1,
+          "startedAt": "2026-11-02T17:48:34.832Z",
+          "success": true,
+          "toolName": "skill"
+        },
+        {
+          "arguments": {
+            "keys": [
+              "path"
+            ],
+            "pathBytes": 155,
+            "pathSha256": "2bed3e0245d35373136577bc6d8965f7c03f88df2f71c665894509de25045ef5"
+          },
+          "completedAt": "2026-11-02T17:48:37.287Z",
+          "index": 2,
+          "startedAt": "2026-11-02T17:48:37.282Z",
+          "success": true,
+          "toolName": "view"
+        },
+        {
+          "arguments": {
+            "keys": [
+              "codeBytes",
+              "codeSha256"
+            ]
+          },
+          "completedAt": "2026-11-02T17:48:56.429Z",
+          "executionCount": 1,
+          "executionObservation": {
+            "durationMs": 2645,
+            "errorType": null,
+            "executionCount": 1,
+            "factObjects": [
+              {
+                "approvalRequired": false,
+                "javaCandidates": [
+                  {
+                    "eligible": true,
+                    "executable": "$TEMP_ROOT/fixtures/prefer-explicit/host/jdks/explicit-primary/bin/java",
+                    "executed": true,
+                    "exists": true,
+                    "exitCode": 0,
+                    "javaHome": "$TEMP_ROOT/fixtures/prefer-explicit/host/jdks/explicit-primary",
+                    "major": 21,
+                    "origin": "JAVA_HOME",
+                    "version": "21.0.6"
+                  },
+                  {
+                    "eligible": false,
+                    "executable": "$TEMP_ROOT/fixtures/prefer-explicit/tools/java",
+                    "executed": true,
+                    "exists": true,
+                    "exitCode": 0,
+                    "javaHome": "$TEMP_ROOT/fixtures/prefer-explicit/tools",
+                    "major": 17,
+                    "origin": "PATH",
+                    "version": "17.0.15"
+                  },
+                  {
+                    "eligible": false,
+                    "executable": "$TEMP_ROOT/fixtures/prefer-explicit/host/Library/Java/JavaVirtualMachines/registered-primary.jdk/Contents/Home/bin/java",
+                    "executed": true,
+                    "exists": true,
+                    "exitCode": 0,
+                    "javaHome": "$TEMP_ROOT/fixtures/prefer-explicit/host/Library/Java/JavaVirtualMachines/registered-primary.jdk/Contents/Home",
+                    "major": 11,
+                    "origin": "java_home -V",
+                    "version": "11.0.27"
+                  },
+                  {
+                    "eligible": true,
+                    "executable": "$TEMP_ROOT/fixtures/prefer-explicit/host/Applications/Android Studio.app/Contents/jbr/Contents/Home/bin/java",
+                    "executed": true,
+                    "exists": true,
+                    "exitCode": 0,
+                    "javaHome": "$TEMP_ROOT/fixtures/prefer-explicit/host/Applications/Android Studio.app/Contents/jbr/Contents/Home",
+                    "major": 21,
+                    "origin": "Android Studio JBR",
+                    "version": "21.0.6"
+                  }
+                ],
+                "physical": {
+                  "connected": 1,
+                  "connectedUnknown": false,
+                  "discovered": 1,
+                  "discoveredUnknown": false,
+                  "readyForXcuitest": null,
+                  "readyForXcuitestUnknown": true,
+                  "usableForDevelopment": null,
+                  "usableForDevelopmentUnknown": true
+                },
+                "simulators": {
+                  "discovered": 1,
+                  "discoveredUnknown": false,
+                  "runtimeCount": 1,
+                  "runtimeCountUnknown": false
+                }
+              }
+            ],
+            "kernelState": "alive",
+            "outputTruncated": false,
+            "runtime": {
+              "environmentKind": "active_venv",
+              "executable": "$TEMP_ROOT/tools/amkernel/bin/python",
+              "implementation": "CPython",
+              "platform": "macOS-26.6.2-arm64-64bit",
+              "pythonVersion": "3.11.16",
+              "workingDirectory": "$TEMP_ROOT/project"
+            },
+            "status": "completed",
+            "stderrBytes": 0,
+            "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdoutBytes": 2316,
+            "stdoutLineCount": 1,
+            "stdoutSha256": "31478898c0d54f073b0a61815f049abcead8cf00d554a9b641d25979b07e89d4"
+          },
+          "index": 3,
+          "kernelState": "alive",
+          "mcpConfigServerName": "amkernel",
+          "mcpConfigSource": "workspace",
+          "mcpServerName": "amkernel",
+          "mcpToolName": "python_exec",
+          "mcpTransport": "stdio",
+          "observedStatus": "completed",
+          "outputTruncated": false,
+          "startedAt": "2026-11-02T17:48:53.721Z",
+          "success": true,
+          "toolName": "amkernel-python_exec"
+        }
+      ]
+    },
+    {
+      "checks": [
+        {
+          "detail": "Copilot exit=0, timedOut=False",
+          "id": "process-finished",
+          "ok": true
+        },
+        {
+          "detail": "Final assistant response contained a parseable JSON report.",
+          "id": "final-json-present",
+          "ok": true
+        },
+        {
+          "detail": "scope/platformEvidence='synthetic-fixture'/'synthetic-fixture'",
+          "id": "final-scope",
+          "ok": true
+        },
+        {
+          "detail": "Final report controls match the prompted shape.",
+          "evidence": [],
+          "id": "final-report-shape",
+          "ok": true
+        },
+        {
+          "detail": "Discovery completed, blocked, or requested approval instead of failing itself.",
+          "id": "discovery-not-declared-failed",
+          "ok": true
+        },
+        {
+          "detail": "Successful amkernel skill loads: 1",
+          "id": "installed-amkernel-skill-loaded",
+          "ok": true
+        },
+        {
+          "detail": "Workspace MCP servers: amkernel:connected",
+          "id": "one-workspace-mcp-server",
+          "ok": true
+        },
+        {
+          "detail": "All MCP calls resolved to workspace amkernel/python_exec.",
+          "id": "mcp-calls-resolve-to-python-exec",
+          "ok": true
+        },
+        {
+          "detail": "Only skill/view and amkernel python_exec tools were executed.",
+          "id": "no-shell-write-other-tools",
+          "ok": true
+        },
+        {
+          "detail": "Completed python_exec calls with a live kernel: 2",
+          "id": "python-exec-completed",
+          "ok": true
+        },
+        {
+          "detail": "Observed kernel states: alive",
+          "id": "no-kernel-death",
+          "ok": true
+        },
+        {
+          "detail": "No python_exec requested dependency packages.",
+          "id": "no-package-installs",
+          "ok": true
+        },
+        {
+          "detail": "python_exec output observations retained: 2",
+          "id": "execution-evidence-captured",
+          "ok": true
+        },
+        {
+          "detail": "Every required discovery capability has independently observed execution.",
+          "evidence": [],
+          "id": "discovery-capabilities-executed",
+          "ok": true
+        },
+        {
+          "detail": "Apple physical, simulator, and runtime inventories were separate commands.",
+          "id": "apple-physical-and-simulators-separate",
+          "ok": true
+        },
+        {
+          "detail": "Physical and simulator inventories used distinct commands.",
+          "id": "physical-command-not-simulator-command",
+          "ok": true
+        },
+        {
+          "detail": "Journal contains only supplied discovery commands.",
+          "evidence": [],
+          "id": "only-read-only-discovery-commands",
+          "ok": true
+        },
+        {
+          "detail": "Every reported candidate matches the discovered inventory, including absences.",
+          "id": "candidate-facts-present",
+          "ok": true
+        },
+        {
+          "detail": "selectedJava=$TEMP_ROOT/fixtures/fallback-bundled/host/Applications/Android Studio.app/Contents/jbr/Contents/Home/bin/java, expected=$TEMP_ROOT/fixtures/fallback-bundled/host/Applications/Android Studio.app/Contents/jbr/Contents/Home/bin/java",
+          "id": "selected-java-expected",
+          "ok": true
+        },
+        {
+          "detail": "Selected candidate was executed successfully and meets the driver minimum.",
+          "id": "selected-java-executed",
+          "ok": true
+        },
+        {
+          "detail": "Earlier candidates were actually rejected by execution or the Java minimum.",
+          "id": "selection-rejects-earlier-or-ineligible-candidates",
+          "ok": true
+        },
+        {
+          "detail": "Every existing Java candidate was executed and its actual exit code reported.",
+          "id": "all-existing-java-candidates-executed",
+          "ok": true
+        },
+        {
+          "detail": "Physical layers match the synthetic listing and remain unknown below connection.",
+          "id": "physical-layers-truthful",
+          "ok": true
+        },
+        {
+          "detail": "Simulator/runtime counts match the separate synthetic inventories.",
+          "id": "simulator-runtime-counts-truthful",
+          "ok": true
+        },
+        {
+          "detail": "Actual python_exec output facts cover every existing candidate and Apple counts.",
+          "id": "python-output-candidate-execution",
+          "ok": true
+        },
+        {
+          "detail": "Synthetic discovery made no session, install, or persistence claim.",
+          "id": "read-only-no-session-no-persistence",
+          "ok": false
+        }
+      ],
+      "clientHomeIsolated": true,
+      "completedAt": "2026-11-02T17:49:54.531805Z",
+      "durationMs": 50199,
+      "executionObservations": [
+        {
+          "callIndex": 3,
+          "durationMs": 2910,
+          "errorType": null,
+          "executionCount": 1,
+          "factObjects": [],
+          "kernelState": "alive",
+          "outputTruncated": false,
+          "runtime": {
+            "environmentKind": "active_venv",
+            "executable": "$TEMP_ROOT/tools/amkernel/bin/python",
+            "implementation": "CPython",
+            "platform": "macOS-26.6.2-arm64-64bit",
+            "pythonVersion": "3.11.16",
+            "workingDirectory": "$TEMP_ROOT/project"
+          },
+          "status": "completed",
+          "stderrBytes": 0,
+          "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdoutBytes": 0,
+          "stdoutLineCount": 0,
+          "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "callIndex": 4,
+          "durationMs": 2,
+          "errorType": null,
+          "executionCount": 2,
+          "factObjects": [
+            {
+              "approvalRequired": true,
+              "javaCandidates": [
+                {
+                  "eligible": false,
+                  "executable": "$TEMP_ROOT/fixtures/fallback-bundled/host/jdks/explicit-primary/bin/java",
+                  "executed": true,
+                  "exists": true,
+                  "exitCode": 1,
+                  "javaHome": null,
+                  "major": null,
+                  "origin": "JAVA_HOME",
+                  "version": null
+                },
+                {
+                  "eligible": false,
+                  "executable": "$TEMP_ROOT/fixtures/fallback-bundled/tools/java",
+                  "executed": true,
+                  "exists": true,
+                  "exitCode": 1,
+                  "javaHome": null,
+                  "major": null,
+                  "origin": "PATH",
+                  "version": null
+                },
+                {
+                  "eligible": false,
+                  "executable": "$TEMP_ROOT/fixtures/fallback-bundled/host/Library/Java/JavaVirtualMachines/registered-secondary.jdk/Contents/Home/bin/java",
+                  "executed": true,
+                  "exists": true,
+                  "exitCode": 0,
+                  "javaHome": "$TEMP_ROOT/fixtures/fallback-bundled/host/Library/Java/JavaVirtualMachines/registered-secondary.jdk/Contents/Home",
+                  "major": 17,
+                  "origin": "java_home -V",
+                  "version": "17.0.13"
+                },
+                {
+                  "eligible": true,
+                  "executable": "$TEMP_ROOT/fixtures/fallback-bundled/host/Applications/Android Studio.app/Contents/jbr/Contents/Home/bin/java",
+                  "executed": true,
+                  "exists": true,
+                  "exitCode": 0,
+                  "javaHome": "$TEMP_ROOT/fixtures/fallback-bundled/host/Applications/Android Studio.app/Contents/jbr/Contents/Home",
+                  "major": 21,
+                  "origin": "Android Studio JBR",
+                  "version": "21.0.6"
+                }
+              ],
+              "physical": {
+                "connected": 1,
+                "connectedUnknown": false,
+                "discovered": 1,
+                "discoveredUnknown": false,
+                "readyForXcuitest": null,
+                "readyForXcuitestUnknown": true,
+                "usableForDevelopment": null,
+                "usableForDevelopmentUnknown": true
+              },
+              "simulators": {
+                "discovered": 1,
+                "discoveredUnknown": false,
+                "runtimeCount": 1,
+                "runtimeCountUnknown": false
+              }
+            }
+          ],
+          "kernelState": "alive",
+          "outputTruncated": false,
+          "runtime": {
+            "environmentKind": "active_venv",
+            "executable": "$TEMP_ROOT/tools/amkernel/bin/python",
+            "implementation": "CPython",
+            "platform": "macOS-26.6.2-arm64-64bit",
+            "pythonVersion": "3.11.16",
+            "workingDirectory": "$TEMP_ROOT/project"
+          },
+          "status": "completed",
+          "stderrBytes": 0,
+          "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdoutBytes": 1971,
+          "stdoutLineCount": 1,
+          "stdoutSha256": "ae48d8d5ed2f8965fff05a886fc452cd21c17aa53c30c691673dcdeb0b53405c"
+        }
+      ],
+      "expectedJava": "$TEMP_ROOT/fixtures/fallback-bundled/host/Applications/Android Studio.app/Contents/jbr/Contents/Home/bin/java",
+      "finalJson": {
+        "approvalRequired": true,
+        "environmentPersisted": false,
+        "javaCandidates": [
+          {
+            "eligible": false,
+            "executable": "$TEMP_ROOT/fixtures/fallback-bundled/host/jdks/explicit-primary/bin/java",
+            "executed": true,
+            "exists": true,
+            "exitCode": 1,
+            "javaHome": null,
+            "major": null,
+            "origin": "JAVA_HOME",
+            "version": null
+          },
+          {
+            "eligible": false,
+            "executable": "$TEMP_ROOT/fixtures/fallback-bundled/tools/java",
+            "executed": true,
+            "exists": true,
+            "exitCode": 1,
+            "javaHome": null,
+            "major": null,
+            "origin": "PATH",
+            "version": null
+          },
+          {
+            "eligible": false,
+            "executable": "$TEMP_ROOT/fixtures/fallback-bundled/host/Library/Java/JavaVirtualMachines/registered-secondary.jdk/Contents/Home/bin/java",
+            "executed": true,
+            "exists": true,
+            "exitCode": 0,
+            "javaHome": "$TEMP_ROOT/fixtures/fallback-bundled/host/Library/Java/JavaVirtualMachines/registered-secondary.jdk/Contents/Home",
+            "major": 17,
+            "origin": "java_home -V",
+            "version": "17.0.13"
+          },
+          {
+            "eligible": true,
+            "executable": "$TEMP_ROOT/fixtures/fallback-bundled/host/Applications/Android Studio.app/Contents/jbr/Contents/Home/bin/java",
+            "executed": true,
+            "exists": true,
+            "exitCode": 0,
+            "javaHome": "$TEMP_ROOT/fixtures/fallback-bundled/host/Applications/Android Studio.app/Contents/jbr/Contents/Home",
+            "major": 21,
+            "origin": "Android Studio JBR",
+            "version": "21.0.6"
+          }
+        ],
+        "kernelState": "alive",
+        "physical": {
+          "connected": 1,
+          "connectedUnknown": false,
+          "discovered": 1,
+          "discoveredUnknown": false,
+          "readyForXcuitest": null,
+          "readyForXcuitestUnknown": true,
+          "usableForDevelopment": null,
+          "usableForDevelopmentUnknown": true
+        },
+        "platformEvidence": "synthetic-fixture",
+        "scope": "synthetic-fixture",
+        "selectedJava": {
+          "executable": "$TEMP_ROOT/fixtures/fallback-bundled/host/Applications/Android Studio.app/Contents/jbr/Contents/Home/bin/java",
+          "reason": "First execution-validated candidate meeting Java >=21: bundled Java 21.0.6. Explicit and PATH candidates exited 1; registered Java 17.0.13 is below the minimum. Discovery is complete; continuing to trust/pairing changes or session-based XCUITest validation requires approval."
+        },
+        "sessionStarted": false,
+        "simulators": {
+          "discovered": 1,
+          "discoveredUnknown": false,
+          "runtimeCount": 1,
+          "runtimeCountUnknown": false
+        },
+        "taskOutcome": "completed"
+      },
+      "finalResponseBytes": 3088,
+      "finalResponseSha256": "623020808db67006470f71bf62e0df6e75a2f3f4098b1a1e5c773a6f003ddf8c",
+      "fixtureJournal": {
+        "commands": [
+          {
+            "argv": [
+              "$TEMP_ROOT/fixtures/fallback-bundled/host/jdks/explicit-primary/bin/java",
+              "-XshowSettings:properties",
+              "-version"
+            ],
+            "exitCode": 1,
+            "javaHome": null,
+            "kind": "java-explicit",
+            "major": null,
+            "version": null
+          },
+          {
+            "argv": [
+              "$TEMP_ROOT/fixtures/fallback-bundled/tools/java",
+              "-XshowSettings:properties",
+              "-version"
+            ],
+            "exitCode": 1,
+            "javaHome": null,
+            "kind": "java-current",
+            "major": null,
+            "version": null
+          },
+          {
+            "argv": [
+              "$TEMP_ROOT/fixtures/fallback-bundled/tools/java_home",
+              "-V"
+            ],
+            "exitCode": 0,
+            "kind": "java-inventory"
+          },
+          {
+            "argv": [
+              "$TEMP_ROOT/fixtures/fallback-bundled/host/Library/Java/JavaVirtualMachines/registered-secondary.jdk/Contents/Home/bin/java",
+              "-XshowSettings:properties",
+              "-version"
+            ],
+            "exitCode": 0,
+            "javaHome": "$TEMP_ROOT/fixtures/fallback-bundled/host/Library/Java/JavaVirtualMachines/registered-secondary.jdk/Contents/Home",
+            "kind": "java-registered",
+            "major": 17,
+            "version": "17.0.13"
+          },
+          {
+            "argv": [
+              "$TEMP_ROOT/fixtures/fallback-bundled/host/Applications/Android Studio.app/Contents/jbr/Contents/Home/bin/java",
+              "-XshowSettings:properties",
+              "-version"
+            ],
+            "exitCode": 0,
+            "javaHome": "$TEMP_ROOT/fixtures/fallback-bundled/host/Applications/Android Studio.app/Contents/jbr/Contents/Home",
+            "kind": "java-bundled",
+            "major": 21,
+            "version": "21.0.6"
+          },
+          {
+            "argv": [
+              "$TEMP_ROOT/fixtures/fallback-bundled/tools/devicectl",
+              "list",
+              "devices",
+              "--json-output",
+              "$TEMP_ROOT/fixtures/fallback-bundled/out/devicectl-devices.json"
+            ],
+            "exitCode": 0,
+            "kind": "apple-physical"
+          },
+          {
+            "argv": [
+              "$TEMP_ROOT/fixtures/fallback-bundled/tools/simctl",
+              "list",
+              "devices",
+              "--json"
+            ],
+            "exitCode": 0,
+            "kind": "apple-simulators"
+          },
+          {
+            "argv": [
+              "$TEMP_ROOT/fixtures/fallback-bundled/tools/simctl",
+              "list",
+              "runtimes",
+              "--json"
+            ],
+            "exitCode": 0,
+            "kind": "apple-runtimes"
+          }
+        ]
+      },
+      "id": "fallback-bundled",
+      "mcpEnvironmentKeys": [
+        "ANDROID_AVD_HOME",
+        "ANDROID_HOME",
+        "ANDROID_SDK_ROOT",
+        "DEVELOPER_DIR",
+        "HOME",
+        "JAVA_HOME",
+        "PATH"
+      ],
+      "mcpServers": [
+        {
+          "name": "WorkIQ",
+          "source": null,
+          "status": "disabled"
+        },
+        {
+          "name": "amkernel",
+          "source": "workspace",
+          "status": "connected"
+        },
+        {
+          "name": "browser-use",
+          "source": null,
+          "status": "disabled"
+        },
+        {
+          "name": "github-copilot-browser",
+          "source": null,
+          "status": "disabled"
+        },
+        {
+          "name": "github-mcp-server",
+          "source": "builtin",
+          "status": "disabled"
+        },
+        {
+          "name": "githubiq",
+          "source": null,
+          "status": "disabled"
+        }
+      ],
+      "observed": {
+        "kernelStates": [
+          "alive"
+        ],
+        "mcp": [
+          {
+            "name": "WorkIQ",
+            "source": null,
+            "status": "disabled"
+          },
+          {
+            "name": "amkernel",
+            "source": "workspace",
+            "status": "connected"
+          },
+          {
+            "name": "browser-use",
+            "source": null,
+            "status": "disabled"
+          },
+          {
+            "name": "github-copilot-browser",
+            "source": null,
+            "status": "disabled"
+          },
+          {
+            "name": "github-mcp-server",
+            "source": "builtin",
+            "status": "disabled"
+          },
+          {
+            "name": "githubiq",
+            "source": null,
+            "status": "disabled"
+          }
+        ],
+        "pythonCallStatuses": [
+          {
+            "index": 3,
+            "kernelState": "alive",
+            "status": "completed"
+          },
+          {
+            "index": 4,
+            "kernelState": "alive",
+            "status": "completed"
+          }
+        ]
+      },
+      "platformEvidence": "synthetic-fixture",
+      "probe": null,
+      "probeJournal": null,
+      "process": {
+        "durationMs": 50189,
+        "eventCount": 2936,
+        "exitCode": 0,
+        "malformedEventLines": 0,
+        "runnerCleanup": [
+          {
+            "observedExit": true,
+            "reason": "process-exit",
+            "runnerPid": 28942
+          }
+        ],
+        "timedOut": false
+      },
+      "promptBytes": 12592,
+      "promptSha256": "3b9e94ab8fac5f8b285dc9192e30c38f7a1b2be02c6e14bc941b499d1372612b",
+      "scope": "synthetic-fixture",
+      "selectionEvidence": {
+        "expectedJava": "$TEMP_ROOT/fixtures/fallback-bundled/host/Applications/Android Studio.app/Contents/jbr/Contents/Home/bin/java",
+        "expectedMatch": true,
+        "journalKinds": [
+          "java-explicit",
+          "java-current",
+          "java-inventory",
+          "java-registered",
+          "java-bundled",
+          "apple-physical",
+          "apple-simulators",
+          "apple-runtimes"
+        ],
+        "minimumJavaMajor": 21,
+        "physicalExpectation": {
+          "connected": 1,
+          "connectedUnknown": false,
+          "discovered": 1,
+          "discoveredUnknown": false,
+          "readyForXcuitest": null,
+          "readyForXcuitestUnknown": true,
+          "usableForDevelopment": null,
+          "usableForDevelopmentUnknown": true
+        },
+        "reportedJava": "$TEMP_ROOT/fixtures/fallback-bundled/host/Applications/Android Studio.app/Contents/jbr/Contents/Home/bin/java",
+        "simulatorExpectation": {
+          "discovered": 1,
+          "discoveredUnknown": false,
+          "runtimeCount": 1,
+          "runtimeCountUnknown": false
+        }
+      },
+      "startedAt": "2026-11-02T17:49:04.332113Z",
+      "status": "failed",
+      "stderr": "",
+      "title": "synthetic host falls back to the bundled Android Studio JBR",
+      "toolCalls": [
+        {
+          "arguments": {
+            "keys": [
+              "skill"
+            ],
+            "skill": "amkernel"
+          },
+          "completedAt": "2026-11-02T17:49:10.678Z",
+          "index": 1,
+          "startedAt": "2026-11-02T17:49:10.675Z",
+          "success": true,
+          "toolName": "skill"
+        },
+        {
+          "arguments": {
+            "keys": [
+              "path"
+            ],
+            "pathBytes": 155,
+            "pathSha256": "2bed3e0245d35373136577bc6d8965f7c03f88df2f71c665894509de25045ef5"
+          },
+          "completedAt": "2026-11-02T17:49:12.817Z",
+          "index": 2,
+          "startedAt": "2026-11-02T17:49:12.811Z",
+          "success": true,
+          "toolName": "view"
+        },
+        {
+          "arguments": {
+            "keys": [
+              "codeBytes",
+              "codeSha256",
+              "timeout"
+            ]
+          },
+          "completedAt": "2026-11-02T17:49:31.536Z",
+          "executionCount": 1,
+          "executionObservation": {
+            "durationMs": 2910,
+            "errorType": null,
+            "executionCount": 1,
+            "factObjects": [],
+            "kernelState": "alive",
+            "outputTruncated": false,
+            "runtime": {
+              "environmentKind": "active_venv",
+              "executable": "$TEMP_ROOT/tools/amkernel/bin/python",
+              "implementation": "CPython",
+              "platform": "macOS-26.6.2-arm64-64bit",
+              "pythonVersion": "3.11.16",
+              "workingDirectory": "$TEMP_ROOT/project"
+            },
+            "status": "completed",
+            "stderrBytes": 0,
+            "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdoutBytes": 0,
+            "stdoutLineCount": 0,
+            "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "index": 3,
+          "kernelState": "alive",
+          "mcpConfigServerName": "amkernel",
+          "mcpConfigSource": "workspace",
+          "mcpServerName": "amkernel",
+          "mcpToolName": "python_exec",
+          "mcpTransport": "stdio",
+          "observedStatus": "completed",
+          "outputTruncated": false,
+          "startedAt": "2026-11-02T17:49:28.564Z",
+          "success": true,
+          "toolName": "amkernel-python_exec"
+        },
+        {
+          "arguments": {
+            "keys": [
+              "codeBytes",
+              "codeSha256"
+            ]
+          },
+          "completedAt": "2026-11-02T17:49:46.932Z",
+          "executionCount": 2,
+          "executionObservation": {
+            "durationMs": 2,
+            "errorType": null,
+            "executionCount": 2,
+            "factObjects": [
+              {
+                "approvalRequired": true,
+                "javaCandidates": [
+                  {
+                    "eligible": false,
+                    "executable": "$TEMP_ROOT/fixtures/fallback-bundled/host/jdks/explicit-primary/bin/java",
+                    "executed": true,
+                    "exists": true,
+                    "exitCode": 1,
+                    "javaHome": null,
+                    "major": null,
+                    "origin": "JAVA_HOME",
+                    "version": null
+                  },
+                  {
+                    "eligible": false,
+                    "executable": "$TEMP_ROOT/fixtures/fallback-bundled/tools/java",
+                    "executed": true,
+                    "exists": true,
+                    "exitCode": 1,
+                    "javaHome": null,
+                    "major": null,
+                    "origin": "PATH",
+                    "version": null
+                  },
+                  {
+                    "eligible": false,
+                    "executable": "$TEMP_ROOT/fixtures/fallback-bundled/host/Library/Java/JavaVirtualMachines/registered-secondary.jdk/Contents/Home/bin/java",
+                    "executed": true,
+                    "exists": true,
+                    "exitCode": 0,
+                    "javaHome": "$TEMP_ROOT/fixtures/fallback-bundled/host/Library/Java/JavaVirtualMachines/registered-secondary.jdk/Contents/Home",
+                    "major": 17,
+                    "origin": "java_home -V",
+                    "version": "17.0.13"
+                  },
+                  {
+                    "eligible": true,
+                    "executable": "$TEMP_ROOT/fixtures/fallback-bundled/host/Applications/Android Studio.app/Contents/jbr/Contents/Home/bin/java",
+                    "executed": true,
+                    "exists": true,
+                    "exitCode": 0,
+                    "javaHome": "$TEMP_ROOT/fixtures/fallback-bundled/host/Applications/Android Studio.app/Contents/jbr/Contents/Home",
+                    "major": 21,
+                    "origin": "Android Studio JBR",
+                    "version": "21.0.6"
+                  }
+                ],
+                "physical": {
+                  "connected": 1,
+                  "connectedUnknown": false,
+                  "discovered": 1,
+                  "discoveredUnknown": false,
+                  "readyForXcuitest": null,
+                  "readyForXcuitestUnknown": true,
+                  "usableForDevelopment": null,
+                  "usableForDevelopmentUnknown": true
+                },
+                "simulators": {
+                  "discovered": 1,
+                  "discoveredUnknown": false,
+                  "runtimeCount": 1,
+                  "runtimeCountUnknown": false
+                }
+              }
+            ],
+            "kernelState": "alive",
+            "outputTruncated": false,
+            "runtime": {
+              "environmentKind": "active_venv",
+              "executable": "$TEMP_ROOT/tools/amkernel/bin/python",
+              "implementation": "CPython",
+              "platform": "macOS-26.6.2-arm64-64bit",
+              "pythonVersion": "3.11.16",
+              "workingDirectory": "$TEMP_ROOT/project"
+            },
+            "status": "completed",
+            "stderrBytes": 0,
+            "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdoutBytes": 1971,
+            "stdoutLineCount": 1,
+            "stdoutSha256": "ae48d8d5ed2f8965fff05a886fc452cd21c17aa53c30c691673dcdeb0b53405c"
+          },
+          "index": 4,
+          "kernelState": "alive",
+          "mcpConfigServerName": "amkernel",
+          "mcpConfigSource": "workspace",
+          "mcpServerName": "amkernel",
+          "mcpToolName": "python_exec",
+          "mcpTransport": "stdio",
+          "observedStatus": "completed",
+          "outputTruncated": false,
+          "startedAt": "2026-11-02T17:49:46.923Z",
+          "success": true,
+          "toolName": "amkernel-python_exec"
+        }
+      ]
+    },
+    {
+      "checks": [
+        {
+          "detail": "Copilot exit=0, timedOut=False",
+          "id": "process-finished",
+          "ok": true
+        },
+        {
+          "detail": "Final assistant response contained a parseable JSON report.",
+          "id": "final-json-present",
+          "ok": true
+        },
+        {
+          "detail": "scope/platformEvidence='synthetic-fixture'/'synthetic-fixture'",
+          "id": "final-scope",
+          "ok": true
+        },
+        {
+          "detail": "Final report controls match the prompted shape.",
+          "evidence": [],
+          "id": "final-report-shape",
+          "ok": true
+        },
+        {
+          "detail": "Discovery completed, blocked, or requested approval instead of failing itself.",
+          "id": "discovery-not-declared-failed",
+          "ok": true
+        },
+        {
+          "detail": "Successful amkernel skill loads: 1",
+          "id": "installed-amkernel-skill-loaded",
+          "ok": true
+        },
+        {
+          "detail": "Workspace MCP servers: amkernel:connected",
+          "id": "one-workspace-mcp-server",
+          "ok": true
+        },
+        {
+          "detail": "All MCP calls resolved to workspace amkernel/python_exec.",
+          "id": "mcp-calls-resolve-to-python-exec",
+          "ok": true
+        },
+        {
+          "detail": "Only skill/view and amkernel python_exec tools were executed.",
+          "id": "no-shell-write-other-tools",
+          "ok": true
+        },
+        {
+          "detail": "Completed python_exec calls with a live kernel: 1",
+          "id": "python-exec-completed",
+          "ok": true
+        },
+        {
+          "detail": "Observed kernel states: alive",
+          "id": "no-kernel-death",
+          "ok": true
+        },
+        {
+          "detail": "No python_exec requested dependency packages.",
+          "id": "no-package-installs",
+          "ok": true
+        },
+        {
+          "detail": "python_exec output observations retained: 1",
+          "id": "execution-evidence-captured",
+          "ok": true
+        },
+        {
+          "detail": "Every required discovery capability has independently observed execution.",
+          "evidence": [],
+          "id": "discovery-capabilities-executed",
+          "ok": true
+        },
+        {
+          "detail": "Apple physical, simulator, and runtime inventories were separate commands.",
+          "id": "apple-physical-and-simulators-separate",
+          "ok": true
+        },
+        {
+          "detail": "Physical and simulator inventories used distinct commands.",
+          "id": "physical-command-not-simulator-command",
+          "ok": true
+        },
+        {
+          "detail": "Journal contains only supplied discovery commands.",
+          "evidence": [],
+          "id": "only-read-only-discovery-commands",
+          "ok": true
+        },
+        {
+          "detail": "Every reported candidate matches the discovered inventory, including absences.",
+          "id": "candidate-facts-present",
+          "ok": true
+        },
+        {
+          "detail": "selectedJava=null, expected=null",
+          "id": "selected-java-expected",
+          "ok": true
+        },
+        {
+          "detail": "No Java candidate was selected.",
+          "id": "selected-java-executed",
+          "ok": true
+        },
+        {
+          "detail": "Earlier candidates were actually rejected by execution or the Java minimum.",
+          "id": "selection-rejects-earlier-or-ineligible-candidates",
+          "ok": true
+        },
+        {
+          "detail": "Every existing Java candidate was executed and its actual exit code reported.",
+          "id": "all-existing-java-candidates-executed",
+          "ok": true
+        },
+        {
+          "detail": "expected usableForDevelopment=None got 0; expected usableForDevelopmentUnknown=True got False; expected readyForXcuitest=None got 0; expected readyForXcuitestUnknown=True got False",
+          "id": "physical-layers-truthful",
+          "ok": false
+        },
+        {
+          "detail": "Simulator/runtime counts match the separate synthetic inventories.",
+          "id": "simulator-runtime-counts-truthful",
+          "ok": true
+        },
+        {
+          "detail": "physical counts in output differ from the listing",
+          "id": "python-output-candidate-execution",
+          "ok": false
+        },
+        {
+          "detail": "Synthetic discovery made no session, install, or persistence claim.",
+          "id": "read-only-no-session-no-persistence",
+          "ok": false
+        }
+      ],
+      "clientHomeIsolated": true,
+      "completedAt": "2026-11-02T17:50:28.688271Z",
+      "durationMs": 34156,
+      "executionObservations": [
+        {
+          "callIndex": 3,
+          "durationMs": 1317,
+          "errorType": null,
+          "executionCount": 1,
+          "factObjects": [
+            {
+              "approvalRequired": true,
+              "javaCandidates": [
+                {
+                  "eligible": false,
+                  "executable": "$TEMP_ROOT/fixtures/missing/host/jdks/explicit-primary/bin/java",
+                  "executed": false,
+                  "exists": false,
+                  "exitCode": null,
+                  "javaHome": null,
+                  "major": null,
+                  "origin": "JAVA_HOME",
+                  "version": null
+                },
+                {
+                  "eligible": false,
+                  "executable": "$TEMP_ROOT/fixtures/missing/tools/java",
+                  "executed": false,
+                  "exists": false,
+                  "exitCode": null,
+                  "javaHome": null,
+                  "major": null,
+                  "origin": "PATH",
+                  "version": null
+                },
+                {
+                  "eligible": false,
+                  "executable": "$TEMP_ROOT/fixtures/missing/host/Library/Java/JavaVirtualMachines/registered-tertiary.jdk/Contents/Home/bin/java",
+                  "executed": false,
+                  "exists": false,
+                  "exitCode": null,
+                  "javaHome": null,
+                  "major": null,
+                  "origin": "java_home -V",
+                  "version": null
+                },
+                {
+                  "eligible": false,
+                  "executable": "$TEMP_ROOT/fixtures/missing/host/Applications/Android Studio.app/Contents/jbr/Contents/Home/bin/java",
+                  "executed": false,
+                  "exists": false,
+                  "exitCode": null,
+                  "javaHome": null,
+                  "major": null,
+                  "origin": "Android Studio JBR",
+                  "version": null
+                }
+              ],
+              "physical": {
+                "connected": 0,
+                "connectedUnknown": false,
+                "discovered": 0,
+                "discoveredUnknown": false,
+                "readyForXcuitest": 0,
+                "readyForXcuitestUnknown": false,
+                "usableForDevelopment": 0,
+                "usableForDevelopmentUnknown": false
+              },
+              "simulators": {
+                "discovered": 0,
+                "discoveredUnknown": false,
+                "runtimeCount": 0,
+                "runtimeCountUnknown": false
+              }
+            }
+          ],
+          "kernelState": "alive",
+          "outputTruncated": false,
+          "runtime": {
+            "environmentKind": "active_venv",
+            "executable": "$TEMP_ROOT/tools/amkernel/bin/python",
+            "implementation": "CPython",
+            "platform": "macOS-26.6.2-arm64-64bit",
+            "pythonVersion": "3.11.16",
+            "workingDirectory": "$TEMP_ROOT/project"
+          },
+          "status": "completed",
+          "stderrBytes": 0,
+          "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdoutBytes": 1587,
+          "stdoutLineCount": 1,
+          "stdoutSha256": "9e388296a3243681969a980a0896e5dc6a6689b567b21a7ef9b4c0c8ca54db17"
+        }
+      ],
+      "expectedJava": null,
+      "finalJson": {
+        "approvalRequired": true,
+        "environmentPersisted": false,
+        "javaCandidates": [
+          {
+            "eligible": false,
+            "executable": "$TEMP_ROOT/fixtures/missing/host/jdks/explicit-primary/bin/java",
+            "executed": false,
+            "exists": false,
+            "exitCode": null,
+            "javaHome": null,
+            "major": null,
+            "origin": "JAVA_HOME",
+            "version": null
+          },
+          {
+            "eligible": false,
+            "executable": "$TEMP_ROOT/fixtures/missing/tools/java",
+            "executed": false,
+            "exists": false,
+            "exitCode": null,
+            "javaHome": null,
+            "major": null,
+            "origin": "PATH",
+            "version": null
+          },
+          {
+            "eligible": false,
+            "executable": "$TEMP_ROOT/fixtures/missing/host/Library/Java/JavaVirtualMachines/registered-tertiary.jdk/Contents/Home/bin/java",
+            "executed": false,
+            "exists": false,
+            "exitCode": null,
+            "javaHome": null,
+            "major": null,
+            "origin": "java_home -V",
+            "version": null
+          },
+          {
+            "eligible": false,
+            "executable": "$TEMP_ROOT/fixtures/missing/host/Applications/Android Studio.app/Contents/jbr/Contents/Home/bin/java",
+            "executed": false,
+            "exists": false,
+            "exitCode": null,
+            "javaHome": null,
+            "major": null,
+            "origin": "Android Studio JBR",
+            "version": null
+          }
+        ],
+        "kernelState": "alive",
+        "physical": {
+          "connected": 0,
+          "connectedUnknown": false,
+          "discovered": 0,
+          "discoveredUnknown": false,
+          "readyForXcuitest": 0,
+          "readyForXcuitestUnknown": false,
+          "usableForDevelopment": 0,
+          "usableForDevelopmentUnknown": false
+        },
+        "platformEvidence": "synthetic-fixture",
+        "scope": "synthetic-fixture",
+        "selectedJava": {
+          "executable": null,
+          "reason": "All four candidates are missing; none could execute or establish Java 21 eligibility. Installing Java would require approval."
+        },
+        "sessionStarted": false,
+        "simulators": {
+          "discovered": 0,
+          "discoveredUnknown": false,
+          "runtimeCount": 0,
+          "runtimeCountUnknown": false
+        },
+        "taskOutcome": "completed"
+      },
+      "finalResponseBytes": 2372,
+      "finalResponseSha256": "8d8b9d3eb008a84b627b11c69f08a8ae4f31363e730aa538c92508135767f1a2",
+      "fixtureJournal": {
+        "commands": [
+          {
+            "argv": [
+              "$TEMP_ROOT/fixtures/missing/tools/java_home",
+              "-V"
+            ],
+            "exitCode": 1,
+            "kind": "java-inventory"
+          },
+          {
+            "argv": [
+              "$TEMP_ROOT/fixtures/missing/tools/devicectl",
+              "list",
+              "devices",
+              "--json-output",
+              "$TEMP_ROOT/fixtures/missing/out/devicectl-devices.json"
+            ],
+            "exitCode": 0,
+            "kind": "apple-physical"
+          },
+          {
+            "argv": [
+              "$TEMP_ROOT/fixtures/missing/tools/simctl",
+              "list",
+              "devices",
+              "--json"
+            ],
+            "exitCode": 0,
+            "kind": "apple-simulators"
+          },
+          {
+            "argv": [
+              "$TEMP_ROOT/fixtures/missing/tools/simctl",
+              "list",
+              "runtimes",
+              "--json"
+            ],
+            "exitCode": 0,
+            "kind": "apple-runtimes"
+          }
+        ]
+      },
+      "id": "missing",
+      "mcpEnvironmentKeys": [
+        "ANDROID_AVD_HOME",
+        "ANDROID_HOME",
+        "ANDROID_SDK_ROOT",
+        "DEVELOPER_DIR",
+        "HOME",
+        "JAVA_HOME",
+        "PATH"
+      ],
+      "mcpServers": [
+        {
+          "name": "WorkIQ",
+          "source": null,
+          "status": "disabled"
+        },
+        {
+          "name": "amkernel",
+          "source": "workspace",
+          "status": "connected"
+        },
+        {
+          "name": "browser-use",
+          "source": null,
+          "status": "disabled"
+        },
+        {
+          "name": "github-copilot-browser",
+          "source": null,
+          "status": "disabled"
+        },
+        {
+          "name": "github-mcp-server",
+          "source": "builtin",
+          "status": "disabled"
+        },
+        {
+          "name": "githubiq",
+          "source": null,
+          "status": "disabled"
+        }
+      ],
+      "observed": {
+        "kernelStates": [
+          "alive"
+        ],
+        "mcp": [
+          {
+            "name": "WorkIQ",
+            "source": null,
+            "status": "disabled"
+          },
+          {
+            "name": "amkernel",
+            "source": "workspace",
+            "status": "connected"
+          },
+          {
+            "name": "browser-use",
+            "source": null,
+            "status": "disabled"
+          },
+          {
+            "name": "github-copilot-browser",
+            "source": null,
+            "status": "disabled"
+          },
+          {
+            "name": "github-mcp-server",
+            "source": "builtin",
+            "status": "disabled"
+          },
+          {
+            "name": "githubiq",
+            "source": null,
+            "status": "disabled"
+          }
+        ],
+        "pythonCallStatuses": [
+          {
+            "index": 3,
+            "kernelState": "alive",
+            "status": "completed"
+          }
+        ]
+      },
+      "platformEvidence": "synthetic-fixture",
+      "probe": null,
+      "probeJournal": null,
+      "process": {
+        "durationMs": 34150,
+        "eventCount": 2275,
+        "exitCode": 0,
+        "malformedEventLines": 0,
+        "runnerCleanup": [
+          {
+            "observedExit": true,
+            "reason": "process-exit",
+            "runnerPid": 29266
+          }
+        ],
+        "timedOut": false
+      },
+      "promptBytes": 10189,
+      "promptSha256": "c0612c369a37304c121b0e29cb20d3db16d75dd44ddc4826d791e51096f7e9d1",
+      "scope": "synthetic-fixture",
+      "selectionEvidence": {
+        "expectedJava": null,
+        "expectedMatch": true,
+        "journalKinds": [
+          "java-inventory",
+          "apple-physical",
+          "apple-simulators",
+          "apple-runtimes"
+        ],
+        "minimumJavaMajor": 21,
+        "physicalExpectation": {
+          "connected": 0,
+          "connectedUnknown": false,
+          "discovered": 0,
+          "discoveredUnknown": false,
+          "readyForXcuitest": null,
+          "readyForXcuitestUnknown": true,
+          "usableForDevelopment": null,
+          "usableForDevelopmentUnknown": true
+        },
+        "reportedJava": null,
+        "simulatorExpectation": {
+          "discovered": 0,
+          "discoveredUnknown": false,
+          "runtimeCount": 0,
+          "runtimeCountUnknown": false
+        }
+      },
+      "startedAt": "2026-11-02T17:49:54.531929Z",
+      "status": "failed",
+      "stderr": "",
+      "title": "synthetic host has no Java candidate and empty Apple inventories",
+      "toolCalls": [
+        {
+          "arguments": {
+            "keys": [
+              "skill"
+            ],
+            "skill": "amkernel"
+          },
+          "completedAt": "2026-11-02T17:50:00.963Z",
+          "index": 1,
+          "startedAt": "2026-11-02T17:50:00.960Z",
+          "success": true,
+          "toolName": "skill"
+        },
+        {
+          "arguments": {
+            "keys": [
+              "path"
+            ],
+            "pathBytes": 155,
+            "pathSha256": "2bed3e0245d35373136577bc6d8965f7c03f88df2f71c665894509de25045ef5"
+          },
+          "completedAt": "2026-11-02T17:50:02.966Z",
+          "index": 2,
+          "startedAt": "2026-11-02T17:50:02.962Z",
+          "success": true,
+          "toolName": "view"
+        },
+        {
+          "arguments": {
+            "keys": [
+              "codeBytes",
+              "codeSha256",
+              "timeout"
+            ]
+          },
+          "completedAt": "2026-11-02T17:50:22.444Z",
+          "executionCount": 1,
+          "executionObservation": {
+            "durationMs": 1317,
+            "errorType": null,
+            "executionCount": 1,
+            "factObjects": [
+              {
+                "approvalRequired": true,
+                "javaCandidates": [
+                  {
+                    "eligible": false,
+                    "executable": "$TEMP_ROOT/fixtures/missing/host/jdks/explicit-primary/bin/java",
+                    "executed": false,
+                    "exists": false,
+                    "exitCode": null,
+                    "javaHome": null,
+                    "major": null,
+                    "origin": "JAVA_HOME",
+                    "version": null
+                  },
+                  {
+                    "eligible": false,
+                    "executable": "$TEMP_ROOT/fixtures/missing/tools/java",
+                    "executed": false,
+                    "exists": false,
+                    "exitCode": null,
+                    "javaHome": null,
+                    "major": null,
+                    "origin": "PATH",
+                    "version": null
+                  },
+                  {
+                    "eligible": false,
+                    "executable": "$TEMP_ROOT/fixtures/missing/host/Library/Java/JavaVirtualMachines/registered-tertiary.jdk/Contents/Home/bin/java",
+                    "executed": false,
+                    "exists": false,
+                    "exitCode": null,
+                    "javaHome": null,
+                    "major": null,
+                    "origin": "java_home -V",
+                    "version": null
+                  },
+                  {
+                    "eligible": false,
+                    "executable": "$TEMP_ROOT/fixtures/missing/host/Applications/Android Studio.app/Contents/jbr/Contents/Home/bin/java",
+                    "executed": false,
+                    "exists": false,
+                    "exitCode": null,
+                    "javaHome": null,
+                    "major": null,
+                    "origin": "Android Studio JBR",
+                    "version": null
+                  }
+                ],
+                "physical": {
+                  "connected": 0,
+                  "connectedUnknown": false,
+                  "discovered": 0,
+                  "discoveredUnknown": false,
+                  "readyForXcuitest": 0,
+                  "readyForXcuitestUnknown": false,
+                  "usableForDevelopment": 0,
+                  "usableForDevelopmentUnknown": false
+                },
+                "simulators": {
+                  "discovered": 0,
+                  "discoveredUnknown": false,
+                  "runtimeCount": 0,
+                  "runtimeCountUnknown": false
+                }
+              }
+            ],
+            "kernelState": "alive",
+            "outputTruncated": false,
+            "runtime": {
+              "environmentKind": "active_venv",
+              "executable": "$TEMP_ROOT/tools/amkernel/bin/python",
+              "implementation": "CPython",
+              "platform": "macOS-26.6.2-arm64-64bit",
+              "pythonVersion": "3.11.16",
+              "workingDirectory": "$TEMP_ROOT/project"
+            },
+            "status": "completed",
+            "stderrBytes": 0,
+            "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdoutBytes": 1587,
+            "stdoutLineCount": 1,
+            "stdoutSha256": "9e388296a3243681969a980a0896e5dc6a6689b567b21a7ef9b4c0c8ca54db17"
+          },
+          "index": 3,
+          "kernelState": "alive",
+          "mcpConfigServerName": "amkernel",
+          "mcpConfigSource": "workspace",
+          "mcpServerName": "amkernel",
+          "mcpToolName": "python_exec",
+          "mcpTransport": "stdio",
+          "observedStatus": "completed",
+          "outputTruncated": false,
+          "startedAt": "2026-11-02T17:50:21.068Z",
+          "success": true,
+          "toolName": "amkernel-python_exec"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 1,
+  "scope": "Native GitHub Copilot CLI discovery behavior through an installed AMKernel wheel; synthetic host facts are not platform evidence",
+  "startedAt": "2026-11-02T17:47:54.060613Z",
+  "summary": {
+    "blocked": 0,
+    "externalStateRegression": false,
+    "externalStateUnchanged": true,
+    "failed": 2,
+    "isolationRegression": false,
+    "isolationUnchanged": true,
+    "passed": 2,
+    "selected": 4,
+    "status": "failed"
+  },
+  "wheel": {
+    "bytes": 186226,
+    "filename": "amkernel-0.1.0-py3-none-any.whl",
+    "sha256": "c978eef9ebe44476258311354b4282c0d2f7b78287c5e39c6f49c10b74c2d94c"
+  }
+}

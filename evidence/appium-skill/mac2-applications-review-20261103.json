@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "scope": "Independent corrected experiment-source and actual failed-M1 evidence review; no application qualification.",
+  "source": "mac2-applications-source-20261103.json",
+  "applicationOriginalSha256": "f77b2f20815adfd492e460ce34d4bbd528e33ec0538252c3c8707fc623af2d6c",
+  "reviews": [
+    {
+      "reviewer": "TextEditGateReview",
+      "initialMajor": 5,
+      "resolved": [
+        "Actual actions only; labels observed before action",
+        "M6/M7 target title and descendant content bound to session and ordering",
+        "M2 one literal save invocation including bundled keys and failed attempts; no post-close save",
+        "Observed source-bound sheet/dialog type for collision cancellation",
+        "Only successful root session DELETE relinquishes ownership"
+      ],
+      "remaining": {
+        "blocker": 0,
+        "major": 0,
+        "minor": 0
+      }
+    },
+    {
+      "reviewer": "FinderGateReview",
+      "initialMajor": 6,
+      "resolved": [
+        "Unambiguous new-window creation identity and baseline preservation",
+        "Only direct window attributes establish window titles",
+        "Emergency restoration trigger includes unresolved owned Finder window",
+        "Receipt refresh with title continuity through second M4 navigation",
+        "Fresh selected-element action before post-action verification",
+        "Owned fixture-only TextEdit emergency restoration including M1",
+        "M4 explicit post-selection pre-close and separate post-close window observations"
+      ],
+      "remaining": {
+        "blocker": 0,
+        "major": 0,
+        "minor": 0
+      }
+    },
+    {
+      "reviewer": "TextEditGateReview",
+      "scope": "Successful direct-WDA scalar fallback preserves authoritative driver null and rejects failed/non-W3C responses",
+      "remaining": {
+        "blocker": 0,
+        "major": 0,
+        "minor": 0
+      }
+    }
+  ],
+  "independentReviewLimits": [
+    "Read-only source review; reviewers ran no UI, commands, tests, builds or formatters.",
+    "No scenario qualification from source review or synthetic smoke alone."
+  ],
+  "throwawaySmokeUniqueChecks": 57,
+  "actualScenarioStatus": "All three actual M1 attempts remain not-qualified. Latest visible rerun proves real clicks/descendant reads and exposes one Major verifier ID-stability defect plus unresolved duplicate-window logical identity/ownership. M2–M7 unexercised.",
+  "actualEvidenceReview": {
+    "reviewer": "TextEditGateReview",
+    "evidence": "mac2-m1-retry-20261103.json",
+    "sha256": "d7eb8a92f0ba07f19273ea65c9d3823594b7169c7daa62d76fa842ae0180b9de",
+    "source": "mac2-m1-retry-source-20261103.json",
+    "clientWheelProvenance": "mac2-applications-source-20261103.json",
+    "prerequisiteObservation": "mac2-desktop-prerequisite-20261103.json",
+    "blocker": 0,
+    "major": 0,
+    "minor": 0,
+    "disposition": "not-qualified",
+    "observations": {
+      "actualMac2TextEditSession": true,
+      "targetDeepLinkDoesNotProveDocumentOpened": true,
+      "allWindowQueriesEmpty": true,
+      "nativeExecutions": 14,
+      "allNativeKernelStatesAlive": true,
+      "failedExecutions": [
+        1,
+        8
+      ],
+      "timedOutAliveExecutions": [
+        10
+      ],
+      "desktopObservedDimensionsRestored": true,
+      "successfulSameSessionDelete": true,
+      "emptySessionListingBeforeStop": true,
+      "ownedServerGroupPortsAndRunnerExitObserved": true,
+      "emergencyRestorationAttempted": false,
+      "canonicalReport": {
+        "taskOutcome": "blocked",
+        "stateRestoration": "restored",
+        "sessionCleanup": "cleaned",
+        "serverCleanup": "not-owned"
+      }
+    },
+    "classifierLimit": "Frozen parse_executions rejects timed_out as unsupported, invalidating aggregate history and attribution. Derived allKernelsObservedAlive=false is not evidence of kernel death. The failed M1 is not reclassified or rewritten.",
+    "reviewLimits": [
+      "Read-only source/evidence review; no commands, UI, tests or reruns.",
+      "Reviewer inspected frozen source but did not recompute hashes or independently attest executed source bytes.",
+      "Post-run lock observation does not establish lock duration or exclusive cause of all failures.",
+      "No Runtime failure, driver incompatibility or passing M1 follows."
+    ],
+    "nextGate": "Owner unlocks desktop; recheck readiness and obtain a qualified independently reviewed M1 before ordered M2–M7."
+  },
+  "latestReview": "mac2-m1-visible-review-20261103.json",
+  "currentFindings": {
+    "blocker": 0,
+    "major": 1,
+    "minor": 0
+  }
+}

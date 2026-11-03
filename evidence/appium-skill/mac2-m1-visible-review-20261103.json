@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "scope": "Independent review of owner-observed unchanged-procedure real M1 rerun; not application qualification.",
+  "reviewer": "TextEditGateReview",
+  "evidence": "mac2-m1-visible-20261103.json",
+  "sha256": "506b9ff1dcaa61fccf78327917f76eb2b8e3dff094b25b806a510038ab746f3e",
+  "source": "mac2-m1-visible-source-20261103.json",
+  "sourceApplicationSha256": "f77b2f20815adfd492e460ce34d4bbd528e33ec0538252c3c8707fc623af2d6c",
+  "disposition": "not-qualified",
+  "findings": {
+    "blocker": 0,
+    "major": 1,
+    "minor": 0
+  },
+  "majorFinding": {
+    "location": "Frozen applications.py:645–658, _m1_ordered_sequence",
+    "problem": "Requires identical query-local target window ID across fresh window queries, which return new IDs; four failed flags share this predicate.",
+    "observedSequence": {
+      "target": {
+        "title": 52,
+        "click": 55,
+        "scopedDescendantQuery": 57,
+        "contentRead": 58
+      },
+      "distractor": {
+        "title": 71,
+        "click": 72,
+        "scopedDescendantQuery": 74,
+        "contentRead": 75
+      },
+      "targetAfterRequery": {
+        "title": 78,
+        "click": 81,
+        "scopedDescendantQuery": 83,
+        "contentRead": 84
+      }
+    },
+    "safeFixBoundary": "Prove logical task document/window identity independently across queries; equal title or equal synthetic text alone cannot merge windows."
+  },
+  "unresolvedIdentityGate": {
+    "startupWindowsBeforeExplicitOpen": 2,
+    "startupTargetTitleMatches": 2,
+    "laterWindowCount": 4,
+    "laterTargetTitleMatches": 3,
+    "eachTargetMatchedSameSyntheticText": true,
+    "underlyingDocumentPathsOrCrossQueryContinuityProven": false,
+    "startupOrigin": "unestablished; do not infer personal contents or ownership"
+  },
+  "observedBehavior": {
+    "selectionPhaseRoles": [
+      "target",
+      "target",
+      "target",
+      "distractor",
+      "target",
+      "target",
+      "target"
+    ],
+    "allKernelsAlive": true,
+    "nativeExecutionCount": 16,
+    "nativeFinalTaskClaim": "completed",
+    "overallQualification": "not-qualified"
+  },
+  "cleanupScope": {
+    "finalZeroWindowQueryIndex": 124,
+    "restorationBeforeSuccessfulSessionDeleteIndex": 129,
+    "emptySessionDiscoveryIndex": 133,
+    "textEditAbsentAndGhosttyRestored": true,
+    "syntheticFilesUnchanged": true,
+    "ownedServerGroupPortsAndRunnerExitObserved": true,
+    "emergencyRestorationAttempted": false,
+    "limits": [
+      "No proof of unrecorded application-history preservation.",
+      "No proof that all startup windows belonged to this run."
+    ]
+  },
+  "reviewLimits": [
+    "Read-only source/evidence review; no UI rerun or commands.",
+    "Source digest inspected via sidecar; no independent hash recomputation.",
+    "Missing lock key at preflight is not explicit false; prior post-run true never established exclusive cause."
+  ],
+  "nextGate": "Correct and behavior-check query-local identity handling and establish unambiguous ownership before another M1 qualification attempt; do not advance M2–M7."
+}

@@ -25,8 +25,12 @@ The installed executable is shared, but every project MCP attachment starts an i
 A project activation contains:
 
 - one copied Skill at `.agents/skills/amkernel`;
+- every official Skill selected by the pinned manifest under `.agents/skills/<name>`;
+- the complete pinned Appium Skills source tree at `.agents/vendor/appium-skills/<commit>`;
 - one idempotent AMKernel entry in the selected Agent's native project MCP configuration;
 - the canonical project path as the MCP process working directory.
+
+The official source is distributed as a wheel resource archive with a pinned sha256, repository, and commit. Activation verifies the archive digest and every member hash before extracting it, then writes a project receipt and exact per-file ownership. Receipt identity is not trusted alone: status and the packaged verifier must also match every source and Skill hash against the trusted manifest. The verifier requires that managed receipt and binds its runtime version to the installed main Skill metadata; a missing or drifted receipt fails closed and is repaired by the installer. Legacy checkouts are adopted only by exact-content reinstall, not by a second provenance backend. The installer does not require a git checkout or network access.
 
 Project activation never installs Appium, starts external services, or creates automation sessions. Ambiguous Agent detection does not modify multiple clients.
 
@@ -50,13 +54,13 @@ amkernel uninstall
 amkernel uninstall --global
 ```
 
-`install` repairs the user-level Runtime and activates the current project. `status` is read-only. `update` is explicit, updates the global Runtime and current project integration, and discloses the cross-project Runtime impact. Plain `uninstall` removes only the current project Skill and MCP entry. `uninstall --global` requires explicit confirmation, removes the user-level Runtime, reports known project references, and does not delete project files or external automation resources.
+`install` repairs the user-level Runtime and activates the current project. A fresh managed Runtime installs a compatible official Appium Python SDK selected at install time; it does not invent a narrower or older-SDK-incompatible constraint. `status` is read-only. `update` is explicit, updates the global Runtime and current project integration, and discloses the cross-project Runtime impact. Plain `uninstall` removes only the current project Skill and MCP entry. `uninstall --global` requires explicit confirmation, removes the user-level Runtime, reports known project references, and does not delete project files or external automation resources.
 
 Human output and bounded JSON output describe paths, versions, changes, restart requirements, and failures without credentials. Noninteractive mutation requires explicit client, project scope, consent, and JSON options.
 
 ### Initial client and platform boundary
 
-Small adapters own project configuration for OMP, Pi, and Codex. The standard Skill path is shared. The Runtime remains subject to the native platform evidence and support policy; distribution does not broaden Stage 1 support claims.
+Small adapters own project configuration for OMP, Pi, Codex, and GitHub Copilot. OMP, Pi, and Copilot use JSON project configuration; Codex uses TOML. Copilot discovers Skills from the shared `.agents/skills` path, so activation does not create a second Skill copy. Copilot applies exactly one project MCP file at a time with whole-file precedence: the adapter uses an existing `.mcp.json`, otherwise an existing `.github/mcp.json`, otherwise it creates `.mcp.json`. It preserves every unrelated entry in the selected file, never creates both files or migrates between them, and leaves the inactive file untouched when both exist. Status verifies only the active file rather than claiming an inactive entry is loaded. Copilot also requires explicit folder trust before project MCP servers load, so status and human output carry a trust notice rather than claiming readiness. The Runtime remains subject to the native platform evidence and support policy; distribution does not broaden Stage 1 support claims.
 
 ## Consequences
 
@@ -104,8 +108,10 @@ Rejected. Two implementations drift in paths, consent, idempotency, and failure 
 2. Repeated installation leaves one unchanged Skill and one MCP entry.
 3. Two projects use the same installed executable but distinct Server, Runner, namespace, cwd, and lifecycle state.
 4. Ambiguous client detection performs no mutation.
-5. Status is read-only and reports Runtime, Skill, MCP, version, and restart state.
+5. Status is read-only and reports Runtime, Skill, MCP, version, provenance, content verification, and restart state.
 6. Update discloses global impact and repairs the current project integration.
-7. Project uninstall leaves the global Runtime and other projects usable.
+7. Project uninstall leaves the global Runtime and other projects usable, removing only files whose recorded hashes still match.
 8. Global uninstall requires explicit confirmation, removes only managed global resources, and reports remaining project references.
-9. Focused adapter, transaction, output-bound, and end-to-end tests pass on every claimed platform.
+9. A clean external project installs from the pinned archive without a source checkout or network fetch.
+10. Modified or unowned official files survive uninstall; a failed activation restores prior files and removes only directories it created.
+11. Focused adapter, transaction, output-bound, and end-to-end tests pass on every claimed platform.

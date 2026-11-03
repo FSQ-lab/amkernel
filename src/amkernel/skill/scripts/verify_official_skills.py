@@ -6,14 +6,14 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import os
 import stat
-import subprocess
 from pathlib import Path
 from typing import Any
 
 SKILL_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_MANIFEST = SKILL_ROOT / "references" / "official-skills.json"
+OFFICIAL_STATE = Path(".agents") / "amkernel-official.json"
+MAIN_METADATA = Path(".agents") / "skills" / "amkernel" / ".amkernel-metadata.json"
 
 
 def _digest(path: Path) -> str:
@@ -32,9 +32,10 @@ def _tree_entries(root: Path) -> tuple[set[str], set[str], set[str]]:
         return files, symlinks, invalid
     for path in root.rglob("*"):
         relative = path.relative_to(root)
-        if ".git" in relative.parts:
-            continue
         name = relative.as_posix()
+        if ".git" in relative.parts:
+            invalid.add(name)
+            continue
         mode = path.lstat().st_mode
         if stat.S_ISLNK(mode):
             symlinks.add(name)
@@ -99,19 +100,6 @@ def _location(value: Any, label: str) -> Path:
     return path
 
 
-def _git(root: Path, *arguments: str) -> subprocess.CompletedProcess[str]:
-    environment = dict(os.environ)
-    environment["GIT_CONFIG_GLOBAL"] = os.devnull
-    environment["GIT_CONFIG_SYSTEM"] = os.devnull
-    return subprocess.run(
-        ["git", "-C", str(root), *arguments],
-        check=False,
-        capture_output=True,
-        text=True,
-        env=environment,
-    )
-
-
 def _validated_root(
     project_root: Path, location: Path, label: str
 ) -> tuple[Path | None, list[str]]:
@@ -143,31 +131,126 @@ def _validated_root(
     return current, []
 
 
-def _canonical_repository(value: str) -> str:
-    return value.removesuffix(".git").rstrip("/")
+def _load_receipt(project_root: Path) -> tuple[dict[str, Any] | None, list[str]]:
+    current = project_root
+    for component in OFFICIAL_STATE.parent.parts:
+        current = current / component
+        try:
+            mode = current.lstat().st_mode
+        except FileNotFoundError:
+            return None, [f"official source receipt: missing: {current}"]
+        except OSError as error:
+            return None, [f"official source receipt: inaccessible: {current}: {error}"]
+        if stat.S_ISLNK(mode):
+            return None, [
+                f"official source receipt: linked location component is forbidden: {current}"
+            ]
+        if not stat.S_ISDIR(mode):
+            return None, [
+                f"official source receipt: location component is not a directory: {current}"
+            ]
+    path = current / OFFICIAL_STATE.name
+    try:
+        mode = path.lstat().st_mode
+    except FileNotFoundError:
+        return None, [f"official source receipt: missing: {path}"]
+    except OSError as error:
+        return None, [f"official source receipt: inaccessible: {error}"]
+    if stat.S_ISLNK(mode):
+        return None, [f"official source receipt: linked file is forbidden: {path}"]
+    if not stat.S_ISREG(mode):
+        return None, [f"official source receipt: not a regular file: {path}"]
+    try:
+        document = json.loads(path.read_text(encoding="utf-8"))
+        return _mapping(document, "official source receipt"), []
+    except (OSError, UnicodeError, json.JSONDecodeError, ValueError) as error:
+        return None, [f"official source receipt: invalid: {error}"]
 
 
-def _verify_provenance(root: Path, repository: str, commit: str) -> list[str]:
+def _load_main_metadata(project_root: Path) -> tuple[str | None, list[str]]:
+    root, errors = _validated_root(project_root, MAIN_METADATA.parent, "main Skill metadata")
+    if root is None:
+        return None, errors
+    path = root / MAIN_METADATA.name
+    try:
+        mode = path.lstat().st_mode
+    except FileNotFoundError:
+        return None, [f"main Skill metadata: missing: {path}"]
+    except OSError as error:
+        return None, [f"main Skill metadata: inaccessible: {error}"]
+    if stat.S_ISLNK(mode):
+        return None, [f"main Skill metadata: linked file is forbidden: {path}"]
+    if not stat.S_ISREG(mode):
+        return None, [f"main Skill metadata: not a regular file: {path}"]
+    try:
+        document = json.loads(path.read_text(encoding="utf-8"))
+        value = _mapping(document, "main Skill metadata")
+        runtime_version = value.get("runtimeVersion")
+        if not isinstance(runtime_version, str) or not runtime_version.strip():
+            raise ValueError("runtimeVersion must be a non-empty string")
+        _file_map(value.get("files"), "main Skill metadata files")
+        return runtime_version, []
+    except (OSError, UnicodeError, json.JSONDecodeError, ValueError) as error:
+        return None, [f"main Skill metadata: invalid: {error}"]
+
+
+def _verify_receipt(
+    receipt: dict[str, Any],
+    repository: str,
+    commit: str,
+    source_location: Path,
+    source_files: dict[str, str],
+    archive_path: str,
+    archive_digest: str,
+    installed: dict[str, tuple[Path, dict[str, str]]],
+    runtime_version: str,
+) -> list[str]:
     errors: list[str] = []
-    head = _git(root, "rev-parse", "--verify", "HEAD")
-    if head.returncode != 0:
-        return [f"official source: not a Git checkout: {root}"]
-    if head.stdout.strip() != commit:
+    if receipt.get("schemaVersion") != 1:
+        errors.append("official source receipt: schemaVersion must be 1")
+    receipt_version = receipt.get("runtimeVersion")
+    if not isinstance(receipt_version, str):
+        errors.append("official source receipt: runtimeVersion must be a string")
+    elif receipt_version != runtime_version:
         errors.append(
-            f"official source: HEAD mismatch: expected {commit}, got {head.stdout.strip()}"
+            "official source receipt: runtimeVersion mismatch: "
+            f"expected {runtime_version}, got {receipt_version}"
         )
-
-    branch = _git(root, "symbolic-ref", "-q", "HEAD")
-    if branch.returncode == 0:
-        errors.append(f"official source: HEAD must be detached, got {branch.stdout.strip()}")
-
-    origin = _git(root, "config", "--get", "remote.origin.url")
-    if origin.returncode != 0:
-        errors.append("official source: missing origin URL")
-    elif _canonical_repository(origin.stdout.strip()) != _canonical_repository(repository):
-        errors.append(
-            f"official source: origin mismatch: expected {repository}, got {origin.stdout.strip()}"
-        )
+    if receipt.get("repository") != repository:
+        errors.append("official source receipt: repository mismatch")
+    if receipt.get("commit") != commit:
+        errors.append("official source receipt: commit mismatch")
+    archive = receipt.get("archive")
+    if not isinstance(archive, dict):
+        errors.append("official source receipt: archive must be an object")
+    else:
+        if archive.get("path") != archive_path:
+            errors.append("official source receipt: archive path mismatch")
+        if archive.get("sha256") != archive_digest:
+            errors.append("official source receipt: archive sha256 mismatch")
+    receipt_source = receipt.get("source")
+    if not isinstance(receipt_source, dict):
+        errors.append("official source receipt: source must be an object")
+    else:
+        if receipt_source.get("path") != source_location.as_posix():
+            errors.append("official source receipt: source path mismatch")
+        if receipt_source.get("files") != source_files:
+            errors.append("official source receipt: source files mismatch")
+    receipt_skills = receipt.get("skills")
+    if not isinstance(receipt_skills, dict):
+        errors.append("official source receipt: skills must be an object")
+    else:
+        if set(receipt_skills) != set(installed):
+            errors.append("official source receipt: skill list mismatch")
+        for name, (location, files) in installed.items():
+            entry = receipt_skills.get(name)
+            if not isinstance(entry, dict):
+                errors.append(f"official source receipt: invalid entry for {name}")
+                continue
+            if entry.get("path") != location.as_posix():
+                errors.append(f"official source receipt: path mismatch for {name}")
+            if entry.get("files") != files:
+                errors.append(f"official source receipt: files mismatch for {name}")
     return errors
 
 
@@ -191,43 +274,67 @@ def verify(manifest_path: Path, project_root: Path) -> list[str]:
 
         source = _mapping(manifest.get("source"), "source")
         source_location = _location(source.get("generatedLocation"), "source.generatedLocation")
-        source_root, errors = _validated_root(project_root, source_location, "official source")
         source_files = _file_map(source.get("files"), "source.files")
-        if source_root is not None:
-            errors.extend(_verify_provenance(source_root, repository, commit))
-            errors.extend(_verify_tree(source_root, source_files, "official source"))
 
-        installed = manifest.get("installedSkills")
-        if not isinstance(installed, list) or not installed:
+        installed_document = manifest.get("installedSkills")
+        if not isinstance(installed_document, list) or not installed_document:
             raise ValueError("installedSkills must be a non-empty array")
-        for index, item in enumerate(installed):
+        entries: dict[str, tuple[Path, dict[str, str]]] = {}
+        for index, item in enumerate(installed_document):
             skill = _mapping(item, f"installedSkills[{index}]")
             name = skill.get("name")
             if not isinstance(name, str):
                 raise ValueError(f"installedSkills[{index}].name must be a string")
+            if name in entries:
+                raise ValueError(f"duplicate installed skill name: {name}")
             runtime_location = _location(
                 skill.get("generatedLocation"),
                 f"installedSkills[{index}].generatedLocation",
             )
-            agent_location = _location(
-                skill.get("selectedAgentLocation"),
-                f"installedSkills[{index}].selectedAgentLocation",
-            )
-            if skill.get("selectedAgentMode") != "copy":
-                raise ValueError(f"installedSkills[{index}].selectedAgentMode must be copy")
             files = _file_map(skill.get("files"), f"installedSkills[{index}].files")
+            entries[name] = (runtime_location, files)
+
+        receipt, receipt_errors = _load_receipt(project_root)
+        if receipt_errors:
+            return receipt_errors
+        if receipt is None:
+            return ["official source receipt: missing"]
+        archive = source.get("archive")
+        if not isinstance(archive, dict):
+            raise ValueError("source.archive must be an object for a source receipt")
+        archive_location = _location(archive.get("path"), "source.archive.path").as_posix()
+        archive_digest = archive.get("sha256")
+        if not isinstance(archive_digest, str):
+            raise ValueError("source.archive.sha256 must be a string")
+        runtime_version, metadata_errors = _load_main_metadata(project_root)
+        if metadata_errors or runtime_version is None:
+            return metadata_errors or ["main Skill metadata: invalid runtimeVersion"]
+        errors = _verify_receipt(
+            receipt,
+            repository,
+            commit,
+            source_location,
+            source_files,
+            archive_location,
+            archive_digest,
+            entries,
+            runtime_version,
+        )
+        if errors:
+            return errors
+        source_root, source_errors = _validated_root(
+            project_root, source_location, "official source"
+        )
+        errors.extend(source_errors)
+        if source_root is not None:
+            errors.extend(_verify_tree(source_root, source_files, "official source"))
+        for name, (runtime_location, files) in entries.items():
             runtime_root, runtime_errors = _validated_root(
                 project_root, runtime_location, f"runtime skill {name}"
             )
             errors.extend(runtime_errors)
             if runtime_root is not None:
                 errors.extend(_verify_tree(runtime_root, files, f"runtime skill {name}"))
-            agent_root, agent_errors = _validated_root(
-                project_root, agent_location, f"selected-agent skill {name}"
-            )
-            errors.extend(agent_errors)
-            if agent_root is not None:
-                errors.extend(_verify_tree(agent_root, files, f"selected-agent skill {name}"))
         return errors
     except (OSError, UnicodeError, json.JSONDecodeError, ValueError) as error:
         return [f"manifest verification failed: {error}"]

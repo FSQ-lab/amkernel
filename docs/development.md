@@ -182,6 +182,20 @@ The accepted implementation stack must provide, from a fresh checkout:
 
 These commands must run in CI. Local hooks may provide fast feedback, but hooks are never the authoritative gate.
 
+Before pushing a delivery branch, run the same quality commands as hosted CI:
+
+```bash
+uv lock --check
+uv run ruff format --check .
+uv run ruff check .
+uv run mypy src tests
+uv run pytest
+uv build
+```
+
+Lint does not check formatting; a successful `ruff check` does not replace
+`ruff format --check`.
+
 ### Gate 2: Focused behavior
 
 Every change runs the smallest tests that fail for its plausible regressions. Core coverage must include, as applicable:

@@ -129,12 +129,200 @@ The formal repository was intentionally created design-only. A sibling spike exi
 
 ## Recommended next implementation slice
 
-S4-001 and S4-005 are independently accepted. Execute S4-010 next in GitHub Project order: run both
-the frozen deterministic scenario and unchanged Issue #82 through Codex CLI from a clean installed
-wheel, retain bounded auditable evidence, and do not tune either contract for client behavior.
+The owner authorized sequential first-release Appium remediation before resuming Stage 4 runs.
+Separate defects own the work: [#102](https://github.com/FSQ-lab/amkernel/issues/102) compatibility,
+[#103](https://github.com/FSQ-lab/amkernel/issues/103) Mac2 routing,
+[#104](https://github.com/FSQ-lab/amkernel/issues/104) complete Copilot installation,
+[#105](https://github.com/FSQ-lab/amkernel/issues/105) external-project installation verification,
+then [#98](https://github.com/FSQ-lab/amkernel/issues/98) real Agent behavior. Environment discovery
+[#106](https://github.com/FSQ-lab/amkernel/issues/106) and owned-state/conversation behavior
+[#107](https://github.com/FSQ-lab/amkernel/issues/107) remain separate contracts. Gmail privacy
+expansion #99 remains post-v1; Windows Android #100 still requires real Windows evidence.
 
-Preserve the experimental/unsupported mobile scope and keep Appium Server and device supervision
-external.
+#102 now distinguishes constraints, tested coverage, observed failures, and proven incompatibility.
+`evidence/appium-skill/compatibility-20261102.json` retains bounded real Copilot CLI 1.0.105 /
+gpt-6.1-sol calls: actual Python 3.11.16, Appium 5.2.5, Selenium 4.52.0, satisfied installed
+requirements, no session or dependency mutation. Both baseline and updated audits classified the
+pairing as unverified; this prompt did not reproduce a baseline hard-block. Independent Skill
+review found 0 Blocker/Major/Minor. Three focused provenance-verifier tests and Ruff passed.
+
+#103 adds the pinned Mac2 Skill and explicit host/target routing. Real Copilot route probes in
+`evidence/appium-skill/mac2-routing-20261102.json` chose `setup-mac2`, observed `Mac2Options`
+defaults (`Mac`/`Mac2`) through `python_exec`, and rejected XCUITest fallback and Windows Mac2.
+Both added official files matched the existing pinned source digests. These are route/options
+checks, not a Calculator session or a platform support claim. The separate new
+actual M0 Calculator baseline is recorded below; it does not relabel these probes.
+
+#104 now installs the main Skill, every referenced official Skill, and the complete pinned
+source archive without a development checkout or runtime network fetch. Copilot edits only
+its active project MCP file, preserves unrelated entries, and still requires explicit folder
+trust. Exact archive/source/copy hashes, receipt/runtime version, linked-path rejection,
+transactional upgrades, foreign-file preservation, and rollback file/directory permissions
+are checked. Focused installation/verifier/CLI checks: 59 passed; Ruff, mypy (53 source files),
+and wheel build passed. Final independent review has zero surviving findings. A clean external
+project and actual GitHub Copilot CLI 1.0.105 / gpt-6.1-sol passed 12 installation checks,
+including native Skill/MCP discovery, native loading of the fifth official Skill
+`xcuitest-real-device-config`, two persistent `python_exec` calls, fail-closed tamper
+and missing-copy repair, and native MCP coexistence in both existing-file layouts.
+This is installation evidence, not physical Mac2/Android/iOS or Windows qualification.
+Retained installation evidence is `evidence/appium-skill/copilot-install-20261102.json` (#105).
+
+#98 now has observed native installed-Skill/MCP behavior for all 16 synthetic
+scenarios through Copilot CLI 1.0.105 / gpt-6.1-sol. Retained evidence is
+`evidence/appium-skill/agent-behavior-20261103.json`; earlier failed runs remain
+unchanged beside it. The initial matrix also exposed a real Mac2 action-limit
+violation hidden by its old oracle: cleanup clicked a second time. Skill guidance
+and the final oracle preserve requested end state and enforce action limits across
+execution and cleanup. Exact report controls replace prose-based status inference;
+ambiguous-submit reconciliation requires a later successful completed/alive call
+observing the actual result. Global cleanup claims are checked against observed
+session, server and restored state. User configuration hashes remained unchanged;
+owned Runner exits are observed without claiming external-session cleanup after
+kernel death or deliberate DELETE failure. Full pytest: 443 passed; final focused
+checks: 38 passed; Ruff, mypy (55 source files), and wheel build passed. These are
+synthetic behavior results, not physical Mac2/Android/iOS or Windows qualification.
+Independent final source/protocol/guidance and all-scenario evidence review found
+0 Blocker / 0 Major / 0 P2; the retained review and source/evidence digests are in
+`evidence/appium-skill/agent-behavior-review-20261103.json`.
+
+#106 now has four passing native installed-Skill/MCP discovery cases: read-only
+actual-host discovery and synthetic explicit-Java preference, bundled-JBR fallback,
+and missing-capability environments. Final evidence is
+`evidence/appium-skill/environment-discovery-20261103.json`; the first run and the
+second run's two contract/oracle failures remain separately retained. Executable
+journals cross-check candidate existence, exit codes, actual version/home facts,
+and separate physical/simulator inventories against both printed and final facts.
+Approval flags concern the current request; readiness counts concern listed targets,
+so an independently observed empty population permits zero without qualifying the
+host. Nonempty unverified readiness remains unknown. Actual user configuration,
+profiles, active Xcode selection and observed service state remained unchanged;
+owned Runner exits were observed. Full pytest: 469 passed; Ruff, mypy (58 source
+files), and wheel build passed. No Appium session was created, and no physical
+platform or Windows support is established by these discovery results.
+Independent final source and four-case evidence review found 0 Blocker / 0 Major /
+0 P2; exact source/evidence digests and review limits are retained in
+`evidence/appium-skill/environment-discovery-review-20261103.json`.
+
+#107 now has completed Skill guidance and synthetic native-client verification
+for conversation/thread selection and task-owned visible-state restoration.
+Thread activity is distinct from nested-message recency; search/local filtering,
+timezone/precision evidence, refresh relocation and returned post-open identity
+are checked. Context/unknown fields cannot manufacture identity, semantics and
+precision metadata cannot stand in for timestamps, and narrowed searches do not
+erase unresolved earlier ties. Later disjoint normalized time intervals can
+resolve them. Approval, restoration-before-quit and separate cleanup outcomes
+remain observed contracts, not Runtime workflow APIs.
+
+#107 final verification at its recorded revision: **514 pytest passed**, Ruff passed, mypy passed
+(60 source files), wheel build passed, and the full installed-wheel/native Copilot
+matrix **18/18 passed** with unchanged recorded user configuration and observed
+owned Runner exits. Independent final source/artifact review: **0 Blocker / 0
+Major / 0 P2**. Final evidence, failed/intermediate iterations, source digests and
+review limits live in `evidence/appium-skill/conversation-final-20261103.json`,
+`conversation-review-20261103.json` and `final-provenance-20261103.json`. The final
+native uncertainty case covers coarse timestamps; other temporal/incomplete-search
+branches have regression coverage, not an additional physical-platform claim.
+
+The original ordered platform run is retained unchanged: external Copilot
+installation passed; initial Calculator/Mac2 created no successful session;
+Android discovery found no working Java/SDK/adb with unknown target counts;
+simctl returned zero runtimes/devices and devicectl returned zero physical targets.
+No dependency/runtime installation, pairing, permission, signing, simulator boot
+or global Xcode change was silently performed. Windows #100 still lacks a
+reachable host/Android target.
+
+The owner-authorized Mac2 retry subsequently created one real Calculator/Mac2
+session, observed foreground state `4` and one window, restored the initial
+Calculator/frontmost-app state, deleted the session, observed an empty session
+listing before server shutdown, and observed owned server/group/ports/Runner exit.
+Unchanged retry evidence is `evidence/appium-skill/mac2-retry-20261103.json`.
+Its original overall result remains `not-qualified`: the historical
+`nativeMcpCompletedAlive` predicate requires every call to complete successfully
+despite observed recovery with live kernels. The original evidence is unchanged.
+
+[#108](https://github.com/FSQ-lab/amkernel/issues/108) now replaces that blanket
+predicate with timestamp-bound recovery, independent target/restoration/cleanup
+checks, and four canonical report checks. Focused behavioral regressions: 79
+passed; full pytest: 593 passed. Ruff and mypy (63 files) passed. New actual
+external-project/native Copilot
+M0 evidence is `evidence/appium-skill/mac2-m0-20261103.json`: failed/alive execution
+2 is retained, and both actual Mac2/Calculator live queries occur inside later
+successful execution 6. One session, restoration before DELETE, empty session
+listing before server stop, and owned server/group/ports/Runner exit were observed.
+All 24 flags pass; the final report is completed/restored/cleaned/not-owned.
+Independent source and actual-evidence review: 0 Blocker / 0 Major / 0 Minor.
+Review record: `evidence/appium-skill/mac2-recovery-review-20261103.json`.
+Source/wheel/client identities and frozen verifier source are retained in
+`mac2-recovery-source-20261103.json`. This is not a Runtime, dependency-conflict or
+tablet finding; the preparation error's exact cause remains unestablished.
+See `docs/experiments/appium-agent-behavior.md` §13 for evidence boundaries.
+
+**Deferred by owner:** complex Mac scenarios under
+[#109](https://github.com/FSQ-lab/amkernel/issues/109), including TextEdit
+multi-window identity, edit/save/reopen, collision handling, Finder relocation,
+cross-app continuity and interruption/partial cleanup, belong to later evaluation.
+Mac is not the highest current priority. Stop M1–M7 execution and associated
+verifier development; they are not current delivery or ordinary-app gates.
+#108/M0 remains qualified. All three M1 attempts remain not-qualified; M2–M7 have
+not run. The retained evidence below is historical, not an instruction to resume
+this supplement. Earlier 57 isolated boundary checks and a clean source review
+missed the Major verifier defect later exposed by actual execution.
+
+The owner-observed unchanged-procedure retry is retained in
+`evidence/appium-skill/mac2-m1-visible-20261103.json`, with source/preflight in
+`mac2-m1-visible-source-20261103.json` and independent review in
+`mac2-m1-visible-review-20261103.json` (0 Blocker / 1 Major / 0 Minor).
+Unlike the earlier empty-window attempt, it observed actual Mac2 window clicks
+and scoped descendant-content reads. Its four failed flags share a predicate
+that incorrectly requires a query-local window ID to survive re-query. However,
+startup already exposed two target-title windows; later three target-title
+windows had indistinguishable synthetic text. Underlying paths and same-logical-
+window continuity remain unproved. Do not remove the ID comparison and promote
+this ambiguous result to passing. All 16 Python executions reported live kernels;
+synthetic files were unchanged, TextEdit was absent and Ghostty foreground after
+cleanup, with owned session/server/group/ports/Runner exit observed. This does not
+prove startup-window ownership or preservation of unrecorded application history.
+
+The earlier post-run lock observation remains historical evidence, not the
+established cause of its empty-window failure. The owner reported disabling lock;
+latest preflight observed Ghostty foreground, an active console, no TextEdit, and
+no returned lock key (not an explicit false). Do not require another lock-setting
+change or attribute the current identity failures to lock. Original failed and
+diagnostic records remain unchanged; regression order and deferred #97/#99 remain.
+
+
+Next: focus on ordinary Appium app operations—opening an app, finding an element,
+clicking, entering synthetic text and checking a simple visible result—with
+proportionate identity, approval and owned-cleanup checks. Resume the existing
+first-release platform priorities; do not extend the already-qualified cheap Mac2
+baseline into another complex Mac campaign. Re-discover available Android/iOS
+prerequisites rather than treating older discovery as current readiness.
+
+Keep #109 for later evaluation, with no deadline or release gate inferred. The
+unresolved verifier/identity issues are retained, not repaired or waived by this
+deferral. Subsequent task-only isolation and identity work stopped as unverified
+temporary drafts; no new UI run, source qualification or permanent setting change
+followed. Retained procedure/reviews remain in `mac2-applications-source-20261103.json`
+and `mac2-applications-review-20261103.json`. No Runtime, public tool or support
+claim changes.
+
+Owner-supervised ordinary mobile operations subsequently completed on Android
+(Calculator, Clock and Edge; Notes explicitly skipped) and a physical iPhone
+(Calculator, Clock, Notes and Edge). See
+`docs/experiments/appium-agent-behavior.md` §15 for observed results, approved
+task-local preparation, RemoteXPC recovery and verified tunnel cleanup. These are
+simple functional observations, not retained raw mobile evidence, independent
+platform acceptance, or completion of the fixed regression sequence. Android's
+initial tab-selection restoration and iOS's initial Settings foreground were not
+verified; browser history, approved pairing/permission choices and installed
+toolchains remain. No production code, public interface or support claim changed.
+
+Project #2 still lists S4-010 as In Progress and S4-030/#82 as Ready. The current credential has
+`read:project`, not board-write scope; the execution override and dependencies are recorded in
+Issues #102 and #81 rather than falsely claiming a board update. S4-001/#82 stay frozen and
+evidence-only items do not own these production changes. After remediation, resume S4-010 with
+both client-neutral layers through the installed wheel; preserve the experimental mobile support
+boundary and external Appium/device ownership.
 
 ## Acceptance criteria
 

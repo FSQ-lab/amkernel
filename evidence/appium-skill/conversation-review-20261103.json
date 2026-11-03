@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "issue": 107,
+  "reviewer": "FinalBehaviorSource",
+  "findings": {
+    "blocker": 0,
+    "major": 0,
+    "p2": 0
+  },
+  "scope": "Independent read-only source and current-source native artifact review; reviewer ran no commands/checks/edits.",
+  "sourceSha256": {
+    "src/amkernel/skill/SKILL.md": "01d0ec80ce8fd808df316141bc3d887645cc817fbb44b3e381a77c710b24353f",
+    "src/amkernel/skill/references/amkernel-appium.md": "a63922905780298e31985e506a53c421681f6e693223bea7e4f8ece825e6c0a8",
+    "tests/e2e/skill_behavior.py": "1a7fe90b10e71387498e8a31319ba09d0daa82e70bbf685ca5e82563b0398e58",
+    "tests/e2e/conversation_fixture.py": "82d91168575726acc9ea47b6100ebe75cc780b25d64028646dc197e9e2eccc59",
+    "tests/e2e/test_skill_behavior_evaluator.py": "044a52ef1de85558b8426cb8822c40850c5c8d92189c5e3cdd91b65edd6278eb",
+    "tests/e2e/test_conversation_fixture.py": "ebc2bb222b83de10d64fddd16980e411d56cdbff61b264ad7d7b4f3d30b228b3"
+  },
+  "evidenceFile": "conversation-final-20261103.json",
+  "evidenceSha256": "ef1828b0fd406d51cefb6d62b3e76d9302b5cc131a2634c88641d83369427348",
+  "nativeSummary": {
+    "blocked": 0,
+    "failed": 0,
+    "isolationRegression": false,
+    "isolationUnchanged": true,
+    "passed": 18,
+    "selected": 18,
+    "status": "passed"
+  },
+  "parentExecutedChecks": {
+    "pytest": {
+      "passed": 514,
+      "durationSeconds": 86.11
+    },
+    "ruff": "passed",
+    "mypy": {
+      "status": "passed",
+      "sourceFiles": 60
+    },
+    "wheelBuild": "passed"
+  },
+  "resolvedFindings": [
+    "Precision/semantics metadata cannot become timestamp evidence; preserve actual observed field identity.",
+    "Context/missing/partial identity queries cannot manufacture opened identity; require matching returned title and participants.",
+    "Earlier unresolved candidate ties survive narrower searches; timezone-aware nonoverlapping timestamp intervals can resolve them.",
+    "Remove the legacy prose-based unsupported-scope test; require semantic unsupported/blocked control plus zero fixture-recorded session attempts.",
+    "Standard value/selected control-state observations align with source; selected reads count as session-bearing execution windows."
+  ],
+  "reviewedObservations": [
+    "Latest case compares four candidates, refreshes/re-locates, opens the correct thread once, verifies returned identity and deletes its owned session.",
+    "Uncertain case observes coarse ambiguity, opens no thread, reports blocked, clears search and deletes its session.",
+    "Compact Android/iOS each have two execution windows, one click and actual changed-state observation.",
+    "No preapproval state change; restoration precedes delete; ambiguous cleanup is not reported completed; preexisting session preserved.",
+    "Recorded global config hashes unchanged; every recorded owned Runner has an observed exit."
+  ],
+  "limits": [
+    "Real Copilot and installed wheel against synthetic loopback only; not Appium driver/device qualification.",
+    "Final native uncertainty case covers coarse timestamps, not every incomplete-search or interval branch; regression tests cover additional boundaries.",
+    "No-endpoint Windows journal proves zero fixture-recorded creates, not global absence of external activity in unrestricted Python.",
+    "Recorded isolation is bounded evidence, not a sandbox guarantee.",
+    "Parent checks are observed parent results, not independent reviewer executions."
+  ]
+}

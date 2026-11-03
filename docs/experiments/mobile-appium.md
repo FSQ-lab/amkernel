@@ -70,6 +70,21 @@ The project-installed `amkernel` skill helps the Agent support a nontechnical us
 
 The skill leaves contextual judgment to the Agent. It does not add runtime behavior, wrap the Appium Python Client, or duplicate official Appium procedure.
 
+### External-project installation qualification
+
+Issue #105 retains the native GitHub Copilot CLI 1.0.105 / `gpt-6.1-sol`
+installation run in [`copilot-install-20261102.json`](../../evidence/appium-skill/copilot-install-20261102.json).
+The run installs a built wheel into an isolated user tool directory from a clean temporary
+target project, not the development repository. It verifies all 134 pinned source files,
+the main Skill and five official Skill copies, native discovery and real-device continuation
+Skill loading, actual persistent `python_exec` results, fail-closed source/copy drift and
+repair, and native coexistence with unrelated MCP services in both active-file layouts.
+All 12 checks passed. The record includes the wheel digest, normalized command working
+directories, native discovery observations and actual MCP result envelopes; command-output
+hashes are integrity evidence, not anonymization. It neither exercises an Appium session
+nor establishes physical platform support. Native configuration discovery alone is not
+runtime readiness; the successful observed `python_exec` results provide that evidence.
+
 ## 5. Required environments
 
 The first complete experiment covers:

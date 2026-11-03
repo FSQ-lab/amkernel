@@ -1,6 +1,6 @@
 {
   "commit": "e907024c210fe024c956ed9c74146fc27b1dd013",
-  "coverage": "Complete pinned repository tree; conservative superset of every path recursively reachable from the three selected skills.",
+  "coverage": "Complete pinned repository tree; conservative superset of every path recursively reachable from the five selected skills, including the real-device continuation.",
   "installedSkills": [
     {
       "cliContentHash": "083f6f9a3217ca9d405a1cb37cf3a221bb793954506c66f32e2fd65cdef6fecf",
@@ -45,6 +45,31 @@
       "sourcePath": "skills/setup-xcuitest"
     },
     {
+      "files": {
+        "SKILL.md": "89a6b0c47ed3e0f6bd97c34fdcb1be053049ac5fbe6baa92f4fa40a9664ca27d",
+        "agents/openai.yaml": "6e3a0b2ef304c02bbcf69c209a2fee8da48bda6500b66561655037b759f4c7e1"
+      },
+      "generatedLocation": ".agents/skills/setup-mac2",
+      "installCommand": "DISABLE_TELEMETRY=1 npx -y skills@1.7.4 add https://github.com/appium/skills/tree/e907024c210fe024c956ed9c74146fc27b1dd013/skills/setup-mac2 --skill setup-mac2 --copy -a claude-code -y",
+      "name": "setup-mac2",
+      "selectedAgent": "claude-code",
+      "selectedAgentLocation": ".claude/skills/setup-mac2",
+      "selectedAgentMode": "copy",
+      "sourcePath": "skills/setup-mac2"
+    },
+    {
+      "files": {
+        "SKILL.md": "5a679799f32ab39c8ceff3e501ff4bb912c6537cde148e969dc1c367c84c1322"
+      },
+      "generatedLocation": ".agents/skills/xcuitest-real-device-config",
+      "installCommand": "DISABLE_TELEMETRY=1 npx -y skills@1.7.4 add https://github.com/appium/skills/tree/e907024c210fe024c956ed9c74146fc27b1dd013/skills/xcuitest-real-device-config --skill xcuitest-real-device-config --copy -a claude-code -y",
+      "name": "xcuitest-real-device-config",
+      "selectedAgent": "claude-code",
+      "selectedAgentLocation": ".claude/skills/xcuitest-real-device-config",
+      "selectedAgentMode": "copy",
+      "sourcePath": "skills/xcuitest-real-device-config"
+    },
+    {
       "cliContentHash": "d6dfde9960f17a2be20ce1b65fda89fa88c10352d0db372b034a9907dad09229",
       "files": {
         "SKILL.md": "2814e41699486dbde2519cd559d70913e6321928580fd75bd6397fa4e012598c"
@@ -68,7 +93,7 @@
   "repository": "https://github.com/appium/skills",
   "restrictions": [
     "No branch, tag, default-ref, or unversioned Skills CLI fallback.",
-    "Verify the canonical detached Git provenance, full source tree, runtime copies, and selected-agent copies before every dry-run or use.",
+    "Verify the managed receipt, runtime version, complete pinned source tree and all runtime Skill copies before every dry-run or use.",
     "Resolve referenced contexts and scripts only from the verified full source checkout.",
     "Do not commit generated official-skill copies, source checkout, selected-agent copies, or lock data.",
     "Stop on any missing, extra, linked, or hash-mismatched file.",
@@ -80,12 +105,19 @@
     "commands": [
       "DISABLE_TELEMETRY=1 npx -y skills@1.7.4 add https://github.com/appium/skills/tree/e907024c210fe024c956ed9c74146fc27b1dd013/skills/setup-uiautomator2 --skill setup-uiautomator2 --copy -a claude-code -y",
       "DISABLE_TELEMETRY=1 npx -y skills@1.7.4 add https://github.com/appium/skills/tree/e907024c210fe024c956ed9c74146fc27b1dd013/skills/setup-xcuitest --skill setup-xcuitest --copy -a claude-code -y",
+      "DISABLE_TELEMETRY=1 npx -y skills@1.7.4 add https://github.com/appium/skills/tree/e907024c210fe024c956ed9c74146fc27b1dd013/skills/setup-mac2 --skill setup-mac2 --copy -a claude-code -y",
+      "DISABLE_TELEMETRY=1 npx -y skills@1.7.4 add https://github.com/appium/skills/tree/e907024c210fe024c956ed9c74146fc27b1dd013/skills/xcuitest-real-device-config --skill xcuitest-real-device-config --copy -a claude-code -y",
       "DISABLE_TELEMETRY=1 npx -y skills@1.7.4 add https://github.com/appium/skills/tree/e907024c210fe024c956ed9c74146fc27b1dd013/skills/appium-troubleshooting --skill appium-troubleshooting --copy -a claude-code -y"
     ],
     "selectedAgent": "claude-code",
     "version": "1.7.4"
   },
   "source": {
+    "archive": {
+      "format": "tar.gz",
+      "path": "references/appium-skills-e907024c210fe024c956ed9c74146fc27b1dd013.tar.gz",
+      "sha256": "9ce21bc92e94614fd65cf932e7951d07e40b0ce4749403479000b99b7d8b8bd2"
+    },
     "acquisitionCommands": [
       "mkdir -p .agents/vendor/appium-skills",
       "git clone --no-checkout https://github.com/appium/skills.git .agents/vendor/appium-skills/e907024c210fe024c956ed9c74146fc27b1dd013",

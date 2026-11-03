@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "scope": "Single-document alternative-path control diagnostic, not M1 multi-window qualification.",
+  "baseSourceManifest": "mac2-applications-initial-source-20261103.json",
+  "baseApplicationOriginalSha256": "78a10e0da2f2810bc4333cdf279dc50cd29c853d980cb4f329d4c7916c681f5d",
+  "baseSourceManifestSha256": "73ad801189e2521f5cedb1f8b1ab52136ef5d8c351e348503207e0348a7726c4",
+  "variant": {
+    "file": "control_diagnostic.py",
+    "sha256": "cec3f8f26e66aa76fdd34aa773ac81274dcd3550e9f8386ac82eeddc82c7f7d1",
+    "source": "\"\"\"One-purpose actual control diagnostic; not an M1 qualification retry.\nReuse the reviewed isolated server/ownership/finalization procedure, changing only\nits native task prompt and transient HTTP-error observation. No runtime changes.\n\"\"\"\nimport ast\nimport hashlib\nimport json\nimport re\nfrom pathlib import Path\nfrom server_utils import parse_transactions as original_parse\n\noriginal = Path(__file__).with_name('applications.py')\nsource = original.read_text()\nprobe = '''This is a TextEdit control diagnostic, NOT the M1 multi-window task. Existing Appium/Selenium imports are available; use importlib.metadata and sys for versions. Missing packaging/pip is NOT incompatibility and does NOT authorize installs, downloads, bootstrap code or user-site changes. Do not fetch package registries or websites. Create exactly one fresh actual Mac2/TextEdit session against the provided owned endpoint. Query the initial windows without printing titles or content; unexpected personal-document reopening means stop. Do NOT repeat Cmd+O or menu opening: those failed in the prior observed run. Try the alternative official macos:deepLink extension with the exact source file URI (source.as_uri()) and bundleId com.apple.TextEdit. Query the resulting window identity and fixture-only content if the action succeeds. On any failure, preserve actual status/kernelState; inspect the exception's actual msg and make a relevant small live query, but do NOT blindly retry or create another session. Return only bounded diagnostic booleans plus safe driver error classification; external verifier observes actual HTTP error responses. Whether the task worked or failed, restore only the newly owned task windows/app and original foreground before quit, delete the owned session and preserve the preexisting server. Canonical taskOutcome should be completed only if direct-open and synthetic identity observation succeeded, otherwise blocked; restoration/session/server are separate. No permission/signing/global setting changes, no personal documents, no screenshots/page source. Follow common ownership and cleanup rules.'''\nprobe = probe.replace('source.as_uri()', 'the primary target URI already provided in setup')\n\nclass DiagnosticVariant(ast.NodeTransformer):\n    def visit_ImportFrom(self,node):\n        if node.module == 'server_utils':\n            node.names = [name for name in node.names if name.name != 'parse_transactions']\n        return node\n    def visit_Assign(self,node):\n        if any(isinstance(target,ast.Name) and target.id == 'tasks' for target in node.targets):\n            node.value = ast.Dict(keys=[ast.Constant('M1')],values=[ast.Constant(probe)])\n        return self.generic_visit(node)\n\ndef parse_with_diagnostics(path):\n    transactions = original_parse(path) or []\n    observed = []\n    for transaction in transactions:\n        if transaction.get('status') is None or transaction['status'] < 400:\n            continue\n        for response in transaction.get('proxy',[]) + transaction.get('responding',[]):\n            value = response.get('value') if isinstance(response,dict) else None\n            if not isinstance(value,dict):\n                continue\n            message = value.get('message')\n            if not isinstance(message,str):\n                continue\n            safe = re.sub(r'[0-9a-fA-F]{8}-[0-9a-fA-F-]{27,}', '$SESSION', message)\n            safe = re.sub(r'/Users/[^/\\s]+', '$HOME', safe)\n            observed.append({'httpStatus':transaction['status'],'error':str(value.get('error'))[:80],'message':safe[:1600],'messageSha256':hashlib.sha256(message.encode()).hexdigest()})\n    internal_errors = []\n    for line in path.read_text(errors='replace').splitlines():\n        if 'Encountered internal error running command' in line:\n            safe = re.sub(r'[0-9a-fA-F]{8}-[0-9a-fA-F-]{27,}', '$SESSION', line)\n            safe = re.sub(r'/Users/[^/\\s]+', '$HOME', safe)\n            internal_errors.append(safe[:1600])\n    # Transient diagnostic only; not copied into the retained scenario artifact.\n    if observed or internal_errors:\n        print(json.dumps({'diagnosticVariantNotM1':True,'httpErrors':observed[:8],'internalErrors':internal_errors[:8]}),flush=True)\n    return transactions\n\ntree = DiagnosticVariant().visit(ast.parse(source))\nast.fix_missing_locations(tree)\nnamespace = dict(globals(),parse_transactions=parse_with_diagnostics)\nexec(compile(tree,str(original),'exec'),namespace)\n"
+  },
+  "evidence": {
+    "file": "mac2-textedit-diagnostic-20261103.json",
+    "sha256": "c0dbdc69b7f3f5857c45d20958ecd10d2bf08beb500185516a623f2a429b2a3a"
+  },
+  "observations": {
+    "actualMac2SessionCount": 1,
+    "directDeepLinkHttpStatus": 200,
+    "nativeSyntheticTitleComparison": true,
+    "nativeNonemptyDocumentValue": true,
+    "restored": true,
+    "sessionListingBeforeStop": 0,
+    "ownedResourcesExited": true
+  },
+  "limits": [
+    "No two-window selection sequence; not qualified M1.",
+    "Nonempty document value is not proof of exact expected content.",
+    "Initial external parser ignored direct WDA scalar envelopes; retained scalar fields are null and not reclassified from native claims.",
+    "No existing failed Cmd+O/menu operation was repeated by this diagnostic.",
+    "The base application digest is the recorded original applications.py identity, not the manifest-file digest. Only normalized application source is retained; original bytes and executed-source identity were not independently attested.",
+    "No core Runtime, permission, signing, global configuration or dependency changes."
+  ],
+  "parserCorrection": {
+    "reviewer": "TextEditGateReview",
+    "blocker": 0,
+    "major": 0,
+    "minor": 0,
+    "throwawayBoundaryChecks": 9,
+    "status": "Reviewed correction; actual full-scenario qualification still pending."
+  }
+}

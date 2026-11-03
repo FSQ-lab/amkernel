@@ -1,0 +1,41 @@
+{
+  "issue": 98,
+  "scope": "Independent read-only source, synthetic protocol, Skill guidance, and native 16-scenario evidence review",
+  "findings": {
+    "blocker": 0,
+    "major": 0,
+    "p2": 0
+  },
+  "reviewers": [
+    "BehaviorOracleReview",
+    "BehaviorSafetyReview",
+    "SourceFinalReview"
+  ],
+  "finalEvidence": {
+    "path": "agent-behavior-20261103.json",
+    "sha256": "601d3b633bafb994699245c9741bb46ac8f34b32536503cef0f402d33ad17922",
+    "passed": 16,
+    "failed": 0,
+    "isolationUnchanged": true
+  },
+  "reviewedSourceSha256": {
+    "tests/e2e/skill_behavior.py": "cd9c3d72b3a2ecfdd9e278fc3c59b34b985e1fe1f92b9312130310efba0ab436",
+    "tests/e2e/test_skill_behavior_evaluator.py": "004787759fdb9578f9f63ba875480b2ee573361e7624eca9bbbd574954225997",
+    "src/amkernel/skill/SKILL.md": "6e3a76a4b457f689561ab33c787f4b994ef159e8b8fe84a3fac764f2327b7b40",
+    "src/amkernel/skill/references/amkernel-appium.md": "c03371f1ac9ad1392e2496f455a7809fd55ae917619f4e1f41607023e87c2486"
+  },
+  "observations": [
+    "Exactly one Mac2 click; changed state verified before deletion; failed label wait disclosed.",
+    "One submission inside timed-out call; a later completed/alive call observes submitted state; no retry.",
+    "Kernel death followed by explicit reset, without claiming external-session cleanup or continuation.",
+    "Owned-session deletion, deliberate cleanup failure, preserved foreign session, restoration before quit, and preapproval nonmutation match fixture observations.",
+    "Five correct compatibility classifications and not-required cleanup in the metadata-only scenario.",
+    "All recorded owned Runner cleanup entries report observed exit."
+  ],
+  "limits": [
+    "Synthetic loopback fixture only; no physical platform or general reliability claim.",
+    "Reviewers ran no checks or native executions; parent ran verification.",
+    "Normalized hashes and markers do not reconstruct every Python operation or raw result.",
+    "Runner exit records reviewed, not independently re-probed; ownership implementation separately reviewed by BehaviorSafetyReview."
+  ]
+}
