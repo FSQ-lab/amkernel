@@ -120,6 +120,40 @@ ROW_RESOURCES = {
     },
     "cancellation-cleanup": {"activeExecutionAborted", "runnerGroupToken"},
 }
+RECORD_KEYS = {
+    "schemaVersion",
+    "recordKind",
+    "recordId",
+    "executionContext",
+    "dispatch",
+    "sources",
+    "matrix",
+    "environment",
+    "cells",
+    "limitations",
+    "review",
+    "createdAt",
+    "cellsSha256",
+    "contentSha256",
+}
+ENVIRONMENT_KEYS = {
+    "os",
+    "python",
+    "wheel",
+    "entryPoint",
+    "runner",
+    "matrixPlatform",
+    "declaredPlatform",
+    "platformDeclarationMatches",
+}
+MATRIX_HEADER_KEYS = {
+    "id",
+    "platforms",
+    "pythonVersions",
+    "rowIds",
+    "requiredEvidence",
+    "unsupportedPlatforms",
+}
 CELL_KEYS = {
     "id",
     "operation",
@@ -256,7 +290,7 @@ def check_privacy(record: dict[str, Any]) -> None:
 def check_sources(record: dict[str, Any], source_root: Path) -> None:
     expected = source_hashes(source_root)
     sources = record.get("sources")
-    require(isinstance(sources, dict), "sources mapping is missing")
+    require_exact_keys(sources, {"matrix", "harness", "contracts", "lock", "wheel"}, "sources")
     require(sources["matrix"]["path"] == MATRIX_PATH, "matrix source path is not frozen")
     require(sources["matrix"]["sha256"] == expected["matrix"], "matrix hash does not match the checkout")
     require(sources["harness"]["path"] == HARNESS_PATH, "harness path is not frozen")
@@ -292,7 +326,7 @@ def check_wheel_file(record: dict[str, Any], wheel_path: Path) -> None:
 
 def check_environment(record: dict[str, Any], matrix: dict[str, Any]) -> None:
     environment = record.get("environment")
-    require(isinstance(environment, dict), "environment identity is missing")
+    require_exact_keys(environment, ENVIRONMENT_KEYS, "environment")
     os_identity = environment.get("os")
     require(isinstance(os_identity, dict), "operating-system identity is missing")
     require(os_identity.get("system") in {"Linux", "Darwin"}, "unsupported observed operating system")
@@ -357,7 +391,7 @@ def check_expected_invocation(record: dict[str, Any], expected: dict[str, Any] |
 
 def check_matrix_header(record: dict[str, Any], matrix: dict[str, Any]) -> None:
     header = record.get("matrix")
-    require(isinstance(header, dict), "matrix metadata is missing")
+    require_exact_keys(header, MATRIX_HEADER_KEYS, "matrix metadata")
     require(header["id"] == matrix["matrixId"], "matrix id is inconsistent")
     require(header["platforms"] == matrix["platforms"], "matrix platforms are inconsistent")
     require(header["pythonVersions"] == matrix["pythonVersions"], "matrix python versions are inconsistent")
@@ -408,7 +442,10 @@ def check_cleanup(cell: dict[str, Any], require_complete: bool) -> None:
 
 def check_transitions(cell: dict[str, Any], row_id: str, passed: bool) -> None:
     transitions = cell["stateTransition"]
-    require(isinstance(transitions, list) and transitions, f"{row_id}: state transitions are missing")
+    require(isinstance(transitions, list), f"{row_id}: state transitions are missing")
+    if not transitions:
+        require(not passed, f"{row_id}: passed cell has no state transitions")
+        return
     required_phase = ROW_TRANSITIONS[row_id]
     observed_phases = [transition.get("phase") for transition in transitions]
     if passed:
@@ -432,7 +469,10 @@ def check_transitions(cell: dict[str, Any], row_id: str, passed: bool) -> None:
 
 def check_process_observations(cell: dict[str, Any], row_id: str, passed: bool) -> None:
     observations = cell["processObservations"]
-    require(isinstance(observations, list) and observations, f"{row_id}: process observations are missing")
+    require(isinstance(observations, list), f"{row_id}: process observations are missing")
+    if not observations:
+        require(not passed, f"{row_id}: passed cell has no process observations")
+        return
     required_phases = ROW_PROCESS_PHASES[row_id]
     phases = [observation.get("phase") for observation in observations]
     if passed:
@@ -476,6 +516,9 @@ def check_process_observations(cell: dict[str, Any], row_id: str, passed: bool) 
 
 def check_resources(cell: dict[str, Any], row_id: str, observations: list[dict[str, Any]]) -> None:
     resources = cell["resourceObservations"]
+    if not resources:
+        require(cell["outcome"] != "passed", f"{row_id}: passed cell has no resource observations")
+        return
     require_exact_keys(resources, ROW_RESOURCES[row_id], f"{row_id}: resourceObservations")
     for key in ("storeRoots", "storeRootsBeforeShutdown"):
         if key in resources:
@@ -564,9 +607,9 @@ def validate_cell(cell: dict[str, Any], row: dict[str, Any]) -> list[str]:
     )
     require(isinstance(cell.get("observed"), dict), f"{row_id}: observed mapping is missing")
     require(set(cell["observed"]) == set(row["expected"]), f"{row_id}: observed keys do not match the matrix")
-    require(isinstance(cell.get("stateTransition"), list) and cell["stateTransition"], f"{row_id}: state transitions are missing")
-    require(isinstance(cell.get("processObservations"), list) and cell["processObservations"], f"{row_id}: process observations are missing")
-    require(isinstance(cell.get("resourceObservations"), dict) and cell["resourceObservations"], f"{row_id}: resource observations are missing")
+    require(isinstance(cell.get("stateTransition"), list), f"{row_id}: state transitions are missing")
+    require(isinstance(cell.get("processObservations"), list), f"{row_id}: process observations are missing")
+    require(isinstance(cell.get("resourceObservations"), dict), f"{row_id}: resource observations are missing")
     require(isinstance(cell.get("checks"), list) and cell["checks"], f"{row_id}: checks are missing")
     require_int(cell.get("durationMs"), f"{row_id}: duration")
     require(isinstance(cell.get("limitations"), list) and all(isinstance(item, str) for item in cell["limitations"]), f"{row_id}: limitations are invalid")
@@ -582,7 +625,8 @@ def validate_cell(cell: dict[str, Any], row: dict[str, Any]) -> list[str]:
     check_cleanup(cell, require_complete=passed)
     check_transitions(cell, row_id, passed)
     check_process_observations(cell, row_id, passed)
-    check_resources(cell, row_id, cell["processObservations"])
+    if passed:
+        check_resources(cell, row_id, cell["processObservations"])
     check_checks(cell, row, passed)
     return [] if passed else [f"{row_id}: outcome is {cell['outcome']!r} (errorType={cell['errorType']!r})"]
 
@@ -619,6 +663,7 @@ def validate_record(
     wheel_path: Path | None = None,
     expected_invocation: dict[str, Any] | None = None,
 ) -> list[str]:
+    require_exact_keys(record, RECORD_KEYS, "record")
     require(record.get("schemaVersion") == SCHEMA_VERSION, "schema version is unsupported")
     require(record.get("recordKind") == "amkernel-cross-os-process-matrix", "record kind is unsupported")
     require(isinstance(record.get("recordId"), str) and record["recordId"], "record id is missing")
