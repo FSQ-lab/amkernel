@@ -4,6 +4,16 @@ All notable changes to AMKernel are recorded here. Public releases use semantic 
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-11-03
+
+Backward-compatible Skill, installation and evaluation corrections from
+[PR #110](https://github.com/FSQ-lab/amkernel/pull/110), published under
+[Release #111](https://github.com/FSQ-lab/amkernel/issues/111).
+The public `python_exec` contract, dependency baseline and qualified Ubuntu/macOS
+CPython 3.11–3.13 support are unchanged. Mobile integrations remain experimental;
+Windows support is not claimed. Exact hosted CI and wheel provenance are recorded
+in the GitHub Release.
+
 ### Fixed
 
 - Classify Appium dependency warnings and unverified matrix coverage separately from proven incompatible constraints, using the actual `python_exec` interpreter and package metadata. Remove the Skill's arbitrary Appium 6.x requirement and scope approved repairs to the observed Runtime ([#102](https://github.com/FSQ-lab/amkernel/issues/102)).
