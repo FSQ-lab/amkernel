@@ -150,8 +150,8 @@ review found 0 Blocker/Major/Minor. Three focused provenance-verifier tests and 
 `evidence/appium-skill/mac2-routing-20261102.json` chose `setup-mac2`, observed `Mac2Options`
 defaults (`Mac`/`Mac2`) through `python_exec`, and rejected XCUITest fallback and Windows Mac2.
 Both added official files matched the existing pinned source digests. These are route/options
-checks, not a Calculator session or a platform support claim; that regression remains required
-after the Copilot installation smoke in the owner's fixed final order.
+checks, not a Calculator session or a platform support claim. The separate new
+actual M0 Calculator baseline is recorded below; it does not relabel these probes.
 
 #104 now installs the main Skill, every referenced official Skill, and the complete pinned
 source archive without a development checkout or runtime network fetch. Copilot edits only
@@ -213,7 +213,7 @@ erase unresolved earlier ties. Later disjoint normalized time intervals can
 resolve them. Approval, restoration-before-quit and separate cleanup outcomes
 remain observed contracts, not Runtime workflow APIs.
 
-Final current-source verification: **514 pytest passed**, Ruff passed, mypy passed
+#107 final verification at its recorded revision: **514 pytest passed**, Ruff passed, mypy passed
 (60 source files), wheel build passed, and the full installed-wheel/native Copilot
 matrix **18/18 passed** with unchanged recorded user configuration and observed
 owned Runner exits. Independent final source/artifact review: **0 Blocker / 0
@@ -236,29 +236,42 @@ session, observed foreground state `4` and one window, restored the initial
 Calculator/frontmost-app state, deleted the session, observed an empty session
 listing before server shutdown, and observed owned server/group/ports/Runner exit.
 Unchanged retry evidence is `evidence/appium-skill/mac2-retry-20261103.json`.
-Its overall result remains `not-qualified`: the sole false qualification flag,
-`nativeMcpCompletedAlive`, requires every call to complete successfully despite
-observed recovery after preparation errors with live kernels. This verification
-defect is recorded separately in [#108](https://github.com/FSQ-lab/amkernel/issues/108),
-not attributed to Runtime, dependency incompatibility or a tablet. It is not fixed,
-and neither the original evidence nor #103 has been relabeled complete. Previous
-independent reviews do not cover a future oracle correction or this new retry.
+Its original overall result remains `not-qualified`: the historical
+`nativeMcpCompletedAlive` predicate requires every call to complete successfully
+despite observed recovery with live kernels. The original evidence is unchanged.
+
+[#108](https://github.com/FSQ-lab/amkernel/issues/108) now replaces that blanket
+predicate with timestamp-bound recovery, independent target/restoration/cleanup
+checks, and four canonical report checks. Focused behavioral regressions: 79
+passed; full pytest: 593 passed. Ruff and mypy (63 files) passed. New actual
+external-project/native Copilot
+M0 evidence is `evidence/appium-skill/mac2-m0-20261103.json`: failed/alive execution
+2 is retained, and both actual Mac2/Calculator live queries occur inside later
+successful execution 6. One session, restoration before DELETE, empty session
+listing before server stop, and owned server/group/ports/Runner exit were observed.
+All 24 flags pass; the final report is completed/restored/cleaned/not-owned.
+Independent source and actual-evidence review: 0 Blocker / 0 Major / 0 Minor.
+Review record: `evidence/appium-skill/mac2-recovery-review-20261103.json`.
+Source/wheel/client identities and frozen verifier source are retained in
+`mac2-recovery-source-20261103.json`. This is not a Runtime, dependency-conflict or
+tablet finding; the preparation error's exact cause remains unestablished.
 See `docs/experiments/appium-agent-behavior.md` §13 for evidence boundaries.
 
-The owner requested more complex Mac scenarios, recorded as planning-only
+The owner authorized more complex Mac scenarios, initially planned in
 [#109](https://github.com/FSQ-lab/amkernel/issues/109): TextEdit first for
 multi-window identity, edit/save/reopen and dialog cancellation; Finder next for
 dynamic relocation and cross-app continuity; isolated interruption/partial-cleanup
 cases last. Both app paths were observed, not automation-qualified. See
 `docs/experiments/appium-agent-behavior.md` §14 for M0–M7, evidence, permissions and
-ownership. No new app scenario or oracle fix has been executed. The original
-cross-platform regression order and deferred #97/#99 boundaries remain unchanged.
+ownership. #108 and the new M0 baseline are now complete; M1–M7 have not yet run.
+The original cross-platform regression order and deferred #97/#99 remain unchanged.
 
 
-Next: correct and independently review the recovered-error verification contract
-before formal Calculator qualification, then complete actual platform acceptance
-in the fixed order as external prerequisites and required permissions become
-available. Do not equate synthetic 18/18, discovery or a successful UI subset with
+Next: execute the owner-authorized TextEdit M1–M3, Finder/cross-app M4–M5, then
+isolated interruption/cleanup M6–M7 only after correcting and independently
+reviewing their ownership and causal-evidence procedures. Continue actual platform
+acceptance in the fixed order as external prerequisites and permissions become
+available. Do not equate synthetic 18/18, discovery or successful UI subsets with
 complete platform qualification. #99 remains post-v1; the only public tool remains
 `python_exec`, with no platform or Gmail semantics added to the core.
 

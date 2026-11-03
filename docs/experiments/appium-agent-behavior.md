@@ -557,6 +557,7 @@ checkout. Evidence files below live in `evidence/appium-skill/`.
 | Copilot installation | `final-install-20261103.json` | Passed installation/discovery, pinned dependency copies, fail-closed tamper handling, MCP coexistence and observed cross-call persistence. |
 | Initial Calculator / Mac2 | `final-mac2-20261103.json` | Not qualified: task-owned server became ready, but no successful actual Mac2 session or required Calculator/window query occurred. |
 | Owner-authorized Calculator / Mac2 retry | `mac2-retry-20261103.json` | Actual Mac2 session, foreground/window queries, restoration and owned cleanup observed; unchanged overall result remains `not-qualified` because of the recovered-error oracle gap in #108. |
+| Corrected recovery baseline M0 | `mac2-m0-20261103.json` | Qualified: retained failed/alive call followed by same-session live queries in a later successful execution; restoration-before-DELETE, owned cleanup and four canonical reports independently checked. |
 | Android | `final-android-discovery-20261103.json` | Discovery only: Java candidates did not execute successfully; SDK/ADB were not found; target counts remain unknown. |
 | iOS simulator | `final-ios-simulator-discovery-20261103.json` | Discovery only: selected Xcode 27.2, successful parsed simctl inventory, zero available runtimes/devices. |
 | Physical iOS | `final-ios-device-discovery-20261103.json` | Discovery only: selected Xcode 27.2, successful parsed devicectl inventory, zero listed physical targets. |
@@ -591,7 +592,7 @@ limits are retained in `final-platform-review-20261103.json` (0 Blocker / 0 Majo
 installation record; no rebuild substituted a different wheel for that proof.
 
 
-### Recovered-error classification gap (#108)
+### Recovered-error classification and correction (#108)
 
 The later owner-authorized retry used the same reviewed procedure and actual
 external-project/native client, not a fixture. One actual Mac2/Calculator session
@@ -613,18 +614,40 @@ only `stateRestoration`; it does not establish complete truthful final reporting
 Runtime or platform setup. Recovery must be proved by relevant later live
 observations and task results, not by ignoring failed calls or trusting a final
 no-op. Required identity/action/restoration/cleanup and report checks remain
-independent. The fix requires negative cases, new actual smoke evidence and
-independent review; none has been performed. Prior review applies only to its
-recorded source/evidence, not to the retry or a future correction. This is a
-verification classification defect, not an observed tablet fault.
+independent. The corrected oracle has 79 focused behavioral regressions covering
+recovered failures, final no-ops, stale sessions, kernel death/reset, timestamp
+causality, both window-query alternatives, missing evidence and contradictory
+reports. A stale-elements/later-handles regression was observed failing before
+its correction and passing afterwards. Full pytest: 593 passed; Ruff and mypy
+(63 files) passed.
 
-## 14. Focused real macOS application plan (#109)
+The new actual external-project/native Copilot CLI 1.0.105 / gpt-6.1-sol run is
+retained separately as `mac2-m0-20261103.json`. Execution 2 failed with
+`ModuleNotFoundError` and a surviving kernel; later executions retained increasing
+counts. Actual session creation occurred in execution 5; foreground state `4` and
+one window were observed within successful execution 6 after the failure.
+Restoration completed before the HTTP-200 session DELETE; the session listing was
+empty before stopping the owned server. Server/group/ports/Runner exit and raw
+Appium-log removal were observed. All 24 qualification flags pass; canonical
+task/restoration/session/server values are completed/restored/cleaned/not-owned.
+This is actual recovered-error proof, not a last-no-op shortcut or a rewrite of
+the historical retry. The error type/hash does not establish its underlying cause.
+
+Independent source and actual-evidence review found 0 Blocker / 0 Major / 0 Minor.
+The review is retained in `mac2-recovery-review-20261103.json`.
+`mac2-recovery-source-20261103.json` retains exact source/evidence/wheel identities,
+the frozen Calculator verifier (checkout-path constant redacted), client/model
+identity and verified installed-project provenance. Desktop and cleanup limits
+remain those in the evidence; unrelated apps/services, complex-app scenarios,
+Android/iOS/Windows support and tablet compatibility are not qualified by M0.
+
+## 14. Focused real macOS application scenarios (#109)
 
 [#109](https://github.com/FSQ-lab/amkernel/issues/109) records the owner's request
-to decompose more complex Mac behavior. This section is **planning, not execution
-or qualification**. TextEdit and Finder were found at
-`/System/Applications/TextEdit.app` and `/System/Library/CoreServices/Finder.app`;
-their presence does not prove Mac2 automation support.
+to decompose more complex Mac behavior. M0 is now qualified separately under
+#108; M1–M7 remain unexecuted pending corrected, independently reviewed procedures.
+TextEdit and Finder were found at `/System/Applications/TextEdit.app` and
+`/System/Library/CoreServices/Finder.app`; presence does not prove Mac2 automation.
 
 Use **TextEdit first**, then **Finder**. They expose documents, windows, dialogs,
 local persistent state and dynamic selection without installing a third-party app
