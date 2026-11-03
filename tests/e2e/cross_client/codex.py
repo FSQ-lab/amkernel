@@ -317,10 +317,7 @@ def _attempt_signal(attempt: dict[str, Any]) -> str:
     return f"exit code {attempt.get('exitCode')}"
 
 
-_EXECUTION_ITEM_TYPES = frozenset({"agent_message", "mcp_tool_call", "command_execution"})
-_TOOL_ITEM_TYPES = frozenset(
-    {"mcp_tool_call", "command_execution", "file_change", "web_search", "local_shell_call"}
-)
+_NON_TOOL_ITEM_TYPES = frozenset({"agent_message", "reasoning"})
 
 
 def _execution_signal(events: list[dict[str, Any]]) -> str | None:
@@ -331,7 +328,9 @@ def _execution_signal(events: list[dict[str, Any]]) -> str | None:
         if event_type not in {"item.started", "item.completed", "item.updated"}:
             continue
         item = event.get("item")
-        if isinstance(item, dict) and item.get("type") in _EXECUTION_ITEM_TYPES:
+        if isinstance(item, dict) and isinstance(item.get("type"), str):
+            # Unknown and future item types fail closed: only turn.started alone is
+            # treated as client-side bookkeeping without model or tool progress.
             return f"{event_type.split('.', 1)[1]} {item.get('type')}"
     return None
 
@@ -390,8 +389,8 @@ def _blocked_reason(detail: str, attempts: list[dict[str, Any]]) -> str:
     return (
         f"The direct model provider probe of {PROVIDER_URL}/models failed ({detail}). "
         f"{len(attempts)} supplementary client launch attempts each {outcome} "
-        f"({observed}); zero observed tool calls were executed, and the installed client "
-        "holds no other authenticated provider. No credential or configuration was modified."
+        f"({observed}); no item.started or item.completed event was observed, so no model "
+        "or tool activity is evidenced. No credential or configuration was modified."
     )
 
 
@@ -1279,7 +1278,8 @@ def _attempt_codex_launch(
         if diagnostic is not None:
             if len(diagnostics) < ATTEMPT_EVENT_LIMIT:
                 diagnostics.append(diagnostic)
-            if diagnostic.get("itemType") in _TOOL_ITEM_TYPES:
+            item_type = diagnostic.get("itemType")
+            if isinstance(item_type, str) and item_type not in _NON_TOOL_ITEM_TYPES:
                 if len(tool_diagnostics) < ATTEMPT_EVENT_LIMIT:
                     tool_diagnostics.append(diagnostic)
                 else:
@@ -1311,11 +1311,11 @@ def _write_attempt(output: Path, index: int, attempt: dict[str, Any]) -> None:
     for event in events:
         redacted = _bound_structure(_redact_structure(event))
         line = json.dumps(redacted, ensure_ascii=False, sort_keys=True)
-        if len(line) > 2048:
+        if len(line.encode()) > 2048:
             summary = {
                 "type": redacted.get("type") if isinstance(redacted, dict) else None,
                 "truncated": True,
-                "originalBytes": len(line),
+                "originalBytes": len(line.encode()),
                 "sha256": _sha256(line.encode()),
             }
             line = json.dumps(summary, sort_keys=True)
@@ -1383,12 +1383,12 @@ def _diagnostic_lines(diagnostics: list[dict[str, Any]]) -> list[str]:
     for diagnostic in diagnostics:
         redacted = _bound_structure(_redact_structure(diagnostic))
         line = json.dumps(redacted, ensure_ascii=False, sort_keys=True)
-        if len(line) > 2048:
+        if len(line.encode()) > 2048:
             line = json.dumps(
                 {
                     "type": redacted.get("type") if isinstance(redacted, dict) else None,
                     "truncated": True,
-                    "originalBytes": len(line),
+                    "originalBytes": len(line.encode()),
                     "sha256": _sha256(line.encode()),
                 },
                 sort_keys=True,

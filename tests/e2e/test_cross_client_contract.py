@@ -879,15 +879,41 @@ def test_codex_runner_classifies_execution_from_observed_events() -> None:
             "timedOut": True,
         }
     )
+    assert codex_runner._attempt_executed(
+        attempt([{"type": "item.completed", "item": {"type": "file_change"}}])
+    )
+    assert codex_runner._attempt_executed(
+        attempt([{"type": "item.completed", "item": {"type": "reasoning"}}])
+    )
+    assert codex_runner._attempt_executed(
+        attempt([{"type": "item.started", "item": {"type": "future_native_action"}}])
+    )
+    assert not codex_runner._attempt_executed(attempt([{"type": "turn.started"}]))
     assert codex_runner._execution_signal(
         [{"type": "item.started", "item": {"type": "mcp_tool_call"}}]
     ) == "started mcp_tool_call"
 
 
+def test_codex_runner_fails_closed_on_native_tool_before_timeout() -> None:
+    attempt = {
+        "events": [
+            {"type": "item.started", "item": {"type": "file_change", "path": "x.py"}},
+            {"type": "item.completed", "item": {"type": "file_change", "path": "x.py"}},
+        ],
+        "exitCode": None,
+        "timedOut": True,
+    }
+
+    assert codex_runner._attempt_executed(attempt)
+    assert codex_runner._execution_signal(
+        cast(list[dict[str, Any]], attempt["events"])
+    ) == "started file_change"
+
+
 def test_codex_runner_detects_execution_beyond_retained_event_limit(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    retained = [{"type": "item.started", "item": {"type": "reasoning"}}] * 400
+    retained = [{"type": "turn.started"}] * 400
     tool_calls = [
         {
             "type": "item.completed",
@@ -918,6 +944,7 @@ def test_codex_runner_detects_execution_beyond_retained_event_limit(
     assert attempt["eventCount"] == 400
     assert attempt["parsedEventCount"] == 801
     assert attempt["execution"] == "completed mcp_tool_call"
+    assert attempt["diagnostics"] == []
     assert len(attempt["toolDiagnostics"]) == 400
     assert attempt["toolDiagnosticsDropped"] == 1
     assert attempt["toolDiagnostics"][0]["tool"] == "python_exec"
@@ -997,7 +1024,8 @@ def _synthetic_attempt(
         "toolDiagnostics": [
             diagnostic
             for diagnostic in diagnostics
-            if diagnostic.get("itemType") in codex_runner._TOOL_ITEM_TYPES
+            if isinstance(diagnostic.get("itemType"), str)
+            and diagnostic["itemType"] not in codex_runner._NON_TOOL_ITEM_TYPES
         ],
         "toolDiagnosticsDropped": 0,
         "stderr": "",
@@ -1124,3 +1152,20 @@ def test_codex_runner_retains_prose_free_execution_supplement(tmp_path: Path) ->
         assert forbidden not in tool_lines
     assert "/Users/" not in retention_text
     assert "abcdef123456" not in retention_text
+
+
+def test_codex_runner_blocked_reason_avoids_unsupported_provider_claim() -> None:
+    reason = codex_runner._blocked_reason(
+        "URLError on direct connection",
+        [
+            {
+                "events": [{"type": "turn.started"}],
+                "exitCode": None,
+                "timedOut": True,
+            }
+        ],
+    )
+
+    assert "authenticated provider" not in reason
+    assert "no item.started or item.completed event was observed" in reason
+    assert "No credential or configuration was modified" in reason
