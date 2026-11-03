@@ -168,6 +168,12 @@ replaying historical part reads from the retained directory alone; the executabl
 digest identifies the launch file, not independently the native binary behind it.
 Independent blocked-record review found 0 Blocker/Major/Minor findings.
 
+A later real harness rerun aborted after approximately 360 seconds because its
+source snapshot changed while the isolated harness was being edited. It emitted
+no evidence record and is not included in the retained reference; its client
+events cannot be replayed from this directory. Do not count it as a valid client
+evaluation or infer additional execution/cleanup outcomes from its abort.
+
 The runner now verifies exact published-wheel bytes, keeps wheel source identity
 separate from harness identity, and stops supplementary launches at the first
 observed item execution. It retains prose-free, bounded diagnostics before raising
@@ -199,8 +205,7 @@ storage-failure consumer test passed. A separate actual Runtime/spawned-Runner
 smoke first returned 42, then an injected Store failure returned
 `kernel_killed/dead` with `ArtifactStoreError`, no active artifact references,
 successful shutdown cleanup and no event-loop errors. Independent source/test
-review found 0 Blocker/Major/Minor findings. The fix is unreleased and still needs
-protected CI.
+review found 0 Blocker/Major/Minor findings.
 
 #115 replaces the scheduling-dependent 32 MiB/1 ms test with two controlled
 real transaction-boundary cases. Cooperative interruption must report
@@ -213,8 +218,13 @@ external workspace observed the same outcomes with natural one-second deadlines,
 including a live subsequent result of 42 versus `KernelUnavailable` after death.
 Independent source/test review found 0 Blocker/Major/Minor findings. This is
 transaction atomicity/lifecycle evidence, not wall-clock deadline accuracy or
-published-wheel/platform qualification. The change is unreleased and still
-needs protected CI.
+published-wheel/platform qualification.
+
+Both fixes merged through PR #116 at
+`fd2c3041cb8efc17974284efcea0d54d33ca0135`. All eight PR CI jobs passed in
+`41621336861`; the separate local quality gate passed 595 tests, Ruff formatting
+and lint, mypy (63 files) and wheel build. The original failed-main run was not
+rerun. The fixes are unreleased; a fresh exact-main result is not yet recorded.
 
 ## What was tried
 
