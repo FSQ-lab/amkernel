@@ -963,6 +963,16 @@ def finalize_observed_from_cleanup(cell: RowCell) -> None:
             "This row terminates the runner process; it does not exercise a live but malformed "
             "private-control protocol."
         )
+    elif cell.row["id"] == "normal-shutdown":
+        cell.limitations.append(
+            "Unforced shutdown is bounded by the SDK context releasing the server below the 2 s "
+            "SIGTERM grace window; this is a timing bound, not a signal audit."
+        )
+    elif cell.row["id"] == "cancellation-cleanup":
+        cell.limitations.append(
+            "Cancellation is exercised by closing the client transport during an active call; "
+            "this row does not claim a separate MCP cancellation notification."
+        )
     if cell.row["id"] == "normal-shutdown":
         cell.observed["serverState"] = "exited" if cell.cleanup.get("serverExited") else "unknown"
         cell.observed["kernelState"] = "dead" if cell.cleanup.get("runnerExited") else "unknown"
