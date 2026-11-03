@@ -204,9 +204,7 @@ def _mac2_actions(*, clicks: int = 1, observe: bool = True) -> list[dict[str, An
             at=1,
             detail={
                 "sessionId": "s1",
-                "caps": json.dumps(
-                    {"platformName": "Mac", "appium:automationName": "Mac2"}
-                ),
+                "caps": json.dumps({"platformName": "Mac", "appium:automationName": "Mac2"}),
             },
         ),
         _action(
@@ -683,9 +681,7 @@ def _timeout_actions(
             _action("source", at=3, path="/session/s1/source", detail={"sessionId": "s1"})
         )
     if mutation:
-        actions.append(
-            _action("click", at=2.5, detail={"sessionId": "s1", "elementId": "e1"})
-        )
+        actions.append(_action("click", at=2.5, detail={"sessionId": "s1", "elementId": "e1"}))
     if cleanup:
         actions.append(_action("delete-session", at=3.5, detail={"sessionId": "s1"}))
     return actions
@@ -868,11 +864,7 @@ def test_kernel_death_structured_cleanup_requires_delete_evidence() -> None:
         variant="kernel-death",
         actions=actions,
         sessions=[{"id": "s1", "preexisting": False, "active": True}],
-        calls=[
-            _python_call(
-                status="kernel_killed", kernel_state="dead", success=False
-            )
-        ],
+        calls=[_python_call(status="kernel_killed", kernel_state="dead", success=False)],
         kernel_kills=[
             {
                 "runnerPid": 12345,
@@ -900,14 +892,8 @@ def test_kernel_death_accepts_truthful_unknown_old_session() -> None:
         variant="kernel-death",
         actions=actions,
         sessions=[{"id": "s1", "preexisting": False, "active": True}],
-        calls=[
-            _python_call(
-                status="kernel_killed", kernel_state="dead", success=False
-            )
-        ],
-        kernel_kills=[
-            {"runnerPid": 12345, "signalSent": True, "observedExit": True}
-        ],
+        calls=[_python_call(status="kernel_killed", kernel_state="dead", success=False)],
+        kernel_kills=[{"runnerPid": 12345, "signalSent": True, "observedExit": True}],
         final=_final(
             taskOutcome="failed",
             sessions={"old": "unknown", "current": "absent"},
@@ -997,9 +983,7 @@ def test_owned_runner_selection_excludes_unrelated_processes() -> None:
         500: (1, "python unrelated.py"),
         600: (1, "python unrelated.py"),
     }
-    assert skill_behavior._select_owned_runner_pids(
-        processes, 100, {400, 600}
-    ) == [200, 400]
+    assert skill_behavior._select_owned_runner_pids(processes, 100, {400, 600}) == [200, 400]
 
 
 def test_preexisting_cleanup_requires_foreign_session_preserved() -> None:
@@ -1055,9 +1039,7 @@ def test_preexisting_cleanup_requires_foreign_session_preserved() -> None:
 
 
 def test_preexisting_scenario_seeds_preexisting_session() -> None:
-    fixture = skill_behavior.SyntheticAppium(
-        skill_behavior._fixture_config("preexisting")
-    )
+    fixture = skill_behavior.SyntheticAppium(skill_behavior._fixture_config("preexisting"))
     fixture.start()
     try:
         snapshot = fixture.snapshot()
@@ -1065,9 +1047,7 @@ def test_preexisting_scenario_seeds_preexisting_session() -> None:
         fixture.stop()
     assert snapshot["preexistingId"] == "fixture-preexisting-session"
     preexisting = [
-        item
-        for item in snapshot["sessions"]
-        if item.get("id") == snapshot["preexistingId"]
+        item for item in snapshot["sessions"] if item.get("id") == snapshot["preexistingId"]
     ]
     assert len(preexisting) == 1
     assert preexisting[0]["active"] is True
@@ -1094,9 +1074,7 @@ def _fixture_request(
 
 
 def test_fixture_rejects_and_journals_invalid_displayed_timeout_window_queries() -> None:
-    fixture = skill_behavior.SyntheticAppium(
-        skill_behavior.FixtureConfig("android")
-    )
+    fixture = skill_behavior.SyntheticAppium(skill_behavior.FixtureConfig("android"))
     fixture.start()
     try:
         status, created = _fixture_request(
@@ -1134,13 +1112,8 @@ def test_fixture_rejects_and_journals_invalid_displayed_timeout_window_queries()
         snapshot = fixture.snapshot()
         journal = snapshot["journal"]
         for name in ("displayed", "timeouts", "window-rect"):
-            assert any(
-                item.get("action") == name and item.get("status") == 200
-                for item in journal
-            )
-        status, _ = _fixture_request(
-            fixture, "GET", "/session/missing/timeouts"
-        )
+            assert any(item.get("action") == name and item.get("status") == 200 for item in journal)
+        status, _ = _fixture_request(fixture, "GET", "/session/missing/timeouts")
         assert status == 404
         status, _ = _fixture_request(
             fixture,
@@ -1150,21 +1123,17 @@ def test_fixture_rejects_and_journals_invalid_displayed_timeout_window_queries()
         assert status == 404
         journal = fixture.snapshot()["journal"]
         assert any(
-            item.get("action") == "timeouts" and item.get("status") == 404
-            for item in journal
+            item.get("action") == "timeouts" and item.get("status") == 404 for item in journal
         )
         assert any(
-            item.get("action") == "displayed" and item.get("status") == 404
-            for item in journal
+            item.get("action") == "displayed" and item.get("status") == 404 for item in journal
         )
     finally:
         fixture.stop()
 
 
 def test_fixture_displayed_reports_stale_element_error() -> None:
-    fixture = skill_behavior.SyntheticAppium(
-        skill_behavior.FixtureConfig("session-error")
-    )
+    fixture = skill_behavior.SyntheticAppium(skill_behavior.FixtureConfig("session-error"))
     fixture.start()
     try:
         status, created = _fixture_request(
@@ -1259,13 +1228,20 @@ def test_fixture_attribute_reads_validate_identity_staleness_and_missing_values(
             fixture,
             "POST",
             "/session",
-            {"capabilities": {"alwaysMatch": {
-                "platformName": "Android", "appium:automationName": "UiAutomator2"
-            }}},
+            {
+                "capabilities": {
+                    "alwaysMatch": {
+                        "platformName": "Android",
+                        "appium:automationName": "UiAutomator2",
+                    }
+                }
+            },
         )
         session_id = created["value"]["sessionId"]
         _, found = _fixture_request(
-            fixture, "POST", f"/session/{session_id}/element",
+            fixture,
+            "POST",
+            f"/session/{session_id}/element",
             {"using": "accessibility id", "value": "Toggle"},
         )
         element_id = found["value"]["element-6066-11e4-a52e-4f735466cecf"]
@@ -1305,16 +1281,22 @@ def test_targeted_control_state_matches_source_and_proves_change_before_cleanup(
     fixture.start()
     try:
         status, created = _fixture_request(
-            fixture, "POST", "/session",
-            {"capabilities": {"alwaysMatch": {
-                "platformName": "iOS", "appium:automationName": "XCUITest"
-            }}},
+            fixture,
+            "POST",
+            "/session",
+            {
+                "capabilities": {
+                    "alwaysMatch": {"platformName": "iOS", "appium:automationName": "XCUITest"}
+                }
+            },
         )
         assert status == 200
         session_id = created["value"]["sessionId"]
         for label in ("Toggle", "Beta"):
             _, found = _fixture_request(
-                fixture, "POST", f"/session/{session_id}/element",
+                fixture,
+                "POST",
+                f"/session/{session_id}/element",
                 {"using": "accessibility id", "value": label},
             )
             element_id = found["value"]["element-6066-11e4-a52e-4f735466cecf"]
@@ -1334,13 +1316,13 @@ def test_targeted_control_state_matches_source_and_proves_change_before_cleanup(
                     _fixture_request(fixture, "POST", prefix + "/click", {})
             snapshot = fixture.snapshot()
             click = next(
-                item for item in reversed(snapshot["journal"])
-                if item["action"] == "click"
+                item for item in reversed(snapshot["journal"]) if item["action"] == "click"
             )
             for action in ("attribute", "selected"):
-                targeted = dict(snapshot, journal=[
-                    item for item in snapshot["journal"] if item["action"] == action
-                ])
+                targeted = dict(
+                    snapshot,
+                    journal=[item for item in snapshot["journal"] if item["action"] == action],
+                )
                 assert skill_behavior._state_observation_after_click(targeted, click)
                 targeted["journal"].append({"action": "delete-session", "at": click["at"]})
                 assert not skill_behavior._state_observation_after_click(targeted, click)
@@ -1349,9 +1331,7 @@ def test_targeted_control_state_matches_source_and_proves_change_before_cleanup(
 
 
 def test_short_flow_rejects_an_extra_session_read_only_window() -> None:
-    for read_action in (
-        "attribute", "displayed", "enabled", "selected", "timeouts", "window-rect"
-    ):
+    for read_action in ("attribute", "displayed", "enabled", "selected", "timeouts", "window-rect"):
         run = _run(
             "ios-short-flow",
             variant="ios",
@@ -1376,9 +1356,9 @@ def test_short_flow_rejects_an_extra_session_read_only_window() -> None:
         )
         checks = _checks(run)
         assert not checks["ios-compact-flow"]["ok"], read_action
-        assert all(
-            item["ok"] for name, item in checks.items() if name != "ios-compact-flow"
-        ), read_action
+        assert all(item["ok"] for name, item in checks.items() if name != "ios-compact-flow"), (
+            read_action
+        )
 
 
 def _create_android_fixture_session(
@@ -1415,9 +1395,7 @@ def _find_fixture_element(
 
 
 def test_fixture_sessions_inventory_tracks_preexisting_created_and_deleted() -> None:
-    fixture = skill_behavior.SyntheticAppium(
-        skill_behavior._fixture_config("preexisting")
-    )
+    fixture = skill_behavior.SyntheticAppium(skill_behavior._fixture_config("preexisting"))
     fixture.start()
     try:
         preexisting_id = "fixture-preexisting-session"
@@ -1445,11 +1423,7 @@ def test_fixture_sessions_inventory_tracks_preexisting_created_and_deleted() -> 
         assert [item["id"] for item in listed["value"]] == [preexisting_id]
         snapshot_after = fixture.snapshot()
         assert snapshot_after["sessions"] == snapshot_before["sessions"]
-        inventory = [
-            item
-            for item in snapshot_after["journal"]
-            if item.get("action") == "sessions"
-        ]
+        inventory = [item for item in snapshot_after["journal"] if item.get("action") == "sessions"]
         assert [item["status"] for item in inventory] == [200, 200, 200]
         assert inventory[-1]["detail"] == {
             "count": 1,
@@ -1474,11 +1448,7 @@ def test_fixture_sessions_inventory_excludes_expired_session_without_mutation() 
         assert listed["value"] == []
         snapshot_after = fixture.snapshot()
         assert snapshot_after["sessions"] == snapshot_before["sessions"]
-        inventory = [
-            item
-            for item in snapshot_after["journal"]
-            if item.get("action") == "sessions"
-        ]
+        inventory = [item for item in snapshot_after["journal"] if item.get("action") == "sessions"]
         assert [item["status"] for item in inventory] == [200]
         assert inventory[0]["detail"] == {"count": 0, "sessionIds": ""}
         assert not snapshot_after["unknownEndpoints"]
@@ -1536,18 +1506,14 @@ def test_fixture_enabled_reflects_model_and_rejects_invalid_elements_and_session
 
 
 def test_fixture_enabled_stale_element_matches_displayed_error() -> None:
-    fixture = skill_behavior.SyntheticAppium(
-        skill_behavior.FixtureConfig("session-error")
-    )
+    fixture = skill_behavior.SyntheticAppium(skill_behavior.FixtureConfig("session-error"))
     fixture.start()
     try:
         session_id = _create_android_fixture_session(fixture)
         element_id = _find_fixture_element(fixture, session_id, "Continue")
         prefix = f"/session/{session_id}/element/{element_id}"
 
-        displayed_status, displayed = _fixture_request(
-            fixture, "GET", f"{prefix}/displayed"
-        )
+        displayed_status, displayed = _fixture_request(fixture, "GET", f"{prefix}/displayed")
         enabled_status, enabled = _fixture_request(fixture, "GET", f"{prefix}/enabled")
         assert displayed_status == enabled_status == 404
         assert enabled["value"] == displayed["value"]
@@ -1601,9 +1567,7 @@ def _conversation_session_journal() -> list[dict[str, Any]]:
             at=1,
             detail={
                 "sessionId": "s1",
-                "caps": json.dumps(
-                    {"platformName": "Android", "automationName": "UiAutomator2"}
-                ),
+                "caps": json.dumps({"platformName": "Android", "automationName": "UiAutomator2"}),
             },
         ),
         _action("delete-session", at=19, detail={"sessionId": "s1"}),
@@ -1796,9 +1760,7 @@ def _latest_actions(
                 "targetKind": "conversation",
                 "threadId": target,
                 "title": next(
-                    item["title"]
-                    for item in _latest_candidates()
-                    if item["threadId"] == target
+                    item["title"] for item in _latest_candidates() if item["threadId"] == target
                 ),
                 "participants": next(
                     item["participants"]
@@ -1869,9 +1831,7 @@ def _latest_actions(
                 {
                     "candidateId": target,
                     "title": next(
-                        item["title"]
-                        for item in _latest_candidates()
-                        if item["threadId"] == target
+                        item["title"] for item in _latest_candidates() if item["threadId"] == target
                     ),
                     "participants": next(
                         item["participants"]
@@ -1896,13 +1856,9 @@ def _latest_run(
     report_target = report_target if report_target is not None else target
     opened = {
         "threadId": target,
-        "title": next(
-            item["title"] for item in _latest_candidates() if item["threadId"] == target
-        ),
+        "title": next(item["title"] for item in _latest_candidates() if item["threadId"] == target),
         "participants": next(
-            item["participants"]
-            for item in _latest_candidates()
-            if item["threadId"] == target
+            item["participants"] for item in _latest_candidates() if item["threadId"] == target
         ),
     }
     conversation = _latest_conversation(
@@ -1919,9 +1875,7 @@ def _latest_run(
     report = {
         "status": "opened",
         "title": next(
-            item["title"]
-            for item in _latest_candidates()
-            if item["threadId"] == report_target
+            item["title"] for item in _latest_candidates() if item["threadId"] == report_target
         ),
         "participants": next(
             item["participants"]
@@ -2219,9 +2173,7 @@ def test_conversation_latest_rejects_wrong_or_unverified_report_identity() -> No
     assert wrong["conversation-correct-thread"]["ok"]
 
 
-@pytest.mark.parametrize(
-    ("sizes", "accepted"), [([0, 3], True), ([0], False), ([0, 9], False)]
-)
+@pytest.mark.parametrize(("sizes", "accepted"), [([0, 3], True), ([0], False), ([0, 9], False)])
 def test_conversation_search_retries_keep_candidates_bounded(
     sizes: list[int], accepted: bool
 ) -> None:
@@ -2291,9 +2243,10 @@ def test_conversation_uncertainty_uses_observations_before_restoration(
         assert all(check["ok"] for check in checks.values())
 
 
-@pytest.mark.parametrize("attribute", [
-    "data-activity-precision", "data-activity-semantics", "data-message-activity-semantics"
-])
+@pytest.mark.parametrize(
+    "attribute",
+    ["data-activity-precision", "data-activity-semantics", "data-message-activity-semantics"],
+)
 def test_temporal_metadata_alone_cannot_establish_ambiguity(attribute: str) -> None:
     from tests.e2e.conversation_fixture import ConversationAppium
 
@@ -2309,7 +2262,9 @@ def test_temporal_metadata_alone_cannot_establish_ambiguity(attribute: str) -> N
         assert status == 200
         session = created["value"]["sessionId"]
         _, found = _fixture_request(
-            fixture, "POST", f"/session/{session}/element",
+            fixture,
+            "POST",
+            f"/session/{session}/element",
             {"using": "accessibility id", "value": "conversation-search"},
         )
         element_key = "element-6066-11e4-a52e-4f735466cecf"
@@ -2320,7 +2275,9 @@ def test_temporal_metadata_alone_cannot_establish_ambiguity(attribute: str) -> N
         assert status == 200
         for candidate in fixture.snapshot()["conversation"]["candidates"][:2]:
             _, found = _fixture_request(
-                fixture, "POST", f"/session/{session}/element",
+                fixture,
+                "POST",
+                f"/session/{session}/element",
                 {
                     "using": "accessibility id",
                     "value": "conversation-row:" + candidate["candidateId"],
@@ -2328,15 +2285,18 @@ def test_temporal_metadata_alone_cannot_establish_ambiguity(attribute: str) -> N
             )
             row = found["value"][element_key]
             status, _ = _fixture_request(
-                fixture, "GET",
+                fixture,
+                "GET",
                 f"/session/{session}/element/{row}/attribute/{attribute}",
             )
             assert status == 200
         _fixture_request(fixture, "DELETE", f"/session/{session}")
         snapshot = fixture.snapshot()
         run = _run(
-            "conversation-uncertain", variant="conversation-uncertain",
-            actions=snapshot["journal"], sessions=snapshot["sessions"],
+            "conversation-uncertain",
+            variant="conversation-uncertain",
+            actions=snapshot["journal"],
+            sessions=snapshot["sessions"],
             conversation=snapshot["conversation"],
             final=_final(
                 taskOutcome="blocked",
@@ -2386,14 +2346,25 @@ def test_fixture_selected_tracks_control_state_and_rejects_invalid_identity() ->
 
 def test_narrower_followup_search_preserves_observed_temporal_ambiguity() -> None:
     conversation = _uncertain_conversation()
-    conversation["actions"].append(_conversation_action("search", 7, {
-        "query": "Research", "candidateIds": ["thread-two"],
-        "matchedCount": 1, "returnedCount": 1, "complete": True,
-    }))
+    conversation["actions"].append(
+        _conversation_action(
+            "search",
+            7,
+            {
+                "query": "Research",
+                "candidateIds": ["thread-two"],
+                "matchedCount": 1,
+                "returnedCount": 1,
+                "complete": True,
+            },
+        )
+    )
     conversation["candidates"] = [conversation["candidates"][1]]
     run = _run(
-        "conversation-uncertain", variant="conversation-uncertain",
-        actions=_conversation_session_journal(), sessions=_CONVERSATION_SESSIONS,
+        "conversation-uncertain",
+        variant="conversation-uncertain",
+        actions=_conversation_session_journal(),
+        sessions=_CONVERSATION_SESSIONS,
         conversation=conversation,
         final=_final(
             taskOutcome="blocked",
@@ -2407,14 +2378,22 @@ def test_narrower_followup_search_preserves_observed_temporal_ambiguity() -> Non
     assert all(check["ok"] for check in checks.values())
 
 
-@pytest.mark.parametrize("values,attribute,precision,ambiguous", [
-    (("1000", "2000"), "data-activity-epoch-ms", "minute", False),
-    (("1000", "1000"), "data-activity-epoch-ms", "minute", True),
-    (("2026-11-03T08:15:00Z", "2026-11-03T08:16:00Z"), "data-activity-iso", "minute", False),
-    (("2026-11-03T08:15:00Z", "2026-11-03T00:15:00-08:00"), "data-activity-iso", "second", True),
-    (("2026-11-03T08:15:00Z", "2026-11-03T08:15:30Z"), "data-activity-iso", "minute", True),
-    (("2026-11-03T08:15:00", "2026-11-03T08:16:00"), "data-activity-iso", "second", True),
-])
+@pytest.mark.parametrize(
+    "values,attribute,precision,ambiguous",
+    [
+        (("1000", "2000"), "data-activity-epoch-ms", "minute", False),
+        (("1000", "1000"), "data-activity-epoch-ms", "minute", True),
+        (("2026-11-03T08:15:00Z", "2026-11-03T08:16:00Z"), "data-activity-iso", "minute", False),
+        (
+            ("2026-11-03T08:15:00Z", "2026-11-03T00:15:00-08:00"),
+            "data-activity-iso",
+            "second",
+            True,
+        ),
+        (("2026-11-03T08:15:00Z", "2026-11-03T08:15:30Z"), "data-activity-iso", "minute", True),
+        (("2026-11-03T08:15:00", "2026-11-03T08:16:00"), "data-activity-iso", "second", True),
+    ],
+)
 def test_later_normalized_time_evidence_resolves_only_disjoint_candidate_intervals(
     values: tuple[str, str], attribute: str, precision: str, ambiguous: bool
 ) -> None:
@@ -2423,18 +2402,30 @@ def test_later_normalized_time_evidence_resolves_only_disjoint_candidate_interva
         zip(("thread-one", "thread-two"), values, strict=True)
     ):
         for offset, field, observed in (
-            (0, attribute, value), (0.1, "data-activity-precision", precision)
+            (0, attribute, value),
+            (0.1, "data-activity-precision", precision),
         ):
-            conversation["actions"].append(_conversation_action("attribute", 7 + index + offset, {
-                "threadId": candidate, "attribute": field, "value": observed,
-                "targetKind": "row",
-            }))
+            conversation["actions"].append(
+                _conversation_action(
+                    "attribute",
+                    7 + index + offset,
+                    {
+                        "threadId": candidate,
+                        "attribute": field,
+                        "value": observed,
+                        "targetKind": "row",
+                    },
+                )
+            )
     run = _run(
-        "conversation-uncertain", variant="conversation-uncertain",
-        actions=_conversation_session_journal(), sessions=_CONVERSATION_SESSIONS,
+        "conversation-uncertain",
+        variant="conversation-uncertain",
+        actions=_conversation_session_journal(),
+        sessions=_CONVERSATION_SESSIONS,
         conversation=conversation,
         final=_final(
-            taskOutcome="blocked", cleanup={"ownedSession": "completed", "server": "preserved"},
+            taskOutcome="blocked",
+            cleanup={"ownedSession": "completed", "server": "preserved"},
             conversation={"status": "uncertain", "reason": "coarse-timestamps"},
         ),
     )
@@ -2443,9 +2434,14 @@ def test_later_normalized_time_evidence_resolves_only_disjoint_candidate_interva
     assert checks["conversation-uncertain-truthful"]["ok"] is ambiguous
 
 
-@pytest.mark.parametrize("title_matches,participants_match,accepted", [
-    (True, True, True), (False, True, False), (True, False, False),
-])
+@pytest.mark.parametrize(
+    "title_matches,participants_match,accepted",
+    [
+        (True, True, True),
+        (False, True, False),
+        (True, False, False),
+    ],
+)
 def test_opened_identity_requires_matching_returned_title_and_participants(
     title_matches: bool, participants_match: bool, accepted: bool
 ) -> None:
@@ -2459,27 +2455,40 @@ def test_opened_identity_requires_matching_returned_title_and_participants(
         (0.1, "title", title),
         (0.2, "conversation", "Participants: " + ", ".join(participants)),
     ):
-        conversation["actions"].append(_conversation_action("attribute", opened_at + offset, {
-            "threadId": opened["threadId"], "attribute": "text",
-            "targetKind": kind, "value": value,
-        }))
+        conversation["actions"].append(
+            _conversation_action(
+                "attribute",
+                opened_at + offset,
+                {
+                    "threadId": opened["threadId"],
+                    "attribute": "text",
+                    "targetKind": kind,
+                    "value": value,
+                },
+            )
+        )
     assert _checks(run)["conversation-opened-identity"]["ok"] is accepted
 
 
-@pytest.mark.parametrize("support,outcome,attempt,accepted", [
-    ("unsupported", "blocked", False, True),
-    (None, "blocked", False, False),
-    ("unsupported", "completed", False, False),
-    ("unsupported", "blocked", True, False),
-])
+@pytest.mark.parametrize(
+    "support,outcome,attempt,accepted",
+    [
+        ("unsupported", "blocked", False, True),
+        (None, "blocked", False, False),
+        ("unsupported", "completed", False, False),
+        ("unsupported", "blocked", True, False),
+    ],
+)
 def test_unsupported_target_requires_blocked_classification_without_session_attempt(
     support: str | None, outcome: str, attempt: bool, accepted: bool
 ) -> None:
     run = _run(
-        "unsupported-windows", variant="none",
+        "unsupported-windows",
+        variant="none",
         actions=[_action("create-session", at=1)] if attempt else [],
         final=_final(
-            taskOutcome=outcome, platformSupport=support,
+            taskOutcome=outcome,
+            platformSupport=support,
             cleanup={"ownedSession": "not-required", "server": "not-required"},
         ),
     )

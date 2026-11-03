@@ -1092,8 +1092,11 @@ class SyntheticAppium:
             path,
             200,
             detail={
-                "elementId": element_id, "label": label, "attribute": attribute,
-                "value": value, "state": observed_state,
+                "elementId": element_id,
+                "label": label,
+                "attribute": attribute,
+                "value": value,
+                "state": observed_state,
             },
         )
         return 200, {"value": value}
@@ -1221,14 +1224,10 @@ class SyntheticAppium:
                         )
                         return
                     if len(parts) == 6 and parts[2] == "element" and parts[4] == "attribute":
-                        self._send(
-                            *fixture._element_read(session_id, parts[3], attribute=parts[5])
-                        )
+                        self._send(*fixture._element_read(session_id, parts[3], attribute=parts[5]))
                         return
                     if len(parts) == 5 and parts[2] == "element" and parts[4] == "displayed":
-                        session = fixture._session(
-                            session_id, "displayed", "GET", self.path
-                        )
+                        session = fixture._session(session_id, "displayed", "GET", self.path)
                         if session is None:
                             self._send(404, {"value": {"error": "invalid session id"}})
                             return
@@ -1282,9 +1281,7 @@ class SyntheticAppium:
                         self._send(200, {"value": True})
                         return
                     if parts[2:] == ["timeouts"]:
-                        session = fixture._session(
-                            session_id, "timeouts", "GET", self.path
-                        )
+                        session = fixture._session(session_id, "timeouts", "GET", self.path)
                         if session is None:
                             self._send(404, {"value": {"error": "invalid session id"}})
                             return
@@ -1298,9 +1295,7 @@ class SyntheticAppium:
                         self._send(200, {"value": {"implicit": 0, "pageLoad": 300000}})
                         return
                     if parts[2:] == ["window", "rect"]:
-                        session = fixture._session(
-                            session_id, "window-rect", "GET", self.path
-                        )
+                        session = fixture._session(session_id, "window-rect", "GET", self.path)
                         if session is None:
                             self._send(404, {"value": {"error": "invalid session id"}})
                             return
@@ -1356,9 +1351,7 @@ class SyntheticAppium:
                         self._send(*fixture._execute(session_id, body))
                         return
                     if parts[2:] == ["timeouts"]:
-                        session = fixture._session(
-                            session_id, "timeouts", "POST", self.path
-                        )
+                        session = fixture._session(session_id, "timeouts", "POST", self.path)
                         if session is None:
                             self._send(404, {"value": {"error": "invalid session id"}})
                             return
@@ -1494,9 +1487,7 @@ def _compat_output_markers(payload: object) -> dict[str, bool]:
             )
         ),
         "versions": "2.0" in text and "2.1" in text,
-        "constraints": (
-            "requiresdist" in canonical or "requires-dist" in canonical
-        )
+        "constraints": ("requiresdist" in canonical or "requires-dist" in canonical)
         and "beta" in text,
         "metadata": "metadata" in text,
     }
@@ -1668,9 +1659,7 @@ def _actions(fixture: Mapping[str, Any], action: str) -> list[dict[str, Any]]:
     return [item for item in _action_list(fixture) if item.get("action") == action]
 
 
-def _state_observation_after_click(
-    fixture: Mapping[str, Any], click: Mapping[str, Any]
-) -> bool:
+def _state_observation_after_click(fixture: Mapping[str, Any], click: Mapping[str, Any]) -> bool:
     """Return whether a read observation shows a changed state after the click.
 
     The observation must fall between the click and the first session DELETE so a
@@ -1683,9 +1672,7 @@ def _state_observation_after_click(
     if not isinstance(initial, dict):
         initial = {}
     delete_times = [
-        float(item["at"])
-        for item in _deletes(fixture)
-        if isinstance(item.get("at"), (int, float))
+        float(item["at"]) for item in _deletes(fixture) if isinstance(item.get("at"), (int, float))
     ]
     first_delete = min(delete_times) if delete_times else float("inf")
     for item in _action_list(fixture):
@@ -1779,8 +1766,7 @@ def _invalid_session_observations(fixture: Mapping[str, Any]) -> list[dict[str, 
         item
         for item in _action_list(fixture)
         if item.get("status") == 404
-        and str(item.get("detail", {}).get("error", "")).strip().lower()
-        == "invalid session id"
+        and str(item.get("detail", {}).get("error", "")).strip().lower() == "invalid session id"
     ]
 
 
@@ -1824,11 +1810,7 @@ def _call_bound_violations(run: Mapping[str, Any]) -> list[dict[str, object]]:
         start = _parse_iso(call.get("startedAt"))
         end = _parse_iso(call.get("completedAt"))
         duration = end - start if start is not None and end is not None else None
-        if (
-            duration is None
-            or count > MAX_ACTIONS_PER_CALL
-            or duration > MAX_CALL_SECONDS
-        ):
+        if duration is None or count > MAX_ACTIONS_PER_CALL or duration > MAX_CALL_SECONDS:
             violations.append(
                 {
                     "toolCallId": call.get("toolCallId"),
@@ -1861,11 +1843,7 @@ def _post_timeout_evidence(
     calls = _mcp_calls(run)
     windows = _call_actions(run)
     timeout_index = next(
-        (
-            index
-            for index, call in enumerate(calls)
-            if call.get("observedStatus") == "timed_out"
-        ),
+        (index for index, call in enumerate(calls) if call.get("observedStatus") == "timed_out"),
         None,
     )
     if timeout_index is None:
@@ -1878,11 +1856,7 @@ def _post_timeout_evidence(
     for index in range(timeout_index + 1, len(calls)):
         call = calls[index]
         call_start = _parse_iso(call.get("startedAt"))
-        if (
-            timeout_end is not None
-            and call_start is not None
-            and call_start < timeout_end
-        ):
+        if timeout_end is not None and call_start is not None and call_start < timeout_end:
             continue
         actions = windows[index] if index < len(windows) else []
         live_queries = [
@@ -1911,9 +1885,7 @@ def _post_timeout_evidence(
         if _observed_reset(call):
             reset_calls.append(call)
             reset_completed = _parse_iso(call.get("completedAt"))
-            if reset_completed is not None and (
-                reset_at is None or reset_completed < reset_at
-            ):
+            if reset_completed is not None and (reset_at is None or reset_completed < reset_at):
                 reset_at = reset_completed
     return live_calls, live_at, reset_calls, reset_at
 
@@ -1989,13 +1961,9 @@ def _session_value(run: Mapping[str, Any], key: str) -> str:
     return label if isinstance(label, str) else ""
 
 
-_CANONICAL_TASK_OUTCOMES = frozenset(
-    {"completed", "failed", "blocked", "approval-required"}
-)
+_CANONICAL_TASK_OUTCOMES = frozenset({"completed", "failed", "blocked", "approval-required"})
 _CANONICAL_SESSION_STATES = frozenset({"alive", "dead", "unknown", "absent"})
-_CANONICAL_CLEANUP_STATES = frozenset(
-    {"completed", "failed", "unknown", "not-required"}
-)
+_CANONICAL_CLEANUP_STATES = frozenset({"completed", "failed", "unknown", "not-required"})
 _CANONICAL_SERVER_STATES = _CANONICAL_CLEANUP_STATES | {"preserved"}
 
 
@@ -2192,15 +2160,11 @@ def _candidate_epoch(item: Mapping[str, Any], keys: Sequence[str]) -> float | No
 
 
 def _candidate_activity_epoch(item: Mapping[str, Any]) -> float | None:
-    return _candidate_epoch(
-        item, ("activityEpochMs", "threadActivityAt", "activityEpoch")
-    )
+    return _candidate_epoch(item, ("activityEpochMs", "threadActivityAt", "activityEpoch"))
 
 
 def _candidate_last_message_epoch(item: Mapping[str, Any]) -> float | None:
-    return _candidate_epoch(
-        item, ("lastMessageEpochMs", "newestMessageAt", "lastMessageAt")
-    )
+    return _candidate_epoch(item, ("lastMessageEpochMs", "newestMessageAt", "lastMessageAt"))
 
 
 def _candidate_activity_display(item: Mapping[str, Any]) -> str:
@@ -2235,9 +2199,7 @@ def _conversation_candidates(fixture: Mapping[str, Any]) -> list[dict[str, Any]]
     return [item for item in value if isinstance(item, dict)] if isinstance(value, list) else []
 
 
-def _conversation_candidate(
-    fixture: Mapping[str, Any], thread_id: str
-) -> dict[str, Any] | None:
+def _conversation_candidate(fixture: Mapping[str, Any], thread_id: str) -> dict[str, Any] | None:
     for item in _conversation_candidates(fixture):
         if _candidate_id(item) == thread_id:
             return item
@@ -2253,9 +2215,7 @@ def _participants(value: object) -> set[str]:
 
 
 def _thread_latest(candidates: Sequence[Mapping[str, Any]]) -> Mapping[str, Any] | None:
-    timed = [
-        item for item in candidates if _candidate_activity_epoch(item) is not None
-    ]
+    timed = [item for item in candidates if _candidate_activity_epoch(item) is not None]
     if not timed:
         return None
     return max(timed, key=lambda item: float(cast(float, _candidate_activity_epoch(item))))
@@ -2269,8 +2229,7 @@ def _conversation_row_clicks(fixture: Mapping[str, Any]) -> list[dict[str, Any]]
     return [
         item
         for item in _conversation_actions(fixture, "click")
-        if _detail_kind(item.get("detail", {}))
-        in {"row", "title", "message", "conversation"}
+        if _detail_kind(item.get("detail", {})) in {"row", "title", "message", "conversation"}
     ]
 
 
@@ -2287,11 +2246,7 @@ def _conversation_invalidations(fixture: Mapping[str, Any]) -> list[dict[str, An
 
 
 def _searches(fixture: Mapping[str, Any]) -> list[dict[str, Any]]:
-    return [
-        item
-        for item in _conversation_actions(fixture, "search")
-        if _action_succeeded(item)
-    ]
+    return [item for item in _conversation_actions(fixture, "search") if _action_succeeded(item)]
 
 
 _OBSERVE_ATTRIBUTES = {
@@ -2341,8 +2296,7 @@ def _conversation_reads(fixture: Mapping[str, Any]) -> list[dict[str, Any]]:
                     "detail": {
                         "threadId": thread_id,
                         "attribute": (
-                            _detail_text(detail, "attribute")
-                            or _OBSERVE_ATTRIBUTES.get(kind, kind)
+                            _detail_text(detail, "attribute") or _OBSERVE_ATTRIBUTES.get(kind, kind)
                         ),
                         "value": _detail_text(detail, "value"),
                         "targetKind": "observe",
@@ -2368,9 +2322,7 @@ def _attribute_reads(
         if names is not None and name not in names:
             continue
         at = item.get("at")
-        if after is not None and (
-            not isinstance(at, (int, float)) or float(at) <= after
-        ):
+        if after is not None and (not isinstance(at, (int, float)) or float(at) <= after):
             continue
         result.append(item)
     return result
@@ -2383,9 +2335,7 @@ _ACTIVITY_ATTRIBUTES = frozenset(
         "data-activity-epoch-ms",
     }
 )
-_LAST_MESSAGE_ATTRIBUTES = frozenset(
-    {"data-last-message-iso", "data-last-message-display"}
-)
+_LAST_MESSAGE_ATTRIBUTES = frozenset({"data-last-message-iso", "data-last-message-display"})
 _IDENTITY_ATTRIBUTES = frozenset({"data-thread-id", "data-title", "data-participants"})
 
 
@@ -2399,20 +2349,14 @@ def _evaluate_conversation_latest(
     candidates = _conversation_candidates(fixture)
     truth = _thread_latest(candidates)
     candidate_ids = [_candidate_id(item) for item in candidates]
-    opens = [
-        item
-        for item in _conversation_open_actions(fixture)
-        if _action_succeeded(item)
-    ]
+    opens = [item for item in _conversation_open_actions(fixture) if _action_succeeded(item)]
     opened = conversation.get("opened") if isinstance(conversation.get("opened"), dict) else None
     opened_id = _detail_thread(opened) if opened else ""
     opened_title = _candidate_title(opened) if opened else ""
     opened_participants = _participants(opened.get("participants")) if opened else set()
     truth_id = _candidate_id(truth) if truth else ""
     latest_declared = str(
-        conversation.get("latestCandidateId")
-        or conversation.get("latestConversationId")
-        or ""
+        conversation.get("latestCandidateId") or conversation.get("latestConversationId") or ""
     )
 
     search_actions = _searches(fixture)
@@ -2476,8 +2420,7 @@ def _evaluate_conversation_latest(
     evaluation.check(
         "conversation-selection-bounded",
         bool(search_ids) and not outside_search,
-        "Row finds outside the bounded search result set: "
-        + (", ".join(outside_search) or "none"),
+        "Row finds outside the bounded search result set: " + (", ".join(outside_search) or "none"),
         outside_search[:8],
     )
 
@@ -2494,12 +2437,9 @@ def _evaluate_conversation_latest(
         and _detail_thread(item.get("detail", {})) == opened_id
         and _is_row_find(item)
     ]
-    open_element = (
-        _detail_text(opens[0].get("detail", {}), "elementId") if opens else ""
-    )
+    open_element = _detail_text(opens[0].get("detail", {}), "elementId") if opens else ""
     relocated = bool(post_find) and any(
-        _detail_text(item.get("detail", {}), "elementId") == open_element
-        for item in post_find
+        _detail_text(item.get("detail", {}), "elementId") == open_element for item in post_find
     )
     pre_ids = {
         _detail_text(item.get("detail", {}), "elementId")
@@ -2550,8 +2490,7 @@ def _evaluate_conversation_latest(
             <= float(cast(float, _candidate_activity_epoch(truth) or 0))
             for item in candidates
         ),
-        f"Opened={opened_id!r}, latest thread activity={truth_id!r}, "
-        f"row order={candidate_ids}",
+        f"Opened={opened_id!r}, latest thread activity={truth_id!r}, row order={candidate_ids}",
         [
             {
                 "id": _candidate_id(item),
@@ -2563,11 +2502,7 @@ def _evaluate_conversation_latest(
         ],
     )
     message_latest = max(
-        (
-            item
-            for item in candidates
-            if _candidate_last_message_epoch(item) is not None
-        ),
+        (item for item in candidates if _candidate_last_message_epoch(item) is not None),
         key=lambda item: float(cast(float, _candidate_last_message_epoch(item))),
         default=None,
     )
@@ -2634,9 +2569,7 @@ def _evaluate_conversation_latest(
         if isinstance(open_at, (int, float))
         else []
     )
-    identity_names = {
-        _detail_text(item.get("detail", {}), "attribute") for item in identity_reads
-    }
+    identity_names = {_detail_text(item.get("detail", {}), "attribute") for item in identity_reads}
     identity_values = {
         _detail_text(item.get("detail", {}), "attribute"): _detail_text(
             item.get("detail", {}), "value"
@@ -2648,8 +2581,7 @@ def _evaluate_conversation_latest(
         and identity_values.get("data-thread-id", opened_id) == opened_id
         and identity_values.get("data-title") == opened_title
         and bool(opened_participants)
-        and _participants(identity_values.get("data-participants"))
-        == opened_participants
+        and _participants(identity_values.get("data-participants")) == opened_participants
     )
     verify_actions = [
         item
@@ -2660,13 +2592,11 @@ def _evaluate_conversation_latest(
         and float(item["at"]) > float(open_at)
         and _detail_thread(item.get("detail", {})) == opened_id
         and _candidate_title(item.get("detail", {})) == opened_title
-        and _participants(item.get("detail", {}).get("participants"))
-        == opened_participants
+        and _participants(item.get("detail", {}).get("participants")) == opened_participants
     ]
     evaluation.check(
         "conversation-opened-identity",
-        opened is not None
-        and (attribute_identity or bool(verify_actions)),
+        opened is not None and (attribute_identity or bool(verify_actions)),
         f"Post-open identity reads={sorted(identity_names)}, "
         f"verification actions={len(verify_actions)}, opened={opened_id!r}",
         identity_values,
@@ -2725,9 +2655,7 @@ def _evaluate_conversation_uncertain(
     matched = last_result.get("matchedCount")
     returned = last_result.get("returnedCount")
     incomplete = completeness is False or (
-        isinstance(matched, int)
-        and isinstance(returned, int)
-        and matched > returned
+        isinstance(matched, int) and isinstance(returned, int) and matched > returned
     )
     activity_reads = _attribute_reads(fixture, names=_ACTIVITY_ATTRIBUTES)
     coarse_visible = False
@@ -2744,8 +2672,11 @@ def _evaluate_conversation_uncertain(
             candidate = _detail_thread(detail)
             value = _detail_text(detail, "value")
             if (
-                candidate in ids and value and isinstance(at, (int, float))
-                and at >= start and (not isinstance(end, (int, float)) or at < end)
+                candidate in ids
+                and value
+                and isinstance(at, (int, float))
+                and at >= start
+                and (not isinstance(end, (int, float)) or at < end)
             ):
                 key = (_detail_text(detail, "attribute"), value)
                 observed_times.setdefault(key, set()).add(candidate)
@@ -2754,9 +2685,11 @@ def _evaluate_conversation_uncertain(
                 continue
             precise: dict[str, tuple[float, float]] = {}
             reads_after = [
-                read for read in _conversation_reads(fixture)
+                read
+                for read in _conversation_reads(fixture)
                 if _detail_thread(read.get("detail", {})) in tied_ids
-                and isinstance(read.get("at"), (int, float)) and read["at"] >= start
+                and isinstance(read.get("at"), (int, float))
+                and read["at"] >= start
             ]
             precision = {
                 _detail_thread(read["detail"]): _detail_text(read["detail"], "value")
@@ -2771,10 +2704,10 @@ def _evaluate_conversation_uncertain(
                 if attribute == "data-activity-epoch-ms" and value.isdigit() and len(value) <= 20:
                     epoch = int(value) / 1000
                     precise[candidate] = (epoch, epoch + 0.001)
-                elif (
-                    attribute == "data-activity-iso"
-                    and precision.get(candidate) in {"second", "minute"}
-                ):
+                elif attribute == "data-activity-iso" and precision.get(candidate) in {
+                    "second",
+                    "minute",
+                }:
                     try:
                         parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
                     except ValueError:
@@ -2784,9 +2717,14 @@ def _evaluate_conversation_uncertain(
                         width = 60 if precision[candidate] == "minute" else 1
                         precise[candidate] = (epoch, epoch + width)
             winner = max(precise, key=lambda candidate: precise[candidate][0]) if precise else None
-            resolved = len(precise) == len(tied_ids) and winner is not None and all(
-                precise[winner][0] > lower and precise[winner][0] >= upper
-                for candidate, (lower, upper) in precise.items() if candidate != winner
+            resolved = (
+                len(precise) == len(tied_ids)
+                and winner is not None
+                and all(
+                    precise[winner][0] > lower and precise[winner][0] >= upper
+                    for candidate, (lower, upper) in precise.items()
+                    if candidate != winner
+                )
             )
             coarse_visible |= not resolved
     permitted_reasons = set()
@@ -2809,8 +2747,7 @@ def _evaluate_conversation_uncertain(
     evaluation.check(
         "conversation-uncertain-native-search",
         bool(search_actions) and bool(search_ids),
-        f"Successful native search calls={len(search_actions)}, "
-        f"candidates={len(set(search_ids))}",
+        f"Successful native search calls={len(search_actions)}, candidates={len(set(search_ids))}",
     )
     row_clicks = _conversation_row_clicks(fixture)
     evaluation.check(
@@ -2829,9 +2766,7 @@ def _evaluate_conversation_uncertain(
         for item in _conversation_reads(fixture)
         if _detail_text(item.get("detail", {}), "attribute") in _ACTIVITY_ATTRIBUTES
     ]
-    observed = {
-        _detail_thread(item.get("detail", {})) for item in activity_reads
-    } - {""}
+    observed = {_detail_thread(item.get("detail", {})) for item in activity_reads} - {""}
     evaluation.check(
         "conversation-uncertain-timestamps-observed",
         len(observed) >= 2,
@@ -2925,9 +2860,7 @@ def evaluate_scenario(run: Mapping[str, Any]) -> dict[str, Any]:
         )
     else:
         evaluation.check("final-scope-synthetic", False, "No final JSON scope to inspect.")
-        evaluation.check(
-            "report-canonical-statuses", False, "No final JSON report to inspect."
-        )
+        evaluation.check("report-canonical-statuses", False, "No final JSON report to inspect.")
     _check_cleanup_claim(evaluation, run, fixture)
 
     skill_loads = [
@@ -3065,9 +2998,7 @@ def evaluate_scenario(run: Mapping[str, Any]) -> dict[str, Any]:
         max_actions = max((len(actions) for actions in appium_windows), default=0)
         evaluation.check(
             "android-compact-flow",
-            len(appium_windows) <= 2
-            and max_actions >= 2
-            and max_actions <= MAX_ACTIONS_PER_CALL,
+            len(appium_windows) <= 2 and max_actions >= 2 and max_actions <= MAX_ACTIONS_PER_CALL,
             f"Calls overlapping fixture actions={len(appium_windows)}, "
             f"max actions in one call={max_actions}, "
             f"limit={MAX_ACTIONS_PER_CALL}",
@@ -3097,9 +3028,7 @@ def evaluate_scenario(run: Mapping[str, Any]) -> dict[str, Any]:
         max_actions = max((len(actions) for actions in appium_windows), default=0)
         evaluation.check(
             "ios-compact-flow",
-            len(appium_windows) <= 2
-            and max_actions >= 2
-            and max_actions <= MAX_ACTIONS_PER_CALL,
+            len(appium_windows) <= 2 and max_actions >= 2 and max_actions <= MAX_ACTIONS_PER_CALL,
             f"Calls overlapping fixture actions={len(appium_windows)}, "
             f"max actions in one call={max_actions}, "
             f"limit={MAX_ACTIONS_PER_CALL}",
@@ -3129,19 +3058,13 @@ def evaluate_scenario(run: Mapping[str, Any]) -> dict[str, Any]:
             not wrong_creates,
             f"XCUITest/UiAutomator2 create attempts={len(wrong_creates)}",
         )
-        toggle_clicks = [
-            item
-            for item in clicks
-            if item.get("detail", {}).get("label") == "Toggle"
-        ]
+        toggle_clicks = [item for item in clicks if item.get("detail", {}).get("label") == "Toggle"]
         evaluation.check(
             "mac2-one-change-click",
             len(toggle_clicks) == 1,
             f"Successful Toggle clicks={len(toggle_clicks)}",
         )
-        changed = any(
-            _state_observation_after_click(fixture, item) for item in toggle_clicks
-        )
+        changed = any(_state_observation_after_click(fixture, item) for item in toggle_clicks)
         evaluation.check(
             "mac2-changed-state-observed",
             bool(toggle_clicks) and changed,
@@ -3349,11 +3272,7 @@ def evaluate_scenario(run: Mapping[str, Any]) -> dict[str, Any]:
             or "none",
         )
         timeout_call = next(
-            (
-                call
-                for call in mcp_calls
-                if call.get("observedStatus") == "timed_out"
-            ),
+            (call for call in mcp_calls if call.get("observedStatus") == "timed_out"),
             None,
         )
         timeout_started = _parse_iso(timeout_call.get("startedAt")) if timeout_call else None
@@ -3384,11 +3303,9 @@ def evaluate_scenario(run: Mapping[str, Any]) -> dict[str, Any]:
         live_calls, live_at, reset_calls, reset_at = _post_timeout_evidence(run)
         inspection_observed = bool(live_calls) or bool(reset_calls)
         inspection_details = [
-            f"query:{call.get('observedStatus')}/{call.get('kernelState')}"
-            for call in live_calls
+            f"query:{call.get('observedStatus')}/{call.get('kernelState')}" for call in live_calls
         ] + [
-            f"reset:{call.get('observedStatus')}/{call.get('kernelState')}"
-            for call in reset_calls
+            f"reset:{call.get('observedStatus')}/{call.get('kernelState')}" for call in reset_calls
         ]
         evaluation.check(
             "post-timeout-inspection-call",
@@ -3397,9 +3314,7 @@ def evaluate_scenario(run: Mapping[str, Any]) -> dict[str, Any]:
             + (", ".join(inspection_details) if inspection_details else "none")
             + "; expected a completed/alive session query or an observed reset",
         )
-        inspection_times = [
-            value for value in (live_at, reset_at) if value is not None
-        ]
+        inspection_times = [value for value in (live_at, reset_at) if value is not None]
         inspection_at = min(inspection_times) if inspection_times else None
         mutation_actions = {
             "create-session",
@@ -3476,8 +3391,7 @@ def evaluate_scenario(run: Mapping[str, Any]) -> dict[str, Any]:
         old_status = _session_value(run, "old")
         evaluation.check(
             "kernel-not-resumable-truth",
-            old_status == "unknown"
-            or (old_status == "dead" and _dead_session_evidence(fixture)),
+            old_status == "unknown" or (old_status == "dead" and _dead_session_evidence(fixture)),
             f"sessions.old={old_status!r}",
         )
         cleanup_value = _cleanup_value(run, "ownedSession")
@@ -3514,9 +3428,7 @@ def evaluate_scenario(run: Mapping[str, Any]) -> dict[str, Any]:
         )
         submits = _actions(fixture, "ambiguous-submit")
         first_submit = submits[0]["at"] if submits else None
-        interruption_ended = (
-            _parse_iso(timeouts[0].get("completedAt")) if timeouts else None
-        )
+        interruption_ended = _parse_iso(timeouts[0].get("completedAt")) if timeouts else None
         read_after: list[dict[str, Any]] = []
         for call, actions in zip(mcp_calls, _call_actions(run), strict=False):
             started = _parse_iso(call.get("startedAt"))
@@ -3602,8 +3514,7 @@ def evaluate_scenario(run: Mapping[str, Any]) -> dict[str, Any]:
         evaluation.check(
             "restore-reported",
             _cleanup_value(run, "restoration") == "completed"
-            and fixture.get("state", {}).get("beta")
-            == fixture.get("initialState", {}).get("beta"),
+            and fixture.get("state", {}).get("beta") == fixture.get("initialState", {}).get("beta"),
             f"cleanup.restoration={_cleanup_value(run, 'restoration')!r}",
         )
         _owner_cleanup_ok(evaluation, run, fixture)
@@ -3675,8 +3586,7 @@ def evaluate_scenario(run: Mapping[str, Any]) -> dict[str, Any]:
         )
         evaluation.check(
             "preexisting-server-preserved",
-            bool(fixture.get("serverAlive"))
-            and _cleanup_value(run, "server") == "preserved",
+            bool(fixture.get("serverAlive")) and _cleanup_value(run, "server") == "preserved",
             f"serverAlive={fixture.get('serverAlive')!r}, "
             f"cleanup.server={_cleanup_value(run, 'server')!r}",
         )
@@ -3732,9 +3642,7 @@ def evaluate_scenario(run: Mapping[str, Any]) -> dict[str, Any]:
             if not observed_metadata
             else f"Observed metadata-bearing python_exec results={len(observed_metadata)}",
         )
-        view_only = not python_calls and any(
-            call.get("toolName") == "view" for call in calls
-        )
+        view_only = not python_calls and any(call.get("toolName") == "view" for call in calls)
         evaluation.check(
             "compatibility-not-view-only",
             not view_only,
@@ -4456,9 +4364,7 @@ def _track_owned_runners(context: RuntimeContext) -> None:
         return
     with context.runner_lock:
         context.owned_runner_pids.update(
-            _select_owned_runner_pids(
-                processes, context.copilot_pid, context.owned_runner_pids
-            )
+            _select_owned_runner_pids(processes, context.copilot_pid, context.owned_runner_pids)
         )
 
 
@@ -4471,8 +4377,7 @@ def _kill_runner_descendant(copilot_pid: int | None) -> dict[str, object]:
     matches = [
         (pid, command)
         for pid, (_ppid, command) in processes.items()
-        if "amkernel.runner" in command
-        and _runner_is_descendant(processes, pid, copilot_pid)
+        if "amkernel.runner" in command and _runner_is_descendant(processes, pid, copilot_pid)
     ]
     if len(matches) != 1:
         return {
@@ -4495,9 +4400,7 @@ def _kill_runner_descendant(copilot_pid: int | None) -> dict[str, object]:
     }
 
 
-def _terminate_owned_runners(
-    context: RuntimeContext, reason: str
-) -> list[dict[str, object]]:
+def _terminate_owned_runners(context: RuntimeContext, reason: str) -> list[dict[str, object]]:
     with context.runner_lock:
         pids = sorted(context.owned_runner_pids)
     if not pids:
@@ -4830,9 +4733,7 @@ def _conversation_appium() -> type[SyntheticAppium]:
     ``python tests/e2e/skill_behavior.py`` invocation working without making the
     repository root importable.
     """
-    module_name = (
-        "tests.e2e.conversation_fixture" if __package__ else "conversation_fixture"
-    )
+    module_name = "tests.e2e.conversation_fixture" if __package__ else "conversation_fixture"
     try:
         module = __import__(module_name, fromlist=["ConversationAppium"])
     except ImportError:
@@ -5019,9 +4920,7 @@ def _preflight(context: RuntimeContext) -> dict[str, Any]:
     return {"ok": all(item["ok"] for item in checks), "checks": checks}
 
 
-def _overall_status(
-    scenarios: Sequence[Mapping[str, Any]], isolation_unchanged: bool
-) -> str:
+def _overall_status(scenarios: Sequence[Mapping[str, Any]], isolation_unchanged: bool) -> str:
     if not isolation_unchanged:
         return "failed"
     if any(item.get("status") == "failed" for item in scenarios):

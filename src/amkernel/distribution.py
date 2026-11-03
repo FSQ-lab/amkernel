@@ -214,17 +214,17 @@ def _file_map(value: object, label: str) -> dict[str, str]:
     result: dict[str, str] = {}
     for relative, digest in value.items():
         path = _safe_relative(relative, label)
-        if not isinstance(digest, str) or len(digest) != 64 or any(
-            character not in "0123456789abcdef" for character in digest
+        if (
+            not isinstance(digest, str)
+            or len(digest) != 64
+            or any(character not in "0123456789abcdef" for character in digest)
         ):
             raise DistributionError(f"{label} contains an invalid sha256 for {path}")
         result[path.as_posix()] = digest
     return result
 
 
-def _scan_tree(
-    root: Path, label: str, *, allow_root_git: bool = False
-) -> dict[str, str]:
+def _scan_tree(root: Path, label: str, *, allow_root_git: bool = False) -> dict[str, str]:
     if root.is_symlink():
         raise DistributionError(f"{label}: symbolic links are forbidden: {root}")
     if not root.is_dir():
@@ -259,9 +259,7 @@ def _scan_tree(
     return result
 
 
-def _tree_problems(
-    root: Path, expected: Mapping[str, str], label: str
-) -> list[str]:
+def _tree_problems(root: Path, expected: Mapping[str, str], label: str) -> list[str]:
     try:
         actual = _scan_tree(root, label)
     except DistributionError as error:
@@ -281,9 +279,7 @@ def _validated_archive_members(
     payload: bytes, expected: Mapping[str, str], label: str
 ) -> dict[str, bytes]:
     if len(payload) > MAX_OFFICIAL_ARCHIVE_BYTES:
-        raise DistributionError(
-            f"{label} exceeds {MAX_OFFICIAL_ARCHIVE_BYTES} compressed bytes"
-        )
+        raise DistributionError(f"{label} exceeds {MAX_OFFICIAL_ARCHIVE_BYTES} compressed bytes")
     members: dict[str, bytes] = {}
     total = 0
     try:
@@ -296,14 +292,10 @@ def _validated_archive_members(
             if member.isdir():
                 prefix = name.as_posix() + "/"
                 if not any(relative.startswith(prefix) for relative in expected):
-                    raise DistributionError(
-                        f"{label} contains an unexpected directory: {name}"
-                    )
+                    raise DistributionError(f"{label} contains an unexpected directory: {name}")
                 continue
             if not member.isfile():
-                raise DistributionError(
-                    f"{label} contains a non-regular member: {name}"
-                )
+                raise DistributionError(f"{label} contains a non-regular member: {name}")
             relative = name.as_posix()
             if relative in members:
                 raise DistributionError(f"{label} contains a duplicate member: {relative}")
@@ -720,8 +712,10 @@ class DistributionManager:
         if not archive_location.parts or archive_location.parts[0] != "references":
             raise DistributionError("official source archive must live under references/")
         archive_digest = archive.get("sha256")
-        if not isinstance(archive_digest, str) or len(archive_digest) != 64 or any(
-            character not in "0123456789abcdef" for character in archive_digest
+        if (
+            not isinstance(archive_digest, str)
+            or len(archive_digest) != 64
+            or any(character not in "0123456789abcdef" for character in archive_digest)
         ):
             raise DistributionError("official source archive sha256 is invalid")
         source_files = _file_map(source_value.get("files"), "official source files")
@@ -739,8 +733,7 @@ class DistributionManager:
                 or not name
                 or name == "amkernel"
                 or any(
-                    character not in "abcdefghijklmnopqrstuvwxyz0123456789-"
-                    for character in name
+                    character not in "abcdefghijklmnopqrstuvwxyz0123456789-" for character in name
                 )
             ):
                 raise DistributionError(f"{label}.name must be a stable directory name")
@@ -752,9 +745,7 @@ class DistributionManager:
                 item.get("generatedLocation"), f"{label}.generatedLocation"
             )
             if agent_location.as_posix() != f".agents/skills/{name}":
-                raise DistributionError(
-                    f"{label}.generatedLocation must be .agents/skills/{name}"
-                )
+                raise DistributionError(f"{label}.generatedLocation must be .agents/skills/{name}")
             files = _file_map(item.get("files"), f"{label}.files")
             for relative, digest in files.items():
                 source_relative = PurePosixPath(source_path, relative).as_posix()
@@ -818,9 +809,10 @@ class DistributionManager:
         state_archive = value.get("archive")
         if not isinstance(state_archive, dict):
             raise DistributionError("official Skills state archive must be an object")
-        if state_archive.get("path") != archive["path"] or state_archive.get(
-            "sha256"
-        ) != archive["sha256"]:
+        if (
+            state_archive.get("path") != archive["path"]
+            or state_archive.get("sha256") != archive["sha256"]
+        ):
             raise DistributionError("official Skills state archive does not match")
         state_source = value.get("source")
         if not isinstance(state_source, dict):
@@ -841,17 +833,11 @@ class DistributionManager:
         for name, item in installed.items():
             state_skill = state_skills.get(name)
             if not isinstance(state_skill, dict):
-                raise DistributionError(
-                    f"official Skills state entry is invalid for {name}"
-                )
+                raise DistributionError(f"official Skills state entry is invalid for {name}")
             if state_skill.get("path") != item["generatedLocation"]:
-                raise DistributionError(
-                    f"official Skills state path does not match for {name}"
-                )
+                raise DistributionError(f"official Skills state path does not match for {name}")
             if state_skill.get("files") != item["files"]:
-                raise DistributionError(
-                    f"official Skills state files do not match for {name}"
-                )
+                raise DistributionError(f"official Skills state files do not match for {name}")
 
     def _previous_official_state(self) -> dict[str, Any] | None:
         value = self._read_receipt(self._official_state_path())
@@ -863,21 +849,19 @@ class DistributionManager:
             raise DistributionError("official Skills state schemaVersion must be 1")
         if not isinstance(value.get("runtimeVersion"), str):
             raise DistributionError("official Skills state runtimeVersion must be a string")
-        if not isinstance(value.get("repository"), str) or not isinstance(
-            value.get("commit"), str
-        ):
+        if not isinstance(value.get("repository"), str) or not isinstance(value.get("commit"), str):
             raise DistributionError("official Skills state provenance must be strings")
         archive = value.get("archive")
-        if not isinstance(archive, dict) or not isinstance(
-            archive.get("path"), str
-        ) or not isinstance(archive.get("sha256"), str):
+        if (
+            not isinstance(archive, dict)
+            or not isinstance(archive.get("path"), str)
+            or not isinstance(archive.get("sha256"), str)
+        ):
             raise DistributionError("official Skills state archive is invalid")
         source = value.get("source")
         if not isinstance(source, dict):
             raise DistributionError("official Skills state source must be an object")
-        source_path = _safe_relative(
-            source.get("path"), "official Skills state source path"
-        )
+        source_path = _safe_relative(source.get("path"), "official Skills state source path")
         source_posix = source_path.as_posix()
         prefix = ".agents/vendor/appium-skills/"
         old_commit = source_posix[len(prefix) :] if source_posix.startswith(prefix) else ""
@@ -898,22 +882,15 @@ class DistributionManager:
                 or not name
                 or name == "amkernel"
                 or any(
-                    character not in "abcdefghijklmnopqrstuvwxyz0123456789-"
-                    for character in name
+                    character not in "abcdefghijklmnopqrstuvwxyz0123456789-" for character in name
                 )
             ):
                 raise DistributionError("official Skills state skill name is invalid")
             if not isinstance(entry, dict):
-                raise DistributionError(
-                    f"official Skills state entry is invalid for {name}"
-                )
-            location = _safe_relative(
-                entry.get("path"), f"official Skills state path for {name}"
-            )
+                raise DistributionError(f"official Skills state entry is invalid for {name}")
+            location = _safe_relative(entry.get("path"), f"official Skills state path for {name}")
             if location.as_posix() != f".agents/skills/{name}":
-                raise DistributionError(
-                    f"official Skills state path is not managed for {name}"
-                )
+                raise DistributionError(f"official Skills state path is not managed for {name}")
             _file_map(entry.get("files"), f"official Skills state files for {name}")
         return value
 
@@ -1078,9 +1055,7 @@ class DistributionManager:
         archive = self._read_official_archive(manifest)
         source = cast(Mapping[str, Any], manifest["source"])
         source_files = cast(Mapping[str, str], source["files"])
-        members = _validated_archive_members(
-            archive, source_files, "official source archive"
-        )
+        members = _validated_archive_members(archive, source_files, "official source archive")
         previous = self._previous_official_state()
         source_location = cast(str, source["generatedLocation"])
         source_root = self.project.joinpath(*PurePosixPath(source_location).parts)
@@ -1104,9 +1079,7 @@ class DistributionManager:
             expected = cast(Mapping[str, str], item["files"])
             source_path = cast(str, item["sourcePath"])
             owned = self._owned_files(previous, location, skill=name)
-            exact = self._prepare_tree(
-                root, expected, owned, transaction, f"official Skill {name}"
-            )
+            exact = self._prepare_tree(root, expected, owned, transaction, f"official Skill {name}")
             if not exact:
                 for relative in expected:
                     source_relative = PurePosixPath(source_path, relative).as_posix()
@@ -1115,13 +1088,9 @@ class DistributionManager:
                         raise DistributionError(
                             f"official source is missing Skill file: {source_relative}"
                         )
-                    transaction.write(
-                        root.joinpath(*PurePosixPath(relative).parts), skill_content
-                    )
+                    transaction.write(root.joinpath(*PurePosixPath(relative).parts), skill_content)
         self._release_obsolete_official(transaction, previous, manifest)
-        transaction.write(
-            self._official_state_path(), self._official_state_bytes(manifest)
-        )
+        transaction.write(self._official_state_path(), self._official_state_bytes(manifest))
 
     def _official_health(self) -> tuple[bool, bool, str | None]:
         try:
@@ -1308,9 +1277,7 @@ class DistributionManager:
         skill_digest_ok = False
         skill_present = False
         try:
-            metadata_mode = _managed_path_mode(
-                self.project, metadata_path, "main Skill metadata"
-            )
+            metadata_mode = _managed_path_mode(self.project, metadata_path, "main Skill metadata")
             if metadata_mode is None or not stat.S_ISREG(metadata_mode):
                 raise DistributionError("main Skill metadata is not a regular file")
             metadata_value = _load_json_object(metadata_path)
@@ -1352,9 +1319,7 @@ class DistributionManager:
         detail = (
             None if healthy else "run `amkernel install` to repair Runtime, Skill, or MCP drift"
         )
-        notice = (
-            _COPILOT_TRUST_NOTICE if client == "copilot" and configured else None
-        )
+        notice = _COPILOT_TRUST_NOTICE if client == "copilot" and configured else None
         return ProjectStatus(
             str(self.project),
             client,
@@ -1386,9 +1351,7 @@ class DistributionManager:
                     entry = value.get("amkernel", {})
             if not isinstance(entry, dict):
                 return False
-            if entry.get("command") != str(executable) or entry.get("cwd") != str(
-                self.project
-            ):
+            if entry.get("command") != str(executable) or entry.get("cwd") != str(self.project):
                 return False
             if client != "copilot":
                 return True
@@ -1449,9 +1412,7 @@ class DistributionManager:
         if root_mode is None or not stat.S_ISDIR(root_mode):
             return
         metadata_path = root / ".amkernel-metadata.json"
-        metadata_mode = _managed_path_mode(
-            self.project, metadata_path, "main Skill metadata"
-        )
+        metadata_mode = _managed_path_mode(self.project, metadata_path, "main Skill metadata")
         if metadata_mode is None or not stat.S_ISREG(metadata_mode):
             return
         try:
@@ -1492,9 +1453,7 @@ class DistributionManager:
         ]
         for name, raw_entry in cast(dict[str, Any], state["skills"]).items():
             entry = cast(dict[str, Any], raw_entry)
-            entries.append(
-                (cast(str, entry["path"]), entry, f"official Skill {name}")
-            )
+            entries.append((cast(str, entry["path"]), entry, f"official Skill {name}"))
         for location, entry, label in entries:
             root = self.project.joinpath(*PurePosixPath(location).parts)
             self._release_owned_tree(
@@ -1505,9 +1464,7 @@ class DistributionManager:
         if mode is None:
             return
         if not stat.S_ISREG(mode):
-            raise DistributionError(
-                f"official Skills state must be a regular file: {state_path}"
-            )
+            raise DistributionError(f"official Skills state must be a regular file: {state_path}")
         transaction.remove(state_path)
 
     def uninstall_project(self, client: Client) -> ProjectStatus:

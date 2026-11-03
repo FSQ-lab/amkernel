@@ -121,12 +121,8 @@ def official_package(
     monkeypatch: pytest.MonkeyPatch,
 ) -> tuple[dict[str, object], bytes, str]:
     manifest, archive, commit = _official_package()
-    monkeypatch.setattr(
-        DistributionManager, "_load_official_manifest", lambda self: manifest
-    )
-    monkeypatch.setattr(
-        DistributionManager, "_read_official_archive", lambda self, value: archive
-    )
+    monkeypatch.setattr(DistributionManager, "_load_official_manifest", lambda self: manifest)
+    monkeypatch.setattr(DistributionManager, "_read_official_archive", lambda self, value: archive)
     return manifest, archive, commit
 
 
@@ -315,18 +311,14 @@ def test_auto_client_detection_accepts_copilot_and_ignores_aws_copilot(
     def aws(argv: Sequence[str]) -> CommandResult:
         return CommandResult(tuple(argv), 0, "AWS Copilot CLI", "", False)
 
-    aws_subject = DistributionManager(
-        project, runner=aws, data_home=tmp_path / "data"
-    )
+    aws_subject = DistributionManager(project, runner=aws, data_home=tmp_path / "data")
     with pytest.raises(DistributionError, match="no supported Coding Agent"):
         aws_subject.select_client("auto")
 
     def github(argv: Sequence[str]) -> CommandResult:
         return CommandResult(tuple(argv), 0, "GitHub Copilot CLI", "", False)
 
-    github_subject = DistributionManager(
-        project, runner=github, data_home=tmp_path / "data"
-    )
+    github_subject = DistributionManager(project, runner=github, data_home=tmp_path / "data")
     assert github_subject.select_client("auto") == "copilot"
 
     config = project / ".mcp.json"
@@ -612,6 +604,7 @@ def test_official_upgrade_changes_file_directory_shape_transactionally(
     monkeypatch.setattr(subject, "_read_official_archive", lambda manifest: new_archive)
 
     if registration_fails:
+
         def fail_registration(client: Client | None) -> None:
             raise RuntimeError("registration failed after shape replacement")
 
@@ -680,9 +673,9 @@ def test_upgrade_releases_only_unchanged_obsolete_official_files(
     assert not (old_skill / "agents").exists()
     assert (project / f".agents/vendor/appium-skills/{new_commit}/LICENSE").is_file()
     assert (project / ".agents/skills/setup-new/SKILL.md").is_file()
-    assert json.loads((project / ".agents/amkernel-official.json").read_text())[
-        "commit"
-    ] == new_commit
+    assert (
+        json.loads((project / ".agents/amkernel-official.json").read_text())["commit"] == new_commit
+    )
     assert subject.status("omp").detail is None
 
 
@@ -910,9 +903,7 @@ def test_broken_linked_managed_ancestor_is_rejected_without_creation(
     assert not missing.exists()
 
 
-def test_config_symlink_is_rejected_without_touching_target(
-    project: Path, tmp_path: Path
-) -> None:
+def test_config_symlink_is_rejected_without_touching_target(project: Path, tmp_path: Path) -> None:
     executable = tmp_path / "bin/amkernel"
     executable.parent.mkdir()
     executable.write_text("executable")
@@ -924,9 +915,7 @@ def test_config_symlink_is_rejected_without_touching_target(
     with pytest.raises(DistributionError, match="must not be a symbolic link"):
         manager(project, executable.parent).configure_project("omp", executable)
 
-    assert json.loads(external.read_text()) == {
-        "mcpServers": {"kept": {"command": "kept"}}
-    }
+    assert json.loads(external.read_text()) == {"mcpServers": {"kept": {"command": "kept"}}}
     assert not (project / ".agents").exists()
 
 
@@ -937,9 +926,7 @@ def test_official_archive_rejects_unsafe_or_unexpected_members() -> None:
     with pytest.raises(DistributionError, match="unexpected member"):
         _validated_archive_members(_tar_bytes({"extra.txt": b"x"}), expected, "archive")
     with pytest.raises(DistributionError, match="sha256 mismatch"):
-        _validated_archive_members(
-            _tar_bytes({"ok.txt": b"tampered"}), expected, "archive"
-        )
+        _validated_archive_members(_tar_bytes({"ok.txt": b"tampered"}), expected, "archive")
     with pytest.raises(DistributionError, match="missing file"):
         _validated_archive_members(_tar_bytes({}), expected, "archive")
 

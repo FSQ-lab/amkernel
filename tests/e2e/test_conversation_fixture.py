@@ -82,9 +82,7 @@ class ConversationFixtureTests(unittest.TestCase):
         assert isinstance(element_id, str)
         return element_id
 
-    def _attribute(
-        self, fixture: ConversationAppium, session: str, element: str, name: str
-    ) -> Any:
+    def _attribute(self, fixture: ConversationAppium, session: str, element: str, name: str) -> Any:
         status, payload = self._call(
             fixture,
             "GET",
@@ -118,22 +116,12 @@ class ConversationFixtureTests(unittest.TestCase):
         self.assertNotIn(latest["rowIndex"], {0, 2})
         self.assertNotEqual(latest["threadActivityAt"], latest["newestMessageAt"])
         for item in candidates:
-            self.assertGreaterEqual(
-                item["threadActivityAt"], item["newestMessageAt"]
-            )
+            self.assertGreaterEqual(item["threadActivityAt"], item["newestMessageAt"])
         self.assertEqual(conversation["uncertainReason"], None)
-        row = self._find(
-            fixture, session, f"conversation-row:{latest['candidateId']}"
-        )
-        self.assertEqual(
-            self._attribute(fixture, session, row, "data-thread-id"), latest_id
-        )
-        self.assertIsNotNone(
-            self._attribute(fixture, session, row, "data-activity-epoch-ms")
-        )
-        status, payload = self._call(
-            fixture, "POST", f"/session/{session}/element/{row}/click"
-        )
+        row = self._find(fixture, session, f"conversation-row:{latest['candidateId']}")
+        self.assertEqual(self._attribute(fixture, session, row, "data-thread-id"), latest_id)
+        self.assertIsNotNone(self._attribute(fixture, session, row, "data-activity-epoch-ms"))
+        status, payload = self._call(fixture, "POST", f"/session/{session}/element/{row}/click")
         self.assertEqual(status, 200, payload)
         opened = fixture.snapshot()["conversation"]["opened"]
         self.assertEqual(opened["candidateId"], latest_id)
@@ -141,9 +129,7 @@ class ConversationFixtureTests(unittest.TestCase):
         self.assertEqual(status, 200)
         self.assertIn("conversation-title", source["value"])
         self.assertIn(latest["title"], source["value"])
-        participants = self._find(
-            fixture, session, "conversation-participants"
-        )
+        participants = self._find(fixture, session, "conversation-participants")
         self.assertEqual(
             self._attribute(fixture, session, participants, "data-participants"),
             ", ".join(latest["participants"]),
@@ -152,9 +138,7 @@ class ConversationFixtureTests(unittest.TestCase):
         timestamp = self._attribute(fixture, session, message, "data-timestamp-iso")
         message_time = datetime.fromisoformat(timestamp)
         self.assertIsNotNone(message_time.tzinfo)
-        self.assertLessEqual(
-            message_time.timestamp(), latest["threadActivityAt"]
-        )
+        self.assertLessEqual(message_time.timestamp(), latest["threadActivityAt"])
 
     def test_refresh_invalidates_old_handles_and_reorders(self) -> None:
         fixture = self._fixture("conversation-latest")
@@ -164,9 +148,7 @@ class ConversationFixtureTests(unittest.TestCase):
         latest_id = before["latestConversationId"]
         old_row = self._find(fixture, session, f"conversation-row:{latest_id}")
         refresh = self._find(fixture, session, "conversation-refresh")
-        status, payload = self._call(
-            fixture, "POST", f"/session/{session}/element/{refresh}/click"
-        )
+        status, payload = self._call(fixture, "POST", f"/session/{session}/element/{refresh}/click")
         self.assertEqual(status, 200, payload)
         after = fixture.snapshot()["conversation"]
         self.assertEqual(after["generation"], before["generation"] + 1)
@@ -174,20 +156,14 @@ class ConversationFixtureTests(unittest.TestCase):
             [item["candidateId"] for item in before["candidates"]],
             [item["candidateId"] for item in after["candidates"]],
         )
-        status, payload = self._call(
-            fixture, "POST", f"/session/{session}/element/{old_row}/click"
-        )
+        status, payload = self._call(fixture, "POST", f"/session/{session}/element/{old_row}/click")
         self.assertEqual(status, 404, payload)
         self.assertEqual(payload["value"]["error"], "stale element reference")
         new_row = self._find(fixture, session, f"conversation-row:{latest_id}")
         self.assertNotEqual(new_row, old_row)
-        status, payload = self._call(
-            fixture, "POST", f"/session/{session}/element/{new_row}/click"
-        )
+        status, payload = self._call(fixture, "POST", f"/session/{session}/element/{new_row}/click")
         self.assertEqual(status, 200, payload)
-        self.assertEqual(
-            fixture.snapshot()["conversation"]["opened"]["candidateId"], latest_id
-        )
+        self.assertEqual(fixture.snapshot()["conversation"]["opened"]["candidateId"], latest_id)
 
     def test_uncertain_variant_exposes_coarse_activity_only(self) -> None:
         fixture = self._fixture("conversation-uncertain")
@@ -199,9 +175,7 @@ class ConversationFixtureTests(unittest.TestCase):
         candidates = conversation["candidates"]
         self.assertEqual(len(candidates), 4)
         coarse = [
-            item
-            for item in candidates
-            if item["threadActivity"] == candidates[0]["threadActivity"]
+            item for item in candidates if item["threadActivity"] == candidates[0]["threadActivity"]
         ]
         self.assertGreaterEqual(len(coarse), 2)
         target = next(
@@ -209,12 +183,8 @@ class ConversationFixtureTests(unittest.TestCase):
             for item in candidates
             if item["candidateId"] == conversation["latestConversationId"]
         )
-        row = self._find(
-            fixture, session, f"conversation-row:{target['candidateId']}"
-        )
-        self.assertIsNone(
-            self._attribute(fixture, session, row, "data-activity-epoch-ms")
-        )
+        row = self._find(fixture, session, f"conversation-row:{target['candidateId']}")
+        self.assertIsNone(self._attribute(fixture, session, row, "data-activity-epoch-ms"))
         self.assertEqual(conversation["opened"], None)
 
     def test_execute_and_non_scroll_actions_fail_explicitly(self) -> None:
@@ -268,27 +238,29 @@ class ConversationFixtureTests(unittest.TestCase):
         self._search(fixture, session)
         latest_id = fixture.snapshot()["conversation"]["latestConversationId"]
         row = self._find(fixture, session, f"conversation-row:{latest_id}")
-        status, _ = self._call(
-            fixture, "POST", f"/session/{session}/element/{row}/click"
-        )
+        status, _ = self._call(fixture, "POST", f"/session/{session}/element/{row}/click")
         self.assertEqual(status, 200)
         context = self._find(fixture, session, "conversation-context")
         self.assertIsNotNone(self._attribute(fixture, session, context, "data-timezone"))
         self.assertIsNone(self._attribute(fixture, session, context, "missing"))
         title = self._find(fixture, session, "conversation-title")
         self.assertIsNone(self._attribute(fixture, session, title, "missing"))
-        self.assertFalse(any(
-            item["action"] == "verify-open"
-            for item in fixture.snapshot()["conversation"]["actions"]
-        ))
+        self.assertFalse(
+            any(
+                item["action"] == "verify-open"
+                for item in fixture.snapshot()["conversation"]["actions"]
+            )
+        )
         status, source = self._call(fixture, "GET", f"/session/{session}/source")
         self.assertEqual(status, 200)
         import xml.etree.ElementTree as ET
+
         root = ET.fromstring(source["value"])
         opened_title = root.find(".//*[@name='conversation-title']")
         self.assertIsNotNone(opened_title)
         verified = [
-            item for item in fixture.snapshot()["conversation"]["actions"]
+            item
+            for item in fixture.snapshot()["conversation"]["actions"]
             if item["action"] == "verify-open"
         ]
         self.assertEqual(verified[-1]["detail"]["candidateId"], latest_id)

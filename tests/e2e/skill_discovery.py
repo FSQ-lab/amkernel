@@ -244,8 +244,7 @@ def _sanitize_fact_object(value: Mapping[str, Any]) -> dict[str, Any] | None:
     if simulators is not None:
         result["simulators"] = simulators
     if not any(
-        key in result
-        for key in ("javaCandidates", "physical", "simulators", "selectedJava")
+        key in result for key in ("javaCandidates", "physical", "simulators", "selectedJava")
     ):
         return None
     return result
@@ -321,18 +320,14 @@ def _sanitize_calls(calls: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
                 item[key] = value
         arguments = call.get("arguments")
         if isinstance(arguments, Mapping):
-            safe_arguments: dict[str, Any] = {
-                "keys": sorted(str(key) for key in arguments)
-            }
+            safe_arguments: dict[str, Any] = {"keys": sorted(str(key) for key in arguments)}
             skill = arguments.get("skill")
             if call.get("toolName") == "skill" and isinstance(skill, str):
                 safe_arguments["skill"] = behavior._safe_text(skill, 120)
             for field in ("code", "path"):
                 value = arguments.get(field)
                 if isinstance(value, str):
-                    safe_arguments[f"{field}Sha256"] = behavior._sha256_bytes(
-                        value.encode()
-                    )
+                    safe_arguments[f"{field}Sha256"] = behavior._sha256_bytes(value.encode())
                     safe_arguments[f"{field}Bytes"] = len(value.encode())
             if arguments.get("packages") is not None:
                 safe_arguments["packagesRequested"] = True
@@ -512,18 +507,12 @@ def _prepare_client_home(context: behavior.RuntimeContext, host_selected: bool) 
     config = behavior._load_json(config_path)
     if not isinstance(config, dict):
         return
-    folders = {
-        str(item)
-        for item in config.get("trustedFolders", [])
-        if isinstance(item, str)
-    }
+    folders = {str(item) for item in config.get("trustedFolders", []) if isinstance(item, str)}
     folders.update(_host_allowed_paths())
     config["trustedFolders"] = sorted(folders)
     behavior._write_json(config_path, config)
     context.temp_evidence["clientConfig"] = {
-        "allowedHostPaths": [
-            behavior._scrubber(context)(item) for item in _host_allowed_paths()
-        ],
+        "allowedHostPaths": [behavior._scrubber(context)(item) for item in _host_allowed_paths()],
         "scope": "isolated client HOME; task-only host read paths",
     }
 
@@ -1035,9 +1024,7 @@ def _probe_candidate_issues(
                 issues.append(f"existing candidate {index} was not executed")
                 continue
             argv = command.get("argv")
-            if not isinstance(argv, list) or not argv or not _path_equal(
-                argv[0], path
-            ):
+            if not isinstance(argv, list) or not argv or not _path_equal(argv[0], path):
                 issues.append(f"candidate {index} verification argv is inconsistent")
             if not _is_int(command.get("exitCode")):
                 issues.append(f"candidate {index} verification has no exit code")
@@ -1085,9 +1072,7 @@ def _probe_candidate_issues(
                 if record.get("version") != facts.get("version"):
                     issues.append(f"final candidate {index} version differs from probe")
                 if record.get("javaHome") != facts.get("javaHome"):
-                    issues.append(
-                        f"final candidate {index} javaHome differs from probe"
-                    )
+                    issues.append(f"final candidate {index} javaHome differs from probe")
         elif candidate.get("exists") is True:
             issues.append(f"inventory candidate {index} has no verification command")
         elif candidate.get("exists") is False:
@@ -1124,9 +1109,7 @@ def _probe_selection_issues(
     return issues
 
 
-def _probe_counts_match(
-    reported: object, expected: Mapping[str, Any], keys: Sequence[str]
-) -> bool:
+def _probe_counts_match(reported: object, expected: Mapping[str, Any], keys: Sequence[str]) -> bool:
     if not isinstance(reported, dict):
         return False
     for key in keys:
@@ -1134,10 +1117,7 @@ def _probe_counts_match(
             continue
         value = expected.get(key)
         if value is None:
-            if (
-                reported.get(key) is not None
-                or reported.get(f"{key}Unknown") is not True
-            ):
+            if reported.get(key) is not None or reported.get(f"{key}Unknown") is not True:
                 return False
         else:
             if reported.get(key) != value:
@@ -1147,9 +1127,7 @@ def _probe_counts_match(
     return True
 
 
-def _probe_command_facts(
-    entries: Sequence[Mapping[str, Any]], kind: str
-) -> dict[str, Any] | None:
+def _probe_command_facts(entries: Sequence[Mapping[str, Any]], kind: str) -> dict[str, Any] | None:
     for entry in entries:
         if entry.get("event") != "command" or entry.get("kind") != kind:
             continue
@@ -1166,16 +1144,19 @@ def _probe_count_issues(
     physical = _probe_command_facts(entries, "apple-physical")
     reported_physical = final_json.get("physical")
     if physical is not None:
-        if not _probe_counts_match(
-            reported_physical, physical, ("discovered", "connected")
-        ):
+        if not _probe_counts_match(reported_physical, physical, ("discovered", "connected")):
             issues.append("physical counts do not match the probe journal")
-    elif _probe_counts_match(
-        reported_physical, {"discovered": None, "connected": None}, (
-            "discovered",
-            "connected",
+    elif (
+        _probe_counts_match(
+            reported_physical,
+            {"discovered": None, "connected": None},
+            (
+                "discovered",
+                "connected",
+            ),
         )
-    ) is False:
+        is False
+    ):
         issues.append("physical counts are promoted without a probe outcome")
     if isinstance(reported_physical, dict):
         for key in ("usableForDevelopment", "readyForXcuitest"):
@@ -1317,9 +1298,7 @@ def _host_state_snapshot() -> dict[str, Any]:
             selected.stdout.strip() if selected is not None and selected.returncode == 0 else None
         ),
         "shellProfiles": profiles,
-        "appiumPackageConfig": behavior._sha256_file(
-            Path.home() / ".appium" / "package.json"
-        ),
+        "appiumPackageConfig": behavior._sha256_file(Path.home() / ".appium" / "package.json"),
         "androidRepositoriesConfig": behavior._sha256_file(
             Path.home() / ".android" / "repositories.cfg"
         ),
@@ -1484,9 +1463,7 @@ outcome; do not manufacture readiness.
 
 
 def _host_prompt(probe: Path, journal: Path) -> str:
-    return _HOST_PROMPT.format(
-        probe=json.dumps(str(probe)), journal=json.dumps(str(journal))
-    )
+    return _HOST_PROMPT.format(probe=json.dumps(str(probe)), journal=json.dumps(str(journal)))
 
 
 def _synthetic_prompt(contract: Mapping[str, Any]) -> str:
@@ -1542,16 +1519,8 @@ def _count_issues(
     if not isinstance(value, dict):
         return ["not an object"]
     issues: list[str] = []
-    counts = {
-        key: value.get(key)
-        for key in keys
-        if not key.endswith("Unknown")
-    }
-    flags = {
-        key: value.get(key)
-        for key in keys
-        if key.endswith("Unknown")
-    }
+    counts = {key: value.get(key) for key in keys if not key.endswith("Unknown")}
+    flags = {key: value.get(key) for key in keys if key.endswith("Unknown")}
     for key, count in counts.items():
         if count is not None and not (_is_int(count) and count >= 0):
             issues.append(f"{key} is not a non-negative integer or null")
@@ -1613,9 +1582,7 @@ def _synthetic_physical_issues(
     return issues
 
 
-def _counts_equal(
-    reported: object, expected: Mapping[str, Any], keys: frozenset[str]
-) -> bool:
+def _counts_equal(reported: object, expected: Mapping[str, Any], keys: frozenset[str]) -> bool:
     if not isinstance(reported, dict):
         return False
     for key in keys:
@@ -1687,11 +1654,7 @@ def _expected_synthetic_counts(
     contract: Mapping[str, Any],
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     physical_section = contract.get("physical")
-    devices = (
-        physical_section.get("devices")
-        if isinstance(physical_section, dict)
-        else None
-    )
+    devices = physical_section.get("devices") if isinstance(physical_section, dict) else None
     physical: dict[str, Any]
     if not isinstance(devices, list):
         physical = {
@@ -1705,11 +1668,7 @@ def _expected_synthetic_counts(
             "readyForXcuitestUnknown": True,
         }
     else:
-        states = [
-            item.get("transportState")
-            for item in devices
-            if isinstance(item, dict)
-        ]
+        states = [item.get("transportState") for item in devices if isinstance(item, dict)]
         known_states: list[bool] = []
         for item in states:
             if not isinstance(item, str):
@@ -1746,16 +1705,10 @@ def _expected_synthetic_counts(
         }
     simulator_section = contract.get("simulators")
     simulator_devices = (
-        simulator_section.get("devices")
-        if isinstance(simulator_section, dict)
-        else None
+        simulator_section.get("devices") if isinstance(simulator_section, dict) else None
     )
     runtime_section = contract.get("runtimes")
-    runtimes = (
-        runtime_section.get("runtimes")
-        if isinstance(runtime_section, dict)
-        else None
-    )
+    runtimes = runtime_section.get("runtimes") if isinstance(runtime_section, dict) else None
     simulators = {
         "discovered": len(simulator_devices) if isinstance(simulator_devices, list) else None,
         "discoveredUnknown": not isinstance(simulator_devices, list),
@@ -1820,8 +1773,7 @@ def _common_checks(
     workspace_servers = [
         item
         for item in servers
-        if isinstance(item, dict)
-        and str(item.get("source", "")).lower() == "workspace"
+        if isinstance(item, dict) and str(item.get("source", "")).lower() == "workspace"
     ]
     evaluation.check(
         "one-workspace-mcp-server",
@@ -1830,17 +1782,11 @@ def _common_checks(
         and str(workspace_servers[0].get("status", "")).lower() == "connected",
         "Workspace MCP servers: "
         + (
-            ", ".join(
-                f"{item.get('name')}:{item.get('status')}" for item in workspace_servers
-            )
+            ", ".join(f"{item.get('name')}:{item.get('status')}" for item in workspace_servers)
             or "none"
         ),
     )
-    mcp_calls = [
-        call
-        for call in calls
-        if call.get("mcpToolName") or call.get("mcpServerName")
-    ]
+    mcp_calls = [call for call in calls if call.get("mcpToolName") or call.get("mcpServerName")]
     bad_mcp = [
         call
         for call in mcp_calls
@@ -1859,25 +1805,20 @@ def _common_checks(
     disallowed = [
         call
         for call in calls
-        if not (
-            call.get("mcpToolName") == "python_exec"
-            or call.get("toolName") in _ALLOWED_TOOLS
-        )
+        if not (call.get("mcpToolName") == "python_exec" or call.get("toolName") in _ALLOWED_TOOLS)
     ]
     evaluation.check(
         "no-shell-write-other-tools",
         not disallowed,
         "Only skill/view and amkernel python_exec tools were executed."
         if not disallowed
-        else "Disallowed tools: "
-        + ", ".join(str(item.get("toolName")) for item in disallowed[:8]),
+        else "Disallowed tools: " + ", ".join(str(item.get("toolName")) for item in disallowed[:8]),
     )
     python_calls = [call for call in mcp_calls if call.get("mcpToolName") == "python_exec"]
     completed = [
         call
         for call in python_calls
-        if call.get("observedStatus") == "completed"
-        and call.get("kernelState") == "alive"
+        if call.get("observedStatus") == "completed" and call.get("kernelState") == "alive"
     ]
     evaluation.check(
         "python-exec-completed",
@@ -1889,15 +1830,9 @@ def _common_checks(
         all(call.get("kernelState") != "dead" for call in python_calls)
         and final_json.get("kernelState") == "alive",
         "Observed kernel states: "
-        + ", ".join(
-            sorted({str(call.get("kernelState")) for call in python_calls})
-        ),
+        + ", ".join(sorted({str(call.get("kernelState")) for call in python_calls})),
     )
-    package_calls = [
-        call
-        for call in python_calls
-        if call.get("arguments", {}).get("packages")
-    ]
+    package_calls = [call for call in python_calls if call.get("arguments", {}).get("packages")]
     evaluation.check(
         "no-package-installs",
         not package_calls,
@@ -1929,16 +1864,13 @@ def _synthetic_inventory_issues(
             if record.get("executed") is not False or record.get("eligible") is not False:
                 issues.append(f"absent candidate reported executed or eligible: {path}")
             if any(
-                record.get(key) is not None
-                for key in ("exitCode", "version", "major", "javaHome")
+                record.get(key) is not None for key in ("exitCode", "version", "major", "javaHome")
             ):
                 issues.append(f"absent candidate has unobserved execution facts: {path}")
     return issues
 
 
-def _same_java_observation(
-    reported: Mapping[str, Any], observed: Mapping[str, Any]
-) -> bool:
+def _same_java_observation(reported: Mapping[str, Any], observed: Mapping[str, Any]) -> bool:
     return (
         reported.get("version") == observed.get("version")
         and reported.get("major") == observed.get("major")
@@ -1978,9 +1910,7 @@ def _check_synthetic_selection(
     if not isinstance(candidates, list):
         candidates = []
     ordered_paths = [
-        _norm_path(item.get("executable"))
-        for item in candidates
-        if isinstance(item, dict)
+        _norm_path(item.get("executable")) for item in candidates if isinstance(item, dict)
     ]
     selected_path = _norm_path(reported_executable)
     selected_index = (
@@ -2035,13 +1965,8 @@ def _check_synthetic_selection(
             candidate.get("kind") or candidate.get("id"),
             candidate.get("executable"),
         )
-        if (
-            journal_command is not None
-            and journal_command.get("exitCode") != exit_code
-        ):
-            rejection_issues.append(
-                f"reported exitCode differs from the journal for {path}"
-            )
+        if journal_command is not None and journal_command.get("exitCode") != exit_code:
+            rejection_issues.append(f"reported exitCode differs from the journal for {path}")
         if journal_command is not None and not _same_java_observation(record, journal_command):
             rejection_issues.append(f"reported Java version/home differs from execution for {path}")
         if exit_code != 0:
@@ -2056,12 +1981,12 @@ def _check_synthetic_selection(
         expected_eligible = exit_code == 0 and major >= minimum_major
         if record.get("eligible") is not expected_eligible:
             rejection_issues.append(f"eligible does not match minimum for {path}")
-        if expected_eligible and index != selected_index and (
-            selected_index is None or index < selected_index
+        if (
+            expected_eligible
+            and index != selected_index
+            and (selected_index is None or index < selected_index)
         ):
-            rejection_issues.append(
-                f"eligible candidate at index {index} was not selected"
-            )
+            rejection_issues.append(f"eligible candidate at index {index} was not selected")
     evaluation.check(
         "selection-rejects-earlier-or-ineligible-candidates",
         not rejection_issues,
@@ -2173,24 +2098,20 @@ def _evaluate_synthetic(
         if not inventory_issues
         else "; ".join(inventory_issues[:8]),
     )
-    _check_synthetic_selection(
-        evaluation, contract, fixture, final_json, journal, reported_map
-    )
+    _check_synthetic_selection(evaluation, contract, fixture, final_json, journal, reported_map)
     expected_physical, expected_simulators = _expected_synthetic_counts(contract)
     empty_physical_observed = expected_physical.get("discovered") == 0 and any(
-        _journal_kind(command.get("kind")) == "apple-physical"
-        and command.get("exitCode") == 0
+        _journal_kind(command.get("kind")) == "apple-physical" and command.get("exitCode") == 0
         for command in journal
     )
     reported_physical = final_json.get("physical")
     reported_simulators = final_json.get("simulators")
     physical_issues = _synthetic_physical_issues(
-        reported_physical, expected_physical,
+        reported_physical,
+        expected_physical,
         empty_inventory_observed=empty_physical_observed,
     )
-    simulator_issues = _count_issues(
-        reported_simulators, sorted(_SIMULATOR_KEYS), physical=False
-    )
+    simulator_issues = _count_issues(reported_simulators, sorted(_SIMULATOR_KEYS), physical=False)
     simulator_issues.extend(
         f"expected {key}={value!r} got {reported_simulators.get(key)!r}"
         for key, value in expected_simulators.items()
@@ -2219,7 +2140,8 @@ def _evaluate_synthetic(
     if evidence_physical is None:
         evidence_issues.append("no physical counts in python_exec output")
     elif _synthetic_physical_issues(
-        evidence_physical, expected_physical,
+        evidence_physical,
+        expected_physical,
         empty_inventory_observed=empty_physical_observed,
     ):
         evidence_issues.append("physical counts in output differ from the listing")
@@ -2310,8 +2232,7 @@ def _evaluate_host(
         and service_after is not None
         and service_after.get("adbServer", 0) <= service_before.get("adbServer", 0)
         and service_after.get("appium", 0) <= service_before.get("appium", 0)
-        and service_after.get("webdriverAgent", 0)
-        <= service_before.get("webdriverAgent", 0)
+        and service_after.get("webdriverAgent", 0) <= service_before.get("webdriverAgent", 0)
         and service_after.get("xcodebuild", 0) <= service_before.get("xcodebuild", 0)
     )
     evaluation.check(
@@ -2378,9 +2299,7 @@ def _run_scenario(context: behavior.RuntimeContext, scenario_id: str) -> dict[st
         final_json = behavior._final_json(final_text)
         observations = _observations(calls)
         probe_entries = (
-            _read_probe_journal(probe_journal_path)
-            if probe_journal_path is not None
-            else []
+            _read_probe_journal(probe_journal_path) if probe_journal_path is not None else []
         )
         evaluation = behavior.Evaluation(scenario_id)
         _common_checks(
@@ -2402,9 +2321,7 @@ def _run_scenario(context: behavior.RuntimeContext, scenario_id: str) -> dict[st
                     service_after,
                 )
             else:
-                _evaluate_synthetic(
-                    evaluation, fixture, calls, final_json, observations
-                )
+                _evaluate_synthetic(evaluation, fixture, calls, final_json, observations)
         result = evaluation.result()
         snapshot = fixture.snapshot() if fixture is not None else None
         result.update(
@@ -2466,31 +2383,19 @@ def _run_scenario(context: behavior.RuntimeContext, scenario_id: str) -> dict[st
             }
         )
         if fixture is not None:
-            expected_physical, expected_simulators = _expected_synthetic_counts(
-                fixture.contract
-            )
-            selected = (
-                final_json.get("selectedJava")
-                if isinstance(final_json, dict)
-                else None
-            )
+            expected_physical, expected_simulators = _expected_synthetic_counts(fixture.contract)
+            selected = final_json.get("selectedJava") if isinstance(final_json, dict) else None
             result["fixtureJournal"] = snapshot
             result["expectedJava"] = (
                 str(fixture.expected_java) if fixture.expected_java is not None else None
             )
             result["selectionEvidence"] = {
-                "minimumJavaMajor": fixture.contract.get("driver", {}).get(
-                    "minimumJavaMajor"
-                ),
+                "minimumJavaMajor": fixture.contract.get("driver", {}).get("minimumJavaMajor"),
                 "expectedJava": (
-                    str(fixture.expected_java)
-                    if fixture.expected_java is not None
-                    else None
+                    str(fixture.expected_java) if fixture.expected_java is not None else None
                 ),
                 "reportedJava": (
-                    selected.get("executable")
-                    if isinstance(selected, dict)
-                    else None
+                    selected.get("executable") if isinstance(selected, dict) else None
                 ),
                 "expectedMatch": (
                     _path_equal(selected.get("executable"), fixture.expected_java)
@@ -2508,19 +2413,13 @@ def _run_scenario(context: behavior.RuntimeContext, scenario_id: str) -> dict[st
                 "simulatorExpectation": expected_simulators,
             }
         else:
-            selected = (
-                final_json.get("selectedJava")
-                if isinstance(final_json, dict)
-                else None
-            )
+            selected = final_json.get("selectedJava") if isinstance(final_json, dict) else None
             probe_expected = _probe_expected_selection(probe_entries)
             result["selectionEvidence"] = {
                 "minimumJavaMajor": _MINIMUM_JAVA_MAJOR,
                 "expectedJava": probe_expected,
                 "reportedJava": (
-                    selected.get("executable")
-                    if isinstance(selected, dict)
-                    else None
+                    selected.get("executable") if isinstance(selected, dict) else None
                 ),
                 "expectedMatch": (
                     isinstance(selected, dict)
@@ -2551,19 +2450,13 @@ def _run_scenario(context: behavior.RuntimeContext, scenario_id: str) -> dict[st
             "completedAt": behavior._now(),
             "durationMs": int((time.time() - started_seconds) * 1000),
             "error": behavior._bounded(
-                behavior._scrubber(context)(
-                    f"{type(error).__name__}: {error}"
-                ),
+                behavior._scrubber(context)(f"{type(error).__name__}: {error}"),
                 4000,
             ),
             "checks": [],
-            "scope": (
-                "actual-host-read-only" if scenario_id == "host" else "synthetic-fixture"
-            ),
+            "scope": ("actual-host-read-only" if scenario_id == "host" else "synthetic-fixture"),
             "platformEvidence": (
-                "actual-host-discovery-only"
-                if scenario_id == "host"
-                else "synthetic-fixture"
+                "actual-host-discovery-only" if scenario_id == "host" else "synthetic-fixture"
             ),
             "serviceProcesses": (
                 {"before": service_before, "after": service_after}
@@ -2679,21 +2572,15 @@ def run(options: behavior.Options) -> dict[str, Any]:
                     "id": "preflight-exception",
                     "ok": False,
                     "detail": behavior._bounded(
-                        behavior._scrubber(context)(
-                            f"{type(error).__name__}: {error}"
-                        ),
+                        behavior._scrubber(context)(f"{type(error).__name__}: {error}"),
                         3000,
                     ),
                 }
             ],
         }
     evidence["preflight"] = preflight
-    evidence["bootstrapInstall"]["installedBeforeScenarios"] = context.temp_evidence.get(
-        "install"
-    )
-    evidence["bootstrapInstall"]["verifiedBeforeScenarios"] = (
-        context.temp_evidence.get("verified")
-    )
+    evidence["bootstrapInstall"]["installedBeforeScenarios"] = context.temp_evidence.get("install")
+    evidence["bootstrapInstall"]["verifiedBeforeScenarios"] = context.temp_evidence.get("verified")
     if not preflight.get("ok"):
         for scenario_id in options.scenarios:
             evidence["scenarios"].append(
@@ -2704,9 +2591,7 @@ def run(options: behavior.Options) -> dict[str, Any]:
                     "error": "global preflight failed; no scenario was started",
                     "checks": [],
                     "scope": (
-                        "actual-host-read-only"
-                        if scenario_id == "host"
-                        else "synthetic-fixture"
+                        "actual-host-read-only" if scenario_id == "host" else "synthetic-fixture"
                     ),
                     "platformEvidence": (
                         "actual-host-discovery-only"
@@ -2725,9 +2610,7 @@ def run(options: behavior.Options) -> dict[str, Any]:
     isolation_after = behavior._prepare_isolation(base)
     external_after = _host_state_snapshot() if check_external else None
     isolation_unchanged = isolation_before == isolation_after
-    external_unchanged = (
-        external_before == external_after if check_external else True
-    )
+    external_unchanged = external_before == external_after if check_external else True
     evidence["isolation"] = {
         "before": isolation_before,
         "after": isolation_after,
@@ -2758,9 +2641,7 @@ def run(options: behavior.Options) -> dict[str, Any]:
         "isolationRegression": not isolation_unchanged,
         "externalStateRegression": not external_unchanged,
     }
-    evidence = cast(
-        dict[str, Any], behavior._scrub_value(evidence, behavior._scrubber(context))
-    )
+    evidence = cast(dict[str, Any], behavior._scrub_value(evidence, behavior._scrubber(context)))
     options.output.parent.mkdir(parents=True, exist_ok=True)
     behavior._write_json(options.output, evidence)
     if not options.keep_temp:
@@ -2807,10 +2688,7 @@ def _parse_args(argv: Sequence[str] | None = None) -> behavior.Options:
         )
     output = args.output
     if output is None:
-        output = (
-            Path(tempfile.mkdtemp(prefix="amkernel-discovery-evidence-"))
-            / "evidence.json"
-        )
+        output = Path(tempfile.mkdtemp(prefix="amkernel-discovery-evidence-")) / "evidence.json"
     scenarios = list(args.scenario or _SCENARIO_IDS)
     scenarios = [scenario_id for scenario_id in _SCENARIO_IDS if scenario_id in scenarios]
     return behavior.Options(

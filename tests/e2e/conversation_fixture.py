@@ -92,11 +92,7 @@ def _threads(variant: str) -> tuple[_Thread, ...]:
         id="conv-7f3a",
         title="Design team",
         participants=("Maya Chen", "Owen Brooks"),
-        activity=_at(
-            "2026-11-03T00:05:10-08:00"
-            if uncertain
-            else "2026-11-03T00:00:00-08:00"
-        ),
+        activity=_at("2026-11-03T00:05:10-08:00" if uncertain else "2026-11-03T00:00:00-08:00"),
         messages=(
             _Message("msg-design-1", "Maya Chen", _at("2026-11-02T23:00:00-08:00")),
             _Message("msg-design-2", "Owen Brooks", _at("2026-11-02T23:30:00-08:00")),
@@ -149,10 +145,7 @@ def _bounded_detail(value: object) -> object:
     if isinstance(value, (list, tuple)):
         return [_bounded_detail(item) for item in list(value)[:12]]
     if isinstance(value, Mapping):
-        return {
-            str(key)[:80]: _bounded_detail(item)
-            for key, item in list(value.items())[:24]
-        }
+        return {str(key)[:80]: _bounded_detail(item) for key, item in list(value.items())[:24]}
     return str(value)[:240]
 
 
@@ -199,9 +192,7 @@ def _contains_scroll(payload: object) -> bool:
 
 def _attributes(mapping: Mapping[str, object]) -> str:
     return " ".join(
-        f"{key}={quoteattr(str(value))}"
-        for key, value in mapping.items()
-        if value is not None
+        f"{key}={quoteattr(str(value))}" for key, value in mapping.items() if value is not None
     )
 
 
@@ -222,8 +213,7 @@ class ConversationAppium(SyntheticAppium):
         variant = _VARIANT_ALIASES.get(str(config.variant), str(config.variant))
         if variant not in _VARIANTS:
             raise ValueError(
-                "conversation fixture variant must be conversation-latest or "
-                "conversation-uncertain"
+                "conversation fixture variant must be conversation-latest or conversation-uncertain"
             )
         super().__init__(config, kill_runner=kill_runner)
         self.variant = variant
@@ -277,9 +267,7 @@ class ConversationAppium(SyntheticAppium):
 
     def _activity_iso(self, thread: _Thread) -> str:
         if self.variant == "conversation-uncertain":
-            return thread.activity.replace(second=0, microsecond=0).isoformat(
-                timespec="seconds"
-            )
+            return thread.activity.replace(second=0, microsecond=0).isoformat(timespec="seconds")
         return _iso(thread.activity)
 
     def _activity_display(self, thread: _Thread) -> str:
@@ -303,9 +291,7 @@ class ConversationAppium(SyntheticAppium):
             "data-generation": str(self.generation),
         }
         if self.variant == "conversation-latest":
-            attributes["data-activity-epoch-ms"] = str(
-                round(thread.activity.timestamp() * 1000)
-            )
+            attributes["data-activity-epoch-ms"] = str(round(thread.activity.timestamp() * 1000))
         return attributes
 
     def _latest_thread(self) -> _Thread:
@@ -376,11 +362,7 @@ class ConversationAppium(SyntheticAppium):
             return "context", None, None
         if value == "conversation-title" and self.screen == "conversation" and self.opened:
             return "title", str(self.opened["candidateId"]), None
-        if (
-            value == "conversation-participants"
-            and self.screen == "conversation"
-            and self.opened
-        ):
+        if value == "conversation-participants" and self.screen == "conversation" and self.opened:
             return "participants", str(self.opened["candidateId"]), None
         if value.startswith("conversation-row:"):
             thread_id = value.split(":", 1)[1]
@@ -425,9 +407,7 @@ class ConversationAppium(SyntheticAppium):
             return "search-input"
         return "conversation"
 
-    def _element_name(
-        self, kind: str, thread_id: str | None, message_index: int | None
-    ) -> str:
+    def _element_name(self, kind: str, thread_id: str | None, message_index: int | None) -> str:
         if kind == "row":
             return f"conversation-row:{thread_id}"
         if kind == "title":
@@ -444,9 +424,7 @@ class ConversationAppium(SyntheticAppium):
             return "conversation-back"
         return "conversation-context"
 
-    def _element_label(
-        self, kind: str, thread_id: str | None, message_index: int | None
-    ) -> str:
+    def _element_label(self, kind: str, thread_id: str | None, message_index: int | None) -> str:
         thread = self._thread(thread_id)
         if kind in {"row", "title"} and thread is not None:
             return thread.title
@@ -463,9 +441,7 @@ class ConversationAppium(SyntheticAppium):
             return "Back"
         return "Conversation context"
 
-    def _find(
-        self, session_id: str, payload: object
-    ) -> tuple[int, dict[str, object]]:
+    def _find(self, session_id: str, payload: object) -> tuple[int, dict[str, object]]:
         path = f"/session/{session_id}/element"
         session = self._session(session_id, "find", "POST", path)
         if session is None:
@@ -714,9 +690,7 @@ class ConversationAppium(SyntheticAppium):
         if attribute is None:
             value: object = copied.get("label")
         elif attribute == "name":
-            value = self._element_name(
-                kind, thread_id, copied.get("messageIndex")
-            )
+            value = self._element_name(kind, thread_id, copied.get("messageIndex"))
         elif attribute in {"label", "text", "content-desc"}:
             value = copied.get("label")
         elif attribute == "value" and kind == "search":
@@ -783,7 +757,9 @@ class ConversationAppium(SyntheticAppium):
             elif attribute == "data-activity-precision":
                 observe_kind = "activity-precision"
             elif attribute in {
-                "data-activity-iso", "data-activity-display", "data-activity-epoch-ms"
+                "data-activity-iso",
+                "data-activity-display",
+                "data-activity-epoch-ms",
             }:
                 observe_kind = "thread-activity"
             elif attribute in {
@@ -799,7 +775,9 @@ class ConversationAppium(SyntheticAppium):
             elif attribute == "data-activity-precision":
                 observe_kind = "activity-precision"
             elif attribute in {
-                "data-activity-iso", "data-activity-display", "data-activity-epoch-ms"
+                "data-activity-iso",
+                "data-activity-display",
+                "data-activity-epoch-ms",
             }:
                 observe_kind = "thread-activity"
             else:
@@ -841,9 +819,7 @@ class ConversationAppium(SyntheticAppium):
             },
         )
 
-    def _click(
-        self, session_id: str, element_id: str
-    ) -> tuple[int, dict[str, object]]:
+    def _click(self, session_id: str, element_id: str) -> tuple[int, dict[str, object]]:
         path = f"/session/{session_id}/element/{element_id}/click"
         session = self._session(session_id, "click", "POST", path)
         if session is None:
@@ -1128,8 +1104,10 @@ class ConversationAppium(SyntheticAppium):
             raw_value = payload.get("value")
             if isinstance(raw_text, str):
                 text = raw_text
-            elif isinstance(raw_value, list) and raw_value and all(
-                isinstance(item, str) for item in raw_value
+            elif (
+                isinstance(raw_value, list)
+                and raw_value
+                and all(isinstance(item, str) for item in raw_value)
             ):
                 text = "".join(raw_value)
             else:
@@ -1269,9 +1247,7 @@ class ConversationAppium(SyntheticAppium):
         self._log("search", 200, detail)
         return 200, {"value": None}
 
-    def _clear(
-        self, session_id: str, element_id: str, path: str
-    ) -> tuple[int, dict[str, object]]:
+    def _clear(self, session_id: str, element_id: str, path: str) -> tuple[int, dict[str, object]]:
         session = self._session(session_id, "search-clear", "POST", path)
         if session is None:
             return _error(404, "invalid session id", "expired")
@@ -1323,9 +1299,7 @@ class ConversationAppium(SyntheticAppium):
     # ------------------------------------------------------------------
     # W3C actions (standard scroll only)
 
-    def _execute(
-        self, session_id: str, payload: object
-    ) -> tuple[int, dict[str, object]]:
+    def _execute(self, session_id: str, payload: object) -> tuple[int, dict[str, object]]:
         path = f"/session/{session_id}/execute/sync"
         session = self._session(session_id, "execute", "POST", path)
         if session is None:
@@ -1409,9 +1383,7 @@ class ConversationAppium(SyntheticAppium):
             "generation": self.generation,
             "previousGeneration": previous,
             "candidateIds": list(self.candidates),
-            "rowOrder": [
-                f"{index}:{thread_id}" for index, thread_id in enumerate(self.candidates)
-            ],
+            "rowOrder": [f"{index}:{thread_id}" for index, thread_id in enumerate(self.candidates)],
             "reordered": len(self.candidates) > 1,
         }
         self._record(
@@ -1428,9 +1400,7 @@ class ConversationAppium(SyntheticAppium):
         self._log("scroll", 200, detail)
         return 200, {"value": None}
 
-    def _delete_actions(
-        self, session_id: str, path: str
-    ) -> tuple[int, dict[str, object]]:
+    def _delete_actions(self, session_id: str, path: str) -> tuple[int, dict[str, object]]:
         session = self._session(session_id, "release-actions", "DELETE", path)
         if session is None:
             return _error(404, "invalid session id", "expired")
@@ -1459,9 +1429,7 @@ class ConversationAppium(SyntheticAppium):
             generation = self.generation
             candidate_ids = list(self.candidates)
             has_more = self.has_more
-            row_order = [
-                f"{index}:{thread_id}" for index, thread_id in enumerate(candidate_ids)
-            ]
+            row_order = [f"{index}:{thread_id}" for index, thread_id in enumerate(candidate_ids)]
         self._record(
             "source",
             method,
@@ -1522,12 +1490,12 @@ class ConversationAppium(SyntheticAppium):
                     'label="Back" accessible="true"/>'
                 )
                 parts.append(
-                    f"<XCUIElementTypeStaticText name=\"conversation-title\" "
+                    f'<XCUIElementTypeStaticText name="conversation-title" '
                     f"label={quoteattr(thread.title)} "
                     f"{_attributes(self._thread_attributes(thread))}/>"
                 )
                 parts.append(
-                    f"<XCUIElementTypeStaticText name=\"conversation-participants\" "
+                    f'<XCUIElementTypeStaticText name="conversation-participants" '
                     f"label={quoteattr('Participants: ' + ', '.join(thread.participants))}/>"
                 )
                 parts.append('<XCUIElementTypeOther name="conversation-messages">')
@@ -1581,11 +1549,11 @@ class ConversationAppium(SyntheticAppium):
                     )
                     parts.append(f"<XCUIElementTypeCell {_attributes(row_attrs)}>")
                     parts.append(
-                        f"<XCUIElementTypeStaticText name=\"thread-activity\" "
+                        f'<XCUIElementTypeStaticText name="thread-activity" '
                         f"label={quoteattr('Last activity: ' + self._activity_display(thread))}/>"
                     )
                     parts.append(
-                        f"<XCUIElementTypeStaticText name=\"newest-message\" "
+                        f'<XCUIElementTypeStaticText name="newest-message" '
                         f"label={quoteattr('Newest message: ' + self._newest_display(thread))}/>"
                     )
                     parts.append("</XCUIElementTypeCell>")
@@ -1709,9 +1677,7 @@ class ConversationAppium(SyntheticAppium):
                 "messageActivitySemantics": MESSAGE_ACTIVITY_SEMANTICS,
                 "searchComplete": self.search_complete,
                 "uncertainReason": (
-                    "coarse-timestamps"
-                    if self.variant == "conversation-uncertain"
-                    else None
+                    "coarse-timestamps" if self.variant == "conversation-uncertain" else None
                 ),
                 "candidates": candidates,
                 "opened": opened,
@@ -1751,25 +1717,15 @@ class ConversationAppium(SyntheticAppium):
                 parts = self._parts()
                 if len(parts) >= 3 and parts[0] == "session":
                     session_id = parts[1]
-                    if (
-                        len(parts) == 5
-                        and parts[2] == "element"
-                        and parts[4] in {"value", "clear"}
-                    ):
+                    if len(parts) == 5 and parts[2] == "element" and parts[4] in {"value", "clear"}:
                         try:
                             body = self._body()
                         except (ValueError, json.JSONDecodeError):
-                            fixture._record(
-                                "bad-request", "POST", self.path, 400, kind="unknown"
-                            )
+                            fixture._record("bad-request", "POST", self.path, 400, kind="unknown")
                             self._send(400, {"value": {"error": "invalid argument"}})
                             return
                         if parts[4] == "value":
-                            self._send(
-                                *fixture._send_keys(
-                                    session_id, parts[3], body, self.path
-                                )
-                            )
+                            self._send(*fixture._send_keys(session_id, parts[3], body, self.path))
                         else:
                             self._send(*fixture._clear(session_id, parts[3], self.path))
                         return
@@ -1777,9 +1733,7 @@ class ConversationAppium(SyntheticAppium):
                         try:
                             body = self._body()
                         except (ValueError, json.JSONDecodeError):
-                            fixture._record(
-                                "bad-request", "POST", self.path, 400, kind="unknown"
-                            )
+                            fixture._record("bad-request", "POST", self.path, 400, kind="unknown")
                             self._send(400, {"value": {"error": "invalid argument"}})
                             return
                         self._send(*fixture._actions(session_id, body, self.path))
@@ -1788,11 +1742,7 @@ class ConversationAppium(SyntheticAppium):
 
             def do_DELETE(self) -> None:
                 parts = self._parts()
-                if (
-                    len(parts) == 3
-                    and parts[0] == "session"
-                    and parts[2] == "actions"
-                ):
+                if len(parts) == 3 and parts[0] == "session" and parts[2] == "actions":
                     self._send(*fixture._delete_actions(parts[1], self.path))
                     return
                 super().do_DELETE()

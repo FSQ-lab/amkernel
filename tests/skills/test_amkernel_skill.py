@@ -68,9 +68,7 @@ def _install_receipt(
     }
     state_path = project_root / ".agents" / "amkernel-official.json"
     _write_json(state_path, state)
-    metadata_path = (
-        project_root / ".agents" / "skills" / "amkernel" / ".amkernel-metadata.json"
-    )
+    metadata_path = project_root / ".agents" / "skills" / "amkernel" / ".amkernel-metadata.json"
     _write_json(
         metadata_path,
         {
@@ -270,9 +268,7 @@ def test_verifier_binds_receipt_to_installed_main_metadata_version(
     }
     manifest_path = _write_manifest(tmp_path, manifest)
     state_path = _install_receipt(tmp_path, manifest)
-    metadata_path = (
-        tmp_path / ".agents" / "skills" / "amkernel" / ".amkernel-metadata.json"
-    )
+    metadata_path = tmp_path / ".agents" / "skills" / "amkernel" / ".amkernel-metadata.json"
 
     accepted = _run_verifier(tmp_path, manifest_path)
     assert accepted.returncode == 0, accepted.stdout + accepted.stderr

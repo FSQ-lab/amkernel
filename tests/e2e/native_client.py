@@ -45,13 +45,9 @@ _CLEANUP_KEYS = (
 )
 _FINAL_ENUMS: dict[str, frozenset[str]] = {
     "taskOutcome": frozenset({"completed", "blocked", "failed", "approval-required"}),
-    "stateRestoration": frozenset(
-        {"restored", "unchanged", "not-needed", "failed", "unknown"}
-    ),
+    "stateRestoration": frozenset({"restored", "unchanged", "not-needed", "failed", "unknown"}),
     "sessionCleanup": frozenset({"cleaned", "not-created", "failed", "unknown"}),
-    "serverCleanup": frozenset(
-        {"not-owned", "preserved", "not-started", "failed", "unknown"}
-    ),
+    "serverCleanup": frozenset({"not-owned", "preserved", "not-started", "failed", "unknown"}),
 }
 _SKILL_NAMES = frozenset(
     {
@@ -84,18 +80,12 @@ def _cleanup_entries(entries: object) -> list[dict[str, object]]:
     for item in entries:
         if not isinstance(item, Mapping):
             continue
-        result.append(
-            {key: item[key] for key in _CLEANUP_KEYS if key in item}
-        )
+        result.append({key: item[key] for key in _CLEANUP_KEYS if key in item})
     return result
 
 
-def _process_record(
-    process: Mapping[str, Any], final_cleanup: object
-) -> dict[str, Any]:
-    safe: dict[str, Any] = {
-        key: process[key] for key in _PROCESS_KEYS if key in process
-    }
+def _process_record(process: Mapping[str, Any], final_cleanup: object) -> dict[str, Any]:
+    safe: dict[str, Any] = {key: process[key] for key in _PROCESS_KEYS if key in process}
     if "runnerCleanup" in process:
         safe["runnerCleanup"] = _cleanup_entries(process.get("runnerCleanup"))
     filtered_final = _cleanup_entries(final_cleanup)
@@ -224,9 +214,7 @@ def run_native(
                 if event_type == "tool.execution_start":
                     start_times[call_id] = _event_timestamp(event)
                     arguments = data.get("arguments")
-                    argument_hashes[call_id] = digest(
-                        json.dumps(arguments, sort_keys=True)
-                    )
+                    argument_hashes[call_id] = digest(json.dumps(arguments, sort_keys=True))
                     if isinstance(arguments, Mapping):
                         code = arguments.get("code")
                         if isinstance(code, str):
@@ -278,8 +266,7 @@ def run_native(
         "finalReportSha256": digest(final),
         "finalStatus": _final_status(parsed),
         "mainSkillLoaded": any(
-            call.get("skill") == "amkernel" and call.get("success") is True
-            for call in records
+            call.get("skill") == "amkernel" and call.get("success") is True for call in records
         ),
         "limits": (
             "Only allowlisted status, identity, timestamp, and digest evidence is "

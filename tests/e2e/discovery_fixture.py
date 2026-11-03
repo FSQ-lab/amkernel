@@ -164,9 +164,7 @@ class DiscoveryFixture:
                 java_home = entry["javaHome"]
                 if version is not None and not isinstance(version, str):
                     raise ValueError(f"invalid fixture journal line {number}: version")
-                if major is not None and (
-                    isinstance(major, bool) or not isinstance(major, int)
-                ):
+                if major is not None and (isinstance(major, bool) or not isinstance(major, int)):
                     raise ValueError(f"invalid fixture journal line {number}: major")
                 if java_home is not None and not isinstance(java_home, str):
                     raise ValueError(f"invalid fixture journal line {number}: javaHome")
@@ -310,9 +308,7 @@ def build_fixture(root: Path, variant: str) -> DiscoveryFixture:
                 "Absent or unknown pairing, trust, and Developer Mode evidence leaves "
                 "usableForDevelopment unknown."
             ),
-            "readiness": (
-                "No signing or WebDriverAgent evidence leaves readyForXcuitest unknown."
-            ),
+            "readiness": ("No signing or WebDriverAgent evidence leaves readyForXcuitest unknown."),
             "simulators": (
                 "Simulator and runtime entries are separate from physical devices and never "
                 "prove physical discovery."
@@ -433,9 +429,7 @@ def build_fixture(root: Path, variant: str) -> DiscoveryFixture:
     )
 
 
-def _java_paths(
-    base: Path, plan: dict[str, dict[str, Any]]
-) -> dict[str, tuple[Path, Path]]:
+def _java_paths(base: Path, plan: dict[str, dict[str, Any]]) -> dict[str, tuple[Path, Path]]:
     tools = base / "tools"
     explicit_home = base / "host" / "jdks" / str(plan["explicit"]["directory"])
     registered_home = (
@@ -491,7 +485,7 @@ def _interpreter() -> str:
 
 
 def _journal_prelude(journal: Path, kind: str) -> str:
-    return f'''#!{_interpreter()}
+    return f"""#!{_interpreter()}
 import json
 import os
 import sys
@@ -512,12 +506,10 @@ def _record(exit_code, kind=None, facts=None):
         handle.write(json.dumps(entry, separators=(",", ":")) + "\\n")
         handle.flush()
         os.fsync(handle.fileno())
-'''
+"""
 
 
-def _java_source(
-    journal: Path, kind: str, home: Path, version: str | None, mode: str
-) -> str:
+def _java_source(journal: Path, kind: str, home: Path, version: str | None, mode: str) -> str:
     properties = ""
     version_text = ""
     error = ""
@@ -546,10 +538,7 @@ def _java_source(
             f"OpenJDK 64-Bit Server VM Synthetic (build {version}+fixture, mixed mode)\n"
         )
     elif mode == "broken":
-        error = (
-            f"Error: cannot execute Java candidate at {home}: "
-            "synthetic broken installation.\n"
-        )
+        error = f"Error: cannot execute Java candidate at {home}: synthetic broken installation.\n"
     elif mode == "stub":
         error = (
             "The operation couldn't be completed. Unable to locate a Java Runtime.\n"
@@ -557,7 +546,9 @@ def _java_source(
         )
     else:
         raise ValueError(f"unknown synthetic Java mode {mode!r}")
-    return _journal_prelude(journal, kind) + f'''
+    return (
+        _journal_prelude(journal, kind)
+        + f"""
 MODE = {mode!r}
 VERSION_VALUE = {version_value!r}
 MAJOR_VALUE = {major_value!r}
@@ -602,7 +593,8 @@ def main():
 
 if __name__ == "__main__":
     raise SystemExit(main())
-'''
+"""
+    )
 
 
 def _inventory_source(journal: Path, home: Path | None, version: str | None) -> str:
@@ -615,7 +607,9 @@ def _inventory_source(journal: Path, home: Path | None, version: str | None) -> 
             f'    {version} (arm64) "Synthetic Fixture" - "OpenJDK" {home}\n\n'
         )
         selected = f"{home}\n"
-    return _journal_prelude(journal, "java-inventory") + f'''
+    return (
+        _journal_prelude(journal, "java-inventory")
+        + f"""
 LISTING = {listing!r}
 SELECTED = {selected!r}
 
@@ -637,7 +631,8 @@ def main():
 
 if __name__ == "__main__":
     raise SystemExit(main())
-'''
+"""
+    )
 
 
 def _physical_payload(present: bool) -> dict[str, Any]:
@@ -708,7 +703,9 @@ def _runtime_payload(present: bool) -> dict[str, Any]:
 
 
 def _devicectl_source(journal: Path, root: Path, payload: dict[str, Any]) -> str:
-    return _journal_prelude(journal, "apple-physical") + f'''
+    return (
+        _journal_prelude(journal, "apple-physical")
+        + f"""
 ROOT = {str(root)!r}
 PAYLOAD = {payload!r}
 
@@ -781,7 +778,8 @@ def main():
 
 if __name__ == "__main__":
     raise SystemExit(main())
-'''
+"""
+    )
 
 
 def _simctl_source(
@@ -789,7 +787,9 @@ def _simctl_source(
     simulator_payload: dict[str, Any],
     runtime_payload: dict[str, Any],
 ) -> str:
-    return _journal_prelude(journal, "apple-simulators") + f'''
+    return (
+        _journal_prelude(journal, "apple-simulators")
+        + f"""
 DEVICES = {simulator_payload!r}
 RUNTIMES = {runtime_payload!r}
 
@@ -822,4 +822,5 @@ def main():
 
 if __name__ == "__main__":
     raise SystemExit(main())
-'''
+"""
+    )

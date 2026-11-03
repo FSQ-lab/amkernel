@@ -168,9 +168,7 @@ def _load_receipt(project_root: Path) -> tuple[dict[str, Any] | None, list[str]]
 
 
 def _load_main_metadata(project_root: Path) -> tuple[str | None, list[str]]:
-    root, errors = _validated_root(
-        project_root, MAIN_METADATA.parent, "main Skill metadata"
-    )
+    root, errors = _validated_root(project_root, MAIN_METADATA.parent, "main Skill metadata")
     if root is None:
         return None, errors
     path = root / MAIN_METADATA.name

@@ -338,9 +338,7 @@ def test_stale_elements_do_not_hide_later_window_handle_recovery() -> None:
         ("success", None),
     ],
 )
-def test_dead_reset_or_nonmonotonic_execution_history_fails(
-    field: str, value: object
-) -> None:
+def test_dead_reset_or_nonmonotonic_execution_history_fails(field: str, value: object) -> None:
     record = _valid_record()
     record["native"]["calls"][2][field] = value
     flags = qualify(record)

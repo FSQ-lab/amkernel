@@ -63,10 +63,7 @@ def _print_status(status: ProjectStatus, as_json: bool) -> None:
     print(f"Skill installed: {'yes' if status.skill_installed else 'no'}")
     if status.skill_installed:
         print(f"Skill provenance: {'verified' if status.skill_provenance else 'unverified'}")
-        print(
-            "Skill content verified: "
-            f"{'yes' if status.skill_content_verified else 'no'}"
-        )
+        print(f"Skill content verified: {'yes' if status.skill_content_verified else 'no'}")
         if status.skill_commit:
             print(f"Skill commit: {status.skill_commit}")
     print(f"MCP configured: {'yes' if status.mcp_configured else 'no'}")

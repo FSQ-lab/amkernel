@@ -26,9 +26,7 @@ def test_java_rejects_non_version_invocations(tmp_path: Path, arguments: list[st
 
 
 @pytest.mark.parametrize("destination_kind", ["absolute", "relative", "symlink"])
-def test_devicectl_cannot_overwrite_outside_fixture(
-    tmp_path: Path, destination_kind: str
-) -> None:
+def test_devicectl_cannot_overwrite_outside_fixture(tmp_path: Path, destination_kind: str) -> None:
     fixture = build_fixture(tmp_path / "fixture", "prefer-explicit")
     outside = tmp_path / "outside"
     outside.mkdir()
@@ -162,14 +160,20 @@ def test_missing_java_cannot_be_reported_as_observed(
         for item in fixture.contract["javaCandidates"]
     ]
     physical = {
-        "discovered": 0, "discoveredUnknown": False,
-        "connected": 0, "connectedUnknown": False,
-        "usableForDevelopment": None, "usableForDevelopmentUnknown": True,
-        "readyForXcuitest": None, "readyForXcuitestUnknown": True,
+        "discovered": 0,
+        "discoveredUnknown": False,
+        "connected": 0,
+        "connectedUnknown": False,
+        "usableForDevelopment": None,
+        "usableForDevelopmentUnknown": True,
+        "readyForXcuitest": None,
+        "readyForXcuitestUnknown": True,
     }
     simulators = {
-        "discovered": 0, "discoveredUnknown": False,
-        "runtimeCount": 0, "runtimeCountUnknown": False,
+        "discovered": 0,
+        "discoveredUnknown": False,
+        "runtimeCount": 0,
+        "runtimeCountUnknown": False,
     }
     final = {
         "selectedJava": {"executable": None},
@@ -210,8 +214,11 @@ def test_missing_java_cannot_be_reported_as_observed(
     ],
 )
 def test_zero_readiness_requires_a_successfully_observed_empty_inventory(
-    tmp_path: Path, variant: str, query_succeeds: bool,
-    readiness: int | None, accepted: bool,
+    tmp_path: Path,
+    variant: str,
+    query_succeeds: bool,
+    readiness: int | None,
+    accepted: bool,
 ) -> None:
     fixture = build_fixture(tmp_path / "fixture", variant)
     argv = fixture.contract["physical"]["argv"]
@@ -227,8 +234,10 @@ def test_zero_readiness_requires_a_successfully_observed_empty_inventory(
     final = {
         "selectedJava": {"executable": None},
         "physical": {
-            "discovered": population, "discoveredUnknown": False,
-            "connected": population, "connectedUnknown": False,
+            "discovered": population,
+            "discoveredUnknown": False,
+            "connected": population,
+            "connectedUnknown": False,
             "usableForDevelopment": readiness,
             "usableForDevelopmentUnknown": readiness is None,
             "readyForXcuitest": readiness,
@@ -237,6 +246,9 @@ def test_zero_readiness_requires_a_successfully_observed_empty_inventory(
     }
     evaluation = Evaluation("physical-population")
     _evaluate_synthetic(evaluation, fixture, [], final, [])
-    assert next(
-        check["ok"] for check in evaluation.checks if check["id"] == "physical-layers-truthful"
-    ) is accepted
+    assert (
+        next(
+            check["ok"] for check in evaluation.checks if check["id"] == "physical-layers-truthful"
+        )
+        is accepted
+    )
