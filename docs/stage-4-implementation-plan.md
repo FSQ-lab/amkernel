@@ -154,6 +154,24 @@ The semantic validator additionally enforces:
 
 Windows is not claimed: the Runtime contract is POSIX-only. Adding Windows requires a separate accepted platform decision and implementation item.
 
+`.github/workflows/cross-os-process-evidence.yml` executes all four environments
+on pull requests and supports manual dispatch. With no inputs it builds the
+current checkout's wheel. To qualify a published wheel, provide all three inputs:
+`wheel_url`, `wheel_sha256`, and its exact 40-character `wheel_source_revision`.
+The workflow separately checks out that source, compares installed package bytes,
+and binds validation and aggregation to the trusted workflow/run/attempt/commit.
+Do not substitute the current harness revision for an older wheel's source.
+
+The installed runner is `tests/e2e/cross_os_process_matrix.py`; the separate
+`cross_os_process_evidence.py validate` and `combine` commands verify records and
+the aggregate index. Workflow artifacts retain per-environment JSON reports and
+`process-evidence-index.json`, including failed reports that exist; validation
+summaries are emitted in the workflow logs. Missing or cancelled environments
+cannot produce full qualification.
+Local runs and synthetic validator mutations are not hosted matrix observations.
+The generated index deliberately keeps independent review pending; reviewers
+record disposition separately after inspecting actual retained evidence.
+
 ## 7. Verification gates
 
 ### S4-001

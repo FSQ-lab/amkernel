@@ -1,0 +1,65 @@
+{
+  "disposition": "accepted",
+  "executedMergeRevision": "46495b43522b99d23b77125cd0a8ecfb304086d2",
+  "files": {
+    "index.json": "caeb9e3803ee07154e41634b7eb01e2665f41f72d3e11f0de8a530231b9ad095",
+    "process-evidence-macos-latest-cpython-3.11.json": "deef0a3f47d2966e01ef176e16024dc65025c4bf7c576988e58bc216d7d31e6c",
+    "process-evidence-macos-latest-cpython-3.13.json": "ef9fd428703394916605bcdd6c25c6f42ae868cb2670b426531e279eb69ae411",
+    "process-evidence-ubuntu-latest-cpython-3.11.json": "4d274d8a0dedfdddf6d2d919141e5cbc719d6d40fbb80c1d9dc34166d517ab17",
+    "process-evidence-ubuntu-latest-cpython-3.13.json": "d9fc3cf5d814c899fb2a9ff472c08425516d7ac39edada3a0c469c398c91adbf",
+    "workflow-steps.log": "0cbdb8cf3dabce347d5d26af81234ae23c1d58fdb4151b3ec69bcd8497a7b4f4"
+  },
+  "headRevision": "737bbd09a5874d1b0131b9dafaa4ab6f4db4dc9e",
+  "indexSha256": "3a3199a9bab97f715554318b9bb7e17cba4041cac331c9b03cb54a4b6daa3fbc",
+  "limitations": [
+    "Original reports and index deliberately retain pending-independent-lifecycle-review; this separate record supplies disposition.",
+    "sourceRootKind=pinned-release-source identifies the separate checkout directory, not publication; exact sourceRevision and wheel digest establish identity.",
+    "Normal shutdown timing below 1.5 seconds excludes the SDK later escalation path by timing, not a signal audit.",
+    "Cancellation final execution count derives from its single executing request; no terminal response is received after disconnect.",
+    "No Windows, Android or iOS qualification; no reset-descendant ordering, live malformed-control injection, or separate MCP cancellation-notification coverage.",
+    "Four report files and selected workflow steps are retained here; wheel bytes remain linked to the hosted process-wheel artifact."
+  ],
+  "logSelection": {
+    "bytes": 63783,
+    "format": "Exact selected gh run view --log lines; includes public /Users/runner and /home/runner paths, not path-free normalized JSON.",
+    "lines": 446,
+    "steps": [
+      "Combine and hash-link evidence",
+      "Run frozen process matrix",
+      "Validate retained evidence"
+    ]
+  },
+  "parentVerification": {
+    "actualLocalPublishedWheelRows": 9,
+    "hostedAggregateReplay": {
+      "environments": 4,
+      "failedCells": 0,
+      "indexHashReproduced": true,
+      "passedCells": 36
+    }
+  },
+  "qualification": "current-source POSIX frozen process matrix; not published-0.1.1 qualification",
+  "recordKind": "amkernel-cross-os-process-independent-review",
+  "reviews": [
+    {
+      "blocker": 0,
+      "kind": "independent automated read-only lifecycle review",
+      "major": 0,
+      "minor": 0,
+      "reviewer": "ReviewHostedLifecycle",
+      "scope": "Inspected all four reports, states, checks, process/resource observations, producer, validator and frozen contract; all 36 rows support passed within stated limits. No replay or tests."
+    },
+    {
+      "blocker": 0,
+      "kind": "independent automated read-only provenance/privacy review",
+      "major": 0,
+      "minor": 0,
+      "reviewer": "ReviewHostedProvenance",
+      "scope": "Authenticated hosted artifacts, source/merge/head identities, wheel/package and aggregate/report hashes. Re-fetched workflow logs and confirmed exact selected-step bytes; no credential or personal-home matches. No tests or runtime replay."
+    }
+  ],
+  "runAttempt": "1",
+  "runId": "41625606905",
+  "runUrl": "https://github.com/FSQ-lab/amkernel/actions/runs/41625606905/attempts/1",
+  "wheelSha256": "4c3029c083fecef50871636ce2d90670c5b54738a93aa141a83f558e3c6f1e77"
+}
