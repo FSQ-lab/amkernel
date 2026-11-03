@@ -262,7 +262,7 @@ def wheel_package_hashes(wheel: Path) -> dict[str, str]:
             for name in sorted(archive.namelist()):
                 if not name.startswith("amkernel/") or name.endswith("/"):
                     continue
-                hashes[name[len("amkernel/"):]] = hashlib.sha256(archive.read(name)).hexdigest()
+                hashes[name[len("amkernel/") :]] = hashlib.sha256(archive.read(name)).hexdigest()
     except zipfile.BadZipFile as error:
         raise EvidenceError(f"wheel is not a valid zip archive: {wheel.name}") from error
     return hashes
@@ -276,19 +276,24 @@ def package_identity(hashes: dict[str, str]) -> dict[str, Any]:
     }
 
 
-def require(condition: bool, message: str) -> None:
+def require(condition: object, message: str) -> None:
     if not condition:
         raise EvidenceError(message)
 
 
-def require_exact_keys(value: Any, keys: set[str], context: str) -> None:
-    require(isinstance(value, dict), f"{context} must be a mapping")
+def require_exact_keys(value: object, keys: set[str], context: str) -> dict[str, Any]:
+    if not isinstance(value, dict):
+        raise EvidenceError(f"{context} must be a mapping")
     actual = set(value)
     require(actual == keys, f"{context} keys are {sorted(actual)}, expected {sorted(keys)}")
+    return value
 
 
 def require_int(value: Any, context: str, *, minimum: int = 0) -> None:
-    require(isinstance(value, int) and not isinstance(value, bool) and value >= minimum, f"{context} is not an integer >= {minimum}")
+    require(
+        isinstance(value, int) and not isinstance(value, bool) and value >= minimum,
+        f"{context} is not an integer >= {minimum}",
+    )
 
 
 def require_bool(value: Any, context: str) -> None:
@@ -303,6 +308,8 @@ def require_iso_time(value: Any, context: str) -> None:
 
 def load_matrix(path: Path) -> dict[str, Any]:
     matrix = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(matrix, dict):
+        raise EvidenceError("matrix must be a mapping")
     require(isinstance(matrix.get("rows"), list) and matrix["rows"], "matrix rows are missing")
     require(matrix["matrixId"], "matrix id is missing")
     return matrix
@@ -327,33 +334,62 @@ def check_privacy(record: dict[str, Any]) -> None:
     text = json.dumps(record, ensure_ascii=False)
     for pattern in PRIVATE_PATTERNS:
         match = pattern.search(text)
-        require(match is None, f"evidence contains a private path or credential-shaped value: {pattern.pattern}")
+        require(
+            match is None,
+            f"evidence contains a private path or credential-shaped value: {pattern.pattern}",
+        )
 
 
 def check_sources(record: dict[str, Any], source_root: Path, wheel_source_root: Path) -> None:
     expected = source_hashes(source_root)
     expected_wheel = wheel_source_hashes(wheel_source_root)
-    sources = record.get("sources")
-    require_exact_keys(sources, {"matrix", "harness", "contracts", "lock", "wheel"}, "sources")
+    sources = require_exact_keys(
+        record.get("sources"), {"matrix", "harness", "contracts", "lock", "wheel"}, "sources"
+    )
     require(sources["matrix"]["path"] == MATRIX_PATH, "matrix source path is not frozen")
-    require(sources["matrix"]["sha256"] == expected["matrix"]["sha256"], "matrix hash does not match the checkout")
+    require(
+        sources["matrix"]["sha256"] == expected["matrix"]["sha256"],
+        "matrix hash does not match the checkout",
+    )
     require(sources["harness"]["path"] == HARNESS_PATH, "harness path is not frozen")
-    require(sources["harness"]["sha256"] == expected["harness"]["sha256"], "harness hash does not match the checkout")
+    require(
+        sources["harness"]["sha256"] == expected["harness"]["sha256"],
+        "harness hash does not match the checkout",
+    )
     require(sources["lock"]["path"] == "uv.lock", "lock path is not frozen")
-    require(sources["lock"]["sha256"] == expected["lock"]["sha256"], "lock hash does not match the checkout")
+    require(
+        sources["lock"]["sha256"] == expected["lock"]["sha256"],
+        "lock hash does not match the checkout",
+    )
     contracts = sources.get("contracts")
-    require(isinstance(contracts, list) and len(contracts) == len(CONTRACT_PATHS), "contract sources are incomplete")
-    for actual, expected_contract in zip(contracts, expected["contracts"]):
+    if not isinstance(contracts, list) or len(contracts) != len(CONTRACT_PATHS):
+        raise EvidenceError("contract sources are incomplete")
+    for actual, expected_contract in zip(contracts, expected["contracts"], strict=True):
         require(actual == expected_contract, "contract hash does not match the checkout")
-    wheel = sources.get("wheel")
-    require_exact_keys(wheel, WHEEL_SOURCE_KEYS, "sources.wheel")
-    require(isinstance(wheel.get("filename"), str) and wheel["filename"], "wheel filename is missing")
+    wheel = require_exact_keys(sources.get("wheel"), WHEEL_SOURCE_KEYS, "sources.wheel")
+    require(
+        isinstance(wheel.get("filename"), str) and wheel["filename"], "wheel filename is missing"
+    )
     require(SHA256_RE.fullmatch(str(wheel.get("sha256"))) is not None, "wheel hash is malformed")
-    require(isinstance(wheel.get("sizeBytes"), int) and wheel["sizeBytes"] > 0, "wheel size is missing")
-    require(wheel.get("packageFileCount") == expected_wheel["packageFileCount"], "wheel package file count does not match the pinned wheel source")
-    require(wheel.get("packageSha256") == expected_wheel["packageSha256"], "wheel package aggregate does not match the pinned wheel source")
-    require(isinstance(wheel.get("sourceRevision"), str) and wheel["sourceRevision"], "wheel source revision is missing")
-    require(wheel.get("sourceRootKind") in {"current-checkout", "pinned-release-source"}, "wheel source root kind is invalid")
+    require(
+        isinstance(wheel.get("sizeBytes"), int) and wheel["sizeBytes"] > 0, "wheel size is missing"
+    )
+    require(
+        wheel.get("packageFileCount") == expected_wheel["packageFileCount"],
+        "wheel package file count does not match the pinned wheel source",
+    )
+    require(
+        wheel.get("packageSha256") == expected_wheel["packageSha256"],
+        "wheel package aggregate does not match the pinned wheel source",
+    )
+    require(
+        isinstance(wheel.get("sourceRevision"), str) and wheel["sourceRevision"],
+        "wheel source revision is missing",
+    )
+    require(
+        wheel.get("sourceRootKind") in {"current-checkout", "pinned-release-source"},
+        "wheel source root kind is invalid",
+    )
 
 
 def check_environment_wheel_identity(record: dict[str, Any]) -> None:
@@ -367,12 +403,20 @@ def check_environment_wheel_identity(record: dict[str, Any]) -> None:
         )
 
 
-def check_expected_wheel(record: dict[str, Any], expected_sha256: str | None, expected_revision: str | None) -> None:
+def check_expected_wheel(
+    record: dict[str, Any], expected_sha256: str | None, expected_revision: str | None
+) -> None:
     wheel = record["sources"]["wheel"]
     if expected_sha256 is not None:
-        require(wheel["sha256"] == expected_sha256, "wheel hash does not match the trusted expected wheel")
+        require(
+            wheel["sha256"] == expected_sha256,
+            "wheel hash does not match the trusted expected wheel",
+        )
     if expected_revision is not None:
-        require(wheel["sourceRevision"] == expected_revision, "wheel source revision does not match the trusted expected revision")
+        require(
+            wheel["sourceRevision"] == expected_revision,
+            "wheel source revision does not match the trusted expected revision",
+        )
 
 
 def check_wheel_file(record: dict[str, Any], wheel_path: Path) -> None:
@@ -381,42 +425,76 @@ def check_wheel_file(record: dict[str, Any], wheel_path: Path) -> None:
     require(wheel_path.stat().st_size == wheel["sizeBytes"], "wheel size does not match evidence")
     require(sha256_path(wheel_path) == wheel["sha256"], "wheel hash does not match evidence")
     package = package_identity(wheel_package_hashes(wheel_path))
-    require(wheel["packageFileCount"] == package["packageFileCount"], "wheel package file count disagrees")
+    require(
+        wheel["packageFileCount"] == package["packageFileCount"],
+        "wheel package file count disagrees",
+    )
     require(wheel["packageSha256"] == package["packageSha256"], "wheel package aggregate disagrees")
     environment_wheel = record["environment"]["wheel"]
-    require(environment_wheel["filename"] == wheel_path.name, "environment wheel filename disagrees")
+    require(
+        environment_wheel["filename"] == wheel_path.name, "environment wheel filename disagrees"
+    )
     require(environment_wheel["sha256"] == wheel["sha256"], "environment wheel hash disagrees")
-    require(environment_wheel["sizeBytes"] == wheel["sizeBytes"], "environment wheel size disagrees")
+    require(
+        environment_wheel["sizeBytes"] == wheel["sizeBytes"], "environment wheel size disagrees"
+    )
 
 
 def check_environment(record: dict[str, Any], matrix: dict[str, Any]) -> None:
-    environment = record.get("environment")
-    require_exact_keys(environment, ENVIRONMENT_KEYS, "environment")
+    environment = require_exact_keys(record.get("environment"), ENVIRONMENT_KEYS, "environment")
     os_identity = environment.get("os")
-    require(isinstance(os_identity, dict), "operating-system identity is missing")
-    require(os_identity.get("system") in {"Linux", "Darwin"}, "unsupported observed operating system")
-    expected_platform = {"Linux": "ubuntu-latest", "Darwin": "macos-latest"}[os_identity["system"]]
-    require(environment["matrixPlatform"] == expected_platform, "matrix platform does not match the OS")
-    require(environment["declaredPlatform"] == expected_platform, "declared platform is inconsistent")
-    require(environment["platformDeclarationMatches"] is True, "platform declaration mismatch was observed")
-    require(expected_platform in matrix["platforms"], "observed platform is not in the frozen matrix")
-    python_identity = environment.get("python")
-    require(isinstance(python_identity, dict), "python identity is missing")
-    require(python_identity.get("implementation") == "CPython", "python implementation is not CPython")
-    require(python_identity.get("majorMinor") in matrix["pythonVersions"], "python minor is not in the matrix")
+    if not isinstance(os_identity, dict):
+        raise EvidenceError("operating-system identity is missing")
     require(
-        str(python_identity.get("version", "")).startswith(str(python_identity["majorMinor"]) + "."),
+        os_identity.get("system") in {"Linux", "Darwin"}, "unsupported observed operating system"
+    )
+    expected_platform = {"Linux": "ubuntu-latest", "Darwin": "macos-latest"}[os_identity["system"]]
+    require(
+        environment["matrixPlatform"] == expected_platform, "matrix platform does not match the OS"
+    )
+    require(
+        environment["declaredPlatform"] == expected_platform, "declared platform is inconsistent"
+    )
+    require(
+        environment["platformDeclarationMatches"] is True,
+        "platform declaration mismatch was observed",
+    )
+    require(
+        expected_platform in matrix["platforms"], "observed platform is not in the frozen matrix"
+    )
+    python_identity = environment.get("python")
+    if not isinstance(python_identity, dict):
+        raise EvidenceError("python identity is missing")
+    require(
+        python_identity.get("implementation") == "CPython", "python implementation is not CPython"
+    )
+    require(
+        python_identity.get("majorMinor") in matrix["pythonVersions"],
+        "python minor is not in the matrix",
+    )
+    require(
+        str(python_identity.get("version", "")).startswith(
+            str(python_identity["majorMinor"]) + "."
+        ),
         "python version does not match its major/minor identity",
     )
-    require(python_identity.get("isVenvLauncher") is True, "harness interpreter is not the isolated venv launcher")
+    require(
+        python_identity.get("isVenvLauncher") is True,
+        "harness interpreter is not the isolated venv launcher",
+    )
     wheel = environment["wheel"]
-    require(wheel["version"] == wheel["installedVersion"], "wheel and installed distribution versions differ")
+    require(
+        wheel["version"] == wheel["installedVersion"],
+        "wheel and installed distribution versions differ",
+    )
     require(
         wheel["entryPointVersionOutput"] == f"amkernel {wheel['version']}",
         "installed entry point version output is inconsistent",
     )
     require(environment["entryPoint"]["present"] is True, "installed entry point is absent")
-    require(environment["entryPoint"]["executable"] is True, "installed entry point is not executable")
+    require(
+        environment["entryPoint"]["executable"] is True, "installed entry point is not executable"
+    )
 
 
 def check_hosted_dispatch(record: dict[str, Any], require_hosted: bool) -> None:
@@ -425,21 +503,43 @@ def check_hosted_dispatch(record: dict[str, Any], require_hosted: bool) -> None:
     if require_hosted:
         require(context == "hosted", "record is not from a hosted workflow")
         dispatch = record.get("dispatch")
-        require(isinstance(dispatch, dict), "hosted dispatch identity is missing")
-        require(re.fullmatch(r"\d+", str(dispatch.get("runId"))) is not None, "hosted run id is missing")
-        require(re.fullmatch(r"\d+", str(dispatch.get("runAttempt"))) is not None, "hosted run attempt is missing")
-        require(re.fullmatch(r"[0-9a-f]{40}", str(dispatch.get("sha"))) is not None, "hosted commit identity is missing")
-        require(isinstance(dispatch.get("job"), str) and dispatch["job"], "hosted job identity is missing")
-        require(isinstance(dispatch.get("workflow"), str) and dispatch["workflow"], "hosted workflow identity is missing")
-        require(isinstance(dispatch.get("workflowRef"), str) and dispatch["workflowRef"], "hosted workflow ref is missing")
-        require(isinstance(dispatch.get("repository"), str) and dispatch["repository"], "hosted repository identity is missing")
+        if not isinstance(dispatch, dict):
+            raise EvidenceError("hosted dispatch identity is missing")
+        require(
+            re.fullmatch(r"\d+", str(dispatch.get("runId"))) is not None, "hosted run id is missing"
+        )
+        require(
+            re.fullmatch(r"\d+", str(dispatch.get("runAttempt"))) is not None,
+            "hosted run attempt is missing",
+        )
+        require(
+            re.fullmatch(r"[0-9a-f]{40}", str(dispatch.get("sha"))) is not None,
+            "hosted commit identity is missing",
+        )
+        require(
+            isinstance(dispatch.get("job"), str) and dispatch["job"],
+            "hosted job identity is missing",
+        )
+        require(
+            isinstance(dispatch.get("workflow"), str) and dispatch["workflow"],
+            "hosted workflow identity is missing",
+        )
+        require(
+            isinstance(dispatch.get("workflowRef"), str) and dispatch["workflowRef"],
+            "hosted workflow ref is missing",
+        )
+        require(
+            isinstance(dispatch.get("repository"), str) and dispatch["repository"],
+            "hosted repository identity is missing",
+        )
 
 
 def check_expected_invocation(record: dict[str, Any], expected: dict[str, Any] | None) -> None:
     if expected is None:
         return
     dispatch = record.get("dispatch")
-    require(isinstance(dispatch, dict), "record dispatch is missing")
+    if not isinstance(dispatch, dict):
+        raise EvidenceError("record dispatch is missing")
     mapping = {
         "repository": "repository",
         "workflow": "workflow",
@@ -451,20 +551,34 @@ def check_expected_invocation(record: dict[str, Any], expected: dict[str, Any] |
     for expected_key, dispatch_key in mapping.items():
         value = expected.get(expected_key)
         require(isinstance(value, str) and value, f"expected invocation {expected_key} is missing")
-        require(str(dispatch.get(dispatch_key)) == value, f"record dispatch {dispatch_key} does not match the combined invocation")
+        require(
+            str(dispatch.get(dispatch_key)) == value,
+            f"record dispatch {dispatch_key} does not match the combined invocation",
+        )
 
 
 def check_matrix_header(record: dict[str, Any], matrix: dict[str, Any]) -> None:
-    header = record.get("matrix")
-    require_exact_keys(header, MATRIX_HEADER_KEYS, "matrix metadata")
+    header = require_exact_keys(record.get("matrix"), MATRIX_HEADER_KEYS, "matrix metadata")
     require(header["id"] == matrix["matrixId"], "matrix id is inconsistent")
     require(header["platforms"] == matrix["platforms"], "matrix platforms are inconsistent")
-    require(header["pythonVersions"] == matrix["pythonVersions"], "matrix python versions are inconsistent")
-    require(header["rowIds"] == [row["id"] for row in matrix["rows"]], "matrix row ids are inconsistent")
-    require(header["requiredEvidence"] == matrix["requiredEvidence"], "required evidence list is inconsistent")
-    require(header["unsupportedPlatforms"] == matrix["unsupportedPlatforms"], "unsupported platform list is inconsistent")
+    require(
+        header["pythonVersions"] == matrix["pythonVersions"],
+        "matrix python versions are inconsistent",
+    )
+    require(
+        header["rowIds"] == [row["id"] for row in matrix["rows"]], "matrix row ids are inconsistent"
+    )
+    require(
+        header["requiredEvidence"] == matrix["requiredEvidence"],
+        "required evidence list is inconsistent",
+    )
+    require(
+        header["unsupportedPlatforms"] == matrix["unsupportedPlatforms"],
+        "unsupported platform list is inconsistent",
+    )
     required = record.get("review")
-    require(isinstance(required, dict) and required.get("required") is True, "review requirement is missing")
+    if not isinstance(required, dict) or required.get("required") is not True:
+        raise EvidenceError("review requirement is missing")
     require(
         required.get("disposition") == "pending-independent-lifecycle-review",
         "review disposition must not be self-attested",
@@ -480,12 +594,25 @@ def check_store(value: Any, context: str) -> None:
 
 def check_cleanup(cell: dict[str, Any], require_complete: bool) -> None:
     cleanup = cell.get("cleanup")
-    require(isinstance(cleanup, dict), f"{cell['id']}: cleanup outcome is missing")
+    if not isinstance(cleanup, dict):
+        raise EvidenceError(f"{cell['id']}: cleanup outcome is missing")
     require_exact_keys(cleanup, CLEANUP_KEYS, f"{cell['id']}: cleanup")
-    for key in ("attempted", "completed", "serverExited", "runnerExited", "processGroupRemoved", "artifactRootRemoved", "forcedCleanup"):
+    for key in (
+        "attempted",
+        "completed",
+        "serverExited",
+        "runnerExited",
+        "processGroupRemoved",
+        "artifactRootRemoved",
+        "forcedCleanup",
+    ):
         require_bool(cleanup[key], f"{cell['id']}: cleanup.{key}")
-    require_int(cleanup["managedProcessesRemaining"], f"{cell['id']}: cleanup.managedProcessesRemaining")
-    require_int(cleanup["managedArtifactsRemaining"], f"{cell['id']}: cleanup.managedArtifactsRemaining")
+    require_int(
+        cleanup["managedProcessesRemaining"], f"{cell['id']}: cleanup.managedProcessesRemaining"
+    )
+    require_int(
+        cleanup["managedArtifactsRemaining"], f"{cell['id']}: cleanup.managedArtifactsRemaining"
+    )
     computed_complete = (
         cleanup["serverExited"]
         and cleanup["runnerExited"]
@@ -495,14 +622,29 @@ def check_cleanup(cell: dict[str, Any], require_complete: bool) -> None:
         and cleanup["managedArtifactsRemaining"] == 0
         and not cleanup["forcedCleanup"]
     )
-    require(cleanup["completed"] == computed_complete, f"{cell['id']}: cleanup completion is contradictory")
+    require(
+        cleanup["completed"] == computed_complete,
+        f"{cell['id']}: cleanup completion is contradictory",
+    )
     if require_complete:
         require(cleanup["attempted"] is True, f"{cell['id']}: cleanup was not attempted")
-        for key in ("completed", "serverExited", "runnerExited", "processGroupRemoved", "artifactRootRemoved"):
+        for key in (
+            "completed",
+            "serverExited",
+            "runnerExited",
+            "processGroupRemoved",
+            "artifactRootRemoved",
+        ):
             require(cleanup.get(key) is True, f"{cell['id']}: cleanup field {key} is not true")
-        require(cleanup.get("managedProcessesRemaining") == 0, f"{cell['id']}: managed processes remain")
-        require(cleanup.get("managedArtifactsRemaining") == 0, f"{cell['id']}: managed artifacts remain")
-        require(cleanup.get("forcedCleanup") is False, f"{cell['id']}: cleanup required forced teardown")
+        require(
+            cleanup.get("managedProcessesRemaining") == 0, f"{cell['id']}: managed processes remain"
+        )
+        require(
+            cleanup.get("managedArtifactsRemaining") == 0, f"{cell['id']}: managed artifacts remain"
+        )
+        require(
+            cleanup.get("forcedCleanup") is False, f"{cell['id']}: cleanup required forced teardown"
+        )
 
 
 def check_transitions(cell: dict[str, Any], row_id: str, passed: bool) -> None:
@@ -514,38 +656,85 @@ def check_transitions(cell: dict[str, Any], row_id: str, passed: bool) -> None:
     required_phase = ROW_TRANSITIONS[row_id]
     observed_phases = [transition.get("phase") for transition in transitions]
     if passed:
-        require(observed_phases == required_phase, f"{row_id}: transition phases are {observed_phases}, expected {required_phase}")
+        require(
+            observed_phases == required_phase,
+            f"{row_id}: transition phases are {observed_phases}, expected {required_phase}",
+        )
     else:
-        require(all(phase in required_phase or phase == "row-aborted" for phase in observed_phases), f"{row_id}: unknown transition phase")
+        require(
+            all(phase in required_phase or phase == "row-aborted" for phase in observed_phases),
+            f"{row_id}: unknown transition phase",
+        )
     allowed_keys = {"at", "phase", "serverState", "kernelState", "executionCount", "status"}
     for transition in transitions:
         require(isinstance(transition, dict), f"{row_id}: transition is not a mapping")
         require(set(transition) <= allowed_keys, f"{row_id}: transition has unknown keys")
-        require({"at", "phase", "serverState", "kernelState", "executionCount"} <= set(transition), f"{row_id}: transition is incomplete")
+        require(
+            {"at", "phase", "serverState", "kernelState", "executionCount"} <= set(transition),
+            f"{row_id}: transition is incomplete",
+        )
         require_iso_time(transition["at"], f"{row_id}: transition.at")
-        require(isinstance(transition["phase"], str) and transition["phase"], f"{row_id}: transition.phase is invalid")
-        require(transition["serverState"] in ALLOWED_SERVER_STATES, f"{row_id}: transition.serverState is invalid")
-        require(transition["kernelState"] in ALLOWED_KERNEL_STATES, f"{row_id}: transition.kernelState is invalid")
+        require(
+            isinstance(transition["phase"], str) and transition["phase"],
+            f"{row_id}: transition.phase is invalid",
+        )
+        require(
+            transition["serverState"] in ALLOWED_SERVER_STATES,
+            f"{row_id}: transition.serverState is invalid",
+        )
+        require(
+            transition["kernelState"] in ALLOWED_KERNEL_STATES,
+            f"{row_id}: transition.kernelState is invalid",
+        )
         if transition["executionCount"] is not None:
-            require_int(transition["executionCount"], f"{row_id}: transition.executionCount", minimum=0)
+            require_int(
+                transition["executionCount"], f"{row_id}: transition.executionCount", minimum=0
+            )
         if "status" in transition:
-            require(transition["status"] in ALLOWED_STATUSES, f"{row_id}: transition.status is invalid")
+            require(
+                transition["status"] in ALLOWED_STATUSES, f"{row_id}: transition.status is invalid"
+            )
     if passed:
         expected_states = ROW_TRANSITION_STATES[row_id]
+        expected_status = (
+            "completed" if row_id == "artifact-integrity-expiry" else cell["observed"].get("status")
+        )
         for transition in transitions:
             expected_server, expected_kernel = expected_states[transition["phase"]]
-            require(transition["serverState"] == expected_server, f"{row_id}: {transition['phase']} serverState is {transition['serverState']!r}, expected {expected_server!r}")
-            require(transition["kernelState"] == expected_kernel, f"{row_id}: {transition['phase']} kernelState is {transition['kernelState']!r}, expected {expected_kernel!r}")
+            require(
+                transition["serverState"] == expected_server,
+                f"{row_id}: {transition['phase']} serverState is "
+                f"{transition['serverState']!r}, expected {expected_server!r}",
+            )
+            require(
+                transition["kernelState"] == expected_kernel,
+                f"{row_id}: {transition['phase']} kernelState is "
+                f"{transition['kernelState']!r}, expected {expected_kernel!r}",
+            )
+            require(
+                transition.get("status") == expected_status,
+                f"{row_id}: {transition['phase']} status disagrees with observed",
+            )
             if (row_id, transition["phase"]) in {
                 ("normal-shutdown", "client-closed"),
                 ("cancellation-cleanup", "client-closed-during-active-execution"),
             }:
-                require(transition["executionCount"] == 1, f"{row_id}: {transition['phase']} executionCount must be the exact observed count 1")
+                require(
+                    transition["executionCount"] == 1,
+                    f"{row_id}: {transition['phase']} executionCount "
+                    "must be the exact observed count 1",
+                )
         last = transitions[-1]
         if "serverState" in cell["observed"]:
-            require(last["serverState"] == cell["observed"]["serverState"], f"{row_id}: final serverState disagrees with observed")
+            require(
+                last["serverState"] == cell["observed"]["serverState"],
+                f"{row_id}: final serverState disagrees with observed",
+            )
         if "kernelState" in cell["observed"]:
-            require(last["kernelState"] == cell["observed"]["kernelState"], f"{row_id}: final kernelState disagrees with observed")
+            require(
+                last["kernelState"] == cell["observed"]["kernelState"],
+                f"{row_id}: final kernelState disagrees with observed",
+            )
 
 
 def check_process_observations(cell: dict[str, Any], row_id: str, passed: bool) -> None:
@@ -557,19 +746,36 @@ def check_process_observations(cell: dict[str, Any], row_id: str, passed: bool) 
     required_phases = ROW_PROCESS_PHASES[row_id]
     phases = [observation.get("phase") for observation in observations]
     if passed:
-        require(phases == required_phases, f"{row_id}: process phases are {phases}, expected {required_phases}")
-    snapshot_keys = {"at", "phase", "managedProcessCount", "serverDescendantCount", "processGroup", "processes"}
+        require(
+            phases == required_phases,
+            f"{row_id}: process phases are {phases}, expected {required_phases}",
+        )
+    snapshot_keys = {
+        "at",
+        "phase",
+        "managedProcessCount",
+        "serverDescendantCount",
+        "processGroup",
+        "processes",
+    }
     group_keys = {"token", "exists"}
     process_keys = {"role", "token", "alive"}
     seen_roles: set[str] = set()
     for observation in observations:
         require_exact_keys(observation, snapshot_keys, f"{row_id}: process snapshot")
         require_iso_time(observation["at"], f"{row_id}: process snapshot.at")
-        require(isinstance(observation["phase"], str) and observation["phase"], f"{row_id}: process snapshot.phase is invalid")
+        require(
+            isinstance(observation["phase"], str) and observation["phase"],
+            f"{row_id}: process snapshot.phase is invalid",
+        )
         require_int(observation["managedProcessCount"], f"{row_id}: managedProcessCount")
         require_int(observation["serverDescendantCount"], f"{row_id}: serverDescendantCount")
         require_exact_keys(observation["processGroup"], group_keys, f"{row_id}: processGroup")
-        require(isinstance(observation["processGroup"]["token"], str) and TOKEN_RE.fullmatch(observation["processGroup"]["token"]), f"{row_id}: processGroup token is invalid")
+        require(
+            isinstance(observation["processGroup"]["token"], str)
+            and TOKEN_RE.fullmatch(observation["processGroup"]["token"]),
+            f"{row_id}: processGroup token is invalid",
+        )
         require_bool(observation["processGroup"]["exists"], f"{row_id}: processGroup.exists")
         processes = observation["processes"]
         require(isinstance(processes, list) and processes, f"{row_id}: processes are missing")
@@ -578,21 +784,36 @@ def check_process_observations(cell: dict[str, Any], row_id: str, passed: bool) 
         server_alive = False
         for process in processes:
             require_exact_keys(process, process_keys, f"{row_id}: process")
-            require(process["role"] in {"server", "runner", "child"}, f"{row_id}: process role is invalid")
+            require(
+                process["role"] in {"server", "runner", "child"},
+                f"{row_id}: process role is invalid",
+            )
             require(process["role"] not in roles, f"{row_id}: duplicate process role")
             roles.add(process["role"])
-            require(isinstance(process["token"], str) and TOKEN_RE.fullmatch(process["token"]), f"{row_id}: process token is invalid")
+            require(
+                isinstance(process["token"], str) and TOKEN_RE.fullmatch(process["token"]),
+                f"{row_id}: process token is invalid",
+            )
             require_bool(process["alive"], f"{row_id}: process.alive")
             if process["alive"]:
                 alive += 1
             if process["role"] == "server" and process["alive"]:
                 server_alive = True
-        require(observation["managedProcessCount"] == alive, f"{row_id}: managedProcessCount disagrees with live roles")
+        require(
+            observation["managedProcessCount"] == alive,
+            f"{row_id}: managedProcessCount disagrees with live roles",
+        )
         expected_descendants = (alive - 1) if server_alive else 0
-        require(observation["serverDescendantCount"] == expected_descendants, f"{row_id}: serverDescendantCount disagrees with live roles")
+        require(
+            observation["serverDescendantCount"] == expected_descendants,
+            f"{row_id}: serverDescendantCount disagrees with live roles",
+        )
         seen_roles.update(roles)
     if passed:
-        require({"server", "runner"} <= seen_roles, f"{row_id}: server and runner were not both observed alive")
+        require(
+            {"server", "runner"} <= seen_roles,
+            f"{row_id}: server and runner were not both observed alive",
+        )
 
 
 def check_resources(cell: dict[str, Any], row_id: str, observations: list[dict[str, Any]]) -> None:
@@ -608,14 +829,26 @@ def check_resources(cell: dict[str, Any], row_id: str, observations: list[dict[s
         require_int(resources["observedManagedProcesses"], f"{row_id}: observedManagedProcesses")
     if "shutdownElapsedSeconds" in resources:
         value = resources["shutdownElapsedSeconds"]
-        require(isinstance(value, (int, float)) and not isinstance(value, bool) and value >= 0, f"{row_id}: shutdownElapsedSeconds is invalid")
-        require(value < TERMINATION_GRACE_SECONDS, f"{row_id}: SDK termination window was required before the server exited")
+        require(
+            isinstance(value, (int, float)) and not isinstance(value, bool) and value >= 0,
+            f"{row_id}: shutdownElapsedSeconds is invalid",
+        )
+        require(
+            value < TERMINATION_GRACE_SECONDS,
+            f"{row_id}: SDK termination window was required before the server exited",
+        )
     for key in TOKEN_KEYS:
         if key in resources:
-            require(isinstance(resources[key], str) and TOKEN_RE.fullmatch(resources[key]), f"{row_id}: {key} is not a token")
+            require(
+                isinstance(resources[key], str) and TOKEN_RE.fullmatch(resources[key]),
+                f"{row_id}: {key} is not a token",
+            )
     for key in SHA256_KEYS:
         if key in resources:
-            require(isinstance(resources[key], str) and SHA256_RE.fullmatch(resources[key]), f"{row_id}: {key} is not a SHA-256 digest")
+            require(
+                isinstance(resources[key], str) and SHA256_RE.fullmatch(resources[key]),
+                f"{row_id}: {key} is not a SHA-256 digest",
+            )
     for key in BOOL_KEYS:
         if key in resources:
             require_bool(resources[key], f"{row_id}: {key}")
@@ -628,53 +861,146 @@ def check_resources(cell: dict[str, Any], row_id: str, observations: list[dict[s
     if "storeAfterEviction" in resources:
         check_store(resources["storeAfterEviction"], f"{row_id}: storeAfterEviction")
     if "activeExecutionAborted" in resources:
-        require(isinstance(resources["activeExecutionAborted"], str) and resources["activeExecutionAborted"], f"{row_id}: activeExecutionAborted is missing")
-        require(resources["activeExecutionAborted"] != "not_finished", f"{row_id}: active execution did not abort")
+        require(
+            isinstance(resources["activeExecutionAborted"], str)
+            and resources["activeExecutionAborted"],
+            f"{row_id}: activeExecutionAborted is missing",
+        )
+        require(
+            resources["activeExecutionAborted"] != "not_finished",
+            f"{row_id}: active execution did not abort",
+        )
     group_tokens = {observation["processGroup"]["token"] for observation in observations}
-    process_tokens = {process["token"] for observation in observations for process in observation["processes"]}
+    process_tokens = {
+        process["token"] for observation in observations for process in observation["processes"]
+    }
     if "runnerGroupToken" in resources:
-        require(resources["runnerGroupToken"] in group_tokens, f"{row_id}: runnerGroupToken was not observed")
+        require(
+            resources["runnerGroupToken"] in group_tokens,
+            f"{row_id}: runnerGroupToken was not observed",
+        )
     if row_id == "destructive-reset":
-        require(resources["previousRunnerToken"] != resources["replacementRunnerToken"], f"{row_id}: reset did not replace the runner")
-        require(resources["previousRunnerToken"] in process_tokens, f"{row_id}: previous runner was not observed")
-        require(resources["replacementRunnerToken"] in process_tokens, f"{row_id}: replacement runner was not observed")
-        final_runner = next(process for process in observations[-1]["processes"] if process["role"] == "runner")
-        require(final_runner["token"] == resources["replacementRunnerToken"], f"{row_id}: replacement runner token disagrees with the final snapshot")
+        require(
+            resources["previousRunnerToken"] != resources["replacementRunnerToken"],
+            f"{row_id}: reset did not replace the runner",
+        )
+        require(
+            resources["previousRunnerToken"] in process_tokens,
+            f"{row_id}: previous runner was not observed",
+        )
+        require(
+            resources["replacementRunnerToken"] in process_tokens,
+            f"{row_id}: replacement runner was not observed",
+        )
+        final_runner = next(
+            process for process in observations[-1]["processes"] if process["role"] == "runner"
+        )
+        require(
+            final_runner["token"] == resources["replacementRunnerToken"],
+            f"{row_id}: replacement runner token disagrees with the final snapshot",
+        )
     if row_id == "timeout-survives":
-        require(resources["runnerToken"] == resources["continuationRunnerToken"], f"{row_id}: continuation did not use the same runner")
-        require(resources["runnerToken"] in process_tokens, f"{row_id}: runner token was not observed")
+        require(
+            resources["runnerToken"] == resources["continuationRunnerToken"],
+            f"{row_id}: continuation did not use the same runner",
+        )
+        require(
+            resources["runnerToken"] in process_tokens, f"{row_id}: runner token was not observed"
+        )
     if row_id in {"timeout-escalates", "runner-channel-death"}:
         final = observations[-1]
-        key = "processGroupExistsAfterEscalation" if row_id == "timeout-escalates" else "processGroupExistsAfterDeath"
-        require(resources[key] == final["processGroup"]["exists"], f"{row_id}: process-group result disagrees with the final snapshot")
-        require(resources["runnerToken"] in process_tokens, f"{row_id}: runner token was not observed")
+        key = (
+            "processGroupExistsAfterEscalation"
+            if row_id == "timeout-escalates"
+            else "processGroupExistsAfterDeath"
+        )
+        require(
+            resources[key] == final["processGroup"]["exists"],
+            f"{row_id}: process-group result disagrees with the final snapshot",
+        )
+        require(
+            resources["runnerToken"] in process_tokens, f"{row_id}: runner token was not observed"
+        )
         runner = next(process for process in final["processes"] if process["role"] == "runner")
         require(runner["alive"] is False, f"{row_id}: final runner is still alive")
     if row_id == "output-limit-drain":
-        require(resources["manifestVerifiedBytes"] == resources["stdoutArtifactSize"], f"{row_id}: manifest bytes disagree with artifact size")
-        require(resources["store"]["managedBytes"] >= resources["stdoutArtifactSize"], f"{row_id}: store does not contain the artifact bytes")
-        require(resources["store"]["artifactRoots"] >= 1, f"{row_id}: artifact store root was not observed")
+        require(
+            resources["manifestVerifiedBytes"] == resources["stdoutArtifactSize"],
+            f"{row_id}: manifest bytes disagree with artifact size",
+        )
+        require(
+            resources["store"]["managedBytes"] >= resources["stdoutArtifactSize"],
+            f"{row_id}: store does not contain the artifact bytes",
+        )
+        require(
+            resources["store"]["artifactRoots"] >= 1,
+            f"{row_id}: artifact store root was not observed",
+        )
     if row_id == "artifact-integrity-expiry":
-        require(resources["tamperedPartIndex"] < resources["manifestPartCount"], f"{row_id}: tampered part index is outside the manifest")
-        require(resources["storeAfterEviction"]["managedBytes"] <= resources["storeCeilingBytes"], f"{row_id}: managed bytes exceed the ceiling")
-        require(resources["storeAfterEviction"]["artifactRoots"] >= 1, f"{row_id}: artifact store root was not observed")
+        require(
+            resources["tamperedPartIndex"] < resources["manifestPartCount"],
+            f"{row_id}: tampered part index is outside the manifest",
+        )
+        require(
+            resources["storeAfterEviction"]["managedBytes"] <= resources["storeCeilingBytes"],
+            f"{row_id}: managed bytes exceed the ceiling",
+        )
+        require(
+            resources["storeAfterEviction"]["artifactRoots"] >= 1,
+            f"{row_id}: artifact store root was not observed",
+        )
     if row_id == "installed-startup":
-        require(resources["observedManagedProcesses"] == observations[0]["managedProcessCount"], f"{row_id}: managed process count disagrees with the snapshot")
+        require(
+            resources["observedManagedProcesses"] == observations[0]["managedProcessCount"],
+            f"{row_id}: managed process count disagrees with the snapshot",
+        )
     if row_id == "normal-shutdown":
         check = next((item for item in cell["checks"] if item["name"] == "unforcedShutdown"), None)
-        require(check is not None and check["passed"] is True and check["observed"] is True, f"{row_id}: unforced shutdown was not established")
-        require(cell["stateTransition"][-1]["serverState"] == cell["observed"]["serverState"], f"{row_id}: final server state disagrees with the transition")
-        require(cell["stateTransition"][-1]["kernelState"] == cell["observed"]["kernelState"], f"{row_id}: final kernel state disagrees with the transition")
-        require(cell["cleanup"]["serverExited"] is (cell["observed"]["serverState"] == "exited"), f"{row_id}: cleanup does not support server exit")
-        require(cell["cleanup"]["runnerExited"] is (cell["observed"]["kernelState"] == "dead"), f"{row_id}: cleanup does not support runner death")
+        require(
+            check is not None and check["passed"] is True and check["observed"] is True,
+            f"{row_id}: unforced shutdown was not established",
+        )
+        require(
+            cell["stateTransition"][-1]["serverState"] == cell["observed"]["serverState"],
+            f"{row_id}: final server state disagrees with the transition",
+        )
+        require(
+            cell["stateTransition"][-1]["kernelState"] == cell["observed"]["kernelState"],
+            f"{row_id}: final kernel state disagrees with the transition",
+        )
+        require(
+            cell["cleanup"]["serverExited"] is (cell["observed"]["serverState"] == "exited"),
+            f"{row_id}: cleanup does not support server exit",
+        )
+        require(
+            cell["cleanup"]["runnerExited"] is (cell["observed"]["kernelState"] == "dead"),
+            f"{row_id}: cleanup does not support runner death",
+        )
     if row_id == "cancellation-cleanup":
-        require(cell["stateTransition"][-1]["serverState"] == cell["observed"]["serverState"], f"{row_id}: final server state disagrees with the transition")
-        require(cell["stateTransition"][-1]["kernelState"] == cell["observed"]["kernelState"], f"{row_id}: final kernel state disagrees with the transition")
-        require(cell["cleanup"]["serverExited"] is (cell["observed"]["serverState"] == "exited"), f"{row_id}: cleanup does not support server exit")
-        require(cell["cleanup"]["runnerExited"] is (cell["observed"]["kernelState"] == "dead"), f"{row_id}: cleanup does not support runner death")
-        require(any(process["role"] == "child" and process["alive"] for observation in observations for process in observation["processes"]), f"{row_id}: active descendant was not observed")
-
-
+        require(
+            cell["stateTransition"][-1]["serverState"] == cell["observed"]["serverState"],
+            f"{row_id}: final server state disagrees with the transition",
+        )
+        require(
+            cell["stateTransition"][-1]["kernelState"] == cell["observed"]["kernelState"],
+            f"{row_id}: final kernel state disagrees with the transition",
+        )
+        require(
+            cell["cleanup"]["serverExited"] is (cell["observed"]["serverState"] == "exited"),
+            f"{row_id}: cleanup does not support server exit",
+        )
+        require(
+            cell["cleanup"]["runnerExited"] is (cell["observed"]["kernelState"] == "dead"),
+            f"{row_id}: cleanup does not support runner death",
+        )
+        require(
+            any(
+                process["role"] == "child" and process["alive"]
+                for observation in observations
+                for process in observation["processes"]
+            ),
+            f"{row_id}: active descendant was not observed",
+        )
 
 
 def check_transition_process_agreement(cell: dict[str, Any], row_id: str) -> None:
@@ -682,51 +1008,99 @@ def check_transition_process_agreement(cell: dict[str, Any], row_id: str) -> Non
         return
     transitions = cell["stateTransition"]
     phase_map = ROW_TRANSITION_PROCESS_PHASE[row_id]
-    observations = {observation["phase"]: observation for observation in cell["processObservations"]}
+    observations = {
+        observation["phase"]: observation for observation in cell["processObservations"]
+    }
     for transition in transitions:
         process_phase = phase_map.get(transition["phase"])
         if process_phase is None:
             continue
-        require(process_phase in observations, f"{row_id}: {transition['phase']} has no matching process observation")
+        require(
+            process_phase in observations,
+            f"{row_id}: {transition['phase']} has no matching process observation",
+        )
         observation = observations[process_phase]
         processes = {process["role"]: process["alive"] for process in observation["processes"]}
         if transition["serverState"] in {"ready", "running"}:
-            require(processes.get("server") is True, f"{row_id}: {transition['phase']} claims a live server without process proof")
+            require(
+                processes.get("server") is True,
+                f"{row_id}: {transition['phase']} claims a live server without process proof",
+            )
         elif transition["serverState"] == "exited":
-            require(processes.get("server") is False, f"{row_id}: {transition['phase']} claims an exited server without process proof")
+            require(
+                processes.get("server") is False,
+                f"{row_id}: {transition['phase']} claims an exited server without process proof",
+            )
         if transition["kernelState"] == "alive":
-            require(processes.get("runner") is True, f"{row_id}: {transition['phase']} claims a live runner without process proof")
+            require(
+                processes.get("runner") is True,
+                f"{row_id}: {transition['phase']} claims a live runner without process proof",
+            )
         elif transition["kernelState"] == "dead":
-            require(processes.get("runner") is False, f"{row_id}: {transition['phase']} claims a dead runner without process proof")
+            require(
+                processes.get("runner") is False,
+                f"{row_id}: {transition['phase']} claims a dead runner without process proof",
+            )
+
 
 def validate_cell(cell: dict[str, Any], row: dict[str, Any]) -> list[str]:
     row_id = row["id"]
     require(isinstance(cell, dict), "cell is not a mapping")
     require_exact_keys(cell, CELL_KEYS, f"{row_id}: cell")
     require(cell.get("id") == row_id, "cell id does not match the matrix row")
-    require(cell.get("operation") == row["operation"], f"{row_id}: operation does not match the matrix")
+    require(
+        cell.get("operation") == row["operation"], f"{row_id}: operation does not match the matrix"
+    )
     require(cell.get("expected") == row["expected"], f"{row_id}: expected values were altered")
     require(
         cell.get("expectedSha256") == sha256_text(canonical_json_bytes(row["expected"]).decode()),
         f"{row_id}: expected-value hash does not match the matrix",
     )
     require(isinstance(cell.get("observed"), dict), f"{row_id}: observed mapping is missing")
-    require(set(cell["observed"]) == set(row["expected"]), f"{row_id}: observed keys do not match the matrix")
-    require(isinstance(cell.get("stateTransition"), list), f"{row_id}: state transitions are missing")
-    require(isinstance(cell.get("processObservations"), list), f"{row_id}: process observations are missing")
-    require(isinstance(cell.get("resourceObservations"), dict), f"{row_id}: resource observations are missing")
-    require(isinstance(cell.get("checks"), list) and cell["checks"], f"{row_id}: checks are missing")
+    require(
+        set(cell["observed"]) == set(row["expected"]),
+        f"{row_id}: observed keys do not match the matrix",
+    )
+    require(
+        isinstance(cell.get("stateTransition"), list), f"{row_id}: state transitions are missing"
+    )
+    require(
+        isinstance(cell.get("processObservations"), list),
+        f"{row_id}: process observations are missing",
+    )
+    require(
+        isinstance(cell.get("resourceObservations"), dict),
+        f"{row_id}: resource observations are missing",
+    )
+    require(
+        isinstance(cell.get("checks"), list) and cell["checks"], f"{row_id}: checks are missing"
+    )
     require_int(cell.get("durationMs"), f"{row_id}: duration")
-    require(isinstance(cell.get("limitations"), list) and all(isinstance(item, str) for item in cell["limitations"]), f"{row_id}: limitations are invalid")
+    require(
+        isinstance(cell.get("limitations"), list)
+        and all(isinstance(item, str) for item in cell["limitations"]),
+        f"{row_id}: limitations are invalid",
+    )
     require(cell.get("outcome") in {"passed", "failed"}, f"{row_id}: outcome is invalid")
-    require(cell.get("errorType") is None or isinstance(cell.get("errorType"), str), f"{row_id}: errorType is invalid")
+    require(
+        cell.get("errorType") is None or isinstance(cell.get("errorType"), str),
+        f"{row_id}: errorType is invalid",
+    )
     passed = cell["outcome"] == "passed"
     if passed:
         require(cell.get("errorType") is None, f"{row_id}: passed cell retained an error")
         for key, expected in row["expected"].items():
-            require(cell["observed"].get(key) == expected, f"{row_id}: passed cell observed {key}={cell['observed'].get(key)!r}, expected {expected!r}")
+            require(
+                cell["observed"].get(key) == expected,
+                f"{row_id}: passed cell observed {key}={cell['observed'].get(key)!r}, "
+                f"expected {expected!r}",
+            )
     else:
-        require(cell.get("errorType") is not None or any(check.get("passed") is not True for check in cell["checks"]), f"{row_id}: failed cell has no failure reason")
+        require(
+            cell.get("errorType") is not None
+            or any(check.get("passed") is not True for check in cell["checks"]),
+            f"{row_id}: failed cell has no failure reason",
+        )
     check_cleanup(cell, require_complete=passed)
     check_transitions(cell, row_id, passed)
     check_process_observations(cell, row_id, passed)
@@ -734,7 +1108,11 @@ def validate_cell(cell: dict[str, Any], row: dict[str, Any]) -> list[str]:
     if passed:
         check_resources(cell, row_id, cell["processObservations"])
     check_checks(cell, row, passed)
-    return [] if passed else [f"{row_id}: outcome is {cell['outcome']!r} (errorType={cell['errorType']!r})"]
+    return (
+        []
+        if passed
+        else [f"{row_id}: outcome is {cell['outcome']!r} (errorType={cell['errorType']!r})"]
+    )
 
 
 def check_checks(cell: dict[str, Any], row: dict[str, Any], passed: bool) -> None:
@@ -742,14 +1120,22 @@ def check_checks(cell: dict[str, Any], row: dict[str, Any], passed: bool) -> Non
     recorded: dict[str, dict[str, Any]] = {}
     for check in cell["checks"]:
         require_exact_keys(check, CHECK_KEYS, f"{row_id}: check")
-        require(isinstance(check["name"], str) and check["name"], f"{row_id}: check name is invalid")
+        require(
+            isinstance(check["name"], str) and check["name"], f"{row_id}: check name is invalid"
+        )
         require(check["name"] not in recorded, f"{row_id}: duplicate check {check['name']}")
         require_bool(check["passed"], f"{row_id}: check {check['name']}.passed is invalid")
-        require(check["passed"] == (check["expected"] == check["observed"]), f"{row_id}: check {check['name']} is contradictory")
+        require(
+            check["passed"] == (check["expected"] == check["observed"]),
+            f"{row_id}: check {check['name']} is contradictory",
+        )
         recorded[check["name"]] = check
     for key in row["expected"]:
         require(key in recorded, f"{row_id}: expected key {key} has no recorded check")
-        require(recorded[key]["expected"] == row["expected"][key], f"{row_id}: check {key} expected value was altered")
+        require(
+            recorded[key]["expected"] == row["expected"][key],
+            f"{row_id}: check {key} expected value was altered",
+        )
         if passed:
             require(recorded[key]["passed"] is True, f"{row_id}: expected check {key} did not pass")
     computed_passed = (
@@ -774,29 +1160,44 @@ def validate_record(
 ) -> list[str]:
     require_exact_keys(record, RECORD_KEYS, "record")
     require(record.get("schemaVersion") == SCHEMA_VERSION, "schema version is unsupported")
-    require(record.get("recordKind") == "amkernel-cross-os-process-matrix", "record kind is unsupported")
+    require(
+        record.get("recordKind") == "amkernel-cross-os-process-matrix", "record kind is unsupported"
+    )
     require(isinstance(record.get("recordId"), str) and record["recordId"], "record id is missing")
-    require(isinstance(record.get("createdAt"), str) and record["createdAt"].endswith("Z"), "creation time is missing")
+    require(
+        isinstance(record.get("createdAt"), str) and record["createdAt"].endswith("Z"),
+        "creation time is missing",
+    )
     check_hosted_dispatch(record, require_hosted)
     if require_hosted:
-        require(expected_invocation is not None, "hosted validation requires the exact expected invocation")
-        require(expected_wheel_sha256 is not None, "hosted validation requires the expected wheel hash")
-        require(expected_wheel_source_revision is not None, "hosted validation requires the expected wheel source revision")
+        require(
+            expected_invocation is not None,
+            "hosted validation requires the exact expected invocation",
+        )
+        require(
+            expected_wheel_sha256 is not None, "hosted validation requires the expected wheel hash"
+        )
+        require(
+            expected_wheel_source_revision is not None,
+            "hosted validation requires the expected wheel source revision",
+        )
     check_expected_invocation(record, expected_invocation)
     check_sources(record, source_root, wheel_source_root or source_root)
     check_expected_wheel(record, expected_wheel_sha256, expected_wheel_source_revision)
     check_environment(record, matrix)
     check_environment_wheel_identity(record)
+    check_matrix_header(record, matrix)
     if wheel_path is not None:
         check_wheel_file(record, wheel_path)
     cells = record.get("cells")
-    require(isinstance(cells, list), "cells are missing")
+    if not isinstance(cells, list):
+        raise EvidenceError("cells are missing")
     require(
         [cell.get("id") for cell in cells] == [row["id"] for row in matrix["rows"]],
         "cell order or membership does not match the frozen matrix",
     )
     problems: list[str] = []
-    for cell, row in zip(cells, matrix["rows"]):
+    for cell, row in zip(cells, matrix["rows"], strict=True):
         problems.extend(validate_cell(cell, row))
     for cell in cells:
         body = {key: value for key, value in cell.items() if key != "cellSha256"}
@@ -913,7 +1314,9 @@ def combine(
     }
     missing = sorted(required - seen)
     require(not missing, f"required environment coverage is missing: {missing}")
-    require(not (seen - required), f"unexpected environments were supplied: {sorted(seen - required)}")
+    require(
+        not (seen - required), f"unexpected environments were supplied: {sorted(seen - required)}"
+    )
     environments.sort(
         key=lambda item: (
             matrix["platforms"].index(item["matrixPlatform"]),
@@ -965,8 +1368,10 @@ def combine(
         "outcome": "observed" if not failures else "failed",
         "failures": failures,
         "limitations": [
-            "The index covers only the frozen POSIX process matrix; Windows, Android, and iOS are not claimed.",
-            "The index links retained per-environment evidence and does not replace independent lifecycle review.",
+            "The index covers only the frozen POSIX process matrix; "
+            "Windows, Android, and iOS are not claimed.",
+            "The index links retained per-environment evidence and does not replace "
+            "independent lifecycle review.",
             "Review disposition remains pending until the parent records its independent review.",
         ],
         "review": {
@@ -988,7 +1393,10 @@ def expected_invocation_from_args(args: argparse.Namespace) -> dict[str, Any]:
         "runAttempt": args.expected_run_attempt,
         "sha": args.expected_sha,
     }
-    require(all(isinstance(value, str) and value for value in values.values()), "every expected invocation value is required")
+    require(
+        all(isinstance(value, str) and value for value in values.values()),
+        "every expected invocation value is required",
+    )
     return values
 
 
@@ -1048,7 +1456,9 @@ def main(argv: list[str] | None = None) -> int:
         )
         if args.require_hosted or any(value is not None for value in invocation_args):
             expected_invocation = expected_invocation_from_args(args)
-        wheel_source_root = Path(args.wheel_source_root).resolve() if args.wheel_source_root else source_root
+        wheel_source_root = (
+            Path(args.wheel_source_root).resolve() if args.wheel_source_root else source_root
+        )
         problems = validate_record(
             record,
             matrix,
@@ -1070,7 +1480,9 @@ def main(argv: list[str] | None = None) -> int:
             "problems": problems,
         }
         if args.summary:
-            Path(args.summary).write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+            Path(args.summary).write_text(
+                json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+            )
         print(json.dumps(summary, indent=2, sort_keys=True))
         return 0 if not problems else 1
     records = [
@@ -1090,7 +1502,11 @@ def main(argv: list[str] | None = None) -> int:
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(index, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    print(json.dumps({key: index[key] for key in ("outcome", "totals", "review", "indexSha256")}, indent=2))
+    print(
+        json.dumps(
+            {key: index[key] for key in ("outcome", "totals", "review", "indexSha256")}, indent=2
+        )
+    )
     return 0 if index["outcome"] == "observed" else 1
 
 
@@ -1099,4 +1515,4 @@ if __name__ == "__main__":
         raise SystemExit(main())
     except EvidenceError as error:
         print(f"evidence validation failed: {error}", file=sys.stderr)
-        raise SystemExit(2)
+        raise SystemExit(2) from error

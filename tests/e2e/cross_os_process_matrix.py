@@ -24,10 +24,11 @@ import sys
 import time
 import uuid
 import zipfile
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Awaitable, Callable, cast
+from typing import Any, cast
 
 from mcp.client import Client
 from mcp.client.stdio import StdioServerParameters
@@ -53,8 +54,7 @@ STORE_ROOT_PREFIX = "amkernel-"
 HOSTED = os.environ.get("GITHUB_ACTIONS") == "true"
 
 IDENTITY_CODE = (
-    "import os\n"
-    "{'runner': os.getpid(), 'server': os.getppid(), 'group': os.getpgrp()}\n"
+    "import os\n{'runner': os.getpid(), 'server': os.getppid(), 'group': os.getpgrp()}\n"
 )
 
 STUBBORN_CHILD_CODE = """import json, os, signal, subprocess, sys, time
@@ -98,7 +98,7 @@ while True:
 
 
 def utc_now() -> str:
-    return datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00", "Z")
+    return datetime.now(UTC).isoformat(timespec="milliseconds").replace("+00:00", "Z")
 
 
 def canonical_json_bytes(value: Any) -> bytes:
@@ -132,7 +132,7 @@ def wheel_package_hashes(wheel: Path) -> dict[str, str]:
         for name in sorted(archive.namelist()):
             if not name.startswith("amkernel/") or name.endswith("/"):
                 continue
-            hashes[name[len("amkernel/"):]] = hashlib.sha256(archive.read(name)).hexdigest()
+            hashes[name[len("amkernel/") :]] = hashlib.sha256(archive.read(name)).hexdigest()
     return hashes
 
 
@@ -327,7 +327,9 @@ class RowCell:
         self.process_observations.append(snapshot)
         return None
 
-    def evidence_check(self, name: str, expected: Any, observed: Any, passed: bool | None = None) -> None:
+    def evidence_check(
+        self, name: str, expected: Any, observed: Any, passed: bool | None = None
+    ) -> None:
         if passed is None:
             passed = observed == expected
         self.evidence_checks.append(
@@ -490,14 +492,17 @@ async def row_installed_startup(ctx: RowContext, cell: RowCell) -> None:
             cast(int, identity["runner"]) == cast(int, identity["group"]),
         )
         cell.evidence_check("executionCount", 1, value["executionCount"])
-    ctx.managed.register({"server": ctx.managed.server, "runner": ctx.managed.runner, "group": ctx.managed.group})
+    ctx.managed.register(
+        {"server": ctx.managed.server, "runner": ctx.managed.runner, "group": ctx.managed.group}
+    )
 
 
 async def row_normal_shutdown(ctx: RowContext, cell: RowCell) -> None:
     async with Client(ctx.parameters, read_timeout_seconds=120.0) as client:
         value = await call_exec(
             client,
-            "import os\n{'value': 1, 'runner': os.getpid(), 'server': os.getppid(), 'group': os.getpgrp()}",
+            "import os\n{'value': 1, 'runner': os.getpid(), "
+            "'server': os.getppid(), 'group': os.getpgrp()}",
         )
         identity = register_identity(cell, ctx, value)
         cell.transition(
@@ -507,7 +512,9 @@ async def row_normal_shutdown(ctx: RowContext, cell: RowCell) -> None:
             executionCount=value["executionCount"],
         )
         cell.evidence_check("completedExecutionCount", 1, value["executionCount"])
-        cell.evidence_check("completedResultValue", 1, cast(dict[str, Any], value["result"])["value"])
+        cell.evidence_check(
+            "completedResultValue", 1, cast(dict[str, Any], value["result"])["value"]
+        )
         cell.resource_observations = {
             "storeRootsBeforeShutdown": len(store_roots(ctx.tmpdir)),
             "runnerGroupToken": ctx.managed.token("group", cast(int, identity["group"])),
@@ -587,9 +594,7 @@ async def row_timeout_survives(ctx: RowContext, cell: RowCell) -> None:
             kernelState=timed_out["kernelState"],
             executionCount=timed_out["executionCount"],
         )
-        continuation = await call_exec(
-            client, "import os\n{'runner': os.getpid(), 'value': 42}"
-        )
+        continuation = await call_exec(client, "import os\n{'runner': os.getpid(), 'value': 42}")
         continued = cast(dict[str, Any], continuation["result"])
         cell.observe_processes(ctx.managed, "after-continuation")
         cell.observed = {
@@ -717,7 +722,7 @@ async def row_output_limit_drain(ctx: RowContext, cell: RowCell) -> None:
                 "import os\n"
                 "chunk = b'x' * 65536\n"
                 "for _ in range(4096): os.write(1, chunk)\n"
-                f"os.write(1, b'tail\\n')\n"
+                "os.write(1, b'tail\\n')\n"
             ),
             timeout=30.0,
         )
@@ -739,9 +744,7 @@ async def row_output_limit_drain(ctx: RowContext, cell: RowCell) -> None:
             kernelState=limited["kernelState"],
             executionCount=limited["executionCount"],
         )
-        continuation = await call_exec(
-            client, "import os\n{'runner': os.getpid(), 'value': 42}"
-        )
+        continuation = await call_exec(client, "import os\n{'runner': os.getpid(), 'value': 42}")
         continued = cast(dict[str, Any], continuation["result"])
         cell.observe_processes(ctx.managed, "after-output-limit")
         cell.observed = {
@@ -757,7 +760,9 @@ async def row_output_limit_drain(ctx: RowContext, cell: RowCell) -> None:
             "continuationVerified": continued == {"runner": runner_pid, "value": 42},
         }
         cell.evidence_check("outputLimitBytes", output_limit, limited["output"]["limitBytes"])
-        cell.evidence_check("totalOutputBytes", output_limit + tail_bytes, limited["output"]["totalBytes"])
+        cell.evidence_check(
+            "totalOutputBytes", output_limit + tail_bytes, limited["output"]["totalBytes"]
+        )
         cell.evidence_check("discardedTailBytes", tail_bytes, limited["output"]["discardedBytes"])
         cell.evidence_check("stdoutArtifactParts", expected_parts, observed_parts)
         cell.evidence_check("continuationExecutionCount", 3, continuation["executionCount"])
@@ -812,7 +817,9 @@ async def row_artifact_integrity_expiry(ctx: RowContext, cell: RowCell) -> None:
             cell.evidence_check("tamperError", "resource integrity failure", error.message)
         else:
             tampered_read = "readable"
-            cell.evidence_check("tamperError", "resource integrity failure", "resource remained readable")
+            cell.evidence_check(
+                "tamperError", "resource integrity failure", "resource remained readable"
+            )
         filler_bytes = filler_execution_bytes(ctx.constants)
         quota = ctx.constants["ARTIFACT_STORE_QUOTA_BYTES"]
         reservation = ctx.constants["EXECUTION_BUNDLE_RESERVATION_BYTES"]
@@ -898,7 +905,9 @@ async def row_cancellation_cleanup(ctx: RowContext, cell: RowCell) -> None:
         await wait_for_path(identity_path, timeout=15.0)
         identity = cast(dict[str, Any], json.loads(identity_path.read_text(encoding="utf-8")))
         if identity.get("childReady") is not True:
-            raise AssertionError("active execution identity was not published after child readiness")
+            raise AssertionError(
+                "active execution identity was not published after child readiness"
+            )
         ctx.managed.register(identity)
         child_pid = cast(int, identity.get("child"))
         cell.observe_processes(ctx.managed, "active-execution")
@@ -915,7 +924,9 @@ async def row_cancellation_cleanup(ctx: RowContext, cell: RowCell) -> None:
             await client_manager.__aexit__(None, None, None)
         finally:
             if active is not None:
-                aborted = "not_finished" if active.done() and not active.cancelled() else "cancelled"
+                aborted = (
+                    "not_finished" if active.done() and not active.cancelled() else "cancelled"
+                )
                 active.cancel()
                 try:
                     await active
@@ -934,7 +945,9 @@ async def row_cancellation_cleanup(ctx: RowContext, cell: RowCell) -> None:
     cell.evidence_check("activeExecutionAborted", True, aborted != "not_finished")
     cell.resource_observations = {
         "activeExecutionAborted": aborted,
-        "runnerGroupToken": None if ctx.managed.group is None else ctx.managed.token("group", ctx.managed.group),
+        "runnerGroupToken": None
+        if ctx.managed.group is None
+        else ctx.managed.token("group", ctx.managed.group),
     }
 
 
@@ -1014,7 +1027,8 @@ async def execute_row(
 
             traceback.print_exception(error)
         cell.limitations.append(
-            "The row aborted before completing all observations; only emitted observations are retained."
+            "The row aborted before completing all observations; "
+            "only emitted observations are retained."
         )
     cell.cleanup = await ctx.managed.finalize()
     finalize_observed_from_cleanup(cell)
@@ -1022,7 +1036,8 @@ async def execute_row(
     cell.evidence_check("cleanupCompleted", True, cleanup_completed)
     if not cleanup_completed:
         cell.limitations.append(
-            "Managed cleanup did not complete within the lifecycle envelope; forced teardown was only harness cleanup."
+            "Managed cleanup did not complete within the lifecycle envelope; "
+            "forced teardown was only harness cleanup."
         )
     if not cell.transitions:
         cell.transition(
@@ -1083,15 +1098,15 @@ def build_sources(
             **package,
             "sourceRevision": wheel_source_revision,
             "sourceRootKind": (
-                "current-checkout"
-                if wheel_source_root == source_root
-                else "pinned-release-source"
+                "current-checkout" if wheel_source_root == source_root else "pinned-release-source"
             ),
         },
     }
 
 
-def build_environment(entry_point: Path, python: Path, wheel: Path, declared_platform: str) -> dict[str, Any]:
+def build_environment(
+    entry_point: Path, python: Path, wheel: Path, declared_platform: str
+) -> dict[str, Any]:
     system = platform.system()
     derived = {"Linux": "ubuntu-latest", "Darwin": "macos-latest"}.get(system, system.lower())
     version_output = subprocess.run(
@@ -1192,9 +1207,12 @@ def build_record(
         "environment": environment,
         "cells": cells,
         "limitations": [
-            "Only the frozen matrix rows were observed; this record makes no Windows, Android, or iOS claim.",
-            "Process identity is represented by per-run opaque tokens; raw PIDs, paths, hostnames, and private content are not retained.",
-            "Cleanup covers only the AMKernel-managed server, runner process group, and artifact root; external host resources are not claimed.",
+            "Only the frozen matrix rows were observed; "
+            "this record makes no Windows, Android, or iOS claim.",
+            "Process identity is represented by per-run opaque tokens; "
+            "raw PIDs, paths, hostnames, and private content are not retained.",
+            "Cleanup covers only the AMKernel-managed server, runner process group, "
+            "and artifact root; external host resources are not claimed.",
             "Independent lifecycle review is required and is not self-attested by this record.",
         ],
         "review": {
