@@ -12,6 +12,7 @@ import subprocess
 import sys
 import tempfile
 import threading
+import urllib.request
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, cast
@@ -36,6 +37,21 @@ FIXTURES = ROOT / "tests" / "fixtures" / "cross_client"
 PROXY = Path(__file__).with_name("codex_proxy.py")
 MODEL = "gpt-6.1-sol"
 PROVIDER_URL = "http://127.0.0.1:23333/api/openai/v1"
+PUBLISHED_WHEEL_VERSION = "0.1.1"
+PUBLISHED_WHEEL_FILENAME = "amkernel-0.1.1-py3-none-any.whl"
+PUBLISHED_WHEEL_SHA256 = "a72cacb0de33335026e0b03e0686d115c8366c4e012f84fe6f4973e1ebcc608f"
+CODEX_BIN_ENV = "CODEX_BIN"
+CODEX_BIN_CANDIDATES = (
+    Path("/Applications/ChatGPT.app/Contents/Resources/codex-cli/bin/codex"),
+    Path.home() / ".codex/plugins/.plugin-appserver/codex-cli/bin/codex",
+)
+ATTEMPT_EVENT_LIMIT = 400
+ATTEMPT_BYTES_LIMIT = 65536
+_HOME_PATH = re.compile(r"/(?:Users|home)/[^/\s\"']+")
+_BEARER = re.compile(r"(?i)(bearer\s+)[A-Za-z0-9._~+/=-]{8,}")
+_SECRET_ASSIGNMENT = re.compile(
+    r"(?i)((?:api[_-]?key|token|password|secret)\s*[=:]\s*)[^,;\s]+"
+)
 
 
 def _now() -> str:
@@ -97,12 +113,85 @@ def _source_snapshot(*excluded_roots: Path) -> str:
     return digest.hexdigest()
 
 
-def _build_clean_wheel(temp: Path) -> tuple[Path, Path]:
+def _redact(text: str) -> str:
+    text = _HOME_PATH.sub("<home>", text)
+    text = _BEARER.sub(r"\1<redacted>", text)
+    return _SECRET_ASSIGNMENT.sub(r"\1<redacted>", text)
+
+
+def _bounded(text: str, limit: int = ATTEMPT_BYTES_LIMIT) -> str:
+    redacted = _redact(text)
+    return redacted[:limit]
+
+
+def _codex_executable() -> str:
+    override = os.environ.get(CODEX_BIN_ENV)
+    if override:
+        candidate = Path(override).expanduser()
+        if not candidate.is_file():
+            raise RuntimeError(f"{CODEX_BIN_ENV} does not point to an executable file")
+        return str(candidate)
+    found = shutil.which("codex")
+    if found:
+        return found
+    for candidate in CODEX_BIN_CANDIDATES:
+        if candidate.is_file():
+            return str(candidate)
+    raise RuntimeError("Codex CLI is not installed or not discoverable; set CODEX_BIN")
+
+
+def _download_published_wheel(destination: Path) -> Path:
+    request = urllib.request.Request(
+        f"https://pypi.org/pypi/amkernel/{PUBLISHED_WHEEL_VERSION}/json",
+        headers={"Accept": "application/json"},
+    )
+    with urllib.request.urlopen(request, timeout=30) as response:
+        metadata = json.load(response)
+    match = next(
+        (
+            item
+            for item in metadata.get("urls", [])
+            if item.get("filename") == PUBLISHED_WHEEL_FILENAME
+        ),
+        None,
+    )
+    if match is None:
+        raise RuntimeError("the published 0.1.1 wheel is absent from the PyPI index")
+    with urllib.request.urlopen(match["url"], timeout=60) as response:
+        destination.write_bytes(response.read())
+    return destination
+
+
+def _published_wheel(temp: Path, explicit: Path | None) -> Path:
+    candidates: list[Path] = []
+    if explicit is not None:
+        candidates.append(explicit)
+    configured = os.environ.get("AMKERNEL_WHEEL")
+    if configured:
+        candidates.append(Path(configured))
+    for candidate in candidates:
+        if not candidate.is_file():
+            raise RuntimeError(f"published wheel path does not exist: {candidate.name}")
+        digest = _sha256(candidate.read_bytes())
+        if digest != PUBLISHED_WHEEL_SHA256:
+            raise RuntimeError(
+                f"{candidate.name} is not the published {PUBLISHED_WHEEL_VERSION} artifact "
+                f"(sha256 {digest})"
+            )
+        return candidate
     dist = temp / "dist"
-    venv = temp / "venv"
     dist.mkdir()
-    _run(["uv", "build", "--wheel", "--out-dir", str(dist)])
-    wheel = next(dist.glob("*.whl"))
+    wheel = _download_published_wheel(dist / PUBLISHED_WHEEL_FILENAME)
+    digest = _sha256(wheel.read_bytes())
+    if digest != PUBLISHED_WHEEL_SHA256:
+        raise RuntimeError("downloaded wheel bytes differ from the published digest")
+    return wheel
+
+
+def _install_published_wheel(temp: Path, explicit: Path | None) -> tuple[Path, Path]:
+    wheel = _published_wheel(temp, explicit)
+    venv = temp / "venv"
+    python = venv / "bin" / "python"
     _run(["uv", "venv", "--python", "3.11", str(venv)])
     _run(
         [
@@ -110,16 +199,70 @@ def _build_clean_wheel(temp: Path) -> tuple[Path, Path]:
             "pip",
             "install",
             "--default-index",
-            "https://pypi.tuna.tsinghua.edu.cn/simple",
+            "https://pypi.org/simple",
             "--python",
-            str(venv / "bin" / "python"),
+            str(python),
             str(wheel),
         ]
     )
+    installed = _run(
+        [
+            str(python),
+            "-c",
+            "import importlib.metadata; print(importlib.metadata.version('amkernel'))",
+        ]
+    )
+    if installed != PUBLISHED_WHEEL_VERSION:
+        raise RuntimeError(f"installed AMKernel version is {installed}, not the published wheel")
     return wheel, venv / "bin" / "amkernel"
 
 
-def _codex_command(server: Path, capture: Path, client_dir: Path) -> list[str]:
+def _probe_provider() -> tuple[bool, str]:
+    endpoint = PROVIDER_URL.rstrip("/") + "/models"
+    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+    try:
+        with opener.open(endpoint, timeout=5) as response:
+            return response.status == 200, f"HTTP {response.status}"
+    except Exception as exc:  # the diagnostic is the evidence
+        return False, f"{type(exc).__name__} on direct connection"
+
+
+def _attempt_signal(attempt: dict[str, Any]) -> str:
+    events = cast(list[dict[str, Any]], attempt["events"])
+    for event in reversed(events):
+        if event.get("type") not in {"error", "turn.failed"}:
+            continue
+        payload = event.get("error") or event.get("message") or ""
+        if isinstance(payload, dict):
+            payload = payload.get("message", "")
+        text = _redact(str(payload))[:240]
+        if text:
+            return text
+    return f"exit code {attempt.get('exitCode')}"
+
+
+def _blocked_reason(detail: str, attempts: list[dict[str, Any]]) -> str:
+    signals = sorted({_attempt_signal(attempt) for attempt in attempts})
+    observed = "; ".join(signals) if signals else "no client event"
+    return (
+        f"The Codex model provider route {PROVIDER_URL} is not listening ({detail}). "
+        f"{len(attempts)} real client launch attempts produced no model turn and no tool call "
+        f"({observed}), and the installed client holds no other authenticated provider. "
+        "No credential or configuration was modified."
+    )
+
+
+def _client_environment(codex_home: Path) -> dict[str, str]:
+    env = os.environ.copy()
+    env["CODEX_HOME"] = str(codex_home)
+    env["NO_PROXY"] = "127.0.0.1,localhost"
+    env["no_proxy"] = "127.0.0.1,localhost"
+    return env
+
+
+def _codex_command(
+    server: Path, capture: Path, client_dir: Path, executable: str
+) -> list[str]:
     proxy_command = [
         sys.executable,
         str(PROXY),
@@ -131,7 +274,7 @@ def _codex_command(server: Path, capture: Path, client_dir: Path) -> list[str]:
         str(capture),
     ]
     command = [
-        "codex",
+        executable,
         "--strict-config",
         "-m",
         MODEL,
@@ -145,6 +288,8 @@ def _codex_command(server: Path, capture: Path, client_dir: Path) -> list[str]:
         'model_providers.agent-maestro.wire_api="responses"',
         "-c",
         "model_providers.agent-maestro.supports_standalone_web_search=true",
+        "-c",
+        'web_search="disabled"',
     ]
     for feature in (
         "computer_use",
@@ -154,7 +299,6 @@ def _codex_command(server: Path, capture: Path, client_dir: Path) -> list[str]:
         "browser_use_external",
         "in_app_browser",
         "standalone_web_search",
-        "web_search_request",
         "skill_search",
         "plugins",
         "apps",
@@ -188,13 +332,17 @@ def _codex_command(server: Path, capture: Path, client_dir: Path) -> list[str]:
 
 
 def _run_codex(
-    prompt: str, server: Path, capture: Path, client_dir: Path, codex_home: Path
+    prompt: str,
+    server: Path,
+    capture: Path,
+    client_dir: Path,
+    codex_home: Path,
+    executable: str = "codex",
 ) -> tuple[list[dict[str, Any]], str, str, str]:
     client_dir.mkdir(parents=True, exist_ok=False)
     codex_home.mkdir(parents=True, exist_ok=False)
-    env = os.environ.copy()
-    env["CODEX_HOME"] = str(codex_home)
-    command = _codex_command(server, capture, client_dir)
+    env = _client_environment(codex_home)
+    command = _codex_command(server, capture, client_dir, executable)
     process = subprocess.Popen(
         command,
         cwd=ROOT,
@@ -919,16 +1067,298 @@ def _build_natural_evidence(
     _write_json(output / "manifest.json", manifest)
 
 
-def run(output: Path) -> None:
+def _attempt_codex_launch(
+    prompt: str,
+    server: Path,
+    capture: Path,
+    client_dir: Path,
+    codex_home: Path,
+    executable: str,
+) -> dict[str, Any]:
+    client_dir.mkdir(parents=True, exist_ok=False)
+    codex_home.mkdir(parents=True, exist_ok=False)
+    env = _client_environment(codex_home)
+    command = _codex_command(server, capture, client_dir, executable)
+    started_at = _now()
+    timed_out = False
+    return_code: int | None = None
+    stdout = ""
+    stderr = ""
+    try:
+        completed = subprocess.run(
+            command,
+            cwd=ROOT,
+            env=env,
+            input=prompt,
+            capture_output=True,
+            text=True,
+            timeout=180,
+        )
+        return_code = completed.returncode
+        stdout = completed.stdout
+        stderr = completed.stderr
+    except subprocess.TimeoutExpired as expired:
+        timed_out = True
+        partial_stdout = expired.stdout or ""
+        partial_stderr = expired.stderr or ""
+        stdout = (
+            partial_stdout.decode("utf-8", "replace")
+            if isinstance(partial_stdout, bytes)
+            else partial_stdout
+        )
+        stderr = (
+            partial_stderr.decode("utf-8", "replace")
+            if isinstance(partial_stderr, bytes)
+            else partial_stderr
+        )
+    completed_at = _now()
+    events: list[dict[str, Any]] = []
+    for line in stdout.splitlines():
+        if len(events) >= ATTEMPT_EVENT_LIMIT:
+            break
+        try:
+            event = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(event, dict):
+            events.append(event)
+    return {
+        "startedAt": started_at,
+        "completedAt": completed_at,
+        "durationMs": _duration_ms(started_at, completed_at),
+        "exitCode": return_code,
+        "timedOut": timed_out,
+        "eventCount": len(events),
+        "events": events,
+        "stderr": _bounded(stderr),
+    }
+
+
+def _write_attempt(output: Path, index: int, attempt: dict[str, Any]) -> None:
+    directory = output / "attempts"
+    directory.mkdir(exist_ok=True)
+    events = cast(list[dict[str, Any]], attempt["events"])
+    lines = []
+    for event in events:
+        line = json.dumps(event, ensure_ascii=False, sort_keys=True)
+        lines.append(_redact(line)[:2048])
+    (directory / f"launch-{index:02d}-events.jsonl").write_text(
+        "\n".join(lines) + ("\n" if lines else "")
+    )
+    (directory / f"launch-{index:02d}-stderr.txt").write_text(cast(str, attempt["stderr"]))
+    summary = {key: value for key, value in attempt.items() if key != "events"}
+    _write_json(directory / f"launch-{index:02d}.json", summary)
+
+
+def _build_blocked_evidence(
+    output: Path,
+    *,
+    client_version: str,
+    client_executable: str,
+    wheel: Path,
+    config: dict[str, object],
+    run_started: str,
+    run_completed: str,
+    reason: str,
+    attempts: list[dict[str, Any]],
+) -> None:
+    output.mkdir(parents=True, exist_ok=False)
+    scenario = load_json(FIXTURES / "scenario.json")
+    normalizer = load_json(FIXTURES / "normalizer.json")
+    schema = load_json(FIXTURES / "evidence.schema.json")
+    wheel_payload = wheel.read_bytes()
+    wheel_digest = _sha256(wheel_payload)
+    if wheel_digest != PUBLISHED_WHEEL_SHA256:
+        raise RuntimeError("blocked evidence wheel is not the published artifact")
+    duration_ms = _duration_ms(run_started, run_completed)
+    record = {
+        "schemaVersion": 1,
+        "runId": f"codex-blocked-{datetime.now(UTC).strftime('%Y%m%d%H%M%S')}",
+        "generatedAt": _now(),
+        "runStartedAt": run_started,
+        "runCompletedAt": run_completed,
+        "outcome": "blocked",
+        "client": {
+            "id": "codex",
+            "executable": "codex",
+            "version": client_version,
+            "model": MODEL,
+            "invocationMode": "ephemeral-home",
+            "nonInteractive": True,
+        },
+        "host": {
+            "system": platform.system(),
+            "release": platform.release(),
+            "architecture": platform.machine(),
+            "pythonVersion": platform.python_version(),
+        },
+        "mcp": {"clientVersion": client_version, "protocolVersion": "2025-06-18"},
+        "amkernel": {
+            "revision": _run(["git", "rev-parse", "HEAD"]),
+            "version": PUBLISHED_WHEEL_VERSION,
+            "wheel": {
+                "filename": wheel.name,
+                "sizeBytes": len(wheel_payload),
+                "sha256": wheel_digest,
+            },
+            "entryPoint": "amkernel",
+            "runnerProtocolVersion": 2,
+        },
+        "contracts": {
+            "scenario": {
+                "id": scenario["scenarioId"],
+                "sha256": sha256_file(FIXTURES / "scenario.json"),
+            },
+            "evidenceSchema": {
+                "id": schema["$id"],
+                "sha256": sha256_file(FIXTURES / "evidence.schema.json"),
+            },
+            "normalizer": {
+                "id": normalizer["normalizerId"],
+                "sha256": sha256_file(FIXTURES / "normalizer.json"),
+            },
+            "normalizerImplementation": {
+                "id": "amkernel-cross-client-normalizer-v1-python",
+                "sha256": sha256_file(ROOT / "tests" / "e2e" / "cross_client_normalizer.py"),
+            },
+        },
+        "preflight": {
+            "clientReady": False,
+            "serverReady": False,
+            "wheelVerified": True,
+            "reason": reason,
+        },
+        "configuration": {
+            "workspaceIsolation": "temporary",
+            "persistentMutation": False,
+            "before": config,
+            "after": config,
+            "serverCommand": ["python", "codex_proxy.py", "--server", "venv/bin/amkernel"],
+        },
+        "steps": [],
+        "context": {
+            "publicToolCount": 1,
+            "selectedTool": "python_exec",
+            "toolCallCount": 0,
+            "schemaRetryCount": 0,
+            "wrongToolSelectionCount": 0,
+            "clarificationRequestCount": 0,
+            "normalizedRequestBytes": 0,
+            "normalizedResultBytes": 0,
+            "maximumNormalizedResultBytes": 0,
+            "rawResourceBytes": 0,
+            "resourceReferenceBytes": 0,
+            "contextReductionRatio": 0,
+            "finalResponseBytes": 0,
+            "normalizedEventsBytes": 0,
+            "durationMs": duration_ms,
+        },
+        "artifacts": [],
+        "cleanup": {
+            "attempted": False,
+            "completed": False,
+            "clientExited": False,
+            "serverExited": False,
+            "runnerExited": False,
+            "managedProcessesRemaining": 0,
+            "managedArtifactsRemaining": 0,
+            "remainingExternalResources": [],
+            "observation": (
+                "No managed client, proxy, or AMKernel process was started, because the "
+                "model provider route failed preflight; the ephemeral attempt homes were "
+                "removed with the temporary directory."
+            ),
+        },
+        "review": {
+            "reviewer": "pending independent reviewer",
+            "source": "https://github.com/FSQ-lab/amkernel/issues/81",
+            "blocker": 0,
+            "major": 0,
+            "minor": 0,
+            "disposition": "pending",
+        },
+        "limitations": [
+            (
+                f"Blocked before the frozen deterministic layer: {len(attempts)} client launch "
+                f"attempts with {client_executable.rsplit('/', 1)[-1]} could not reach the "
+                "configured model provider, so neither evidence layer produced a step."
+            ),
+            (
+                "Bounded redacted launch logs are retained under attempts/ as supplementary "
+                "records; they are not evidence artifacts and contain no model turn."
+            ),
+            (
+                "One host architecture and one client build were exercised; "
+                "no client-quality conclusion is implied."
+            ),
+        ],
+    }
+    _write_json(output / "evidence.json", record)
+    for index, attempt in enumerate(attempts, start=1):
+        _write_attempt(output, index, attempt)
+    executable_path = Path(client_executable)
+    _write_json(
+        output / "attempts" / "environment.json",
+        {
+            "clientVersion": client_version,
+            "clientExecutable": {
+                "basename": executable_path.name,
+                "sizeBytes": executable_path.stat().st_size,
+                "sha256": sha256_file(executable_path),
+            },
+            "model": MODEL,
+            "providerUrl": PROVIDER_URL,
+            "wheel": {"filename": wheel.name, "sha256": wheel_digest},
+            "pythonVersion": platform.python_version(),
+            "hostRelease": platform.release(),
+            "attempts": len(attempts),
+        },
+    )
+    validate_evidence(record, output, FIXTURES)
+
+
+def run(output: Path, wheel_path: Path | None = None) -> None:
     if output.exists():
         raise FileExistsError(output)
-    client_version = _run(["codex", "--version"])
+    executable = _codex_executable()
+    client_version = _run([executable, "--version"])
     config_before = _persistent_config()
     source_before = _source_snapshot(output)
     scenario = load_json(FIXTURES / "scenario.json")
     with tempfile.TemporaryDirectory(prefix="amkernel-codex-") as raw_temp:
         temp = Path(raw_temp)
-        wheel, server = _build_clean_wheel(temp)
+        wheel, server = _install_published_wheel(temp, wheel_path)
+        ready, detail = _probe_provider()
+        if not ready:
+            run_started = _now()
+            attempts = [
+                _attempt_codex_launch(
+                    _deterministic_prompt(scenario),
+                    server,
+                    temp / f"attempt-{index}-capture",
+                    temp / f"attempt-{index}-client",
+                    temp / f"attempt-{index}-home",
+                    executable,
+                )
+                for index in (1, 2)
+            ]
+            run_completed = _now()
+            if _persistent_config() != config_before:
+                raise RuntimeError("persistent Codex configuration changed during the attempts")
+            if _source_snapshot(output) != source_before:
+                raise RuntimeError("repository source snapshot changed during the attempts")
+            _build_blocked_evidence(
+                output,
+                client_version=client_version,
+                client_executable=executable,
+                wheel=wheel,
+                config=config_before,
+                run_started=run_started,
+                run_completed=run_completed,
+                reason=_blocked_reason(detail, attempts),
+                attempts=attempts,
+            )
+            return
         deterministic_capture = temp / "deterministic-capture"
         deterministic_events, started, completed, deterministic_stderr = _run_codex(
             _deterministic_prompt(scenario),
@@ -936,6 +1366,7 @@ def run(output: Path) -> None:
             deterministic_capture,
             temp / "deterministic-client",
             temp / "deterministic-home",
+            executable,
         )
         resources_path = deterministic_capture / "resources.json"
         if not resources_path.is_file():
@@ -981,6 +1412,7 @@ def run(output: Path) -> None:
             natural_capture,
             temp / "natural-client",
             temp / "natural-home",
+            executable,
         )
         natural_resources = cast(
             list[dict[str, Any]], load_json(natural_capture / "resources.json")
@@ -1008,8 +1440,14 @@ def run(output: Path) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run the certified Codex Stage 4 reference layers")
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument(
+        "--wheel",
+        type=Path,
+        default=None,
+        help="Published AMKernel 0.1.1 wheel; its bytes must match the pinned digest.",
+    )
     args = parser.parse_args()
-    run(args.output.resolve())
+    run(args.output.resolve(), args.wheel)
     return 0
 
 

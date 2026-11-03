@@ -1,0 +1,17 @@
+{
+  "parts": [
+    {
+      "mimeType": "application/octet-stream",
+      "sha256": "6b59425c5bf6585e132f7e6b520623ea2ac76484f1a4bde550313c5a05c08140",
+      "sizeBytes": 8388608,
+      "uri": "amkernel://artifact/9fbfb41701034d999ee145dded951ced/d1e02604e8674635bdc0aa7fd26cf452/part/0"
+    },
+    {
+      "mimeType": "application/octet-stream",
+      "sha256": "62c66a7a5dd70c3146618063c344e531e6d4b59e379808443ce962b3abd63c5a",
+      "sizeBytes": 1,
+      "uri": "amkernel://artifact/9fbfb41701034d999ee145dded951ced/d1e02604e8674635bdc0aa7fd26cf452/part/1"
+    }
+  ],
+  "reason": "8 MiB artifact part payloads are omitted from the portable directory; their sizes and digests are recorded here and in report.json."
+}
