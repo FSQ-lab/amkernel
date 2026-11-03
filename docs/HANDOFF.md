@@ -2,7 +2,7 @@
 
 ## Task
 
-Advance Stage 4 cross-client validation in GitHub Project order while preserving one client-neutral scenario, privacy-safe retained evidence, and AMKernel's existing public interface.
+Complete the owner-authorized post-0.1.1 work: ordered real-platform acceptance, real Windows Android verification, and installed-wheel Codex/cross-OS Stage 4 evaluation, without changing the public interface or support claims.
 
 ## Context
 
@@ -98,6 +98,59 @@ The formal repository was intentionally created design-only. A sibling spike exi
 - Global OMP memory is disabled; this project uses local project-scoped memory.
 - The sibling `/Users/qunmi/Documents/FSQ_LAB/omp` remains untouched as historical discussion/prototype material.
 
+## Release 0.1.1 and post-release verification
+
+PR #110 merged the completed remediation and retained evidence. Release PR #112
+merged through protected `main` at `e16f42727b32a30fd431e4504712a5f31c28b408`;
+its PR and exact-main CI run `41612230439` each passed all eight jobs. Release
+Actions run `41613732304` published the unchanged main-CI wheel to the immutable
+GitHub `v0.1.1` release and PyPI. Wheel SHA-256:
+`a72cacb0de33335026e0b03e0686d115c8366c4e012f84fe6f4973e1ebcc608f`.
+Release Issue #111 is closed. Qualified support remains Ubuntu/macOS CPython
+3.11–3.13; mobile remains experimental and Windows remains unqualified.
+
+`evidence/appium-skill/published-011-install-20261103.json` retains the actual
+published-wheel external-directory stdio/persistence smoke, complete Copilot
+installation, and parent-observed receipt/MCP/native-interpreter/cwd linkage.
+Private paths and raw events are withheld; this is not an independent installation
+replay or byte-for-byte verification of installed package files.
+
+The next actual native Copilot Mac2 attempt is **not-qualified**, retained in
+`published-011-mac2-20261103.json`. No successful session or live Calculator/window
+query occurred. Failed/alive calls remain visible. Desktop restoration is false;
+owned server/group/ports/Runner disappearance was observed separately. A later
+read-only host observation explicitly returned a locked session and loginwindow
+foreground. Further UI work needs manual owner unlock; do not unlock automatically
+or change settings. This current prerequisite does not establish the cause of the
+earlier Mac2 process-not-running error. Historical qualified `mac2-m0-20261103.json`
+is unchanged. Independent artifact review has 0 Blocker/Major/Minor findings in
+`published-011-review-20261103.json`; review does not make the failed run pass.
+
+Keep the fixed sequence: install smoke → Mac2 → Android → iOS simulator → physical
+iOS → independent review. Downstream formal platform runs have not started.
+Current simulator discovery returned zero available/booted devices; physical Apple
+discovery returned one connected development-enabled target, not XCUITest readiness.
+Existing task-local Java 17 and Android SDK/adb were found and execution-validated;
+no new dependency installation or shared ADB startup was performed in this attempt.
+
+Windows prerequisite discovery found no authorized reachable Windows/Android host
+or repository self-hosted runner. No actual Windows command or failure was
+observed. `published-011-windows-readiness-20261103.json` distinguishes those facts
+from static shipped-code POSIX requirements: Artifact Store startup, Supervisor
+spawning/control and Runner signal initialization lack native Windows support.
+Windows needs the separate accepted platform design required by #100/ADR-0005;
+do not remove guards or weaken file-identity/owned-cleanup contracts as a shortcut.
+A new authorized hosted Windows job can supply lifecycle-only evidence, not the
+required Android-device scenario. Missing existing jobs do not prove hosted
+execution impossible. Issue #100 records the investigated limits and dependencies.
+
+Issues #102, #103, #104, #106, #107 and #108 are closed against their completed,
+merged and independently reviewed defect contracts. #98 and #105 remain open for
+the outstanding actual-platform sequence; #100 still requires real Windows evidence.
+Project #2 still has #81 In Progress, #79/#82 Ready. Available credentials have
+`read:project`, not board-write scope; issue updates do not imply board changes.
+Complex Mac #109, dynamic-list #97 and Gmail privacy expansion #99 stay deferred.
+
 ## What was tried
 
 - A small MCP v2/TypeScript + Python subprocess spike was built in `../omp`.
@@ -127,9 +180,9 @@ The formal repository was intentionally created design-only. A sibling spike exi
 - **Security:** local stdio, same-user Python code execution; not a sandbox.
 - **Memory:** project-scoped only; no global memory.
 
-## Recommended next implementation slice
+## Implementation record and superseded execution queue
 
-The owner authorized sequential first-release Appium remediation before resuming Stage 4 runs.
+The owner previously authorized sequential first-release Appium remediation before Stage 4 runs. The release/status section above supersedes this historical execution queue.
 Separate defects own the work: [#102](https://github.com/FSQ-lab/amkernel/issues/102) compatibility,
 [#103](https://github.com/FSQ-lab/amkernel/issues/103) Mac2 routing,
 [#104](https://github.com/FSQ-lab/amkernel/issues/104) complete Copilot installation,

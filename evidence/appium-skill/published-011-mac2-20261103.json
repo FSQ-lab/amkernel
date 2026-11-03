@@ -1,0 +1,432 @@
+{
+  "schemaVersion": 2,
+  "scope": "Actual installed native Copilot, actual Mac2/Calculator; no fixture, synthetic driver, arithmetic, or personal app contents",
+  "status": "not-qualified",
+  "base": "$TASK_ROOT",
+  "project": "$TARGET_PROJECT",
+  "failedAt": null,
+  "error": null,
+  "before": {
+    "calculator": [],
+    "frontmostBundleId": "com.mitchellh.ghostty"
+  },
+  "after": {
+    "calculator": [],
+    "frontmostBundleId": "com.apple.loginwindow"
+  },
+  "cleanup": {
+    "desktopRestored": false,
+    "desktopLimits": "Desktop restoration compares only JXA observations of running com.apple.calculator processes (bundleId, pid, hidden) and the frontmost bundle identifier at two instants; it makes no claim about other applications, window contents, focus within apps, or intermediate states.",
+    "ownedServer": {
+      "started": true,
+      "pid": 94745,
+      "pgid": 94745,
+      "groupOwned": true,
+      "stopAttempted": true,
+      "exited": true,
+      "processGroupGone": true,
+      "appiumPortClosed": true,
+      "wdaPortClosed": true,
+      "terminationSignal": "SIGTERM"
+    },
+    "runner": {
+      "entries": [
+        {
+          "runnerPid": 94843,
+          "reason": "process-exit",
+          "observedExit": true
+        }
+      ],
+      "observedGone": true,
+      "limits": "Runner evidence is the owned-runner termination report from native_evidence; it is not inferred from the Appium server exit."
+    },
+    "limits": "No claim is made about unrelated system processes or external helpers."
+  },
+  "server": {
+    "pid": 94745,
+    "pgid": 94745,
+    "groupOwned": true,
+    "endpoint": "http://127.0.0.1:57671",
+    "shared": false,
+    "ready": true,
+    "sessionDiscovery": "ephemeral --allow-insecure=*:session_discovery on this task-owned localhost server"
+  },
+  "requestedIdentity": {
+    "platformName": "Mac",
+    "automationName": "Mac2",
+    "bundleId": "com.apple.calculator",
+    "noReset": true,
+    "skipAppKill": true
+  },
+  "native": {
+    "process": {
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 114270,
+      "eventCount": 1234,
+      "malformedEventLines": 0,
+      "runnerCleanup": [
+        {
+          "runnerPid": 94843,
+          "reason": "process-exit",
+          "observedExit": true
+        }
+      ]
+    },
+    "calls": [
+      {
+        "toolName": "skill",
+        "mcpToolName": null,
+        "mcpConfigSource": null,
+        "mcpServerName": null,
+        "mcpConfigServerName": null,
+        "mcpTransport": null,
+        "callIdSha256": "e6e5e65e4bda5ccfe8e7cd0c3564992942712ce979b6fbb55571e0f4509199e6",
+        "startedAt": "2026-11-03T09:52:26.870Z",
+        "completedAt": "2026-11-03T09:52:26.873Z",
+        "argumentsSha256": "de9b6567632b0b47ce0453c423f596fa219298e6b161f87767fa72f1e6b701f1",
+        "codeSha256": null,
+        "success": true,
+        "skill": "amkernel"
+      },
+      {
+        "toolName": "view",
+        "mcpToolName": null,
+        "mcpConfigSource": null,
+        "mcpServerName": null,
+        "mcpConfigServerName": null,
+        "mcpTransport": null,
+        "callIdSha256": "c341608f989f5e3e49a3eb504b7647fde476daff8c95d0b17071dbfecc1d829d",
+        "startedAt": "2026-11-03T09:52:29.755Z",
+        "completedAt": "2026-11-03T09:52:29.763Z",
+        "argumentsSha256": "bc95eb6351f75fa49f1f97453c10e1de822a36eb0df83f14a23744734c986ffb",
+        "codeSha256": null,
+        "success": true
+      },
+      {
+        "toolName": "amkernel-python_exec",
+        "mcpToolName": "python_exec",
+        "mcpConfigSource": "workspace",
+        "mcpServerName": "amkernel",
+        "mcpConfigServerName": "amkernel",
+        "mcpTransport": "stdio",
+        "callIdSha256": "afb47f5a3268e22b6af25d7ffb5365f0d71d3c782beddaf674847fa463ccda6a",
+        "startedAt": "2026-11-03T09:52:29.757Z",
+        "completedAt": "2026-11-03T09:52:29.857Z",
+        "argumentsSha256": "29e52bd77385f26c3b2eea0837c3d81c9dd98c7142ba89178ca62de9cab33a60",
+        "codeSha256": "e1a76f8c989bd0d906c580c743d3117cebbfa4268de328f0fb308492cdda5a9f",
+        "success": true,
+        "status": "completed",
+        "kernelState": "alive",
+        "executionCount": 1,
+        "durationMs": 31,
+        "stdoutSha256": "06b95c2a32bd1327e4600c3a4fea4c0a41a824d0ad954d5e73c170d4449d1a46",
+        "stdoutBytes": 81,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderrBytes": 0
+      },
+      {
+        "toolName": "skill",
+        "mcpToolName": null,
+        "mcpConfigSource": null,
+        "mcpServerName": null,
+        "mcpConfigServerName": null,
+        "mcpTransport": null,
+        "callIdSha256": "1dce665c36407ed476330068cfb05bb014d798ad0aeb0244a10d7eb32d6f6220",
+        "startedAt": "2026-11-03T09:52:31.124Z",
+        "completedAt": "2026-11-03T09:52:31.127Z",
+        "argumentsSha256": "0936e790db92da3ebf43a748df71c0a5debe57efc729f0a1bc5519d76f5a1b81",
+        "codeSha256": null,
+        "success": true,
+        "skill": "setup-mac2"
+      },
+      {
+        "toolName": "view",
+        "mcpToolName": null,
+        "mcpConfigSource": null,
+        "mcpServerName": null,
+        "mcpConfigServerName": null,
+        "mcpTransport": null,
+        "callIdSha256": "d936c9331a39d11ea3636ee095015b18a6ca43e0dc0ff81b1c9411d2561aaf46",
+        "startedAt": "2026-11-03T09:52:36.672Z",
+        "completedAt": "2026-11-03T09:52:36.675Z",
+        "argumentsSha256": "57ed79a7696614208c0a94b305bd6f64e346bbe0fa5ff3b01413d5e890418074",
+        "codeSha256": null,
+        "success": true
+      },
+      {
+        "toolName": "amkernel-python_exec",
+        "mcpToolName": "python_exec",
+        "mcpConfigSource": "workspace",
+        "mcpServerName": "amkernel",
+        "mcpConfigServerName": "amkernel",
+        "mcpTransport": "stdio",
+        "callIdSha256": "5564a5319e3cd3763817050fef917a6f7d055591ccdc6c75a5c4b988cd78efc7",
+        "startedAt": "2026-11-03T09:52:36.672Z",
+        "completedAt": "2026-11-03T09:52:36.681Z",
+        "argumentsSha256": "341d6d2ffb7f2d44b43e721c70041029a2f2152d81d6ca09965c42ae63ee4ae7",
+        "codeSha256": "20f7b7a6f5ec2d7d42d553be32c9dd8797d4d8b72c198a695596e61a60438739",
+        "success": true,
+        "status": "failed",
+        "kernelState": "alive",
+        "executionCount": 2,
+        "durationMs": 1,
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderrBytes": 0,
+        "errorType": "ModuleNotFoundError"
+      },
+      {
+        "toolName": "amkernel-python_exec",
+        "mcpToolName": "python_exec",
+        "mcpConfigSource": "workspace",
+        "mcpServerName": "amkernel",
+        "mcpConfigServerName": "amkernel",
+        "mcpTransport": "stdio",
+        "callIdSha256": "a1264d79cf20d80f187755075fde15c515a7bda2ef769e8d1a5f4b4f3d369b82",
+        "startedAt": "2026-11-03T09:52:39.823Z",
+        "completedAt": "2026-11-03T09:52:39.999Z",
+        "argumentsSha256": "57a19d0f9c68b897ddee5bfc82eac2d9c6495cc1fc71fb779ff8f6d308c2f4be",
+        "codeSha256": "c17b58882ea75ea838983282393ffc7a60534b1af3beb596b713a3fbd436991f",
+        "success": true,
+        "status": "completed",
+        "kernelState": "alive",
+        "executionCount": 3,
+        "durationMs": 166,
+        "stdoutSha256": "a5743eb4c7a13a5c88b5de816e8d7778dd9239d0dde4a28cacb7d66e63e13d11",
+        "stdoutBytes": 18013,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderrBytes": 0
+      },
+      {
+        "toolName": "amkernel-python_exec",
+        "mcpToolName": "python_exec",
+        "mcpConfigSource": "workspace",
+        "mcpServerName": "amkernel",
+        "mcpConfigServerName": "amkernel",
+        "mcpTransport": "stdio",
+        "callIdSha256": "7316c5e8911b4208479d0da4cc04e1d6de213a1abfaf9aa3738621a711d4ae1e",
+        "startedAt": "2026-11-03T09:52:44.776Z",
+        "completedAt": "2026-11-03T09:52:45.336Z",
+        "argumentsSha256": "8bc66e1fda869341c842778b5c6aea8686dbaaded16d14a6301e69be65ff309c",
+        "codeSha256": "f72b7e62e04c0e902f03975097db9ecb09f36bcb179c7ad0c11c9b88902e152d",
+        "success": true,
+        "status": "completed",
+        "kernelState": "alive",
+        "executionCount": 4,
+        "durationMs": 548,
+        "stdoutSha256": "7c62e6ed1a1b6ff7503417858312aa19436d5e76cc0adb05ee5b411c5f234f09",
+        "stdoutBytes": 3079,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderrBytes": 0
+      },
+      {
+        "toolName": "amkernel-python_exec",
+        "mcpToolName": "python_exec",
+        "mcpConfigSource": "workspace",
+        "mcpServerName": "amkernel",
+        "mcpConfigServerName": "amkernel",
+        "mcpTransport": "stdio",
+        "callIdSha256": "f063439f314b28325ffb21f1f8fd4cfc38859f4520b83c19437fe3b017f8da27",
+        "startedAt": "2026-11-03T09:52:48.023Z",
+        "completedAt": "2026-11-03T09:53:58.266Z",
+        "argumentsSha256": "e9250972182749adc0373674d450e44a7625689ae0bd7652f4b86069a6a001a0",
+        "codeSha256": "b21e1dca470870b4a358d4ebfbff75bda8937ba7a1df1f40f602059d3b1d05b5",
+        "success": true,
+        "status": "failed",
+        "kernelState": "alive",
+        "executionCount": 5,
+        "durationMs": 70233,
+        "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdoutBytes": 0,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderrBytes": 0,
+        "errorType": "selenium.common.exceptions.WebDriverException"
+      },
+      {
+        "toolName": "amkernel-python_exec",
+        "mcpToolName": "python_exec",
+        "mcpConfigSource": "workspace",
+        "mcpServerName": "amkernel",
+        "mcpConfigServerName": "amkernel",
+        "mcpTransport": "stdio",
+        "callIdSha256": "fc3019b7b3425ab31d14090de5e33aefcacff9cda08b1c4392c0c76daf57fbe9",
+        "startedAt": "2026-11-03T09:54:03.825Z",
+        "completedAt": "2026-11-03T09:54:03.853Z",
+        "argumentsSha256": "e1f2362d6a6c1f6011351f04c0d12758836b638e7bae822774204ddba83c7ac1",
+        "codeSha256": "d2cc41ce7191878bca1e1dccf818578da31a361cce44a945f1784a5138aa8228",
+        "success": true,
+        "status": "completed",
+        "kernelState": "alive",
+        "executionCount": 6,
+        "durationMs": 21,
+        "stdoutSha256": "3a95e65fed35c76e8c762647d1b16ca4f04692e22c2e850c29f16971bf3470f0",
+        "stdoutBytes": 68,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderrBytes": 0
+      },
+      {
+        "toolName": "view",
+        "mcpToolName": null,
+        "mcpConfigSource": null,
+        "mcpServerName": null,
+        "mcpConfigServerName": null,
+        "mcpTransport": null,
+        "callIdSha256": "a2958aac9536a492f53b3ecb7afbddfd25aaca5aa6f0f01a12770e55b5a8c1c4",
+        "startedAt": "2026-11-03T09:54:07.248Z",
+        "completedAt": "2026-11-03T09:54:07.250Z",
+        "argumentsSha256": "f1a5e9034d731640856e2bf3272d8e1cfb9fc670b0e0b85763923c83681075e1",
+        "codeSha256": null,
+        "success": true
+      },
+      {
+        "toolName": "amkernel-python_exec",
+        "mcpToolName": "python_exec",
+        "mcpConfigSource": "workspace",
+        "mcpServerName": "amkernel",
+        "mcpConfigServerName": "amkernel",
+        "mcpTransport": "stdio",
+        "callIdSha256": "993bec862a3d23f4ae5d5978b6b5382362f72f072f47b939188544f8cf98938d",
+        "startedAt": "2026-11-03T09:54:11.620Z",
+        "completedAt": "2026-11-03T09:54:11.629Z",
+        "argumentsSha256": "93635b455a43cf6337f0915e6f0b0c1e7bc85526d125de13245d4ffe0983935e",
+        "codeSha256": "ca37da5737b62bf106d33759ada89eefc404e595372b9ddc4d7fb685836c43f9",
+        "success": true,
+        "status": "completed",
+        "kernelState": "alive",
+        "executionCount": 7,
+        "durationMs": 1,
+        "stdoutSha256": "c5784422b6096dda8d4ce2a5eeb1e42e86c6fcc4f37c00a6bc8e50f557336f1c",
+        "stdoutBytes": 254,
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderrBytes": 0
+      }
+    ],
+    "finalReportSha256": "e507aafdccf5588634c2084f66d0c999c15333321426a785601533cff8893319",
+    "finalStatus": {
+      "taskOutcome": "blocked",
+      "stateRestoration": "unknown",
+      "sessionCleanup": "unknown",
+      "serverCleanup": "not-owned"
+    },
+    "mainSkillLoaded": true,
+    "limits": "Only allowlisted status, identity, timestamp, and digest evidence is retained. Absent event timestamps remain null; raw code, arguments, output, final prose, and stderr are withheld."
+  },
+  "appium": {
+    "logSha256": "2a0808cf54459cd3d8b473352587a3b6526664ca5fd713d402b34c6ec53729b0",
+    "logBytes": 31081,
+    "rawLogRemoved": true
+  },
+  "protocol": {
+    "parseComplete": true,
+    "transactions": 3,
+    "sessionIdsObservedCount": 0,
+    "createSession": {
+      "observed": false,
+      "status": null,
+      "requestAutomationNameMac2": false,
+      "requestCalculatorBundleId": false,
+      "requestPlatformMac": false,
+      "responseAutomationNameMac2": false,
+      "responseCalculatorBundleId": false,
+      "responsePlatformMac": false,
+      "sessionIdSha256": null,
+      "startedAt": null,
+      "completedAt": null
+    },
+    "queryAppState": {
+      "observed": false,
+      "status": null,
+      "scriptOk": false,
+      "bundleArgumentOk": false,
+      "foregroundValue": null,
+      "foregroundOk": false
+    },
+    "windowElements": {
+      "observed": false,
+      "status": null,
+      "windowQuery": false,
+      "count": null,
+      "nonEmptyElementList": false
+    },
+    "windowHandles": {
+      "observed": false,
+      "status": null,
+      "nonEmptyHandleList": false,
+      "count": null
+    },
+    "sessionDelete": {
+      "observed": false,
+      "status": null
+    },
+    "restoration": {
+      "observed": false,
+      "beforeSessionDelete": false
+    },
+    "singleSessionObserved": false,
+    "listing": {
+      "observed": true,
+      "observedBeforeOwnedServerStop": true,
+      "count": 0,
+      "qualifyingSessionListed": null,
+      "idsSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "qualification": {
+    "harnessCompleted": true,
+    "nativeClientCompleted": true,
+    "mainSkillLoaded": true,
+    "nativeRecoveryProven": false,
+    "actualMac2SessionCreated": false,
+    "actualCalculatorQueryAppState": false,
+    "actualWindowQuery": false,
+    "singleActualSession": false,
+    "sessionDeleteObserved": false,
+    "sessionGoneBeforeOwnedServerStop": false,
+    "desktopRestored": false,
+    "restorationBeforeSessionDelete": false,
+    "ownedServerExited": true,
+    "ownedProcessGroupGone": true,
+    "ownedAppiumPortClosed": true,
+    "ownedWdaPortClosed": true,
+    "rawAppiumLogRemoved": true,
+    "runnerResourcesObservedGone": true,
+    "ownedResourcesObservedGone": true,
+    "finalReportCanonical": true,
+    "reportTaskCompleted": false,
+    "reportRestorationConsistent": false,
+    "reportSessionCleanupConsistent": false,
+    "reportServerCleanupConsistent": true
+  },
+  "limits": "No raw tool arguments, python_exec stdout/stderr, final prose, Appium log text, session capabilities, device inventory, or driver diagnostics are persisted; only allowlisted parsed protocol/session metadata, process identity, statuses, and SHA-256 hashes are retained.",
+  "publication": {
+    "version": "0.1.1",
+    "mainCommit": "e16f42727b32a30fd431e4504712a5f31c28b408",
+    "wheelSha256": "a72cacb0de33335026e0b03e0686d115c8366c4e012f84fe6f4973e1ebcc608f",
+    "origin": "Published wheel; isolated external-project install and native GitHub Copilot CLI; not a development checkout Runtime",
+    "installationEvidence": {
+      "path": "published-011-install-20261103.json",
+      "sha256": "702979a018121ef5d24f9df38e9cc4845aab751d817bbb00085804816878496f"
+    }
+  },
+  "diagnosis": {
+    "missingPackagingObserved": true,
+    "missingPackagingRecoveredWithoutInstallation": true,
+    "mac2DriverProcessNotRunningObserved": true,
+    "sessionCreationErrorType": "selenium.common.exceptions.WebDriverException",
+    "finalFrontmostLoginwindowObserved": true,
+    "rootCause": "unestablished; loginwindow observation alone does not establish cause",
+    "historicalM0QualificationUnchanged": true,
+    "downstreamFixedOrderRunsStarted": false,
+    "rawClientEventsNotRetained": true
+  },
+  "currentGuiPrerequisite": {
+    "screenIsLockedExplicitlyTrue": true,
+    "frontmostBundleId": "com.apple.loginwindow",
+    "observationTiming": "Separate read-only host observation after the failed run",
+    "unlockAttempted": false,
+    "settingsChanged": false,
+    "limit": "Current GUI availability only; does not establish cause of prior session failure"
+  }
+}
