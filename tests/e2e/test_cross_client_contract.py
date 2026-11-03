@@ -4,7 +4,9 @@ import base64
 import copy
 import hashlib
 import io
+import json
 import shutil
+import types
 from pathlib import Path
 from typing import Any, cast
 
@@ -856,3 +858,149 @@ def test_source_snapshot_includes_evidence_except_selected_output(
     output.mkdir()
     (output / "manifest.json").write_text("generated")
     assert codex_runner._source_snapshot(output) == excluded_before
+
+
+def test_codex_runner_copies_external_wheel_into_temporary_dist(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    external = tmp_path / "external" / "amkernel-0.1.1-py3-none-any.whl"
+    external.parent.mkdir()
+    external.write_bytes(b"wheel-bytes")
+    monkeypatch.setattr(
+        codex_runner, "PUBLISHED_WHEEL_SHA256", hashlib.sha256(b"wheel-bytes").hexdigest()
+    )
+    temp = tmp_path / "temp"
+    temp.mkdir()
+
+    wheel = codex_runner._published_wheel(temp, external)
+
+    assert wheel == temp / "dist" / external.name
+    assert wheel.read_bytes() == b"wheel-bytes"
+
+
+def test_codex_runner_classifies_execution_from_observed_events() -> None:
+    def attempt(events: list[dict[str, Any]]) -> dict[str, Any]:
+        return {"events": events, "exitCode": 1, "timedOut": False}
+
+    assert not codex_runner._attempt_executed(attempt([{"type": "turn.started"}]))
+    assert codex_runner._attempt_executed(
+        attempt([{"type": "item.completed", "item": {"type": "agent_message"}}])
+    )
+    assert codex_runner._attempt_executed(
+        attempt([{"type": "item.completed", "item": {"type": "mcp_tool_call"}}])
+    )
+    assert codex_runner._attempt_executed(attempt([{"type": "turn.completed"}]))
+    assert codex_runner._attempt_executed(
+        {
+            "events": [{"type": "item.started", "item": {"type": "mcp_tool_call"}}],
+            "exitCode": None,
+            "timedOut": True,
+        }
+    )
+    assert codex_runner._execution_signal(
+        [{"type": "item.started", "item": {"type": "mcp_tool_call"}}]
+    ) == "started mcp_tool_call"
+
+
+def test_codex_runner_detects_execution_beyond_retained_event_limit(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    retained = [{"type": "item.started", "item": {"type": "reasoning"}}] * 400
+    stdout = "\n".join(
+        json.dumps(event) for event in [*retained, {"type": "turn.completed"}]
+    )
+
+    def fake_run(*args: Any, **kwargs: Any) -> types.SimpleNamespace:
+        assert kwargs["timeout"] == 180
+        return types.SimpleNamespace(returncode=0, stdout=stdout, stderr="")
+
+    monkeypatch.setattr("tests.e2e.cross_client.codex.subprocess.run", fake_run)
+
+    attempt = codex_runner._attempt_codex_launch(
+        "prompt",
+        Path("server"),
+        tmp_path / "capture",
+        tmp_path / "client",
+        tmp_path / "home",
+        "codex",
+    )
+
+    assert attempt["eventCount"] == 400
+    assert attempt["parsedEventCount"] == 401
+    assert attempt["execution"] == "completed model turn"
+    assert codex_runner._attempt_executed(attempt)
+
+
+def test_codex_runner_redacts_quoted_and_structured_credentials() -> None:
+    redacted = codex_runner._redact('{"api_key": "sk-live-123", "token": "tok-456"}')
+    assert "sk-live-123" not in redacted
+    assert "tok-456" not in redacted
+    assert redacted.count("<redacted>") >= 2
+
+    structured = codex_runner._redact_structure(
+        {"token": "x", "nested": [{"password": "p", "note": "keep"}]}
+    )
+    assert structured == {
+        "token": "<redacted>",
+        "nested": [{"password": "<redacted>", "note": "keep"}],
+    }
+
+
+def test_codex_runner_retains_parseable_bounded_event_log(tmp_path: Path) -> None:
+    attempt = {
+        "startedAt": TIMESTAMP,
+        "completedAt": RUN_COMPLETED,
+        "durationMs": 13,
+        "exitCode": 0,
+        "timedOut": False,
+        "eventCount": 2,
+        "events": [
+            {
+                "type": "item.completed",
+                "item": {
+                    "type": "agent_message",
+                    "text": "x" * 5000,
+                    "detail": "y" * 5000,
+                    "note": "z" * 5000,
+                    "token": "secret-value",
+                },
+            },
+            {"type": "turn.completed"},
+        ],
+        "stderr": "",
+    }
+
+    codex_runner._write_attempt(tmp_path, 1, attempt)
+
+    lines = (tmp_path / "attempts" / "launch-01-events.jsonl").read_text().splitlines()
+    parsed = [json.loads(line) for line in lines]
+    assert len(parsed) == 2
+    assert parsed[0]["truncated"] is True
+    assert parsed[0]["type"] == "item.completed"
+    assert "secret-value" not in lines[0]
+    assert parsed[1] == {"type": "turn.completed"}
+
+
+def test_codex_runner_records_published_and_harness_provenance_separately(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    wheel = tmp_path / "amkernel-0.1.1-py3-none-any.whl"
+    wheel.write_bytes(b"wheel")
+    monkeypatch.setattr(codex_runner, "_run", lambda *args, **kwargs: "harness-rev")
+
+    codex_runner._write_provenance(tmp_path, wheel)
+
+    document = load_json(tmp_path / "provenance.json")
+    assert document["amkernel"]["sourceRevision"] == "e16f42727b32a30fd431e4504712a5f31c28b408"
+    assert document["amkernel"]["wheel"]["sha256"] == hashlib.sha256(b"wheel").hexdigest()
+    assert document["harness"]["revision"] == "harness-rev"
+
+
+def test_codex_runner_blocked_cleanup_observation_names_supplementary_launches() -> None:
+    observation = codex_runner._blocked_cleanup_observation(
+        [{"exitCode": None, "timedOut": True}, {"exitCode": None, "timedOut": True}]
+    )
+
+    assert "not entered" in observation
+    assert "Two supplementary Codex launch attempts" in observation
+    assert "both recorded exit codes are null" in observation

@@ -17,7 +17,7 @@
     "completed": false,
     "managedArtifactsRemaining": 0,
     "managedProcessesRemaining": 0,
-    "observation": "No managed client, proxy, or AMKernel process was started, because the model provider route failed preflight; the ephemeral attempt homes were removed with the temporary directory.",
+    "observation": "The frozen deterministic and naturalistic layers were not entered; these cleanup booleans describe only those unentered layers. Two supplementary Codex launch attempts were made, each timed out after approximately 180 seconds, and both recorded exit codes are null. TemporaryDirectory scope exit is the harness cleanup mechanism; no separate process-tree cleanup observation is retained.",
     "remainingExternalResources": [],
     "runnerExited": false,
     "serverExited": false
@@ -93,8 +93,8 @@
     "system": "Darwin"
   },
   "limitations": [
-    "Blocked before the frozen deterministic layer: 2 client launch attempts with codex could not reach the configured model provider, so neither evidence layer produced a step.",
-    "Bounded redacted launch logs are retained under attempts/ as supplementary records; they are not evidence artifacts and contain no model turn.",
+    "Blocked before the frozen deterministic layer: 2 client launch attempts with codex could not reach the configured model provider, so neither evidence layer was entered and no step was produced.",
+    "Bounded redacted launch logs are retained under attempts/ as supplementary records; they are not evidence artifacts and contain no completed model turn or model-generated response.",
     "One host architecture and one client build were exercised; no client-quality conclusion is implied."
   ],
   "mcp": {
@@ -104,7 +104,7 @@
   "outcome": "blocked",
   "preflight": {
     "clientReady": false,
-    "reason": "The Codex model provider route http://127.0.0.1:23333/api/openai/v1 is not listening (URLError on direct connection). 2 real client launch attempts produced no model turn and no tool call (Reconnecting... waiting for network (Connection failed: error sending request)), and the installed client holds no other authenticated provider. No credential or configuration was modified.",
+    "reason": "The direct model provider probe of http://127.0.0.1:23333/api/openai/v1/models failed (URLError on direct connection). 2 supplementary client launch attempts each remained in connection retry until the 180 s bound (Reconnecting... waiting for network (Connection failed: error sending request)); zero observed tool calls were executed, and the installed client holds no other authenticated provider. No credential or configuration was modified.",
     "serverReady": false,
     "wheelVerified": true
   },
@@ -113,7 +113,7 @@
     "disposition": "pending",
     "major": 0,
     "minor": 0,
-    "reviewer": "pending independent reviewer",
+    "reviewer": "pending independent reviewer (counters are placeholders, not a zero-findings review)",
     "source": "https://github.com/FSQ-lab/amkernel/issues/81"
   },
   "runCompletedAt": "2026-11-03T10:13:53.260700Z",

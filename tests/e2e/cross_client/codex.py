@@ -12,6 +12,7 @@ import subprocess
 import sys
 import tempfile
 import threading
+import urllib.error
 import urllib.request
 from datetime import UTC, datetime
 from pathlib import Path
@@ -40,17 +41,37 @@ PROVIDER_URL = "http://127.0.0.1:23333/api/openai/v1"
 PUBLISHED_WHEEL_VERSION = "0.1.1"
 PUBLISHED_WHEEL_FILENAME = "amkernel-0.1.1-py3-none-any.whl"
 PUBLISHED_WHEEL_SHA256 = "a72cacb0de33335026e0b03e0686d115c8366c4e012f84fe6f4973e1ebcc608f"
+PUBLISHED_SOURCE_REVISION = "e16f42727b32a30fd431e4504712a5f31c28b408"
 CODEX_BIN_ENV = "CODEX_BIN"
 CODEX_BIN_CANDIDATES = (
     Path("/Applications/ChatGPT.app/Contents/Resources/codex-cli/bin/codex"),
     Path.home() / ".codex/plugins/.plugin-appserver/codex-cli/bin/codex",
 )
 ATTEMPT_EVENT_LIMIT = 400
+ATTEMPT_TIMEOUT_SECONDS = 180
 ATTEMPT_BYTES_LIMIT = 65536
 _HOME_PATH = re.compile(r"/(?:Users|home)/[^/\s\"']+")
 _BEARER = re.compile(r"(?i)(bearer\s+)[A-Za-z0-9._~+/=-]{8,}")
+_SENSITIVE_KEYS = frozenset(
+    {
+        "api_key",
+        "api-key",
+        "apikey",
+        "token",
+        "access_token",
+        "refresh_token",
+        "password",
+        "secret",
+        "authorization",
+    }
+)
+_QUOTED_ASSIGNMENT = re.compile(
+    r"(?i)([\"']?(?:api[_-]?key|apikey|token|access_token|refresh_token|password|secret|"
+    r"authorization)[\"']?\s*[:=]\s*)([\"'])(?:\\.|(?!\2).)*\2"
+)
 _SECRET_ASSIGNMENT = re.compile(
-    r"(?i)((?:api[_-]?key|token|password|secret)\s*[=:]\s*)[^,;\s]+"
+    r"(?i)([\"']?(?:api[_-]?key|apikey|token|access_token|refresh_token|password|secret|"
+    r"authorization)[\"']?\s*[=:]\s*)[^,;\s]+"
 )
 
 
@@ -116,7 +137,55 @@ def _source_snapshot(*excluded_roots: Path) -> str:
 def _redact(text: str) -> str:
     text = _HOME_PATH.sub("<home>", text)
     text = _BEARER.sub(r"\1<redacted>", text)
+    text = _QUOTED_ASSIGNMENT.sub(r"\1\2<redacted>\2", text)
     return _SECRET_ASSIGNMENT.sub(r"\1<redacted>", text)
+
+
+def _redact_structure(value: Any) -> Any:
+    if isinstance(value, dict):
+        return {
+            str(key): (
+                "<redacted>"
+                if str(key).lower() in _SENSITIVE_KEYS
+                else _redact_structure(item)
+            )
+            for key, item in value.items()
+        }
+    if isinstance(value, list):
+        return [_redact_structure(item) for item in value]
+    if isinstance(value, str):
+        return _redact(value)
+    return value
+
+
+def _bound_structure(value: Any, limit: int = 1024) -> Any:
+    if isinstance(value, dict):
+        return {str(key): _bound_structure(item, limit) for key, item in value.items()}
+    if isinstance(value, list):
+        return [_bound_structure(item, limit) for item in value]
+    if isinstance(value, str) and len(value) > limit:
+        return value[:limit] + "…<truncated>"
+    return value
+
+
+def _write_provenance(output: Path, wheel: Path) -> None:
+    payload = wheel.read_bytes()
+    _write_json(
+        output / "provenance.json",
+        {
+            "amkernel": {
+                "version": PUBLISHED_WHEEL_VERSION,
+                "wheel": {"filename": wheel.name, "sha256": _sha256(payload)},
+                "sourceRevision": PUBLISHED_SOURCE_REVISION,
+                "source": "published PyPI artifact",
+            },
+            "harness": {
+                "path": "tests/e2e/cross_client/codex.py",
+                "revision": _run(["git", "rev-parse", "HEAD"]),
+                "sha256": sha256_file(Path(__file__)),
+            },
+        },
+    )
 
 
 def _bounded(text: str, limit: int = ATTEMPT_BYTES_LIMIT) -> str:
@@ -169,6 +238,8 @@ def _published_wheel(temp: Path, explicit: Path | None) -> Path:
     configured = os.environ.get("AMKERNEL_WHEEL")
     if configured:
         candidates.append(Path(configured))
+    dist = temp / "dist"
+    dist.mkdir()
     for candidate in candidates:
         if not candidate.is_file():
             raise RuntimeError(f"published wheel path does not exist: {candidate.name}")
@@ -178,9 +249,12 @@ def _published_wheel(temp: Path, explicit: Path | None) -> Path:
                 f"{candidate.name} is not the published {PUBLISHED_WHEEL_VERSION} artifact "
                 f"(sha256 {digest})"
             )
-        return candidate
-    dist = temp / "dist"
-    dist.mkdir()
+        target = dist / candidate.name
+        if candidate.resolve() != target.resolve():
+            shutil.copyfile(candidate, target)
+        if _sha256(target.read_bytes()) != PUBLISHED_WHEEL_SHA256:
+            raise RuntimeError("copied wheel bytes differ from the published digest")
+        return target
     wheel = _download_published_wheel(dist / PUBLISHED_WHEEL_FILENAME)
     digest = _sha256(wheel.read_bytes())
     if digest != PUBLISHED_WHEEL_SHA256:
@@ -223,6 +297,8 @@ def _probe_provider() -> tuple[bool, str]:
     try:
         with opener.open(endpoint, timeout=5) as response:
             return response.status == 200, f"HTTP {response.status}"
+    except urllib.error.HTTPError as exc:
+        return False, f"HTTP {exc.code} on direct connection"
     except Exception as exc:  # the diagnostic is the evidence
         return False, f"{type(exc).__name__} on direct connection"
 
@@ -241,14 +317,42 @@ def _attempt_signal(attempt: dict[str, Any]) -> str:
     return f"exit code {attempt.get('exitCode')}"
 
 
+_EXECUTION_ITEM_TYPES = frozenset({"agent_message", "mcp_tool_call", "command_execution"})
+
+
+def _execution_signal(events: list[dict[str, Any]]) -> str | None:
+    for event in events:
+        event_type = event.get("type")
+        if event_type == "turn.completed":
+            return "completed model turn"
+        if event_type not in {"item.started", "item.completed", "item.updated"}:
+            continue
+        item = event.get("item")
+        if isinstance(item, dict) and item.get("type") in _EXECUTION_ITEM_TYPES:
+            return f"{event_type.split('.', 1)[1]} {item.get('type')}"
+    return None
+
+
+def _attempt_executed(attempt: dict[str, Any]) -> bool:
+    if attempt.get("execution"):
+        return True
+    return _execution_signal(cast(list[dict[str, Any]], attempt["events"])) is not None
+
+
 def _blocked_reason(detail: str, attempts: list[dict[str, Any]]) -> str:
     signals = sorted({_attempt_signal(attempt) for attempt in attempts})
     observed = "; ".join(signals) if signals else "no client event"
+    timed = bool(attempts) and all(attempt.get("timedOut") for attempt in attempts)
+    outcome = (
+        f"remained in connection retry until the {ATTEMPT_TIMEOUT_SECONDS} s bound"
+        if timed
+        else "ended without a completed model turn or model-generated response"
+    )
     return (
-        f"The Codex model provider route {PROVIDER_URL} is not listening ({detail}). "
-        f"{len(attempts)} real client launch attempts produced no model turn and no tool call "
-        f"({observed}), and the installed client holds no other authenticated provider. "
-        "No credential or configuration was modified."
+        f"The direct model provider probe of {PROVIDER_URL}/models failed ({detail}). "
+        f"{len(attempts)} supplementary client launch attempts each {outcome} "
+        f"({observed}); zero observed tool calls were executed, and the installed client "
+        "holds no other authenticated provider. No credential or configuration was modified."
     )
 
 
@@ -797,7 +901,7 @@ def _build_deterministic_evidence(
         },
         "mcp": {"clientVersion": client_version, "protocolVersion": "2025-06-18"},
         "amkernel": {
-            "revision": _run(["git", "rev-parse", "HEAD"]),
+            "revision": PUBLISHED_SOURCE_REVISION,
             "version": _run(
                 [
                     str(wheel.parent.parent / "venv" / "bin" / "python"),
@@ -882,7 +986,10 @@ def _build_deterministic_evidence(
             ),
         },
         "review": {
-            "reviewer": "pending independent reviewer",
+            "reviewer": (
+                "pending independent reviewer (counters are placeholders, not a "
+                "zero-findings review)"
+            ),
             "source": "https://github.com/FSQ-lab/amkernel/issues/81",
             "blocker": 0,
             "major": 0,
@@ -892,6 +999,7 @@ def _build_deterministic_evidence(
         "limitations": ["One reference Codex client and one host architecture were exercised."],
     }
     _write_json(output / "evidence.json", record)
+    _write_provenance(output, wheel)
     validate_evidence(record, output, FIXTURES)
 
 
@@ -1092,7 +1200,7 @@ def _attempt_codex_launch(
             input=prompt,
             capture_output=True,
             text=True,
-            timeout=180,
+            timeout=ATTEMPT_TIMEOUT_SECONDS,
         )
         return_code = completed.returncode
         stdout = completed.stdout
@@ -1113,14 +1221,19 @@ def _attempt_codex_launch(
         )
     completed_at = _now()
     events: list[dict[str, Any]] = []
+    execution: str | None = None
+    parsed_event_count = 0
     for line in stdout.splitlines():
-        if len(events) >= ATTEMPT_EVENT_LIMIT:
-            break
         try:
             event = json.loads(line)
         except json.JSONDecodeError:
             continue
-        if isinstance(event, dict):
+        if not isinstance(event, dict):
+            continue
+        parsed_event_count += 1
+        if execution is None:
+            execution = _execution_signal([event])
+        if len(events) < ATTEMPT_EVENT_LIMIT:
             events.append(event)
     return {
         "startedAt": started_at,
@@ -1128,7 +1241,9 @@ def _attempt_codex_launch(
         "durationMs": _duration_ms(started_at, completed_at),
         "exitCode": return_code,
         "timedOut": timed_out,
+        "execution": execution,
         "eventCount": len(events),
+        "parsedEventCount": parsed_event_count,
         "events": events,
         "stderr": _bounded(stderr),
     }
@@ -1140,14 +1255,47 @@ def _write_attempt(output: Path, index: int, attempt: dict[str, Any]) -> None:
     events = cast(list[dict[str, Any]], attempt["events"])
     lines = []
     for event in events:
-        line = json.dumps(event, ensure_ascii=False, sort_keys=True)
-        lines.append(_redact(line)[:2048])
+        redacted = _bound_structure(_redact_structure(event))
+        line = json.dumps(redacted, ensure_ascii=False, sort_keys=True)
+        if len(line) > 2048:
+            summary = {
+                "type": redacted.get("type") if isinstance(redacted, dict) else None,
+                "truncated": True,
+                "originalBytes": len(line),
+                "sha256": _sha256(line.encode()),
+            }
+            line = json.dumps(summary, sort_keys=True)
+        lines.append(line)
     (directory / f"launch-{index:02d}-events.jsonl").write_text(
         "\n".join(lines) + ("\n" if lines else "")
     )
     (directory / f"launch-{index:02d}-stderr.txt").write_text(cast(str, attempt["stderr"]))
     summary = {key: value for key, value in attempt.items() if key != "events"}
     _write_json(directory / f"launch-{index:02d}.json", summary)
+
+
+def _blocked_cleanup_observation(attempts: list[dict[str, Any]]) -> str:
+    codes = [attempt.get("exitCode") for attempt in attempts]
+    if len(attempts) == 2 and all(code is None for code in codes):
+        count_phrase = "Two supplementary Codex launch attempts were made"
+        exit_phrase = "both recorded exit codes are null"
+    else:
+        count_phrase = f"{len(attempts)} supplementary Codex launch attempts were made"
+        rendered = ", ".join("null" if code is None else str(code) for code in codes)
+        exit_phrase = f"recorded exit codes are {rendered}"
+    timed = bool(attempts) and all(attempt.get("timedOut") for attempt in attempts)
+    timing = (
+        "each timed out after approximately 180 seconds"
+        if timed
+        else "each ended without entering a model turn"
+    )
+    return (
+        "The frozen deterministic and naturalistic layers were not entered; these cleanup "
+        "booleans describe only those unentered layers. "
+        f"{count_phrase}, {timing}, and {exit_phrase}. "
+        "TemporaryDirectory scope exit is the harness cleanup mechanism; no separate "
+        "process-tree cleanup observation is retained."
+    )
 
 
 def _build_blocked_evidence(
@@ -1194,7 +1342,7 @@ def _build_blocked_evidence(
         },
         "mcp": {"clientVersion": client_version, "protocolVersion": "2025-06-18"},
         "amkernel": {
-            "revision": _run(["git", "rev-parse", "HEAD"]),
+            "revision": PUBLISHED_SOURCE_REVISION,
             "version": PUBLISHED_WHEEL_VERSION,
             "wheel": {
                 "filename": wheel.name,
@@ -1263,14 +1411,13 @@ def _build_blocked_evidence(
             "managedProcessesRemaining": 0,
             "managedArtifactsRemaining": 0,
             "remainingExternalResources": [],
-            "observation": (
-                "No managed client, proxy, or AMKernel process was started, because the "
-                "model provider route failed preflight; the ephemeral attempt homes were "
-                "removed with the temporary directory."
-            ),
+            "observation": _blocked_cleanup_observation(attempts),
         },
         "review": {
-            "reviewer": "pending independent reviewer",
+            "reviewer": (
+                "pending independent reviewer (counters are placeholders, not a "
+                "zero-findings review)"
+            ),
             "source": "https://github.com/FSQ-lab/amkernel/issues/81",
             "blocker": 0,
             "major": 0,
@@ -1281,11 +1428,13 @@ def _build_blocked_evidence(
             (
                 f"Blocked before the frozen deterministic layer: {len(attempts)} client launch "
                 f"attempts with {client_executable.rsplit('/', 1)[-1]} could not reach the "
-                "configured model provider, so neither evidence layer produced a step."
+                "configured model provider, so neither evidence layer was entered and no "
+                "step was produced."
             ),
             (
                 "Bounded redacted launch logs are retained under attempts/ as supplementary "
-                "records; they are not evidence artifacts and contain no model turn."
+                "records; they are not evidence artifacts and contain no completed model "
+                "turn or model-generated response."
             ),
             (
                 "One host architecture and one client build were exercised; "
@@ -1294,6 +1443,7 @@ def _build_blocked_evidence(
         ],
     }
     _write_json(output / "evidence.json", record)
+    _write_provenance(output, wheel)
     for index, attempt in enumerate(attempts, start=1):
         _write_attempt(output, index, attempt)
     executable_path = Path(client_executable)
@@ -1309,8 +1459,16 @@ def _build_blocked_evidence(
             "model": MODEL,
             "providerUrl": PROVIDER_URL,
             "wheel": {"filename": wheel.name, "sha256": wheel_digest},
+            "publishedSourceRevision": PUBLISHED_SOURCE_REVISION,
             "pythonVersion": platform.python_version(),
             "hostRelease": platform.release(),
+            "supplementaryLaunches": [
+                {
+                    "exitCode": attempt.get("exitCode"),
+                    "timedOut": bool(attempt.get("timedOut")),
+                }
+                for attempt in attempts
+            ],
             "attempts": len(attempts),
         },
     )
@@ -1330,7 +1488,6 @@ def run(output: Path, wheel_path: Path | None = None) -> None:
         wheel, server = _install_published_wheel(temp, wheel_path)
         ready, detail = _probe_provider()
         if not ready:
-            run_started = _now()
             attempts = [
                 _attempt_codex_launch(
                     _deterministic_prompt(scenario),
@@ -1342,23 +1499,27 @@ def run(output: Path, wheel_path: Path | None = None) -> None:
                 )
                 for index in (1, 2)
             ]
-            run_completed = _now()
-            if _persistent_config() != config_before:
-                raise RuntimeError("persistent Codex configuration changed during the attempts")
-            if _source_snapshot(output) != source_before:
-                raise RuntimeError("repository source snapshot changed during the attempts")
-            _build_blocked_evidence(
-                output,
-                client_version=client_version,
-                client_executable=executable,
-                wheel=wheel,
-                config=config_before,
-                run_started=run_started,
-                run_completed=run_completed,
-                reason=_blocked_reason(detail, attempts),
-                attempts=attempts,
-            )
-            return
+            if not any(_attempt_executed(attempt) for attempt in attempts):
+                run_started = attempts[0]["startedAt"]
+                run_completed = attempts[-1]["completedAt"]
+                if _persistent_config() != config_before:
+                    raise RuntimeError(
+                        "persistent Codex configuration changed during the attempts"
+                    )
+                if _source_snapshot(output) != source_before:
+                    raise RuntimeError("repository source snapshot changed during the attempts")
+                _build_blocked_evidence(
+                    output,
+                    client_version=client_version,
+                    client_executable=executable,
+                    wheel=wheel,
+                    config=config_before,
+                    run_started=run_started,
+                    run_completed=run_completed,
+                    reason=_blocked_reason(detail, attempts),
+                    attempts=attempts,
+                )
+                return
         deterministic_capture = temp / "deterministic-capture"
         deterministic_events, started, completed, deterministic_stderr = _run_codex(
             _deterministic_prompt(scenario),
