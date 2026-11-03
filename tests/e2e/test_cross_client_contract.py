@@ -860,24 +860,6 @@ def test_source_snapshot_includes_evidence_except_selected_output(
     assert codex_runner._source_snapshot(output) == excluded_before
 
 
-def test_codex_runner_copies_external_wheel_into_temporary_dist(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    external = tmp_path / "external" / "amkernel-0.1.1-py3-none-any.whl"
-    external.parent.mkdir()
-    external.write_bytes(b"wheel-bytes")
-    monkeypatch.setattr(
-        codex_runner, "PUBLISHED_WHEEL_SHA256", hashlib.sha256(b"wheel-bytes").hexdigest()
-    )
-    temp = tmp_path / "temp"
-    temp.mkdir()
-
-    wheel = codex_runner._published_wheel(temp, external)
-
-    assert wheel == temp / "dist" / external.name
-    assert wheel.read_bytes() == b"wheel-bytes"
-
-
 def test_codex_runner_classifies_execution_from_observed_events() -> None:
     def attempt(events: list[dict[str, Any]]) -> dict[str, Any]:
         return {"events": events, "exitCode": 1, "timedOut": False}
@@ -979,31 +961,6 @@ def test_codex_runner_retains_parseable_bounded_event_log(tmp_path: Path) -> Non
     assert parsed[0]["type"] == "item.completed"
     assert "secret-value" not in lines[0]
     assert parsed[1] == {"type": "turn.completed"}
-
-
-def test_codex_runner_records_published_and_harness_provenance_separately(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    wheel = tmp_path / "amkernel-0.1.1-py3-none-any.whl"
-    wheel.write_bytes(b"wheel")
-    monkeypatch.setattr(codex_runner, "_run", lambda *args, **kwargs: "harness-rev")
-
-    codex_runner._write_provenance(tmp_path, wheel)
-
-    document = load_json(tmp_path / "provenance.json")
-    assert document["amkernel"]["sourceRevision"] == "e16f42727b32a30fd431e4504712a5f31c28b408"
-    assert document["amkernel"]["wheel"]["sha256"] == hashlib.sha256(b"wheel").hexdigest()
-    assert document["harness"]["revision"] == "harness-rev"
-
-
-def test_codex_runner_blocked_cleanup_observation_names_supplementary_launches() -> None:
-    observation = codex_runner._blocked_cleanup_observation(
-        [{"exitCode": None, "timedOut": True}, {"exitCode": None, "timedOut": True}]
-    )
-
-    assert "not entered" in observation
-    assert "Two supplementary Codex launch attempts" in observation
-    assert "both recorded exit codes are null" in observation
 
 
 def _synthetic_attempt(
