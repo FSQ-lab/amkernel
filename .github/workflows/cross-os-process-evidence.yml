@@ -1,0 +1,213 @@
+name: Cross-OS process evidence
+
+on:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      wheel_url:
+        description: Optional published wheel URL; when set, wheel_sha256 is required.
+        required: false
+        type: string
+      wheel_sha256:
+        description: SHA-256 of the optional supplied wheel.
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: cross-os-process-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-wheel:
+    name: build-wheel
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      WHEEL_URL_INPUT: ${{ inputs.wheel_url }}
+      WHEEL_SHA256_INPUT: ${{ inputs.wheel_sha256 }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
+        with:
+          python-version-file: .python-version
+      - name: Set up uv
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          version: 0.12.5
+          enable-cache: true
+      - name: Materialize wheel
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p process-wheel
+          if [ -n "$WHEEL_URL_INPUT" ]; then
+            if [ -z "$WHEEL_SHA256_INPUT" ]; then
+              echo "wheel_sha256 is required when wheel_url is supplied" >&2
+              exit 1
+            fi
+            wheel_name=$(basename "$WHEEL_URL_INPUT")
+            case "$wheel_name" in
+              amkernel-*-py3-none-any.whl) ;;
+              *)
+                echo "wheel_url must end in an amkernel-*-py3-none-any.whl filename" >&2
+                exit 1
+                ;;
+            esac
+            curl -fsSL --retry 3 --retry-delay 2 \
+              -o "process-wheel/$wheel_name" "$WHEEL_URL_INPUT"
+          else
+            uv build --wheel --out-dir process-wheel >/dev/null
+          fi
+          wheelfile=$(ls process-wheel/amkernel-*.whl)
+          actual_sha256=$(python - "$wheelfile" <<'PY'
+          import hashlib
+          import sys
+          print(hashlib.sha256(open(sys.argv[1], "rb").read()).hexdigest())
+          PY
+          )
+          if [ -n "$WHEEL_SHA256_INPUT" ] && [ "$actual_sha256" != "$WHEEL_SHA256_INPUT" ]; then
+            echo "wheel SHA-256 does not match the supplied value" >&2
+            exit 1
+          fi
+          echo "wheel=$wheelfile sha256=$actual_sha256"
+      - name: Upload wheel
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: process-wheel
+          path: process-wheel/
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 30
+
+  process-matrix:
+    name: process-matrix (${{ matrix.platform }}, Python ${{ matrix.python }})
+    needs: build-wheel
+    runs-on: ${{ matrix.platform }}
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [ubuntu-latest, macos-latest]
+        python: ["3.11", "3.13"]
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up Python ${{ matrix.python }}
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Set up uv
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          version: 0.12.5
+          enable-cache: true
+      - name: Download wheel
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: process-wheel
+          path: process-wheel
+      - name: Prepare isolated runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv export --frozen --no-dev --no-emit-project --format requirements.txt \
+            --output-file "$RUNNER_TEMP/requirements.txt"
+          uv venv "$RUNNER_TEMP/process-venv" --python "${{ matrix.python }}"
+          uv pip install --python "$RUNNER_TEMP/process-venv/bin/python" \
+            --requirement "$RUNNER_TEMP/requirements.txt"
+      - name: Install wheel
+        shell: bash
+        run: |
+          set -euo pipefail
+          wheel_count=$(find process-wheel -type f -name 'amkernel-*.whl' | wc -l | tr -d ' ')
+          if [ "$wheel_count" -ne 1 ]; then
+            echo "expected exactly one wheel, found $wheel_count" >&2
+            exit 1
+          fi
+          wheel=$(find process-wheel -type f -name 'amkernel-*.whl')
+          wheel_sha256=$(python - "$wheel" <<'PY'
+          import hashlib
+          import sys
+          print(hashlib.sha256(open(sys.argv[1], "rb").read()).hexdigest())
+          PY
+          )
+          echo "WHEEL=$wheel" >> "$GITHUB_ENV"
+          echo "WHEEL_SHA256=$wheel_sha256" >> "$GITHUB_ENV"
+          uv pip install --python "$RUNNER_TEMP/process-venv/bin/python" --no-deps "$wheel"
+      - name: Run frozen process matrix
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p process-evidence
+          "$RUNNER_TEMP/process-venv/bin/python" tests/e2e/cross_os_process_matrix.py \
+            --entry-point "$RUNNER_TEMP/process-venv/bin/amkernel" \
+            --python "$RUNNER_TEMP/process-venv/bin/python" \
+            --workspace "$RUNNER_TEMP/process-workspace" \
+            --matrix tests/fixtures/cross_client/process-matrix.json \
+            --source-root . \
+            --wheel "$WHEEL" \
+            --platform "${{ matrix.platform }}" \
+            --output "process-evidence/process-evidence-${{ matrix.platform }}-cpython-${{ matrix.python }}.json"
+      - name: Validate retained evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/process-venv/bin/python" tests/e2e/cross_os_process_evidence.py validate \
+            --evidence "process-evidence/process-evidence-${{ matrix.platform }}-cpython-${{ matrix.python }}.json" \
+            --matrix tests/fixtures/cross_client/process-matrix.json \
+            --source-root . \
+            --wheel "$WHEEL" \
+            --require-hosted
+      - name: Upload evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: process-evidence-${{ matrix.platform }}-cpython-${{ matrix.python }}
+          path: process-evidence/process-evidence-${{ matrix.platform }}-cpython-${{ matrix.python }}.json
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 30
+
+  combine-evidence:
+    name: combine-evidence
+    needs: process-matrix
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
+        with:
+          python-version-file: .python-version
+      - name: Download per-environment evidence
+        continue-on-error: true
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: process-evidence-*
+          path: process-evidence
+          merge-multiple: true
+      - name: Combine and hash-link evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          ls -l process-evidence
+          python tests/e2e/cross_os_process_evidence.py combine \
+            --evidence-dir process-evidence \
+            --matrix tests/fixtures/cross_client/process-matrix.json \
+            --source-root . \
+            --output process-evidence-index/process-evidence-index.json
+      - name: Upload combined index
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: process-evidence-index
+          path: process-evidence-index/process-evidence-index.json
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 30
