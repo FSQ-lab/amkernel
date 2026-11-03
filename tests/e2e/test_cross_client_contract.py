@@ -4,7 +4,9 @@ import base64
 import copy
 import hashlib
 import io
+import json
 import shutil
+import types
 from pathlib import Path
 from typing import Any, cast
 
@@ -856,3 +858,317 @@ def test_source_snapshot_includes_evidence_except_selected_output(
     output.mkdir()
     (output / "manifest.json").write_text("generated")
     assert codex_runner._source_snapshot(output) == excluded_before
+
+
+def test_codex_runner_classifies_execution_from_observed_events() -> None:
+    def attempt(events: list[dict[str, Any]]) -> dict[str, Any]:
+        return {"events": events, "exitCode": 1, "timedOut": False}
+
+    assert not codex_runner._attempt_executed(attempt([{"type": "turn.started"}]))
+    assert codex_runner._attempt_executed(
+        attempt([{"type": "item.completed", "item": {"type": "agent_message"}}])
+    )
+    assert codex_runner._attempt_executed(
+        attempt([{"type": "item.completed", "item": {"type": "mcp_tool_call"}}])
+    )
+    assert codex_runner._attempt_executed(attempt([{"type": "turn.completed"}]))
+    assert codex_runner._attempt_executed(
+        {
+            "events": [{"type": "item.started", "item": {"type": "mcp_tool_call"}}],
+            "exitCode": None,
+            "timedOut": True,
+        }
+    )
+    assert codex_runner._attempt_executed(
+        attempt([{"type": "item.completed", "item": {"type": "file_change"}}])
+    )
+    assert codex_runner._attempt_executed(
+        attempt([{"type": "item.completed", "item": {"type": "reasoning"}}])
+    )
+    assert codex_runner._attempt_executed(
+        attempt([{"type": "item.started", "item": {"type": "future_native_action"}}])
+    )
+    assert not codex_runner._attempt_executed(attempt([{"type": "turn.started"}]))
+    assert (
+        codex_runner._execution_signal(
+            [{"type": "item.started", "item": {"type": "mcp_tool_call"}}]
+        )
+        == "started mcp_tool_call"
+    )
+
+
+def test_codex_runner_fails_closed_on_native_tool_before_timeout() -> None:
+    attempt = {
+        "events": [
+            {"type": "item.started", "item": {"type": "file_change", "path": "x.py"}},
+            {"type": "item.completed", "item": {"type": "file_change", "path": "x.py"}},
+        ],
+        "exitCode": None,
+        "timedOut": True,
+    }
+
+    assert codex_runner._attempt_executed(attempt)
+    assert (
+        codex_runner._execution_signal(cast(list[dict[str, Any]], attempt["events"]))
+        == "started file_change"
+    )
+
+
+def test_codex_runner_detects_execution_beyond_retained_event_limit(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    retained = [{"type": "turn.started"}] * 400
+    tool_calls = [
+        {
+            "type": "item.completed",
+            "item": {
+                "type": "mcp_tool_call",
+                "server": "amkernel",
+                "tool": "python_exec",
+            },
+        }
+    ] * 401
+    stdout = "\n".join(json.dumps(event) for event in [*retained, *tool_calls])
+
+    def fake_run(*args: Any, **kwargs: Any) -> types.SimpleNamespace:
+        assert kwargs["timeout"] == 180
+        return types.SimpleNamespace(returncode=0, stdout=stdout, stderr="")
+
+    monkeypatch.setattr("tests.e2e.cross_client.codex.subprocess.run", fake_run)
+
+    attempt = codex_runner._attempt_codex_launch(
+        "prompt",
+        Path("server"),
+        tmp_path / "capture",
+        tmp_path / "client",
+        tmp_path / "home",
+        "codex",
+    )
+
+    assert attempt["eventCount"] == 400
+    assert attempt["parsedEventCount"] == 801
+    assert attempt["execution"] == "completed mcp_tool_call"
+    assert len(attempt["diagnostics"]) == 400
+    assert attempt["diagnostics"][0]["tool"] == "python_exec"
+    assert len(attempt["toolDiagnostics"]) == 400
+    assert attempt["toolDiagnosticsDropped"] == 1
+    assert attempt["toolDiagnostics"][0]["tool"] == "python_exec"
+    assert codex_runner._attempt_executed(attempt)
+
+
+def test_codex_runner_redacts_quoted_and_structured_credentials() -> None:
+    redacted = codex_runner._redact('{"api_key": "sk-live-123", "token": "tok-456"}')
+    assert "sk-live-123" not in redacted
+    assert "tok-456" not in redacted
+    assert redacted.count("<redacted>") >= 2
+
+    structured = codex_runner._redact_structure(
+        {"token": "x", "nested": [{"password": "p", "note": "keep"}]}
+    )
+    assert structured == {
+        "token": "<redacted>",
+        "nested": [{"password": "<redacted>", "note": "keep"}],
+    }
+
+
+def test_codex_runner_retains_parseable_bounded_event_log(tmp_path: Path) -> None:
+    attempt = {
+        "startedAt": TIMESTAMP,
+        "completedAt": RUN_COMPLETED,
+        "durationMs": 13,
+        "exitCode": 0,
+        "timedOut": False,
+        "eventCount": 2,
+        "events": [
+            {
+                "type": "item.completed",
+                "item": {
+                    "type": "agent_message",
+                    "text": "x" * 5000,
+                    "detail": "y" * 5000,
+                    "note": "z" * 5000,
+                    "token": "secret-value",
+                },
+            },
+            {"type": "turn.completed"},
+        ],
+        "stderr": "",
+    }
+
+    codex_runner._write_attempt(tmp_path, 1, attempt)
+
+    lines = (tmp_path / "attempts" / "launch-01-events.jsonl").read_text().splitlines()
+    parsed = [json.loads(line) for line in lines]
+    assert len(parsed) == 2
+    assert parsed[0]["truncated"] is True
+    assert parsed[0]["type"] == "item.completed"
+    assert "secret-value" not in lines[0]
+    assert parsed[1] == {"type": "turn.completed"}
+
+
+def _synthetic_attempt(
+    *, execution: str | None, events: list[dict[str, Any]] | None = None
+) -> dict[str, Any]:
+    observed = events or []
+    diagnostics = [
+        diagnostic
+        for diagnostic in (codex_runner._diagnostic_event(event) for event in observed)
+        if diagnostic is not None
+    ]
+    return {
+        "startedAt": TIMESTAMP,
+        "completedAt": RUN_COMPLETED,
+        "durationMs": 13,
+        "exitCode": 0,
+        "timedOut": False,
+        "execution": execution,
+        "eventCount": len(observed),
+        "parsedEventCount": len(observed),
+        "events": observed,
+        "diagnostics": diagnostics,
+        "toolDiagnostics": [
+            diagnostic
+            for diagnostic in diagnostics
+            if isinstance(diagnostic.get("itemType"), str)
+            and diagnostic["itemType"] not in codex_runner._NON_TOOL_ITEM_TYPES
+        ],
+        "toolDiagnosticsDropped": 0,
+        "stderr": "",
+    }
+
+
+def test_codex_runner_stops_supplementary_launches_after_execution(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    calls: list[str] = []
+    outcomes = [
+        _synthetic_attempt(execution=None),
+        _synthetic_attempt(execution="completed model turn"),
+    ]
+
+    def fake_launch(*args: Any, **kwargs: Any) -> dict[str, Any]:
+        calls.append(str(args[2]))
+        return outcomes[len(calls) - 1]
+
+    monkeypatch.setattr(codex_runner, "_attempt_codex_launch", fake_launch)
+
+    attempts, executed = codex_runner._launch_supplementary_attempts(
+        "prompt", Path("server"), tmp_path, "codex"
+    )
+
+    assert len(calls) == 2
+    assert len(attempts) == 2
+    assert executed is attempts[1]
+
+    calls.clear()
+    outcomes[0] = _synthetic_attempt(execution="started mcp_tool_call")
+    first_attempts, first_executed = codex_runner._launch_supplementary_attempts(
+        "prompt", Path("server"), tmp_path, "codex"
+    )
+
+    assert len(calls) == 1
+    assert first_executed is first_attempts[0]
+
+
+def test_codex_runner_retains_prose_free_execution_supplement(tmp_path: Path) -> None:
+    temp = tmp_path / "temp"
+    capture = temp / "attempt-1-capture"
+    capture.mkdir(parents=True)
+    (capture / "resources.json").write_text(
+        '{"resource": "/Users/private/secret.txt", "note": "TOKEN=abcdef123456"}'
+    )
+    executable = tmp_path / "codex"
+    executable.write_bytes(b"binary")
+    wheel = tmp_path / "amkernel-0.1.1-py3-none-any.whl"
+    wheel.write_bytes(b"wheel")
+    events: list[dict[str, Any]] = [
+        {
+            "type": "item.started",
+            "item": {
+                "type": "mcp_tool_call",
+                "server": "amkernel",
+                "tool": "python_exec",
+                "name": "python_exec",
+                "arguments": "PRIVATE ARGUMENTS",
+            },
+        },
+        {"type": "item.completed", "item": {"type": "agent_message", "text": "MODEL PROSE"}},
+        {"type": "item.completed", "item": {"type": "reasoning", "text": "HIDDEN THOUGHTS"}},
+        {"type": "turn.completed"},
+    ]
+    attempt = _synthetic_attempt(execution="completed model turn", events=events)
+    attempt["stderr"] = "log /Users/private/secret.txt TOKEN=abcdef123456"
+
+    codex_runner._write_execution_supplement(
+        tmp_path / "out",
+        attempts=[attempt],
+        temp=temp,
+        executable=str(executable),
+        client_version="0.162.0-alpha.17.2",
+        wheel=wheel,
+        probe_detail="URLError on direct connection",
+        config={"model_provider": "agent-maestro"},
+        config_changed=True,
+        source_changed=False,
+        tool_audit_incomplete=False,
+    )
+
+    root = tmp_path / "out" / "supplementary"
+    environment = load_json(root / "environment.json")
+    assert environment["observedExecution"] is True
+    assert environment["requiresReview"] is True
+    assert environment["frozenLayersEntered"] is False
+    assert environment["publishedSourceRevision"] == ("e16f42727b32a30fd431e4504712a5f31c28b408")
+    assert environment["persistentConfigurationChanged"] is True
+    assert environment["repositorySourceChanged"] is False
+    assert environment["toolAuditIncomplete"] is False
+
+    lines = (root / "attempt-01" / "diagnostics.jsonl").read_text().splitlines()
+    diagnostics = [json.loads(line) for line in lines]
+    assert [entry["itemType"] for entry in diagnostics if "itemType" in entry] == [
+        "mcp_tool_call",
+        "agent_message",
+        "reasoning",
+    ]
+    tool_event = diagnostics[0]
+    assert tool_event["tool"] == "python_exec"
+    assert tool_event["name"] == "python_exec"
+    assert tool_event["argumentsBytes"] == len("PRIVATE ARGUMENTS")
+    assert "textBytes" not in tool_event
+    assert diagnostics[1]["textBytes"] == len("MODEL PROSE")
+    assert "text" not in diagnostics[1]
+
+    metadata = load_json(root / "attempt-01" / "metadata.json")
+    assert metadata["execution"] == "completed model turn"
+    assert metadata["capture"]["retainedFilename"] == "capture-resources.redacted.json"
+    retained_capture = root / "attempt-01" / metadata["capture"]["retainedFilename"]
+    retention_text = (
+        "\n".join(lines)
+        + (root / "attempt-01" / "stderr.txt").read_text()
+        + retained_capture.read_text()
+        + json.dumps(environment)
+    )
+    tool_lines = (root / "attempt-01" / "tool-events.jsonl").read_text()
+    assert "python_exec" in tool_lines
+    for forbidden in ("MODEL PROSE", "HIDDEN THOUGHTS", "PRIVATE ARGUMENTS"):
+        assert forbidden not in retention_text
+        assert forbidden not in tool_lines
+    assert "/Users/" not in retention_text
+    assert "abcdef123456" not in retention_text
+
+
+def test_codex_runner_blocked_reason_avoids_unsupported_provider_claim() -> None:
+    reason = codex_runner._blocked_reason(
+        "URLError on direct connection",
+        [
+            {
+                "events": [{"type": "turn.started"}],
+                "exitCode": None,
+                "timedOut": True,
+            }
+        ],
+    )
+
+    assert "authenticated provider" not in reason
+    assert "no item.started or item.completed event was observed" in reason
+    assert "No credential or configuration was modified" in reason

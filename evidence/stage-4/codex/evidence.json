@@ -1,0 +1,124 @@
+{
+  "amkernel": {
+    "entryPoint": "amkernel",
+    "revision": "e16f42727b32a30fd431e4504712a5f31c28b408",
+    "runnerProtocolVersion": 2,
+    "version": "0.1.1",
+    "wheel": {
+      "filename": "amkernel-0.1.1-py3-none-any.whl",
+      "sha256": "a72cacb0de33335026e0b03e0686d115c8366c4e012f84fe6f4973e1ebcc608f",
+      "sizeBytes": 187535
+    }
+  },
+  "artifacts": [],
+  "cleanup": {
+    "attempted": false,
+    "clientExited": false,
+    "completed": false,
+    "managedArtifactsRemaining": 0,
+    "managedProcessesRemaining": 0,
+    "observation": "The frozen deterministic and naturalistic layers were not entered; these cleanup booleans describe only those unentered layers. Two supplementary Codex launch attempts were made, each timed out after approximately 180 seconds, and both recorded exit codes are null. TemporaryDirectory scope exit is the harness cleanup mechanism; no separate process-tree cleanup observation is retained.",
+    "remainingExternalResources": [],
+    "runnerExited": false,
+    "serverExited": false
+  },
+  "client": {
+    "executable": "codex",
+    "id": "codex",
+    "invocationMode": "ephemeral-home",
+    "model": "gpt-6.1-sol",
+    "nonInteractive": true,
+    "version": "codex-cli 0.162.0-alpha.17.2"
+  },
+  "configuration": {
+    "after": {
+      "existed": true,
+      "scope": "persistent-client-config",
+      "sha256": "91c79f4c2a01b410538e013b0f0f0cae0f4ff3b15f3d3b2e3ac76864f88c3ff3"
+    },
+    "before": {
+      "existed": true,
+      "scope": "persistent-client-config",
+      "sha256": "91c79f4c2a01b410538e013b0f0f0cae0f4ff3b15f3d3b2e3ac76864f88c3ff3"
+    },
+    "persistentMutation": false,
+    "serverCommand": [
+      "python",
+      "codex_proxy.py",
+      "--server",
+      "venv/bin/amkernel"
+    ],
+    "workspaceIsolation": "temporary"
+  },
+  "context": {
+    "clarificationRequestCount": 0,
+    "contextReductionRatio": 0,
+    "durationMs": 360022.47599999997,
+    "finalResponseBytes": 0,
+    "maximumNormalizedResultBytes": 0,
+    "normalizedEventsBytes": 0,
+    "normalizedRequestBytes": 0,
+    "normalizedResultBytes": 0,
+    "publicToolCount": 1,
+    "rawResourceBytes": 0,
+    "resourceReferenceBytes": 0,
+    "schemaRetryCount": 0,
+    "selectedTool": "python_exec",
+    "toolCallCount": 0,
+    "wrongToolSelectionCount": 0
+  },
+  "contracts": {
+    "evidenceSchema": {
+      "id": "https://fsq-lab.example/amkernel/cross-client-evidence.schema.json",
+      "sha256": "4961be4717fa5ccb8015f2ed95d44f788ea5c04e128dea83b7ddc227b5b811e6"
+    },
+    "normalizer": {
+      "id": "amkernel-cross-client-normalizer-v1",
+      "sha256": "aaea1d13a75b7ff3be5b976189b6f964b799e9bef8b86f498a6e955fe578646c"
+    },
+    "normalizerImplementation": {
+      "id": "amkernel-cross-client-normalizer-v1-python",
+      "sha256": "12984c54cf7b076c88565792fa777d22608df2e3db918dc581c15a140f1ded39"
+    },
+    "scenario": {
+      "id": "amkernel-cross-client-v1",
+      "sha256": "01ba0afe4d975a1f13f006ac22f90a05d445d47df630dc17b2b78416f815f95a"
+    }
+  },
+  "generatedAt": "2026-11-03T10:13:53.306367Z",
+  "host": {
+    "architecture": "arm64",
+    "pythonVersion": "3.11.16",
+    "release": "25.6.0",
+    "system": "Darwin"
+  },
+  "limitations": [
+    "Blocked before the frozen deterministic layer: 2 client launch attempts with codex could not reach the configured model provider, so neither evidence layer was entered and no step was produced.",
+    "Bounded redacted launch logs are retained under attempts/ as supplementary records; they are not evidence artifacts and contain no completed model turn or model-generated response.",
+    "One host architecture and one client build were exercised; no client-quality conclusion is implied."
+  ],
+  "mcp": {
+    "clientVersion": "codex-cli 0.162.0-alpha.17.2",
+    "protocolVersion": "2025-06-18"
+  },
+  "outcome": "blocked",
+  "preflight": {
+    "clientReady": false,
+    "reason": "The direct model provider probe of http://127.0.0.1:23333/api/openai/v1/models failed (URLError on direct connection). 2 supplementary client launch attempts each remained in connection retry until the 180 s bound (Reconnecting... waiting for network (Connection failed: error sending request)); zero observed tool calls were executed, and the installed client holds no other authenticated provider. No credential or configuration was modified.",
+    "serverReady": false,
+    "wheelVerified": true
+  },
+  "review": {
+    "blocker": 0,
+    "disposition": "accepted",
+    "major": 0,
+    "minor": 0,
+    "reviewer": "ReviewCodexEvidence (blocked record only; neither client layer entered)",
+    "source": "https://github.com/FSQ-lab/amkernel/issues/81"
+  },
+  "runCompletedAt": "2026-11-03T10:13:53.260700Z",
+  "runId": "codex-blocked-20261103101353",
+  "runStartedAt": "2026-11-03T10:07:53.238224Z",
+  "schemaVersion": 1,
+  "steps": []
+}

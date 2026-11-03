@@ -1,0 +1,319 @@
+{
+  "checks": [
+    {
+      "check": "tools.single-python-exec",
+      "expected": [
+        "python_exec"
+      ],
+      "observed": [
+        "python_exec"
+      ],
+      "passed": true
+    },
+    {
+      "check": "tools.description-clauses",
+      "expected": [],
+      "observed": [],
+      "passed": true
+    },
+    {
+      "check": "step.initialize-state.semantics",
+      "expected": {
+        "kernelState": "alive",
+        "result": 1,
+        "status": "completed"
+      },
+      "observed": {
+        "kernelState": "alive",
+        "result": 1,
+        "status": "completed"
+      },
+      "passed": true
+    },
+    {
+      "check": "step.reuse-state.semantics",
+      "expected": {
+        "kernelState": "alive",
+        "result": [
+          "initialized",
+          "reused"
+        ],
+        "status": "completed"
+      },
+      "observed": {
+        "kernelState": "alive",
+        "result": [
+          "initialized",
+          "reused"
+        ],
+        "status": "completed"
+      },
+      "passed": true
+    },
+    {
+      "check": "step.ordinary-error.semantics",
+      "expected": {
+        "errorType": "ValueError",
+        "kernelState": "alive",
+        "status": "failed"
+      },
+      "observed": {
+        "errorType": "ValueError",
+        "kernelState": "alive",
+        "status": "failed"
+      },
+      "passed": true
+    },
+    {
+      "check": "step.continue-after-error.semantics",
+      "expected": {
+        "kernelState": "alive",
+        "result": [
+          "initialized",
+          "reused",
+          "before-error"
+        ],
+        "status": "completed"
+      },
+      "observed": {
+        "kernelState": "alive",
+        "result": [
+          "initialized",
+          "reused",
+          "before-error"
+        ],
+        "status": "completed"
+      },
+      "passed": true
+    },
+    {
+      "check": "step.bounded-output.semantics",
+      "expected": {
+        "discardedBytes": 0,
+        "discardedLines": 0,
+        "kernelState": "alive",
+        "limitExceeded": false,
+        "result": "output-complete",
+        "status": "completed",
+        "stderr": "stderr-marker\n",
+        "stdout": "stdout-marker\n",
+        "totalBytes": 28,
+        "totalLines": 2,
+        "truncated": false
+      },
+      "observed": {
+        "discardedBytes": 0,
+        "discardedLines": 0,
+        "kernelState": "alive",
+        "limitExceeded": false,
+        "result": "output-complete",
+        "status": "completed",
+        "stderr": "stderr-marker\n",
+        "stdout": "stdout-marker\n",
+        "totalBytes": 28,
+        "totalLines": 2,
+        "truncated": false
+      },
+      "passed": true
+    },
+    {
+      "check": "step.structured-result.semantics",
+      "expected": {
+        "kernelState": "alive",
+        "result": {
+          "answer": 42,
+          "flags": [
+            true,
+            false
+          ],
+          "nested": {
+            "value": null
+          }
+        },
+        "status": "completed"
+      },
+      "observed": {
+        "kernelState": "alive",
+        "result": {
+          "answer": 42,
+          "flags": [
+            true,
+            false
+          ],
+          "nested": {
+            "value": null
+          }
+        },
+        "status": "completed"
+      },
+      "passed": true
+    },
+    {
+      "check": "step.rich-display.semantics",
+      "expected": {
+        "displayKind": "image",
+        "height": 3,
+        "kernelState": "alive",
+        "mimeType": "image/png",
+        "result": "display-complete",
+        "status": "completed",
+        "width": 2
+      },
+      "observed": {
+        "displayKind": "image",
+        "height": 3,
+        "kernelState": "alive",
+        "mimeType": "image/png",
+        "result": "display-complete",
+        "status": "completed",
+        "width": 2
+      },
+      "passed": true
+    },
+    {
+      "check": "step.create-artifact.semantics",
+      "expected": {
+        "kernelState": "alive",
+        "mimeType": "application/octet-stream",
+        "partCount": 2,
+        "representation": "manifest",
+        "result": "artifact-complete",
+        "sizeBytes": 8388609,
+        "status": "completed"
+      },
+      "observed": {
+        "kernelState": "alive",
+        "mimeType": "application/octet-stream",
+        "partCount": 2,
+        "representation": "manifest",
+        "result": "artifact-complete",
+        "sizeBytes": 8388609,
+        "status": "completed"
+      },
+      "passed": true
+    },
+    {
+      "check": "step.timeout-survives.semantics",
+      "expected": {
+        "errorType": "TimeoutError",
+        "kernelState": "alive",
+        "status": "timed_out"
+      },
+      "observed": {
+        "errorType": "TimeoutError",
+        "kernelState": "alive",
+        "status": "timed_out"
+      },
+      "passed": true
+    },
+    {
+      "check": "step.continue-after-timeout.semantics",
+      "expected": {
+        "kernelState": "alive",
+        "result": 42,
+        "status": "completed"
+      },
+      "observed": {
+        "kernelState": "alive",
+        "result": 42,
+        "status": "completed"
+      },
+      "passed": true
+    },
+    {
+      "check": "step.reset-namespace.semantics",
+      "expected": {
+        "kernelState": "alive",
+        "result": false,
+        "status": "completed"
+      },
+      "observed": {
+        "kernelState": "alive",
+        "result": false,
+        "status": "completed"
+      },
+      "passed": true
+    },
+    {
+      "check": "manifest.part-count",
+      "expected": 2,
+      "observed": 2,
+      "passed": true
+    },
+    {
+      "check": "manifest.offsets",
+      "expected": true,
+      "observed": true,
+      "passed": true
+    },
+    {
+      "check": "manifest.declared-size",
+      "expected": 8388609,
+      "observed": 8388609,
+      "passed": true
+    },
+    {
+      "check": "manifest.part-digests",
+      "expected": true,
+      "observed": true,
+      "passed": true
+    },
+    {
+      "check": "manifest.whole-digest",
+      "expected": "1675fa290ec5756bee75f8eb259ae7daf4c75b7a9d30a50e3fcd4094795a4efb",
+      "observed": "1675fa290ec5756bee75f8eb259ae7daf4c75b7a9d30a50e3fcd4094795a4efb",
+      "passed": true
+    },
+    {
+      "check": "resource.mime-types",
+      "expected": [
+        "application/vnd.amkernel.artifact-manifest+json",
+        "application/octet-stream",
+        "application/octet-stream"
+      ],
+      "observed": [
+        "application/vnd.amkernel.artifact-manifest+json",
+        "application/octet-stream",
+        "application/octet-stream"
+      ],
+      "passed": true
+    },
+    {
+      "check": "display.dimensions",
+      "expected": [
+        2,
+        3
+      ],
+      "observed": [
+        2,
+        3
+      ],
+      "passed": true
+    },
+    {
+      "check": "display.pixels-red",
+      "expected": [
+        [
+          255,
+          0,
+          0
+        ]
+      ],
+      "observed": [
+        [
+          255,
+          0,
+          0
+        ]
+      ],
+      "passed": true
+    }
+  ],
+  "failureCount": 0,
+  "mode": "server-level-mcp-validation",
+  "notApplicable": [
+    "read-artifact-resources.rawBytesInFinalResponse requires a client final response",
+    "naturalistic Issue #82 layer requires a model provider"
+  ],
+  "status": "passed"
+}
