@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "scope": "Independent read-only review of observed published-0.1.1 installation, failed native Mac2 regression, and Windows prerequisite/static boundaries; not a replay or platform qualification",
+  "reviewer": "PublishedPlatformEvidenceReview",
+  "findings": {"blocker": 0, "major": 0, "minor": 0},
+  "references": [
+    {"path": "published-011-install-20261103.json", "sha256": "702979a018121ef5d24f9df38e9cc4845aab751d817bbb00085804816878496f"},
+    {"path": "published-011-mac2-20261103.json", "sha256": "c2495d305822fb3a5a1cc5b759f6b59cba5e49b69f456f535f0667c45bff5831"},
+    {"path": "published-011-windows-readiness-20261103.json", "sha256": "47cfcd8ce066ae7de3ca2dc21e38a912ea2e6d76b3a7af5eac074ddd3d3c07f4"}
+  ],
+  "assessment": {
+    "failedQualificationPreserved": true,
+    "historicalQualifiedM0Unchanged": true,
+    "failedAliveExecutionsPreserved": true,
+    "ownedCleanupSeparateFromRestoration": true,
+    "noLockCausalInference": true,
+    "publicationIdentityMatchedGitHubAndPyPI": true,
+    "parentObservedInstallToInvocationLinkageRetained": true,
+    "installationIndependentlyReplayed": false,
+    "installedFilesIndependentlyComparedToPublishedWheel": false
+  },
+  "windowsAssessment": {
+    "noActualWindowsExecutionClaimed": true,
+    "staticPosixBarriersMatchInspectedSource": true,
+    "hostedLifecycleEvidenceDistinctFromAndroidQualification": true,
+    "acceptedPlatformDecisionStillRequired": true,
+    "guardsAndSecurityContractsPreserved": true,
+    "inventoryIndependentlyReplayed": false,
+    "limit": "Host-discovery counts are retained parent/agent observations; private inventories are withheld. Review confirms source facts, scope and limits, not the underlying inventory search or an actual Windows outcome."
+  },
+  "remainingGates": [
+    "Qualified published-0.1.1 Mac2 run with actual target queries, restoration and session cleanup",
+    "Fresh ordered Android UiAutomator2, iOS simulator and physical-iOS qualification",
+    "Real Windows Runtime and Android evidence under Issue #100",
+    "Remaining Stage 4 installed-wheel cross-client validation"
+  ],
+  "limits": "Review inspected retained sources/artifacts and public release/PyPI metadata. No UI, tests, builds, linters or formatters ran. Receipt/config/interpreter comparisons are parent-observed booleans; private paths, raw events and diagnostics are withheld, so those comparisons cannot be independently recomputed. Review does not make the failed Mac2 run pass, establish its root cause, or reinstate deferred complex Mac M1-M7 work. The separate current GUI lock observation is a prerequisite observation, not a cause determination."
+}

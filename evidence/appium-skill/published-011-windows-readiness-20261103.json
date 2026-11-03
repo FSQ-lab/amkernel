@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "scope": "Read-only Windows/Android prerequisite discovery and static shipped-code inspection; not Windows execution or qualification",
+  "revision": "e16f42727b32a30fd431e4504712a5f31c28b408",
+  "status": "blocked",
+  "windowsExecutionObserved": false,
+  "windowsFailureObserved": false,
+  "windowsAndroidScenarioObserved": false,
+  "reachableAuthorizedWindowsCandidates": 0,
+  "availableRepoSelfHostedRunners": 0,
+  "existingWindowsActionsJob": false,
+  "discoverySources": [
+    "Configured SSH hosts and remote-access configuration",
+    "Registered local VM tools/images",
+    "Existing remote-desktop clients without pairing or credential expansion",
+    "Repository self-hosted runners and workflow matrices",
+    "Existing host inventories and retained evidence"
+  ],
+  "discoveryLimits": [
+    "No network scan, remote pairing, credential expansion, VM startup/creation, dependency installation or persistent configuration changes",
+    "Organization runner inventory returned permission denied; repository inventory had zero runners",
+    "Absence of a current Windows job does not rule out adding authorized GitHub-hosted Windows lifecycle-only verification; hosted execution is not an attached Android host"
+  ],
+  "staticInspection": {
+    "observedOn": "macOS source inspection only",
+    "actualWindowsStartupOutcome": "not observed",
+    "barriers": [
+      {
+        "path": "src/amkernel/artifact_store.py",
+        "lines": "155-157",
+        "fact": "ArtifactStore rejects non-POSIX descriptor operations; KernelRuntime constructs it before MCP initialization"
+      },
+      {
+        "path": "src/amkernel/supervisor.py",
+        "lines": "431-440",
+        "fact": "Explicit POSIX primitive guard; spawn also uses pass_fds and start_new_session"
+      },
+      {
+        "path": "src/amkernel/runner.py",
+        "lines": "102-108",
+        "fact": "Module initialization binds Unix-only signal primitives"
+      }
+    ],
+    "inference": "The shipped code does not implement native Windows Runtime startup/lifecycle. This is a static conclusion, not an observed Windows failure."
+  },
+  "requiredBeforeSupportClaim": [
+    "Accepted Windows platform/lifecycle decision preserving kernel survival, reset, timeout, shutdown, owned-resource cleanup and Artifact Store identity/confinement",
+    "Actual clean installed-package python_exec/process evidence on the qualified Windows/Python range",
+    "Authorized Windows host with an Android device or emulator and existing or explicitly approved Appium/SDK/JBR setup",
+    "Real UiAutomator2 scenario, unsupported-target rejection behavior and independent review"
+  ],
+  "supportClaim": "Windows remains unqualified; no desktop/XCUITest/Mac2 downgrade, Runtime guard removal or security-contract relaxation",
+  "rawHostInventoryRetained": false
+}

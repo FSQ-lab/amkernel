@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "scope": "Parent-observed publication identity, actual external-project stdio smoke and complete Copilot installation; not platform qualification",
+  "publication": {
+    "version": "0.1.1",
+    "mainCommit": "e16f42727b32a30fd431e4504712a5f31c28b408",
+    "wheelSha256": "a72cacb0de33335026e0b03e0686d115c8366c4e012f84fe6f4973e1ebcc608f",
+    "releaseUrl": "https://github.com/FSQ-lab/amkernel/releases/tag/v0.1.1",
+    "pypiMetadataUrl": "https://pypi.org/pypi/amkernel/0.1.1/json",
+    "releaseRunUrl": "https://github.com/FSQ-lab/amkernel/actions/runs/41613732304"
+  },
+  "stdioSmoke": {
+    "tool": "python_exec",
+    "status": "completed",
+    "kernelState": "alive",
+    "stdout": "42\n",
+    "persistentNamespace": true,
+    "workspace": "temporary external directory"
+  },
+  "copilotInstallation": {
+    "client": "copilot",
+    "runtime_version": "0.1.1",
+    "runtime_installed": true,
+    "mcp_configured": true,
+    "skill_installed": true,
+    "skill_content_verified": true,
+    "skill_provenance": true,
+    "skill_version": "0.1.1",
+    "skill_commit": "e907024c210fe024c956ed9c74146fc27b1dd013"
+  },
+  "nativeInvocationLinkage": {
+    "mcpCommandMatchesReceiptResolvedExecutable": true,
+    "nativeInterpreterMatchesReceiptResolvedSiblingPython": true,
+    "nativeWorkingDirectoryMatchesExternalProject": true,
+    "mcpWorkingDirectoryMatchesExternalProject": true,
+    "nativePythonVersion": "3.11.16"
+  },
+  "limits": "Observed receipt/config/runtime comparisons are retained as booleans. Absolute paths, raw client events and diagnostics, tokens, private device inventories, and raw install output are not retained. The stdio smoke exercised tool discovery and two calls proving persistence; it does not qualify Appium, cleanup failure paths, Windows, or the fixed platform sequence."
+}
