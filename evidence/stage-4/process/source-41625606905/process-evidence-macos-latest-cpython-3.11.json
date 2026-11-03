@@ -1,0 +1,1459 @@
+{
+  "cells": [
+    {
+      "cellSha256": "e378348eb6abfca1dacc20cc59f936d790466e9ded10b1763f25002583c562e6",
+      "checks": [
+        {
+          "expected": "ready",
+          "name": "serverState",
+          "observed": "ready",
+          "passed": true
+        },
+        {
+          "expected": "alive",
+          "name": "kernelState",
+          "observed": "alive",
+          "passed": true
+        },
+        {
+          "expected": 2,
+          "name": "managedProcesses",
+          "observed": 2,
+          "passed": true
+        },
+        {
+          "expected": 1,
+          "name": "toolCount",
+          "observed": 1,
+          "passed": true
+        },
+        {
+          "expected": true,
+          "name": "runnerGroupMatchesRunner",
+          "observed": true,
+          "passed": true
+        },
+        {
+          "expected": 1,
+          "name": "executionCount",
+          "observed": 1,
+          "passed": true
+        },
+        {
+          "expected": true,
+          "name": "cleanupCompleted",
+          "observed": true,
+          "passed": true
+        }
+      ],
+      "cleanup": {
+        "artifactRootRemoved": true,
+        "attempted": true,
+        "completed": true,
+        "forcedCleanup": false,
+        "managedArtifactsRemaining": 0,
+        "managedProcessesRemaining": 0,
+        "processGroupRemoved": true,
+        "runnerExited": true,
+        "serverExited": true
+      },
+      "durationMs": 1199,
+      "errorType": null,
+      "expected": {
+        "kernelState": "alive",
+        "managedProcesses": 2,
+        "serverState": "ready"
+      },
+      "expectedSha256": "d6d84cd39bc40c03f55bd816beb092c685d801c0c1e905cca18f400867988c14",
+      "id": "installed-startup",
+      "limitations": [],
+      "observed": {
+        "kernelState": "alive",
+        "managedProcesses": 2,
+        "serverState": "ready"
+      },
+      "operation": "Start the installed amkernel entry point and initialize MCP over stdio.",
+      "outcome": "passed",
+      "processObservations": [
+        {
+          "at": "2026-11-03T11:14:43.616Z",
+          "managedProcessCount": 2,
+          "phase": "after-identity",
+          "processGroup": {
+            "exists": true,
+            "token": "80df10101067d242"
+          },
+          "processes": [
+            {
+              "alive": true,
+              "role": "server",
+              "token": "07ab3d10e7c03ec5"
+            },
+            {
+              "alive": true,
+              "role": "runner",
+              "token": "d9dea287a16678da"
+            }
+          ],
+          "serverDescendantCount": 1
+        }
+      ],
+      "resourceObservations": {
+        "observedManagedProcesses": 2,
+        "storeRoots": 1
+      },
+      "stateTransition": [
+        {
+          "at": "2026-11-03T11:14:43.617Z",
+          "executionCount": 1,
+          "kernelState": "alive",
+          "phase": "after-mcp-initialize",
+          "serverState": "ready"
+        }
+      ]
+    },
+    {
+      "cellSha256": "30ab708ca2cd3727fc6eb766bd38e1be912302c9317c6e11dfb8a4856cde8635",
+      "checks": [
+        {
+          "expected": "exited",
+          "name": "serverState",
+          "observed": "exited",
+          "passed": true
+        },
+        {
+          "expected": "dead",
+          "name": "kernelState",
+          "observed": "dead",
+          "passed": true
+        },
+        {
+          "expected": 0,
+          "name": "managedProcessesRemaining",
+          "observed": 0,
+          "passed": true
+        },
+        {
+          "expected": 1,
+          "name": "completedExecutionCount",
+          "observed": 1,
+          "passed": true
+        },
+        {
+          "expected": 1,
+          "name": "completedResultValue",
+          "observed": 1,
+          "passed": true
+        },
+        {
+          "expected": true,
+          "name": "unforcedShutdown",
+          "observed": true,
+          "passed": true
+        },
+        {
+          "expected": true,
+          "name": "cleanupCompleted",
+          "observed": true,
+          "passed": true
+        }
+      ],
+      "cleanup": {
+        "artifactRootRemoved": true,
+        "attempted": true,
+        "completed": true,
+        "forcedCleanup": false,
+        "managedArtifactsRemaining": 0,
+        "managedProcessesRemaining": 0,
+        "processGroupRemoved": true,
+        "runnerExited": true,
+        "serverExited": true
+      },
+      "durationMs": 822,
+      "errorType": null,
+      "expected": {
+        "kernelState": "dead",
+        "managedProcessesRemaining": 0,
+        "serverState": "exited"
+      },
+      "expectedSha256": "07de64c427f1cb948b54ea11ce6f8155d552cf87d77ea5a8f6b235b84ec8e218",
+      "id": "normal-shutdown",
+      "limitations": [
+        "Unforced shutdown is bounded by the SDK context releasing the server below the 2 s SIGTERM grace window; this is a timing bound, not a signal audit."
+      ],
+      "observed": {
+        "kernelState": "dead",
+        "managedProcessesRemaining": 0,
+        "serverState": "exited"
+      },
+      "operation": "Close the MCP client after one completed execution.",
+      "outcome": "passed",
+      "processObservations": [
+        {
+          "at": "2026-11-03T11:14:44.475Z",
+          "managedProcessCount": 2,
+          "phase": "after-identity",
+          "processGroup": {
+            "exists": true,
+            "token": "9b7ebd8901440313"
+          },
+          "processes": [
+            {
+              "alive": true,
+              "role": "server",
+              "token": "9988aa557e132ce5"
+            },
+            {
+              "alive": true,
+              "role": "runner",
+              "token": "096ae9c5e6fa438f"
+            }
+          ],
+          "serverDescendantCount": 1
+        }
+      ],
+      "resourceObservations": {
+        "runnerGroupToken": "9b7ebd8901440313",
+        "shutdownElapsedSeconds": 0.088,
+        "storeRootsBeforeShutdown": 1
+      },
+      "stateTransition": [
+        {
+          "at": "2026-11-03T11:14:44.475Z",
+          "executionCount": 1,
+          "kernelState": "alive",
+          "phase": "before-shutdown",
+          "serverState": "ready"
+        },
+        {
+          "at": "2026-11-03T11:14:44.563Z",
+          "executionCount": 1,
+          "kernelState": "dead",
+          "phase": "client-closed",
+          "serverState": "exited"
+        }
+      ]
+    },
+    {
+      "cellSha256": "ca689b0a44c8f97dbdd3b54095a91345a13994aecf033116c6779638ad825b6d",
+      "checks": [
+        {
+          "expected": "ready",
+          "name": "serverState",
+          "observed": "ready",
+          "passed": true
+        },
+        {
+          "expected": "alive",
+          "name": "kernelState",
+          "observed": "alive",
+          "passed": true
+        },
+        {
+          "expected": true,
+          "name": "runnerReplaced",
+          "observed": true,
+          "passed": true
+        },
+        {
+          "expected": true,
+          "name": "priorNamespaceAbsent",
+          "observed": true,
+          "passed": true
+        },
+        {
+          "expected": 1,
+          "name": "resetExecutionCount",
+          "observed": 1,
+          "passed": true
+        },
+        {
+          "expected": false,
+          "name": "previousRunnerGone",
+          "observed": false,
+          "passed": true
+        },
+        {
+          "expected": true,
+          "name": "cleanupCompleted",
+          "observed": true,
+          "passed": true
+        }
+      ],
+      "cleanup": {
+        "artifactRootRemoved": true,
+        "attempted": true,
+        "completed": true,
+        "forcedCleanup": false,
+        "managedArtifactsRemaining": 0,
+        "managedProcessesRemaining": 0,
+        "processGroupRemoved": true,
+        "runnerExited": true,
+        "serverExited": true
+      },
+      "durationMs": 1668,
+      "errorType": null,
+      "expected": {
+        "kernelState": "alive",
+        "priorNamespaceAbsent": true,
+        "runnerReplaced": true,
+        "serverState": "ready"
+      },
+      "expectedSha256": "aafe654d5448d177608e9dcb6f77b81d32666c82353e4042361d8e1ff2caa0c2",
+      "id": "destructive-reset",
+      "limitations": [
+        "Reset observes replacement runner identity, namespace loss, and prior runner death; it does not prove old process-group descendant cleanup or replacement ordering."
+      ],
+      "observed": {
+        "kernelState": "alive",
+        "priorNamespaceAbsent": true,
+        "runnerReplaced": true,
+        "serverState": "ready"
+      },
+      "operation": "Reset after creating state and compare runner identities.",
+      "outcome": "passed",
+      "processObservations": [
+        {
+          "at": "2026-11-03T11:14:45.876Z",
+          "managedProcessCount": 2,
+          "phase": "after-identity",
+          "processGroup": {
+            "exists": true,
+            "token": "5b9993efc599dc0e"
+          },
+          "processes": [
+            {
+              "alive": true,
+              "role": "server",
+              "token": "4def60c5fbfc87bc"
+            },
+            {
+              "alive": true,
+              "role": "runner",
+              "token": "098f38aeabc79cd1"
+            }
+          ],
+          "serverDescendantCount": 1
+        },
+        {
+          "at": "2026-11-03T11:14:46.098Z",
+          "managedProcessCount": 2,
+          "phase": "after-reset",
+          "processGroup": {
+            "exists": true,
+            "token": "eab5afac19a1f854"
+          },
+          "processes": [
+            {
+              "alive": true,
+              "role": "server",
+              "token": "4def60c5fbfc87bc"
+            },
+            {
+              "alive": true,
+              "role": "runner",
+              "token": "7e502c7613fb6374"
+            }
+          ],
+          "serverDescendantCount": 1
+        }
+      ],
+      "resourceObservations": {
+        "previousRunnerToken": "098f38aeabc79cd1",
+        "replacementRunnerToken": "7e502c7613fb6374"
+      },
+      "stateTransition": [
+        {
+          "at": "2026-11-03T11:14:45.876Z",
+          "executionCount": 1,
+          "kernelState": "alive",
+          "phase": "before-reset",
+          "serverState": "ready"
+        },
+        {
+          "at": "2026-11-03T11:14:46.098Z",
+          "executionCount": 1,
+          "kernelState": "alive",
+          "phase": "after-reset",
+          "serverState": "ready"
+        }
+      ]
+    },
+    {
+      "cellSha256": "1a7e274060d30836c9c26d52aa704e0c6726b4c4870986f338d2145d9cdbb53b",
+      "checks": [
+        {
+          "expected": "timed_out",
+          "name": "status",
+          "observed": "timed_out",
+          "passed": true
+        },
+        {
+          "expected": "alive",
+          "name": "kernelState",
+          "observed": "alive",
+          "passed": true
+        },
+        {
+          "expected": true,
+          "name": "continuationVerified",
+          "observed": true,
+          "passed": true
+        },
+        {
+          "expected": "TimeoutError",
+          "name": "timeoutErrorType",
+          "observed": "TimeoutError",
+          "passed": true
+        },
+        {
+          "expected": 3,
+          "name": "continuationExecutionCount",
+          "observed": 3,
+          "passed": true
+        },
+        {
+          "expected": true,
+          "name": "sameRunnerPid",
+          "observed": true,
+          "passed": true
+        },
+        {
+          "expected": true,
+          "name": "cleanupCompleted",
+          "observed": true,
+          "passed": true
+        }
+      ],
+      "cleanup": {
+        "artifactRootRemoved": true,
+        "attempted": true,
+        "completed": true,
+        "forcedCleanup": false,
+        "managedArtifactsRemaining": 0,
+        "managedProcessesRemaining": 0,
+        "processGroupRemoved": true,
+        "runnerExited": true,
+        "serverExited": true
+      },
+      "durationMs": 890,
+      "errorType": null,
+      "expected": {
+        "continuationVerified": true,
+        "kernelState": "alive",
+        "status": "timed_out"
+      },
+      "expectedSha256": "62f9dcc7eec414c6e697eeae957b463b74984dde6382d6dda40c14d7f84e3735",
+      "id": "timeout-survives",
+      "limitations": [],
+      "observed": {
+        "continuationVerified": true,
+        "kernelState": "alive",
+        "status": "timed_out"
+      },
+      "operation": "Time out interruptible Python code and execute a continuation call.",
+      "outcome": "passed",
+      "processObservations": [
+        {
+          "at": "2026-11-03T11:14:46.910Z",
+          "managedProcessCount": 2,
+          "phase": "after-identity",
+          "processGroup": {
+            "exists": true,
+            "token": "45f7dde88ec7eab6"
+          },
+          "processes": [
+            {
+              "alive": true,
+              "role": "server",
+              "token": "d819c49b7c5976b1"
+            },
+            {
+              "alive": true,
+              "role": "runner",
+              "token": "c6771d31ab417d8d"
+            }
+          ],
+          "serverDescendantCount": 1
+        },
+        {
+          "at": "2026-11-03T11:14:47.010Z",
+          "managedProcessCount": 2,
+          "phase": "after-continuation",
+          "processGroup": {
+            "exists": true,
+            "token": "45f7dde88ec7eab6"
+          },
+          "processes": [
+            {
+              "alive": true,
+              "role": "server",
+              "token": "d819c49b7c5976b1"
+            },
+            {
+              "alive": true,
+              "role": "runner",
+              "token": "c6771d31ab417d8d"
+            }
+          ],
+          "serverDescendantCount": 1
+        }
+      ],
+      "resourceObservations": {
+        "continuationRunnerToken": "c6771d31ab417d8d",
+        "runnerToken": "c6771d31ab417d8d"
+      },
+      "stateTransition": [
+        {
+          "at": "2026-11-03T11:14:46.968Z",
+          "executionCount": 2,
+          "kernelState": "alive",
+          "phase": "after-timeout",
+          "serverState": "ready",
+          "status": "timed_out"
+        }
+      ]
+    },
+    {
+      "cellSha256": "81d6f2c433264ca56298df3fba08d00db44910294ee5c86130d476dbc1d65f7b",
+      "checks": [
+        {
+          "expected": "kernel_killed",
+          "name": "status",
+          "observed": "kernel_killed",
+          "passed": true
+        },
+        {
+          "expected": "dead",
+          "name": "kernelState",
+          "observed": "dead",
+          "passed": true
+        },
+        {
+          "expected": false,
+          "name": "runnerReplacedImplicitly",
+          "observed": false,
+          "passed": true
+        },
+        {
+          "expected": "KernelKilled",
+          "name": "escalationErrorType",
+          "observed": "KernelKilled",
+          "passed": true
+        },
+        {
+          "expected": "kernel_killed",
+          "name": "unavailableStatus",
+          "observed": "kernel_killed",
+          "passed": true
+        },
+        {
+          "expected": "KernelUnavailable",
+          "name": "unavailableErrorType",
+          "observed": "KernelUnavailable",
+          "passed": true
+        },
+        {
+          "expected": true,
+          "name": "serverRemainedReady",
+          "observed": true,
+          "passed": true
+        },
+        {
+          "expected": 2,
+          "name": "executionCountUnchanged",
+          "observed": 2,
+          "passed": true
+        },
+        {
+          "expected": true,
+          "name": "cleanupCompleted",
+          "observed": true,
+          "passed": true
+        }
+      ],
+      "cleanup": {
+        "artifactRootRemoved": true,
+        "attempted": true,
+        "completed": true,
+        "forcedCleanup": false,
+        "managedArtifactsRemaining": 0,
+        "managedProcessesRemaining": 0,
+        "processGroupRemoved": true,
+        "runnerExited": true,
+        "serverExited": true
+      },
+      "durationMs": 2850,
+      "errorType": null,
+      "expected": {
+        "kernelState": "dead",
+        "runnerReplacedImplicitly": false,
+        "status": "kernel_killed"
+      },
+      "expectedSha256": "0045f728256539c7bd319b789cf5b84bd5d5e675ddb88078ded3337bc9cda93a",
+      "id": "timeout-escalates",
+      "limitations": [],
+      "observed": {
+        "kernelState": "dead",
+        "runnerReplacedImplicitly": false,
+        "status": "kernel_killed"
+      },
+      "operation": "Time out code that prevents normal interruption and observe escalation.",
+      "outcome": "passed",
+      "processObservations": [
+        {
+          "at": "2026-11-03T11:14:47.703Z",
+          "managedProcessCount": 2,
+          "phase": "after-identity",
+          "processGroup": {
+            "exists": true,
+            "token": "6cbc02d620c8ffa3"
+          },
+          "processes": [
+            {
+              "alive": true,
+              "role": "server",
+              "token": "cd5a456c60ae3afa"
+            },
+            {
+              "alive": true,
+              "role": "runner",
+              "token": "1c4c50962e77d28f"
+            }
+          ],
+          "serverDescendantCount": 1
+        },
+        {
+          "at": "2026-11-03T11:14:49.880Z",
+          "managedProcessCount": 1,
+          "phase": "after-escalation",
+          "processGroup": {
+            "exists": false,
+            "token": "6cbc02d620c8ffa3"
+          },
+          "processes": [
+            {
+              "alive": true,
+              "role": "server",
+              "token": "cd5a456c60ae3afa"
+            },
+            {
+              "alive": false,
+              "role": "runner",
+              "token": "1c4c50962e77d28f"
+            }
+          ],
+          "serverDescendantCount": 0
+        }
+      ],
+      "resourceObservations": {
+        "processGroupExistsAfterEscalation": false,
+        "runnerToken": "1c4c50962e77d28f"
+      },
+      "stateTransition": [
+        {
+          "at": "2026-11-03T11:14:49.881Z",
+          "executionCount": 2,
+          "kernelState": "dead",
+          "phase": "after-escalation",
+          "serverState": "ready",
+          "status": "kernel_killed"
+        }
+      ]
+    },
+    {
+      "cellSha256": "7341ae8d1db9fd22ca7189ed0125e853420e635e61c2634008119b3676f80c63",
+      "checks": [
+        {
+          "expected": "kernel_killed",
+          "name": "status",
+          "observed": "kernel_killed",
+          "passed": true
+        },
+        {
+          "expected": "dead",
+          "name": "kernelState",
+          "observed": "dead",
+          "passed": true
+        },
+        {
+          "expected": "ready",
+          "name": "serverState",
+          "observed": "ready",
+          "passed": true
+        },
+        {
+          "expected": false,
+          "name": "runnerReplacedImplicitly",
+          "observed": false,
+          "passed": true
+        },
+        {
+          "expected": "KernelExited",
+          "name": "runnerDeathErrorType",
+          "observed": "KernelExited",
+          "passed": true
+        },
+        {
+          "expected": "kernel_killed",
+          "name": "unavailableStatus",
+          "observed": "kernel_killed",
+          "passed": true
+        },
+        {
+          "expected": "KernelUnavailable",
+          "name": "unavailableErrorType",
+          "observed": "KernelUnavailable",
+          "passed": true
+        },
+        {
+          "expected": 2,
+          "name": "executionCountUnchanged",
+          "observed": 2,
+          "passed": true
+        },
+        {
+          "expected": true,
+          "name": "cleanupCompleted",
+          "observed": true,
+          "passed": true
+        }
+      ],
+      "cleanup": {
+        "artifactRootRemoved": true,
+        "attempted": true,
+        "completed": true,
+        "forcedCleanup": false,
+        "managedArtifactsRemaining": 0,
+        "managedProcessesRemaining": 0,
+        "processGroupRemoved": true,
+        "runnerExited": true,
+        "serverExited": true
+      },
+      "durationMs": 763,
+      "errorType": null,
+      "expected": {
+        "kernelState": "dead",
+        "runnerReplacedImplicitly": false,
+        "serverState": "ready",
+        "status": "kernel_killed"
+      },
+      "expectedSha256": "d940d01be68506f0c7535906aef2714943a4856d05b4f188603c91a3f176a7ed",
+      "id": "runner-channel-death",
+      "limitations": [
+        "This row terminates the runner process; it does not exercise a live but malformed private-control protocol."
+      ],
+      "observed": {
+        "kernelState": "dead",
+        "runnerReplacedImplicitly": false,
+        "serverState": "ready",
+        "status": "kernel_killed"
+      },
+      "operation": "Terminate the managed runner while a request is active.",
+      "outcome": "passed",
+      "processObservations": [
+        {
+          "at": "2026-11-03T11:14:50.600Z",
+          "managedProcessCount": 2,
+          "phase": "after-identity",
+          "processGroup": {
+            "exists": true,
+            "token": "943836e1b5e5aaff"
+          },
+          "processes": [
+            {
+              "alive": true,
+              "role": "server",
+              "token": "3f837e3a74a8ffbb"
+            },
+            {
+              "alive": true,
+              "role": "runner",
+              "token": "13600e915d768c8b"
+            }
+          ],
+          "serverDescendantCount": 1
+        },
+        {
+          "at": "2026-11-03T11:14:50.647Z",
+          "managedProcessCount": 1,
+          "phase": "after-runner-death",
+          "processGroup": {
+            "exists": false,
+            "token": "943836e1b5e5aaff"
+          },
+          "processes": [
+            {
+              "alive": true,
+              "role": "server",
+              "token": "3f837e3a74a8ffbb"
+            },
+            {
+              "alive": false,
+              "role": "runner",
+              "token": "13600e915d768c8b"
+            }
+          ],
+          "serverDescendantCount": 0
+        }
+      ],
+      "resourceObservations": {
+        "processGroupExistsAfterDeath": false,
+        "runnerToken": "13600e915d768c8b"
+      },
+      "stateTransition": [
+        {
+          "at": "2026-11-03T11:14:50.647Z",
+          "executionCount": 2,
+          "kernelState": "dead",
+          "phase": "after-runner-death",
+          "serverState": "ready",
+          "status": "kernel_killed"
+        }
+      ]
+    },
+    {
+      "cellSha256": "fe7c6b06781faff4e1f844972f037f68d52de54090a95680ef79e63fcc69bb59",
+      "checks": [
+        {
+          "expected": "failed",
+          "name": "status",
+          "observed": "failed",
+          "passed": true
+        },
+        {
+          "expected": "alive",
+          "name": "kernelState",
+          "observed": "alive",
+          "passed": true
+        },
+        {
+          "expected": "OutputLimitExceeded",
+          "name": "errorType",
+          "observed": "OutputLimitExceeded",
+          "passed": true
+        },
+        {
+          "expected": true,
+          "name": "drainCompleted",
+          "observed": true,
+          "passed": true
+        },
+        {
+          "expected": true,
+          "name": "continuationVerified",
+          "observed": true,
+          "passed": true
+        },
+        {
+          "expected": "application/vnd.amkernel.artifact-manifest+json",
+          "name": "stdoutManifestMime",
+          "observed": "application/vnd.amkernel.artifact-manifest+json",
+          "passed": true
+        },
+        {
+          "expected": 268435456,
+          "name": "outputLimitBytes",
+          "observed": 268435456,
+          "passed": true
+        },
+        {
+          "expected": 268435461,
+          "name": "totalOutputBytes",
+          "observed": 268435461,
+          "passed": true
+        },
+        {
+          "expected": 5,
+          "name": "discardedTailBytes",
+          "observed": 5,
+          "passed": true
+        },
+        {
+          "expected": 32,
+          "name": "stdoutArtifactParts",
+          "observed": 32,
+          "passed": true
+        },
+        {
+          "expected": 3,
+          "name": "continuationExecutionCount",
+          "observed": 3,
+          "passed": true
+        },
+        {
+          "expected": true,
+          "name": "cleanupCompleted",
+          "observed": true,
+          "passed": true
+        }
+      ],
+      "cleanup": {
+        "artifactRootRemoved": true,
+        "attempted": true,
+        "completed": true,
+        "forcedCleanup": false,
+        "managedArtifactsRemaining": 0,
+        "managedProcessesRemaining": 0,
+        "processGroupRemoved": true,
+        "runnerExited": true,
+        "serverExited": true
+      },
+      "durationMs": 20848,
+      "errorType": null,
+      "expected": {
+        "continuationVerified": true,
+        "drainCompleted": true,
+        "errorType": "OutputLimitExceeded",
+        "kernelState": "alive",
+        "status": "failed"
+      },
+      "expectedSha256": "d40490b229993abd0ff745291c07d1bdefe371c227cd3e4a1fca68969c88336e",
+      "id": "output-limit-drain",
+      "limitations": [],
+      "observed": {
+        "continuationVerified": true,
+        "drainCompleted": true,
+        "errorType": "OutputLimitExceeded",
+        "kernelState": "alive",
+        "status": "failed"
+      },
+      "operation": "Cross the output ceiling and confirm stream draining and bounded diagnostics.",
+      "outcome": "passed",
+      "processObservations": [
+        {
+          "at": "2026-11-03T11:14:51.429Z",
+          "managedProcessCount": 2,
+          "phase": "after-identity",
+          "processGroup": {
+            "exists": true,
+            "token": "814e9f14e28bcc24"
+          },
+          "processes": [
+            {
+              "alive": true,
+              "role": "server",
+              "token": "63cc833f2eddd64c"
+            },
+            {
+              "alive": true,
+              "role": "runner",
+              "token": "227ddb607f713102"
+            }
+          ],
+          "serverDescendantCount": 1
+        },
+        {
+          "at": "2026-11-03T11:15:11.411Z",
+          "managedProcessCount": 2,
+          "phase": "after-output-limit",
+          "processGroup": {
+            "exists": true,
+            "token": "814e9f14e28bcc24"
+          },
+          "processes": [
+            {
+              "alive": true,
+              "role": "server",
+              "token": "63cc833f2eddd64c"
+            },
+            {
+              "alive": true,
+              "role": "runner",
+              "token": "227ddb607f713102"
+            }
+          ],
+          "serverDescendantCount": 1
+        }
+      ],
+      "resourceObservations": {
+        "manifestVerifiedBytes": 268435456,
+        "stdoutArtifactSha256": "8531f9720e3f5ce15fde831a4c677c501b3ef320d4f156c1248299cd9955392d",
+        "stdoutArtifactSize": 268435456,
+        "stdoutManifestPartCount": 32,
+        "store": {
+          "artifactFiles": 33,
+          "artifactRootRemoved": false,
+          "artifactRoots": 1,
+          "managedBytes": 268442452
+        }
+      },
+      "stateTransition": [
+        {
+          "at": "2026-11-03T11:15:11.337Z",
+          "executionCount": 2,
+          "kernelState": "alive",
+          "phase": "after-output-limit",
+          "serverState": "ready",
+          "status": "failed"
+        }
+      ]
+    },
+    {
+      "cellSha256": "8b50f9fe917c7c9e8a4fa61e4aee12df74de6a3bfaf2d0c1ad483a9842a6b55d",
+      "checks": [
+        {
+          "expected": "verified",
+          "name": "initialRead",
+          "observed": "verified",
+          "passed": true
+        },
+        {
+          "expected": "rejected",
+          "name": "tamperedRead",
+          "observed": "rejected",
+          "passed": true
+        },
+        {
+          "expected": "not_found",
+          "name": "expiredRead",
+          "observed": "not_found",
+          "passed": true
+        },
+        {
+          "expected": true,
+          "name": "remainingManagedBytesWithinCeiling",
+          "observed": true,
+          "passed": true
+        },
+        {
+          "expected": "manifest",
+          "name": "multipartRepresentation",
+          "observed": "manifest",
+          "passed": true
+        },
+        {
+          "expected": 8388609,
+          "name": "initialManifestBytes",
+          "observed": 8388609,
+          "passed": true
+        },
+        {
+          "expected": "application/vnd.amkernel.artifact-manifest+json",
+          "name": "manifestMime",
+          "observed": "application/vnd.amkernel.artifact-manifest+json",
+          "passed": true
+        },
+        {
+          "expected": 1,
+          "name": "tamperMatchCount",
+          "observed": 1,
+          "passed": true
+        },
+        {
+          "expected": "resource integrity failure",
+          "name": "tamperError",
+          "observed": "resource integrity failure",
+          "passed": true
+        },
+        {
+          "expected": 10,
+          "name": "expiryExecutionCount",
+          "observed": 10,
+          "passed": true
+        },
+        {
+          "expected": "resource not found",
+          "name": "expiryError",
+          "observed": "resource not found",
+          "passed": true
+        },
+        {
+          "expected": true,
+          "name": "managedBytesCeiling",
+          "observed": true,
+          "passed": true
+        },
+        {
+          "expected": true,
+          "name": "cleanupCompleted",
+          "observed": true,
+          "passed": true
+        }
+      ],
+      "cleanup": {
+        "artifactRootRemoved": true,
+        "attempted": true,
+        "completed": true,
+        "forcedCleanup": false,
+        "managedArtifactsRemaining": 0,
+        "managedProcessesRemaining": 0,
+        "processGroupRemoved": true,
+        "runnerExited": true,
+        "serverExited": true
+      },
+      "durationMs": 7323,
+      "errorType": null,
+      "expected": {
+        "expiredRead": "not_found",
+        "initialRead": "verified",
+        "remainingManagedBytesWithinCeiling": true,
+        "tamperedRead": "rejected"
+      },
+      "expectedSha256": "4100eb10764218f5fbfc4075207631739388e0ae5de4ed3240af09cd96d4e2c3",
+      "id": "artifact-integrity-expiry",
+      "limitations": [],
+      "observed": {
+        "expiredRead": "not_found",
+        "initialRead": "verified",
+        "remainingManagedBytesWithinCeiling": true,
+        "tamperedRead": "rejected"
+      },
+      "operation": "Read a multipart artifact, detect tampering, then force managed-store eviction.",
+      "outcome": "passed",
+      "processObservations": [
+        {
+          "at": "2026-11-03T11:15:12.455Z",
+          "managedProcessCount": 2,
+          "phase": "after-identity",
+          "processGroup": {
+            "exists": true,
+            "token": "14b78688f6aa8db5"
+          },
+          "processes": [
+            {
+              "alive": true,
+              "role": "server",
+              "token": "a500ac714945c6ef"
+            },
+            {
+              "alive": true,
+              "role": "runner",
+              "token": "b9550f5771834499"
+            }
+          ],
+          "serverDescendantCount": 1
+        },
+        {
+          "at": "2026-11-03T11:15:18.676Z",
+          "managedProcessCount": 2,
+          "phase": "after-expiry",
+          "processGroup": {
+            "exists": true,
+            "token": "14b78688f6aa8db5"
+          },
+          "processes": [
+            {
+              "alive": true,
+              "role": "server",
+              "token": "a500ac714945c6ef"
+            },
+            {
+              "alive": true,
+              "role": "runner",
+              "token": "b9550f5771834499"
+            }
+          ],
+          "serverDescendantCount": 1
+        }
+      ],
+      "resourceObservations": {
+        "fillerBytesPerExecution": 268369920,
+        "fillerExecutions": 7,
+        "manifestPartCount": 2,
+        "multipartBytes": 8388609,
+        "storeAfterEviction": {
+          "artifactFiles": 198,
+          "artifactRootRemoved": false,
+          "artifactRoots": 1,
+          "managedBytes": 1610261496
+        },
+        "storeCeilingBytes": 2147483648,
+        "tamperedPartIndex": 0,
+        "tamperedPartSha256": "6b59425c5bf6585e132f7e6b520623ea2ac76484f1a4bde550313c5a05c08140"
+      },
+      "stateTransition": [
+        {
+          "at": "2026-11-03T11:15:18.613Z",
+          "executionCount": 10,
+          "kernelState": "alive",
+          "phase": "after-expiry",
+          "serverState": "ready",
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "cellSha256": "fc460231098d10e61427cf46c99d51d061d82d5749e8fdd723cb8ce55132ae21",
+      "checks": [
+        {
+          "expected": "exited",
+          "name": "serverState",
+          "observed": "exited",
+          "passed": true
+        },
+        {
+          "expected": "dead",
+          "name": "kernelState",
+          "observed": "dead",
+          "passed": true
+        },
+        {
+          "expected": 0,
+          "name": "managedProcessesRemaining",
+          "observed": 0,
+          "passed": true
+        },
+        {
+          "expected": 0,
+          "name": "managedArtifactsRemaining",
+          "observed": 0,
+          "passed": true
+        },
+        {
+          "expected": 1,
+          "name": "toolCountDuringActiveRun",
+          "observed": 1,
+          "passed": true
+        },
+        {
+          "expected": true,
+          "name": "activeRunnerAlive",
+          "observed": true,
+          "passed": true
+        },
+        {
+          "expected": true,
+          "name": "activeChildAlive",
+          "observed": true,
+          "passed": true
+        },
+        {
+          "expected": true,
+          "name": "activeExecutionAborted",
+          "observed": true,
+          "passed": true
+        },
+        {
+          "expected": true,
+          "name": "cleanupCompleted",
+          "observed": true,
+          "passed": true
+        }
+      ],
+      "cleanup": {
+        "artifactRootRemoved": true,
+        "attempted": true,
+        "completed": true,
+        "forcedCleanup": false,
+        "managedArtifactsRemaining": 0,
+        "managedProcessesRemaining": 0,
+        "processGroupRemoved": true,
+        "runnerExited": true,
+        "serverExited": true
+      },
+      "durationMs": 2765,
+      "errorType": null,
+      "expected": {
+        "kernelState": "dead",
+        "managedArtifactsRemaining": 0,
+        "managedProcessesRemaining": 0,
+        "serverState": "exited"
+      },
+      "expectedSha256": "7b1656aacfc2f867b14713e3d3a9cbbdae645e2f0d18fb902e4c828ccea7e395",
+      "id": "cancellation-cleanup",
+      "limitations": [
+        "Cancellation is exercised by closing the client transport during an active call; this row does not claim a separate MCP cancellation notification."
+      ],
+      "observed": {
+        "kernelState": "dead",
+        "managedArtifactsRemaining": 0,
+        "managedProcessesRemaining": 0,
+        "serverState": "exited"
+      },
+      "operation": "Cancel the server task during an active execution and observe process/resource cleanup.",
+      "outcome": "passed",
+      "processObservations": [
+        {
+          "at": "2026-11-03T11:15:19.637Z",
+          "managedProcessCount": 3,
+          "phase": "active-execution",
+          "processGroup": {
+            "exists": true,
+            "token": "63223926f1c519e7"
+          },
+          "processes": [
+            {
+              "alive": true,
+              "role": "server",
+              "token": "9e7b03b408ee8e22"
+            },
+            {
+              "alive": true,
+              "role": "runner",
+              "token": "eb779a1ed28a79c7"
+            },
+            {
+              "alive": true,
+              "role": "child",
+              "token": "27b405f1fc918209"
+            }
+          ],
+          "serverDescendantCount": 2
+        }
+      ],
+      "resourceObservations": {
+        "activeExecutionAborted": "MCPError",
+        "runnerGroupToken": "63223926f1c519e7"
+      },
+      "stateTransition": [
+        {
+          "at": "2026-11-03T11:15:19.637Z",
+          "executionCount": 1,
+          "kernelState": "alive",
+          "phase": "active-execution",
+          "serverState": "ready"
+        },
+        {
+          "at": "2026-11-03T11:15:21.676Z",
+          "executionCount": 1,
+          "kernelState": "dead",
+          "phase": "client-closed-during-active-execution",
+          "serverState": "exited"
+        }
+      ]
+    }
+  ],
+  "cellsSha256": "df44761764165d2759dcd5f5d55208dfb24f01cc66952e55986ac7f233e40cce",
+  "contentSha256": "43c8192b642ded9bd3edfd6f320754aa7950483520bcf73b3facb8bfb9574836",
+  "createdAt": "2026-11-03T11:15:22.264Z",
+  "dispatch": {
+    "job": "process-matrix",
+    "ref": "refs/pull/118/merge",
+    "repository": "FSQ-lab/amkernel",
+    "runAttempt": "1",
+    "runId": "41625606905",
+    "sha": "46495b43522b99d23b77125cd0a8ecfb304086d2",
+    "workflow": "Cross-OS process evidence",
+    "workflowRef": "FSQ-lab/amkernel/.github/workflows/cross-os-process-evidence.yml@refs/pull/118/merge"
+  },
+  "environment": {
+    "declaredPlatform": "macos-latest",
+    "entryPoint": {
+      "executable": true,
+      "name": "amkernel",
+      "present": true
+    },
+    "matrixPlatform": "macos-latest",
+    "os": {
+      "machine": "arm64",
+      "platform": "macOS-26.6.2-arm64-arm-64bit",
+      "release": "25.6.0",
+      "system": "Darwin",
+      "version": "Darwin Kernel Version 25.6.0: Fri Jul 31 19:16:43 PDT 2026; root:xnu-12377.161.14~5/RELEASE_ARM64_VMAPPLE"
+    },
+    "platformDeclarationMatches": true,
+    "python": {
+      "implementation": "CPython",
+      "isVenvLauncher": true,
+      "majorMinor": "3.11",
+      "version": "3.11.9"
+    },
+    "runner": {
+      "arch": "ARM64",
+      "image": "macos26",
+      "os": "macOS"
+    },
+    "wheel": {
+      "entryPointVersionOutput": "amkernel 0.1.1",
+      "filename": "amkernel-0.1.1-py3-none-any.whl",
+      "installedVersion": "0.1.1",
+      "sha256": "4c3029c083fecef50871636ce2d90670c5b54738a93aa141a83f558e3c6f1e77",
+      "sizeBytes": 187531,
+      "version": "0.1.1"
+    }
+  },
+  "executionContext": "hosted",
+  "limitations": [
+    "Only the frozen matrix rows were observed; this record makes no Windows, Android, or iOS claim.",
+    "Process identity is represented by per-run opaque tokens; raw PIDs, paths, hostnames, and private content are not retained.",
+    "Cleanup covers only the AMKernel-managed server, runner process group, and artifact root; external host resources are not claimed.",
+    "Independent lifecycle review is required and is not self-attested by this record."
+  ],
+  "matrix": {
+    "id": "amkernel-cross-os-process-v1",
+    "platforms": [
+      "ubuntu-latest",
+      "macos-latest"
+    ],
+    "pythonVersions": [
+      "3.11",
+      "3.13"
+    ],
+    "requiredEvidence": [
+      "operating-system-identity",
+      "python-identity",
+      "wheel-identity",
+      "per-row-state-transition",
+      "process-observations",
+      "resource-observations",
+      "cleanup-outcome",
+      "review-disposition"
+    ],
+    "rowIds": [
+      "installed-startup",
+      "normal-shutdown",
+      "destructive-reset",
+      "timeout-survives",
+      "timeout-escalates",
+      "runner-channel-death",
+      "output-limit-drain",
+      "artifact-integrity-expiry",
+      "cancellation-cleanup"
+    ],
+    "unsupportedPlatforms": [
+      {
+        "platform": "windows",
+        "reason": "AMKernel Runtime is POSIX-only; Windows requires a separate accepted platform decision."
+      }
+    ]
+  },
+  "recordId": "amkernel-cross-os-process-v1-9914cf9608a548f5938f8cecab8257ed",
+  "recordKind": "amkernel-cross-os-process-matrix",
+  "review": {
+    "disposition": "pending-independent-lifecycle-review",
+    "required": true
+  },
+  "schemaVersion": 1,
+  "sources": {
+    "contracts": [
+      {
+        "path": "docs/decisions/0003-stage-1-execution-contract.md",
+        "sha256": "1729744f63fb54b8b3da21fa8707e4ee662133fcabaa9264b5b6ef6b7078f176"
+      },
+      {
+        "path": "docs/decisions/0004-stage-1-runner-protocol.md",
+        "sha256": "0e3bf6ddf1d6360ba4ac589d6fe366d641a7f17483aab9a6fecd9c1367857365"
+      },
+      {
+        "path": "docs/decisions/0005-stage-1-runtime-lifecycle.md",
+        "sha256": "56356085094aff0f40b6ebdfcdd9c6c6bbbb0ef1ffd07e6c9606439cd01a9137"
+      },
+      {
+        "path": "docs/decisions/0006-stage-2-output-and-artifact-contract.md",
+        "sha256": "e43c412484d086e65591cc849c0e5ade1e1b00fcd9ddbbf0c3e85a25a53f8e9c"
+      }
+    ],
+    "harness": {
+      "path": "tests/e2e/cross_os_process_matrix.py",
+      "sha256": "19b8299016de348ace6d9807ad8d09dd99fd4f1991a32791c6e23b06653b269b"
+    },
+    "lock": {
+      "path": "uv.lock",
+      "sha256": "e9743288c9e891dee8155d216756152222f54dd82218a1b5e0b3a0645127e967"
+    },
+    "matrix": {
+      "path": "tests/fixtures/cross_client/process-matrix.json",
+      "sha256": "2a009eed823ec5d9df216a129ee8aabdb18486defe191c6ca181eb5a60171580"
+    },
+    "wheel": {
+      "filename": "amkernel-0.1.1-py3-none-any.whl",
+      "packageFileCount": 20,
+      "packageSha256": "f42451b99eea9d675da1c7a7214ee9f9b0333cb1e7792fd63b34963e1b0277f3",
+      "sha256": "4c3029c083fecef50871636ce2d90670c5b54738a93aa141a83f558e3c6f1e77",
+      "sizeBytes": 187531,
+      "sourceRevision": "46495b43522b99d23b77125cd0a8ecfb304086d2",
+      "sourceRootKind": "pinned-release-source"
+    }
+  }
+}

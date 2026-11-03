@@ -189,6 +189,10 @@ Issue #81 remains open until the configured provider and client can execute the
 unchanged deterministic and naturalistic layers; no alternate provider, credential
 or persistent configuration was silently introduced.
 
+These corrections and blocked-reference evidence merged through PR #117 at
+`771397f96fb0d3c2d2d0278443c0a9d4cb1fe0dc` after all eight PR CI jobs passed
+in `41623314474`. The merge does not qualify either Codex evaluation layer.
+
 ## Post-release core CI defects
 
 Exact-main CI `41618289181` at `43114989275d6e287dc506c2cc2fd614d1f383da`
@@ -231,7 +235,7 @@ eight jobs after the merge; this is separate from the original failed run.
 
 The S4-030 runner executes the unchanged nine-row matrix through an installed
 wheel in isolated workspaces. The hosted workflow covers Ubuntu/macOS with
-CPython 3.11/3.13, retains existing failed reports and validation summaries, and
+CPython 3.11/3.13, retains existing failed reports, emits validation summaries, and
 combines only records bound to the exact workflow invocation and wheel identity.
 An optional published wheel requires its digest and a separate pinned source
 checkout; package bytes are compared with that source rather than the newer
@@ -246,14 +250,28 @@ and post-fix rejections: self-approved review, altered frozen matrix metadata,
 and contradictory timeout transition status. Those mutations are synthetic
 validator checks, not platform observations.
 
+Hosted run `41625606905`, attempt 1, observed all 36 cells passing across the four
+environments. Original reports, the unchanged pending-review index and selected
+actual matrix/validation/aggregation logs are retained under
+`evidence/stage-4/process/source-41625606905/`. Parent aggregation reproduced
+index hash `3a3199a9bab97f715554318b9bb7e17cba4041cac331c9b03cb54a4b6daa3fbc`.
+This run built current source at PR merge SHA
+`46495b43522b99d23b77125cd0a8ecfb304086d2`, not head-branch SHA
+`737bbd09a5874d1b0131b9dafaa4ab6f4db4dc9e`. Its wheel digest is
+`4c3029c083fecef50871636ce2d90670c5b54738a93aa141a83f558e3c6f1e77`;
+this includes unreleased fixes and is not published-0.1.1 qualification.
+
 Independent static Runner and validator reviews found 0 Blocker/Major/Minor findings. The
 normal-shutdown bound excludes the SDK's later escalation path by elapsed time,
 not signal tracing. Cancellation's final count derives from its single executing
 request; no terminal response is received after disconnect. Descendant reset
 ordering, live malformed-control injection, and separate MCP cancellation
 notifications remain outside this frozen matrix. Windows, Android and iOS are
-not claimed. Hosted execution and retained aggregate evidence remain required
-before closing #79.
+not claimed. Independent lifecycle and provenance/privacy evidence reviews each
+found 0 Blocker/Major/Minor findings; `review.json` records acceptance separately
+without rewriting the original pending-review reports/index. The retained
+`sourceRootKind=pinned-release-source` denotes a separate source directory, not
+verified publication. The actual digest and source revision above control claims.
 
 ## What was tried
 

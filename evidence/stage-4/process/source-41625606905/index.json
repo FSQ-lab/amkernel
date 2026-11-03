@@ -1,0 +1,490 @@
+{
+  "createdAt": "2026-11-03T11:15:22.264Z",
+  "environments": [
+    {
+      "cells": [
+        {
+          "cellSha256": "8d75cce21dbf560229362eebcffae3500302524008104415beba0d52b5965acb",
+          "checksPassed": 7,
+          "checksTotal": 7,
+          "id": "installed-startup",
+          "outcome": "passed"
+        },
+        {
+          "cellSha256": "67096515d356c1104d70a1ea459e65286c0c63775f4673204d8b986e1ee37948",
+          "checksPassed": 7,
+          "checksTotal": 7,
+          "id": "normal-shutdown",
+          "outcome": "passed"
+        },
+        {
+          "cellSha256": "9390fc7068fa35a65ab5bc9e917aeff92a0aae97c360d4030073c584713d41b4",
+          "checksPassed": 7,
+          "checksTotal": 7,
+          "id": "destructive-reset",
+          "outcome": "passed"
+        },
+        {
+          "cellSha256": "2f29ac9409f7f32425f1aa0e8bb9ecd4720f3e7aec9a9fb6fda62e95fee8f685",
+          "checksPassed": 7,
+          "checksTotal": 7,
+          "id": "timeout-survives",
+          "outcome": "passed"
+        },
+        {
+          "cellSha256": "0141eea2071bc0aa5e124793602ba8bd687ac9b33415efda0413bbecb099babc",
+          "checksPassed": 9,
+          "checksTotal": 9,
+          "id": "timeout-escalates",
+          "outcome": "passed"
+        },
+        {
+          "cellSha256": "ff1cd75858da5b18cb94da3661d127ce81cb8668e66087f4050894be28bf2da7",
+          "checksPassed": 9,
+          "checksTotal": 9,
+          "id": "runner-channel-death",
+          "outcome": "passed"
+        },
+        {
+          "cellSha256": "b3b10eb060d7f010cca0cf6d95e3ff678ed3e990273c12b46a93ba1e32b27c17",
+          "checksPassed": 12,
+          "checksTotal": 12,
+          "id": "output-limit-drain",
+          "outcome": "passed"
+        },
+        {
+          "cellSha256": "484403fdda215734e8b630e9281e5826e84f73988949d20f27e44482f26e72fa",
+          "checksPassed": 13,
+          "checksTotal": 13,
+          "id": "artifact-integrity-expiry",
+          "outcome": "passed"
+        },
+        {
+          "cellSha256": "f87f671142b9f096349fbe5f3d3b9399ab7b51c5095a4802f99245a19f567358",
+          "checksPassed": 9,
+          "checksTotal": 9,
+          "id": "cancellation-cleanup",
+          "outcome": "passed"
+        }
+      ],
+      "environmentId": "ubuntu-latest-cpython-3.11",
+      "evidenceFile": "process-evidence-ubuntu-latest-cpython-3.11.json",
+      "evidenceSha256": "4d274d8a0dedfdddf6d2d919141e5cbc719d6d40fbb80c1d9dc34166d517ab17",
+      "matrixPlatform": "ubuntu-latest",
+      "os": {
+        "machine": "x86_64",
+        "platform": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.43",
+        "release": "7.0.0-1017-azure",
+        "system": "Linux",
+        "version": "#17-Ubuntu SMP PREEMPT Thu Sep 24 15:54:51 UTC 2026"
+      },
+      "python": {
+        "implementation": "CPython",
+        "isVenvLauncher": true,
+        "majorMinor": "3.11",
+        "version": "3.11.17"
+      },
+      "pythonMajorMinor": "3.11",
+      "recordContentSha256": "541c39e89c91382f210aa578d33fdac5ad674cf825431e97b145b6fe5695af0c",
+      "runner": {
+        "arch": "X64",
+        "image": "ubuntu26",
+        "os": "Linux"
+      },
+      "wheel": {
+        "entryPointVersionOutput": "amkernel 0.1.1",
+        "filename": "amkernel-0.1.1-py3-none-any.whl",
+        "installedVersion": "0.1.1",
+        "sha256": "4c3029c083fecef50871636ce2d90670c5b54738a93aa141a83f558e3c6f1e77",
+        "sizeBytes": 187531,
+        "version": "0.1.1"
+      }
+    },
+    {
+      "cells": [
+        {
+          "cellSha256": "5d1cd79e7346cc76a5c73570560397fc1191b714210c0b3f21c4625d0e04dde0",
+          "checksPassed": 7,
+          "checksTotal": 7,
+          "id": "installed-startup",
+          "outcome": "passed"
+        },
+        {
+          "cellSha256": "ba2d82631c2a1c933d5eb9b5f46b726a8b23b4fda24f3e3d0aa88d168a365b05",
+          "checksPassed": 7,
+          "checksTotal": 7,
+          "id": "normal-shutdown",
+          "outcome": "passed"
+        },
+        {
+          "cellSha256": "b09371aaae1b5a9b4b1c435eb65f78ace9807c4dfeb6f91ea919136a2756ba11",
+          "checksPassed": 7,
+          "checksTotal": 7,
+          "id": "destructive-reset",
+          "outcome": "passed"
+        },
+        {
+          "cellSha256": "f734c8e7428f0c2394cc47bea3cfa3c7cfde6a0f98563aa2f50c24cc82264e09",
+          "checksPassed": 7,
+          "checksTotal": 7,
+          "id": "timeout-survives",
+          "outcome": "passed"
+        },
+        {
+          "cellSha256": "0868998f45c6d401805f1f5ccc4044bcf98cb17be0be78b8c73beddcf7015a1e",
+          "checksPassed": 9,
+          "checksTotal": 9,
+          "id": "timeout-escalates",
+          "outcome": "passed"
+        },
+        {
+          "cellSha256": "2b26f649082b084791b9a035b0270a6b682b05a6f18304f810edb6959944c286",
+          "checksPassed": 9,
+          "checksTotal": 9,
+          "id": "runner-channel-death",
+          "outcome": "passed"
+        },
+        {
+          "cellSha256": "c8bfd79ec317c808696043d4af2576a96c5aaaff23c0d732bb576176167c20b6",
+          "checksPassed": 12,
+          "checksTotal": 12,
+          "id": "output-limit-drain",
+          "outcome": "passed"
+        },
+        {
+          "cellSha256": "871d26f63e64e2433cc8dc806f356ffcffe3052d3403cba118e0e7b33245beb9",
+          "checksPassed": 13,
+          "checksTotal": 13,
+          "id": "artifact-integrity-expiry",
+          "outcome": "passed"
+        },
+        {
+          "cellSha256": "7d20059d432030ac250008f6ded0b180f12c653ed7011c3836c94bbdfa64db6b",
+          "checksPassed": 9,
+          "checksTotal": 9,
+          "id": "cancellation-cleanup",
+          "outcome": "passed"
+        }
+      ],
+      "environmentId": "ubuntu-latest-cpython-3.13",
+      "evidenceFile": "process-evidence-ubuntu-latest-cpython-3.13.json",
+      "evidenceSha256": "d9fc3cf5d814c899fb2a9ff472c08425516d7ac39edada3a0c469c398c91adbf",
+      "matrixPlatform": "ubuntu-latest",
+      "os": {
+        "machine": "x86_64",
+        "platform": "Linux-7.0.0-1014-aws-x86_64-with-glibc2.43",
+        "release": "7.0.0-1014-aws",
+        "system": "Linux",
+        "version": "#14-Ubuntu SMP PREEMPT Thu Sep 17 19:08:36 UTC 2026"
+      },
+      "python": {
+        "implementation": "CPython",
+        "isVenvLauncher": true,
+        "majorMinor": "3.13",
+        "version": "3.13.16"
+      },
+      "pythonMajorMinor": "3.13",
+      "recordContentSha256": "31cdad1a66f5b75980c0f26e8aa7ea2c13630fd70dd0fafec189b7a22194ef4c",
+      "runner": {
+        "arch": "X64",
+        "image": "ubuntu26",
+        "os": "Linux"
+      },
+      "wheel": {
+        "entryPointVersionOutput": "amkernel 0.1.1",
+        "filename": "amkernel-0.1.1-py3-none-any.whl",
+        "installedVersion": "0.1.1",
+        "sha256": "4c3029c083fecef50871636ce2d90670c5b54738a93aa141a83f558e3c6f1e77",
+        "sizeBytes": 187531,
+        "version": "0.1.1"
+      }
+    },
+    {
+      "cells": [
+        {
+          "cellSha256": "e378348eb6abfca1dacc20cc59f936d790466e9ded10b1763f25002583c562e6",
+          "checksPassed": 7,
+          "checksTotal": 7,
+          "id": "installed-startup",
+          "outcome": "passed"
+        },
+        {
+          "cellSha256": "30ab708ca2cd3727fc6eb766bd38e1be912302c9317c6e11dfb8a4856cde8635",
+          "checksPassed": 7,
+          "checksTotal": 7,
+          "id": "normal-shutdown",
+          "outcome": "passed"
+        },
+        {
+          "cellSha256": "ca689b0a44c8f97dbdd3b54095a91345a13994aecf033116c6779638ad825b6d",
+          "checksPassed": 7,
+          "checksTotal": 7,
+          "id": "destructive-reset",
+          "outcome": "passed"
+        },
+        {
+          "cellSha256": "1a7e274060d30836c9c26d52aa704e0c6726b4c4870986f338d2145d9cdbb53b",
+          "checksPassed": 7,
+          "checksTotal": 7,
+          "id": "timeout-survives",
+          "outcome": "passed"
+        },
+        {
+          "cellSha256": "81d6f2c433264ca56298df3fba08d00db44910294ee5c86130d476dbc1d65f7b",
+          "checksPassed": 9,
+          "checksTotal": 9,
+          "id": "timeout-escalates",
+          "outcome": "passed"
+        },
+        {
+          "cellSha256": "7341ae8d1db9fd22ca7189ed0125e853420e635e61c2634008119b3676f80c63",
+          "checksPassed": 9,
+          "checksTotal": 9,
+          "id": "runner-channel-death",
+          "outcome": "passed"
+        },
+        {
+          "cellSha256": "fe7c6b06781faff4e1f844972f037f68d52de54090a95680ef79e63fcc69bb59",
+          "checksPassed": 12,
+          "checksTotal": 12,
+          "id": "output-limit-drain",
+          "outcome": "passed"
+        },
+        {
+          "cellSha256": "8b50f9fe917c7c9e8a4fa61e4aee12df74de6a3bfaf2d0c1ad483a9842a6b55d",
+          "checksPassed": 13,
+          "checksTotal": 13,
+          "id": "artifact-integrity-expiry",
+          "outcome": "passed"
+        },
+        {
+          "cellSha256": "fc460231098d10e61427cf46c99d51d061d82d5749e8fdd723cb8ce55132ae21",
+          "checksPassed": 9,
+          "checksTotal": 9,
+          "id": "cancellation-cleanup",
+          "outcome": "passed"
+        }
+      ],
+      "environmentId": "macos-latest-cpython-3.11",
+      "evidenceFile": "process-evidence-macos-latest-cpython-3.11.json",
+      "evidenceSha256": "deef0a3f47d2966e01ef176e16024dc65025c4bf7c576988e58bc216d7d31e6c",
+      "matrixPlatform": "macos-latest",
+      "os": {
+        "machine": "arm64",
+        "platform": "macOS-26.6.2-arm64-arm-64bit",
+        "release": "25.6.0",
+        "system": "Darwin",
+        "version": "Darwin Kernel Version 25.6.0: Fri Jul 31 19:16:43 PDT 2026; root:xnu-12377.161.14~5/RELEASE_ARM64_VMAPPLE"
+      },
+      "python": {
+        "implementation": "CPython",
+        "isVenvLauncher": true,
+        "majorMinor": "3.11",
+        "version": "3.11.9"
+      },
+      "pythonMajorMinor": "3.11",
+      "recordContentSha256": "43c8192b642ded9bd3edfd6f320754aa7950483520bcf73b3facb8bfb9574836",
+      "runner": {
+        "arch": "ARM64",
+        "image": "macos26",
+        "os": "macOS"
+      },
+      "wheel": {
+        "entryPointVersionOutput": "amkernel 0.1.1",
+        "filename": "amkernel-0.1.1-py3-none-any.whl",
+        "installedVersion": "0.1.1",
+        "sha256": "4c3029c083fecef50871636ce2d90670c5b54738a93aa141a83f558e3c6f1e77",
+        "sizeBytes": 187531,
+        "version": "0.1.1"
+      }
+    },
+    {
+      "cells": [
+        {
+          "cellSha256": "867f9ca87c3af7a8fada346692866d695c7737d0e4cb49a3581d0ee591078348",
+          "checksPassed": 7,
+          "checksTotal": 7,
+          "id": "installed-startup",
+          "outcome": "passed"
+        },
+        {
+          "cellSha256": "aaae98f18c791dbab5ddaeb44046aaad98c1ab54bc46697f8611d0aa84ac3204",
+          "checksPassed": 7,
+          "checksTotal": 7,
+          "id": "normal-shutdown",
+          "outcome": "passed"
+        },
+        {
+          "cellSha256": "5a1f0e79631704ad3091206109b7c857a023b52b7bd9fc5bf39f6a6421df6f1e",
+          "checksPassed": 7,
+          "checksTotal": 7,
+          "id": "destructive-reset",
+          "outcome": "passed"
+        },
+        {
+          "cellSha256": "2446523364a94e0cc690a642714fb25229756839da29c6539972a3e9fe4642e4",
+          "checksPassed": 7,
+          "checksTotal": 7,
+          "id": "timeout-survives",
+          "outcome": "passed"
+        },
+        {
+          "cellSha256": "eb7eaff45cf8ae2a73a89fac6b93adcf75cfadfaecda40a7cf13b7276f16fc90",
+          "checksPassed": 9,
+          "checksTotal": 9,
+          "id": "timeout-escalates",
+          "outcome": "passed"
+        },
+        {
+          "cellSha256": "64c85fca6b50f2e8c48cf0d38436ea2c22fc6f34b21425ba2648ad2bfd213853",
+          "checksPassed": 9,
+          "checksTotal": 9,
+          "id": "runner-channel-death",
+          "outcome": "passed"
+        },
+        {
+          "cellSha256": "aeaeab8559b14c2bf19e749d24916776178079d296855fb55fdf701a901196f4",
+          "checksPassed": 12,
+          "checksTotal": 12,
+          "id": "output-limit-drain",
+          "outcome": "passed"
+        },
+        {
+          "cellSha256": "4df83d64e75f042764d566ca2a6f4dad4faeb6578e5871617166b5632e442296",
+          "checksPassed": 13,
+          "checksTotal": 13,
+          "id": "artifact-integrity-expiry",
+          "outcome": "passed"
+        },
+        {
+          "cellSha256": "42cc42c8d8ada0827b138fc69103b6d032bca5cc736c2b50554adc5ff76f5fcd",
+          "checksPassed": 9,
+          "checksTotal": 9,
+          "id": "cancellation-cleanup",
+          "outcome": "passed"
+        }
+      ],
+      "environmentId": "macos-latest-cpython-3.13",
+      "evidenceFile": "process-evidence-macos-latest-cpython-3.13.json",
+      "evidenceSha256": "ef9fd428703394916605bcdd6c25c6f42ae868cb2670b426531e279eb69ae411",
+      "matrixPlatform": "macos-latest",
+      "os": {
+        "machine": "arm64",
+        "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+        "release": "25.6.0",
+        "system": "Darwin",
+        "version": "Darwin Kernel Version 25.6.0: Fri Jul 31 19:16:43 PDT 2026; root:xnu-12377.161.14~5/RELEASE_ARM64_VMAPPLE"
+      },
+      "python": {
+        "implementation": "CPython",
+        "isVenvLauncher": true,
+        "majorMinor": "3.13",
+        "version": "3.13.17"
+      },
+      "pythonMajorMinor": "3.13",
+      "recordContentSha256": "7f0358f4c2a85222a5ebdc5338f9a415b68bb215861ef7cd326c54d3b6d6b50f",
+      "runner": {
+        "arch": "ARM64",
+        "image": "macos26",
+        "os": "macOS"
+      },
+      "wheel": {
+        "entryPointVersionOutput": "amkernel 0.1.1",
+        "filename": "amkernel-0.1.1-py3-none-any.whl",
+        "installedVersion": "0.1.1",
+        "sha256": "4c3029c083fecef50871636ce2d90670c5b54738a93aa141a83f558e3c6f1e77",
+        "sizeBytes": 187531,
+        "version": "0.1.1"
+      }
+    }
+  ],
+  "failures": [],
+  "indexKind": "amkernel-cross-os-process-matrix-index",
+  "indexSha256": "3a3199a9bab97f715554318b9bb7e17cba4041cac331c9b03cb54a4b6daa3fbc",
+  "invocation": {
+    "repository": "FSQ-lab/amkernel",
+    "runAttempt": "1",
+    "runId": "41625606905",
+    "sha": "46495b43522b99d23b77125cd0a8ecfb304086d2",
+    "workflow": "Cross-OS process evidence",
+    "workflowRef": "FSQ-lab/amkernel/.github/workflows/cross-os-process-evidence.yml@refs/pull/118/merge"
+  },
+  "limitations": [
+    "The index covers only the frozen POSIX process matrix; Windows, Android, and iOS are not claimed.",
+    "The index links retained per-environment evidence and does not replace independent lifecycle review.",
+    "Review disposition remains pending until the parent records its independent review."
+  ],
+  "matrix": {
+    "id": "amkernel-cross-os-process-v1",
+    "platforms": [
+      "ubuntu-latest",
+      "macos-latest"
+    ],
+    "pythonVersions": [
+      "3.11",
+      "3.13"
+    ],
+    "rowIds": [
+      "installed-startup",
+      "normal-shutdown",
+      "destructive-reset",
+      "timeout-survives",
+      "timeout-escalates",
+      "runner-channel-death",
+      "output-limit-drain",
+      "artifact-integrity-expiry",
+      "cancellation-cleanup"
+    ],
+    "sha256": "2a009eed823ec5d9df216a129ee8aabdb18486defe191c6ca181eb5a60171580",
+    "unsupportedPlatforms": [
+      {
+        "platform": "windows",
+        "reason": "AMKernel Runtime is POSIX-only; Windows requires a separate accepted platform decision."
+      }
+    ]
+  },
+  "outcome": "observed",
+  "review": {
+    "disposition": "pending-independent-lifecycle-review",
+    "required": true
+  },
+  "schemaVersion": 1,
+  "sources": {
+    "contracts": [
+      {
+        "path": "docs/decisions/0003-stage-1-execution-contract.md",
+        "sha256": "1729744f63fb54b8b3da21fa8707e4ee662133fcabaa9264b5b6ef6b7078f176"
+      },
+      {
+        "path": "docs/decisions/0004-stage-1-runner-protocol.md",
+        "sha256": "0e3bf6ddf1d6360ba4ac589d6fe366d641a7f17483aab9a6fecd9c1367857365"
+      },
+      {
+        "path": "docs/decisions/0005-stage-1-runtime-lifecycle.md",
+        "sha256": "56356085094aff0f40b6ebdfcdd9c6c6bbbb0ef1ffd07e6c9606439cd01a9137"
+      },
+      {
+        "path": "docs/decisions/0006-stage-2-output-and-artifact-contract.md",
+        "sha256": "e43c412484d086e65591cc849c0e5ade1e1b00fcd9ddbbf0c3e85a25a53f8e9c"
+      }
+    ],
+    "harnessSha256": "19b8299016de348ace6d9807ad8d09dd99fd4f1991a32791c6e23b06653b269b",
+    "lockSha256": "e9743288c9e891dee8155d216756152222f54dd82218a1b5e0b3a0645127e967",
+    "sourceRoot": "checkout"
+  },
+  "totals": {
+    "cells": 36,
+    "environments": 4,
+    "failedCells": 0,
+    "passedCells": 36
+  },
+  "wheel": {
+    "filename": "amkernel-0.1.1-py3-none-any.whl",
+    "packageFileCount": 20,
+    "packageSha256": "f42451b99eea9d675da1c7a7214ee9f9b0333cb1e7792fd63b34963e1b0277f3",
+    "sha256": "4c3029c083fecef50871636ce2d90670c5b54738a93aa141a83f558e3c6f1e77",
+    "sizeBytes": 187531,
+    "sourceRevision": "46495b43522b99d23b77125cd0a8ecfb304086d2",
+    "sourceRootKind": "pinned-release-source"
+  }
+}

@@ -164,9 +164,10 @@ Do not substitute the current harness revision for an older wheel's source.
 
 The installed runner is `tests/e2e/cross_os_process_matrix.py`; the separate
 `cross_os_process_evidence.py validate` and `combine` commands verify records and
-the aggregate index. Workflow artifacts retain per-environment JSON reports,
-validation summaries, and `process-evidence-index.json`, including failed reports
-that exist. Missing or cancelled environments cannot produce full qualification.
+the aggregate index. Workflow artifacts retain per-environment JSON reports and
+`process-evidence-index.json`, including failed reports that exist; validation
+summaries are emitted in the workflow logs. Missing or cancelled environments
+cannot produce full qualification.
 Local runs and synthetic validator mutations are not hosted matrix observations.
 The generated index deliberately keeps independent review pending; reviewers
 record disposition separately after inspecting actual retained evidence.

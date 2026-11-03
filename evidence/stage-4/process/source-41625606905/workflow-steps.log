@@ -1,0 +1,446 @@
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	﻿2026-11-03T11:12:55.4820752Z ##[group]Run set -euo pipefail
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:12:55.4821085Z ^[[36;1mset -euo pipefail^[[0m
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:12:55.4821541Z ^[[36;1mmkdir -p process-evidence^[[0m
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:12:55.4821996Z ^[[36;1m"$RUNNER_TEMP/process-venv/bin/python" tests/e2e/cross_os_process_matrix.py \^[[0m
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:12:55.4822465Z ^[[36;1m  --entry-point "$RUNNER_TEMP/process-venv/bin/amkernel" \^[[0m
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:12:55.4822866Z ^[[36;1m  --python "$RUNNER_TEMP/process-venv/bin/python" \^[[0m
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:12:55.4823206Z ^[[36;1m  --workspace "$RUNNER_TEMP/process-workspace" \^[[0m
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:12:55.4823610Z ^[[36;1m  --matrix tests/fixtures/cross_client/process-matrix.json \^[[0m
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:12:55.4823945Z ^[[36;1m  --source-root . \^[[0m
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:12:55.4824229Z ^[[36;1m  --wheel-source-root wheel-source \^[[0m
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:12:55.4824683Z ^[[36;1m  --wheel-source-revision "46495b43522b99d23b77125cd0a8ecfb304086d2" \^[[0m
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:12:55.4825035Z ^[[36;1m  --wheel "$WHEEL" \^[[0m
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:12:55.4825287Z ^[[36;1m  --platform "ubuntu-latest" \^[[0m
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:12:55.4825794Z ^[[36;1m  --output "process-evidence/process-evidence-ubuntu-latest-cpython-3.13.json"^[[0m
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:12:55.4837237Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:12:55.4837574Z env:
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:12:55.4837860Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.16/x64
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:12:55.4838277Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.16/x64/lib/pkgconfig
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:12:55.4838677Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.16/x64
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:12:55.4839027Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.16/x64
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:12:55.4839413Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.16/x64
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:12:55.4839770Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.16/x64/lib
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:12:55.4840110Z   UV_PYTHON_INSTALL_DIR: /home/runner/work/_temp/uv-python-dir
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:12:55.4840461Z   UV_CACHE_DIR: /home/runner/work/_temp/setup-uv-cache
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:12:55.4840805Z   WHEEL: process-wheel/amkernel-0.1.1-py3-none-any.whl
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:12:55.4841336Z   WHEEL_SHA256: 4c3029c083fecef50871636ce2d90670c5b54738a93aa141a83f558e3c6f1e77
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:12:55.4841716Z ##[endgroup]
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:12:57.8349054Z ##[group]process-row installed-startup
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:12:58.9017098Z installed-startup: passed
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:12:58.9018064Z ##[endgroup]
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:12:58.9018564Z ##[group]process-row normal-shutdown
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:12:59.6532391Z normal-shutdown: passed
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:12:59.6533359Z ##[endgroup]
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:12:59.6533778Z ##[group]process-row destructive-reset
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:00.5038122Z destructive-reset: passed
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:00.5039316Z ##[endgroup]
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:00.5039982Z ##[group]process-row timeout-survives
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:01.3284388Z timeout-survives: passed
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:01.3285415Z ##[endgroup]
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:01.3285846Z ##[group]process-row timeout-escalates
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:04.0611623Z KernelKilled: Runner did not settle after deadline interrupt
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:04.0612263Z 
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:04.2000542Z timeout-escalates: passed
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:04.2001612Z ##[endgroup]
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:04.2002072Z ##[group]process-row runner-channel-death
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:04.8226919Z KernelExited: response channel failed: Runner response channel closed
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:04.8227291Z 
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:04.9470660Z runner-channel-death: passed
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:04.9471676Z ##[endgroup]
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:04.9472218Z ##[group]process-row output-limit-drain
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:20.3782797Z output-limit-drain: passed
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:20.3783542Z ##[endgroup]
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:20.3784415Z ##[group]process-row artifact-integrity-expiry
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:21.5802139Z Artifact Store resource integrity failure
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:28.0237407Z artifact-integrity-expiry: passed
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:28.0238301Z ##[endgroup]
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:28.0238958Z ##[group]process-row cancellation-cleanup
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:30.6753158Z KernelKilled: Runner did not settle after cancellation interrupt
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:30.6753896Z 
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:30.6834937Z cancellation-cleanup: passed
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:30.6835745Z ##[endgroup]
+process-matrix (ubuntu-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:31.2961370Z cells=9 passed=9 failed=0
+process-matrix (ubuntu-latest, Python 3.13)	Validate retained evidence	﻿2026-11-03T11:13:31.4533782Z ##[group]Run set -euo pipefail
+process-matrix (ubuntu-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:13:31.4534178Z ^[[36;1mset -euo pipefail^[[0m
+process-matrix (ubuntu-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:13:31.4534577Z ^[[36;1m"$RUNNER_TEMP/process-venv/bin/python" tests/e2e/cross_os_process_evidence.py validate \^[[0m
+process-matrix (ubuntu-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:13:31.4535181Z ^[[36;1m  --evidence "process-evidence/process-evidence-ubuntu-latest-cpython-3.13.json" \^[[0m
+process-matrix (ubuntu-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:13:31.4535666Z ^[[36;1m  --matrix tests/fixtures/cross_client/process-matrix.json \^[[0m
+process-matrix (ubuntu-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:13:31.4536019Z ^[[36;1m  --source-root . \^[[0m
+process-matrix (ubuntu-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:13:31.4536327Z ^[[36;1m  --wheel-source-root wheel-source \^[[0m
+process-matrix (ubuntu-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:13:31.4536653Z ^[[36;1m  --wheel "$WHEEL" \^[[0m
+process-matrix (ubuntu-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:13:31.4536940Z ^[[36;1m  --require-hosted \^[[0m
+process-matrix (ubuntu-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:13:31.4537218Z ^[[36;1m  --expected-repository "FSQ-lab/amkernel" \^[[0m
+process-matrix (ubuntu-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:13:31.4537600Z ^[[36;1m  --expected-workflow "Cross-OS process evidence" \^[[0m
+process-matrix (ubuntu-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:13:31.4538354Z ^[[36;1m  --expected-workflow-ref "FSQ-lab/amkernel/.github/workflows/cross-os-process-evidence.yml@refs/pull/118/merge" \^[[0m
+process-matrix (ubuntu-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:13:31.4538952Z ^[[36;1m  --expected-run-id "41625606905" \^[[0m
+process-matrix (ubuntu-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:13:31.4539280Z ^[[36;1m  --expected-run-attempt "1" \^[[0m
+process-matrix (ubuntu-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:13:31.4539649Z ^[[36;1m  --expected-sha "46495b43522b99d23b77125cd0a8ecfb304086d2" \^[[0m
+process-matrix (ubuntu-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:13:31.4540132Z ^[[36;1m  --expected-wheel-sha256 "4c3029c083fecef50871636ce2d90670c5b54738a93aa141a83f558e3c6f1e77" \^[[0m
+process-matrix (ubuntu-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:13:31.4540655Z ^[[36;1m  --expected-wheel-source-revision "46495b43522b99d23b77125cd0a8ecfb304086d2"^[[0m
+process-matrix (ubuntu-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:13:31.4553010Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+process-matrix (ubuntu-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:13:31.4553425Z env:
+process-matrix (ubuntu-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:13:31.4553700Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.16/x64
+process-matrix (ubuntu-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:13:31.4554149Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.16/x64/lib/pkgconfig
+process-matrix (ubuntu-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:13:31.4554639Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.16/x64
+process-matrix (ubuntu-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:13:31.4555040Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.16/x64
+process-matrix (ubuntu-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:13:31.4555492Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.16/x64
+process-matrix (ubuntu-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:13:31.4555911Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.16/x64/lib
+process-matrix (ubuntu-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:13:31.4556292Z   UV_PYTHON_INSTALL_DIR: /home/runner/work/_temp/uv-python-dir
+process-matrix (ubuntu-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:13:31.4556630Z   UV_CACHE_DIR: /home/runner/work/_temp/setup-uv-cache
+process-matrix (ubuntu-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:13:31.4557001Z   WHEEL: process-wheel/amkernel-0.1.1-py3-none-any.whl
+process-matrix (ubuntu-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:13:31.4557431Z   WHEEL_SHA256: 4c3029c083fecef50871636ce2d90670c5b54738a93aa141a83f558e3c6f1e77
+process-matrix (ubuntu-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:13:31.4557822Z ##[endgroup]
+process-matrix (ubuntu-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:13:31.5036179Z {
+process-matrix (ubuntu-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:13:31.5036567Z   "cells": 9,
+process-matrix (ubuntu-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:13:31.5037069Z   "contentSha256": "31cdad1a66f5b75980c0f26e8aa7ea2c13630fd70dd0fafec189b7a22194ef4c",
+process-matrix (ubuntu-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:13:31.5037559Z   "evidence": "process-evidence-ubuntu-latest-cpython-3.13.json",
+process-matrix (ubuntu-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:13:31.5038004Z   "evidenceSha256": "d9fc3cf5d814c899fb2a9ff472c08425516d7ac39edada3a0c469c398c91adbf",
+process-matrix (ubuntu-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:13:31.5038431Z   "failed": 0,
+process-matrix (ubuntu-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:13:31.5038682Z   "passed": 9,
+process-matrix (ubuntu-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:13:31.5038923Z   "problems": []
+process-matrix (ubuntu-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:13:31.5039139Z }
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	﻿2026-11-03T11:14:41.3892290Z ##[group]Run set -euo pipefail
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:41.3892540Z ^[[36;1mset -euo pipefail^[[0m
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:41.3892740Z ^[[36;1mmkdir -p process-evidence^[[0m
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:41.3893100Z ^[[36;1m"$RUNNER_TEMP/process-venv/bin/python" tests/e2e/cross_os_process_matrix.py \^[[0m
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:41.3893540Z ^[[36;1m  --entry-point "$RUNNER_TEMP/process-venv/bin/amkernel" \^[[0m
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:41.3893890Z ^[[36;1m  --python "$RUNNER_TEMP/process-venv/bin/python" \^[[0m
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:41.3894230Z ^[[36;1m  --workspace "$RUNNER_TEMP/process-workspace" \^[[0m
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:41.3894590Z ^[[36;1m  --matrix tests/fixtures/cross_client/process-matrix.json \^[[0m
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:41.3895000Z ^[[36;1m  --source-root . \^[[0m
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:41.3895220Z ^[[36;1m  --wheel-source-root wheel-source \^[[0m
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:41.3898760Z ^[[36;1m  --wheel-source-revision "46495b43522b99d23b77125cd0a8ecfb304086d2" \^[[0m
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:41.3899190Z ^[[36;1m  --wheel "$WHEEL" \^[[0m
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:41.3899430Z ^[[36;1m  --platform "macos-latest" \^[[0m
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:41.3899970Z ^[[36;1m  --output "process-evidence/process-evidence-macos-latest-cpython-3.11.json"^[[0m
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:41.3939190Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:41.3939470Z env:
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:41.3939710Z   pythonLocation: /Users/runner/hostedtoolcache/Python/3.11.9/arm64
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:41.3940140Z   PKG_CONFIG_PATH: /Users/runner/hostedtoolcache/Python/3.11.9/arm64/lib/pkgconfig
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:41.3940570Z   Python_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.11.9/arm64
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:41.3940960Z   Python2_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.11.9/arm64
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:41.3941400Z   Python3_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.11.9/arm64
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:41.3941770Z   UV_PYTHON_INSTALL_DIR: /Users/runner/work/_temp/uv-python-dir
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:41.3942110Z   UV_CACHE_DIR: /Users/runner/work/_temp/setup-uv-cache
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:41.3942420Z   WHEEL: process-wheel/amkernel-0.1.1-py3-none-any.whl
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:41.3942800Z   WHEEL_SHA256: 4c3029c083fecef50871636ce2d90670c5b54738a93aa141a83f558e3c6f1e77
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:41.3943130Z ##[endgroup]
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:42.5408410Z ##[group]process-row installed-startup
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:43.7407360Z installed-startup: passed
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:43.7508010Z ##[endgroup]
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:43.7533700Z ##[group]process-row normal-shutdown
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:44.5634340Z normal-shutdown: passed
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:44.5735140Z ##[endgroup]
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:44.5761640Z ##[group]process-row destructive-reset
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:46.2326820Z destructive-reset: passed
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:46.2434200Z ##[endgroup]
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:46.2537340Z ##[group]process-row timeout-survives
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:47.1238820Z timeout-survives: passed
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:47.1239800Z ##[endgroup]
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:47.1240410Z ##[group]process-row timeout-escalates
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:49.8345990Z KernelKilled: Runner did not settle after deadline interrupt
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:49.8346600Z 
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:49.9742410Z timeout-escalates: passed
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:49.9743760Z ##[endgroup]
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:49.9744200Z ##[group]process-row runner-channel-death
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:50.6051020Z KernelExited: response channel failed: Runner response channel closed
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:50.6051480Z 
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:50.7376910Z runner-channel-death: passed
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:50.7391730Z ##[endgroup]
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:14:50.7396230Z ##[group]process-row output-limit-drain
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:15:11.5868270Z output-limit-drain: passed
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:15:11.5882760Z ##[endgroup]
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:15:11.5885990Z ##[group]process-row artifact-integrity-expiry
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:15:13.1809650Z Artifact Store resource integrity failure
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:15:18.9114310Z artifact-integrity-expiry: passed
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:15:18.9115810Z ##[endgroup]
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:15:18.9116430Z ##[group]process-row cancellation-cleanup
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:15:21.6617890Z KernelKilled: Runner did not settle after cancellation interrupt
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:15:21.6618840Z 
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:15:21.6767820Z cancellation-cleanup: passed
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:15:21.6770830Z ##[endgroup]
+process-matrix (macos-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:15:22.2682720Z cells=9 passed=9 failed=0
+process-matrix (macos-latest, Python 3.11)	Validate retained evidence	﻿2026-11-03T11:15:22.7234950Z ##[group]Run set -euo pipefail
+process-matrix (macos-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:15:22.7235420Z ^[[36;1mset -euo pipefail^[[0m
+process-matrix (macos-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:15:22.7235990Z ^[[36;1m"$RUNNER_TEMP/process-venv/bin/python" tests/e2e/cross_os_process_evidence.py validate \^[[0m
+process-matrix (macos-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:15:22.7236590Z ^[[36;1m  --evidence "process-evidence/process-evidence-macos-latest-cpython-3.11.json" \^[[0m
+process-matrix (macos-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:15:22.7237220Z ^[[36;1m  --matrix tests/fixtures/cross_client/process-matrix.json \^[[0m
+process-matrix (macos-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:15:22.7237750Z ^[[36;1m  --source-root . \^[[0m
+process-matrix (macos-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:15:22.7246700Z ^[[36;1m  --wheel-source-root wheel-source \^[[0m
+process-matrix (macos-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:15:22.7247060Z ^[[36;1m  --wheel "$WHEEL" \^[[0m
+process-matrix (macos-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:15:22.7247420Z ^[[36;1m  --require-hosted \^[[0m
+process-matrix (macos-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:15:22.7247860Z ^[[36;1m  --expected-repository "FSQ-lab/amkernel" \^[[0m
+process-matrix (macos-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:15:22.7248290Z ^[[36;1m  --expected-workflow "Cross-OS process evidence" \^[[0m
+process-matrix (macos-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:15:22.7249020Z ^[[36;1m  --expected-workflow-ref "FSQ-lab/amkernel/.github/workflows/cross-os-process-evidence.yml@refs/pull/118/merge" \^[[0m
+process-matrix (macos-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:15:22.7249820Z ^[[36;1m  --expected-run-id "41625606905" \^[[0m
+process-matrix (macos-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:15:22.7250150Z ^[[36;1m  --expected-run-attempt "1" \^[[0m
+process-matrix (macos-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:15:22.7250540Z ^[[36;1m  --expected-sha "46495b43522b99d23b77125cd0a8ecfb304086d2" \^[[0m
+process-matrix (macos-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:15:22.7251010Z ^[[36;1m  --expected-wheel-sha256 "4c3029c083fecef50871636ce2d90670c5b54738a93aa141a83f558e3c6f1e77" \^[[0m
+process-matrix (macos-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:15:22.7251520Z ^[[36;1m  --expected-wheel-source-revision "46495b43522b99d23b77125cd0a8ecfb304086d2"^[[0m
+process-matrix (macos-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:15:22.7311790Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
+process-matrix (macos-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:15:22.7312160Z env:
+process-matrix (macos-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:15:22.7312590Z   pythonLocation: /Users/runner/hostedtoolcache/Python/3.11.9/arm64
+process-matrix (macos-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:15:22.7313090Z   PKG_CONFIG_PATH: /Users/runner/hostedtoolcache/Python/3.11.9/arm64/lib/pkgconfig
+process-matrix (macos-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:15:22.7313630Z   Python_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.11.9/arm64
+process-matrix (macos-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:15:22.7314120Z   Python2_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.11.9/arm64
+process-matrix (macos-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:15:22.7314490Z   Python3_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.11.9/arm64
+process-matrix (macos-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:15:22.7314840Z   UV_PYTHON_INSTALL_DIR: /Users/runner/work/_temp/uv-python-dir
+process-matrix (macos-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:15:22.7315140Z   UV_CACHE_DIR: /Users/runner/work/_temp/setup-uv-cache
+process-matrix (macos-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:15:22.7315470Z   WHEEL: process-wheel/amkernel-0.1.1-py3-none-any.whl
+process-matrix (macos-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:15:22.7315870Z   WHEEL_SHA256: 4c3029c083fecef50871636ce2d90670c5b54738a93aa141a83f558e3c6f1e77
+process-matrix (macos-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:15:22.7316330Z ##[endgroup]
+process-matrix (macos-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:15:22.8129360Z {
+process-matrix (macos-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:15:22.8129740Z   "cells": 9,
+process-matrix (macos-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:15:22.8130280Z   "contentSha256": "43c8192b642ded9bd3edfd6f320754aa7950483520bcf73b3facb8bfb9574836",
+process-matrix (macos-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:15:22.8130840Z   "evidence": "process-evidence-macos-latest-cpython-3.11.json",
+process-matrix (macos-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:15:22.8131420Z   "evidenceSha256": "deef0a3f47d2966e01ef176e16024dc65025c4bf7c576988e58bc216d7d31e6c",
+process-matrix (macos-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:15:22.8131920Z   "failed": 0,
+process-matrix (macos-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:15:22.8132240Z   "passed": 9,
+process-matrix (macos-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:15:22.8132540Z   "problems": []
+process-matrix (macos-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:15:22.8132790Z }
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	﻿2026-11-03T11:12:53.4817652Z ##[group]Run set -euo pipefail
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:12:53.4817936Z ^[[36;1mset -euo pipefail^[[0m
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:12:53.4818263Z ^[[36;1mmkdir -p process-evidence^[[0m
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:12:53.4818734Z ^[[36;1m"$RUNNER_TEMP/process-venv/bin/python" tests/e2e/cross_os_process_matrix.py \^[[0m
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:12:53.4819312Z ^[[36;1m  --entry-point "$RUNNER_TEMP/process-venv/bin/amkernel" \^[[0m
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:12:53.4819978Z ^[[36;1m  --python "$RUNNER_TEMP/process-venv/bin/python" \^[[0m
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:12:53.4820445Z ^[[36;1m  --workspace "$RUNNER_TEMP/process-workspace" \^[[0m
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:12:53.4820889Z ^[[36;1m  --matrix tests/fixtures/cross_client/process-matrix.json \^[[0m
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:12:53.4821299Z ^[[36;1m  --source-root . \^[[0m
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:12:53.4821665Z ^[[36;1m  --wheel-source-root wheel-source \^[[0m
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:12:53.4822091Z ^[[36;1m  --wheel-source-revision "46495b43522b99d23b77125cd0a8ecfb304086d2" \^[[0m
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:12:53.4822540Z ^[[36;1m  --wheel "$WHEEL" \^[[0m
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:12:53.4833662Z ^[[36;1m  --platform "ubuntu-latest" \^[[0m
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:12:53.4834281Z ^[[36;1m  --output "process-evidence/process-evidence-ubuntu-latest-cpython-3.11.json"^[[0m
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:12:53.4862663Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:12:53.4862953Z env:
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:12:53.4863176Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.17/x64
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:12:53.4863526Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib/pkgconfig
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:12:53.4863872Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:12:53.4864190Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:12:53.4864491Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:12:53.4864796Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:12:53.4865125Z   UV_PYTHON_INSTALL_DIR: /home/runner/work/_temp/uv-python-dir
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:12:53.4865425Z   UV_CACHE_DIR: /home/runner/work/_temp/setup-uv-cache
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:12:53.4865709Z   WHEEL: process-wheel/amkernel-0.1.1-py3-none-any.whl
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:12:53.4866065Z   WHEEL_SHA256: 4c3029c083fecef50871636ce2d90670c5b54738a93aa141a83f558e3c6f1e77
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:12:53.4866379Z ##[endgroup]
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:12:55.4338989Z ##[group]process-row installed-startup
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:12:56.4875106Z installed-startup: passed
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:12:56.4875687Z ##[endgroup]
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:12:56.4876019Z ##[group]process-row normal-shutdown
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:12:57.2127140Z normal-shutdown: passed
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:12:57.2127835Z ##[endgroup]
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:12:57.2128394Z ##[group]process-row destructive-reset
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:12:58.0344422Z destructive-reset: passed
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:12:58.0345005Z ##[endgroup]
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:12:58.0345343Z ##[group]process-row timeout-survives
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:12:58.8426589Z timeout-survives: passed
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:12:58.8427145Z ##[endgroup]
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:12:58.8427484Z ##[group]process-row timeout-escalates
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:13:01.6054227Z KernelKilled: Runner did not settle after deadline interrupt
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:13:01.6054560Z 
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:13:01.7147967Z timeout-escalates: passed
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:13:01.7148685Z ##[endgroup]
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:13:01.7149129Z ##[group]process-row runner-channel-death
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:13:02.3521188Z KernelExited: response channel failed: Runner response channel closed
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:13:02.3521597Z 
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:13:02.4499978Z runner-channel-death: passed
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:13:02.4500647Z ##[endgroup]
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:13:02.4500982Z ##[group]process-row output-limit-drain
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:13:18.1553684Z output-limit-drain: passed
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:13:18.1554564Z ##[endgroup]
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:13:18.1554901Z ##[group]process-row artifact-integrity-expiry
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:13:19.4118208Z Artifact Store resource integrity failure
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:13:37.2059307Z artifact-integrity-expiry: passed
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:13:37.2060219Z ##[endgroup]
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:13:37.2060668Z ##[group]process-row cancellation-cleanup
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:13:39.8660345Z KernelKilled: Runner did not settle after cancellation interrupt
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:13:39.8660992Z 
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:13:39.8776491Z cancellation-cleanup: passed
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:13:39.8777209Z ##[endgroup]
+process-matrix (ubuntu-latest, Python 3.11)	Run frozen process matrix	2026-11-03T11:13:40.4886344Z cells=9 passed=9 failed=0
+process-matrix (ubuntu-latest, Python 3.11)	Validate retained evidence	﻿2026-11-03T11:13:40.6219744Z ##[group]Run set -euo pipefail
+process-matrix (ubuntu-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:13:40.6220042Z ^[[36;1mset -euo pipefail^[[0m
+process-matrix (ubuntu-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:13:40.6220405Z ^[[36;1m"$RUNNER_TEMP/process-venv/bin/python" tests/e2e/cross_os_process_evidence.py validate \^[[0m
+process-matrix (ubuntu-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:13:40.6220925Z ^[[36;1m  --evidence "process-evidence/process-evidence-ubuntu-latest-cpython-3.11.json" \^[[0m
+process-matrix (ubuntu-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:13:40.6221360Z ^[[36;1m  --matrix tests/fixtures/cross_client/process-matrix.json \^[[0m
+process-matrix (ubuntu-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:13:40.6221671Z ^[[36;1m  --source-root . \^[[0m
+process-matrix (ubuntu-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:13:40.6221912Z ^[[36;1m  --wheel-source-root wheel-source \^[[0m
+process-matrix (ubuntu-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:13:40.6222152Z ^[[36;1m  --wheel "$WHEEL" \^[[0m
+process-matrix (ubuntu-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:13:40.6222355Z ^[[36;1m  --require-hosted \^[[0m
+process-matrix (ubuntu-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:13:40.6222599Z ^[[36;1m  --expected-repository "FSQ-lab/amkernel" \^[[0m
+process-matrix (ubuntu-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:13:40.6222894Z ^[[36;1m  --expected-workflow "Cross-OS process evidence" \^[[0m
+process-matrix (ubuntu-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:13:40.6223557Z ^[[36;1m  --expected-workflow-ref "FSQ-lab/amkernel/.github/workflows/cross-os-process-evidence.yml@refs/pull/118/merge" \^[[0m
+process-matrix (ubuntu-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:13:40.6224286Z ^[[36;1m  --expected-run-id "41625606905" \^[[0m
+process-matrix (ubuntu-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:13:40.6224636Z ^[[36;1m  --expected-run-attempt "1" \^[[0m
+process-matrix (ubuntu-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:13:40.6225067Z ^[[36;1m  --expected-sha "46495b43522b99d23b77125cd0a8ecfb304086d2" \^[[0m
+process-matrix (ubuntu-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:13:40.6225753Z ^[[36;1m  --expected-wheel-sha256 "4c3029c083fecef50871636ce2d90670c5b54738a93aa141a83f558e3c6f1e77" \^[[0m
+process-matrix (ubuntu-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:13:40.6226417Z ^[[36;1m  --expected-wheel-source-revision "46495b43522b99d23b77125cd0a8ecfb304086d2"^[[0m
+process-matrix (ubuntu-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:13:40.6253996Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+process-matrix (ubuntu-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:13:40.6254287Z env:
+process-matrix (ubuntu-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:13:40.6254512Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.17/x64
+process-matrix (ubuntu-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:13:40.6254866Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib/pkgconfig
+process-matrix (ubuntu-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:13:40.6255205Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+process-matrix (ubuntu-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:13:40.6255507Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+process-matrix (ubuntu-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:13:40.6255812Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+process-matrix (ubuntu-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:13:40.6256120Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib
+process-matrix (ubuntu-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:13:40.6256440Z   UV_PYTHON_INSTALL_DIR: /home/runner/work/_temp/uv-python-dir
+process-matrix (ubuntu-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:13:40.6256739Z   UV_CACHE_DIR: /home/runner/work/_temp/setup-uv-cache
+process-matrix (ubuntu-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:13:40.6257027Z   WHEEL: process-wheel/amkernel-0.1.1-py3-none-any.whl
+process-matrix (ubuntu-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:13:40.6257382Z   WHEEL_SHA256: 4c3029c083fecef50871636ce2d90670c5b54738a93aa141a83f558e3c6f1e77
+process-matrix (ubuntu-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:13:40.6257699Z ##[endgroup]
+process-matrix (ubuntu-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:13:40.6779899Z {
+process-matrix (ubuntu-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:13:40.6780146Z   "cells": 9,
+process-matrix (ubuntu-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:13:40.6780481Z   "contentSha256": "541c39e89c91382f210aa578d33fdac5ad674cf825431e97b145b6fe5695af0c",
+process-matrix (ubuntu-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:13:40.6780926Z   "evidence": "process-evidence-ubuntu-latest-cpython-3.11.json",
+process-matrix (ubuntu-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:13:40.6781364Z   "evidenceSha256": "4d274d8a0dedfdddf6d2d919141e5cbc719d6d40fbb80c1d9dc34166d517ab17",
+process-matrix (ubuntu-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:13:40.6781717Z   "failed": 0,
+process-matrix (ubuntu-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:13:40.6781921Z   "passed": 9,
+process-matrix (ubuntu-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:13:40.6782088Z   "problems": []
+process-matrix (ubuntu-latest, Python 3.11)	Validate retained evidence	2026-11-03T11:13:40.6782260Z }
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	﻿2026-11-03T11:13:34.2049590Z ##[group]Run set -euo pipefail
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:34.2049890Z ^[[36;1mset -euo pipefail^[[0m
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:34.2050180Z ^[[36;1mmkdir -p process-evidence^[[0m
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:34.2050600Z ^[[36;1m"$RUNNER_TEMP/process-venv/bin/python" tests/e2e/cross_os_process_matrix.py \^[[0m
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:34.2051140Z ^[[36;1m  --entry-point "$RUNNER_TEMP/process-venv/bin/amkernel" \^[[0m
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:34.2051590Z ^[[36;1m  --python "$RUNNER_TEMP/process-venv/bin/python" \^[[0m
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:34.2052010Z ^[[36;1m  --workspace "$RUNNER_TEMP/process-workspace" \^[[0m
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:34.2052470Z ^[[36;1m  --matrix tests/fixtures/cross_client/process-matrix.json \^[[0m
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:34.2052830Z ^[[36;1m  --source-root . \^[[0m
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:34.2053140Z ^[[36;1m  --wheel-source-root wheel-source \^[[0m
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:34.2053510Z ^[[36;1m  --wheel-source-revision "46495b43522b99d23b77125cd0a8ecfb304086d2" \^[[0m
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:34.2053890Z ^[[36;1m  --wheel "$WHEEL" \^[[0m
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:34.2054180Z ^[[36;1m  --platform "macos-latest" \^[[0m
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:34.2054630Z ^[[36;1m  --output "process-evidence/process-evidence-macos-latest-cpython-3.13.json"^[[0m
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:34.2087400Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:34.2087750Z env:
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:34.2088020Z   pythonLocation: /Users/runner/hostedtoolcache/Python/3.13.17/arm64
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:34.2088470Z   PKG_CONFIG_PATH: /Users/runner/hostedtoolcache/Python/3.13.17/arm64/lib/pkgconfig
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:34.2088900Z   Python_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.13.17/arm64
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:34.2089270Z   Python2_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.13.17/arm64
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:34.2089670Z   Python3_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.13.17/arm64
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:34.2090040Z   UV_PYTHON_INSTALL_DIR: /Users/runner/work/_temp/uv-python-dir
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:34.2090400Z   UV_CACHE_DIR: /Users/runner/work/_temp/setup-uv-cache
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:34.2090720Z   WHEEL: process-wheel/amkernel-0.1.1-py3-none-any.whl
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:34.2091120Z   WHEEL_SHA256: 4c3029c083fecef50871636ce2d90670c5b54738a93aa141a83f558e3c6f1e77
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:34.2091450Z ##[endgroup]
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:35.9057330Z ##[group]process-row installed-startup
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:37.2856340Z installed-startup: passed
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:37.2898510Z ##[endgroup]
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:37.2918490Z ##[group]process-row normal-shutdown
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:38.2835870Z normal-shutdown: passed
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:38.2864370Z ##[endgroup]
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:38.2873760Z ##[group]process-row destructive-reset
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:39.4935920Z destructive-reset: passed
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:39.4936830Z ##[endgroup]
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:39.4937630Z ##[group]process-row timeout-survives
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:40.3451710Z timeout-survives: passed
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:40.3453090Z ##[endgroup]
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:40.3453630Z ##[group]process-row timeout-escalates
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:43.0820000Z KernelKilled: Runner did not settle after deadline interrupt
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:43.0821250Z 
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:43.3047750Z timeout-escalates: passed
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:43.3049810Z ##[endgroup]
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:43.3050710Z ##[group]process-row runner-channel-death
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:44.2997700Z KernelExited: response channel failed: Runner response channel closed
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:44.3010440Z 
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:44.5410350Z runner-channel-death: passed
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:44.5412560Z ##[endgroup]
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:13:44.5413670Z ##[group]process-row output-limit-drain
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:14:06.9505440Z output-limit-drain: passed
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:14:06.9507940Z ##[endgroup]
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:14:06.9508510Z ##[group]process-row artifact-integrity-expiry
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:14:08.9113950Z Artifact Store resource integrity failure
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:14:16.6200150Z artifact-integrity-expiry: passed
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:14:16.6203570Z ##[endgroup]
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:14:16.6204940Z ##[group]process-row cancellation-cleanup
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:14:19.6426520Z KernelKilled: Runner did not settle after cancellation interrupt
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:14:19.6427030Z 
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:14:19.6509770Z cancellation-cleanup: passed
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:14:19.6512990Z ##[endgroup]
+process-matrix (macos-latest, Python 3.13)	Run frozen process matrix	2026-11-03T11:14:20.7257360Z cells=9 passed=9 failed=0
+process-matrix (macos-latest, Python 3.13)	Validate retained evidence	﻿2026-11-03T11:14:21.3018820Z ##[group]Run set -euo pipefail
+process-matrix (macos-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:14:21.3019320Z ^[[36;1mset -euo pipefail^[[0m
+process-matrix (macos-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:14:21.3019760Z ^[[36;1m"$RUNNER_TEMP/process-venv/bin/python" tests/e2e/cross_os_process_evidence.py validate \^[[0m
+process-matrix (macos-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:14:21.3020530Z ^[[36;1m  --evidence "process-evidence/process-evidence-macos-latest-cpython-3.13.json" \^[[0m
+process-matrix (macos-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:14:21.3021150Z ^[[36;1m  --matrix tests/fixtures/cross_client/process-matrix.json \^[[0m
+process-matrix (macos-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:14:21.3021640Z ^[[36;1m  --source-root . \^[[0m
+process-matrix (macos-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:14:21.3021970Z ^[[36;1m  --wheel-source-root wheel-source \^[[0m
+process-matrix (macos-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:14:21.3022260Z ^[[36;1m  --wheel "$WHEEL" \^[[0m
+process-matrix (macos-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:14:21.3022580Z ^[[36;1m  --require-hosted \^[[0m
+process-matrix (macos-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:14:21.3022930Z ^[[36;1m  --expected-repository "FSQ-lab/amkernel" \^[[0m
+process-matrix (macos-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:14:21.3023310Z ^[[36;1m  --expected-workflow "Cross-OS process evidence" \^[[0m
+process-matrix (macos-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:14:21.3024050Z ^[[36;1m  --expected-workflow-ref "FSQ-lab/amkernel/.github/workflows/cross-os-process-evidence.yml@refs/pull/118/merge" \^[[0m
+process-matrix (macos-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:14:21.3034450Z ^[[36;1m  --expected-run-id "41625606905" \^[[0m
+process-matrix (macos-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:14:21.3034750Z ^[[36;1m  --expected-run-attempt "1" \^[[0m
+process-matrix (macos-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:14:21.3035100Z ^[[36;1m  --expected-sha "46495b43522b99d23b77125cd0a8ecfb304086d2" \^[[0m
+process-matrix (macos-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:14:21.3035710Z ^[[36;1m  --expected-wheel-sha256 "4c3029c083fecef50871636ce2d90670c5b54738a93aa141a83f558e3c6f1e77" \^[[0m
+process-matrix (macos-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:14:21.3036260Z ^[[36;1m  --expected-wheel-source-revision "46495b43522b99d23b77125cd0a8ecfb304086d2"^[[0m
+process-matrix (macos-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:14:21.3114730Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
+process-matrix (macos-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:14:21.3115800Z env:
+process-matrix (macos-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:14:21.3116590Z   pythonLocation: /Users/runner/hostedtoolcache/Python/3.13.17/arm64
+process-matrix (macos-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:14:21.3117790Z   PKG_CONFIG_PATH: /Users/runner/hostedtoolcache/Python/3.13.17/arm64/lib/pkgconfig
+process-matrix (macos-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:14:21.3118960Z   Python_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.13.17/arm64
+process-matrix (macos-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:14:21.3119930Z   Python2_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.13.17/arm64
+process-matrix (macos-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:14:21.3121070Z   Python3_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.13.17/arm64
+process-matrix (macos-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:14:21.3122160Z   UV_PYTHON_INSTALL_DIR: /Users/runner/work/_temp/uv-python-dir
+process-matrix (macos-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:14:21.3123000Z   UV_CACHE_DIR: /Users/runner/work/_temp/setup-uv-cache
+process-matrix (macos-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:14:21.3123870Z   WHEEL: process-wheel/amkernel-0.1.1-py3-none-any.whl
+process-matrix (macos-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:14:21.3124990Z   WHEEL_SHA256: 4c3029c083fecef50871636ce2d90670c5b54738a93aa141a83f558e3c6f1e77
+process-matrix (macos-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:14:21.3126120Z ##[endgroup]
+process-matrix (macos-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:14:21.4407590Z {
+process-matrix (macos-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:14:21.4408480Z   "cells": 9,
+process-matrix (macos-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:14:21.4409420Z   "contentSha256": "7f0358f4c2a85222a5ebdc5338f9a415b68bb215861ef7cd326c54d3b6d6b50f",
+process-matrix (macos-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:14:21.4410850Z   "evidence": "process-evidence-macos-latest-cpython-3.13.json",
+process-matrix (macos-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:14:21.4412000Z   "evidenceSha256": "ef9fd428703394916605bcdd6c25c6f42ae868cb2670b426531e279eb69ae411",
+process-matrix (macos-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:14:21.4412980Z   "failed": 0,
+process-matrix (macos-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:14:21.4413490Z   "passed": 9,
+process-matrix (macos-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:14:21.4414060Z   "problems": []
+process-matrix (macos-latest, Python 3.13)	Validate retained evidence	2026-11-03T11:14:21.4414600Z }
+combine-evidence	Combine and hash-link evidence	﻿2026-11-03T11:15:35.1795783Z ##[group]Run set -euo pipefail
+combine-evidence	Combine and hash-link evidence	2026-11-03T11:15:35.1796262Z ^[[36;1mset -euo pipefail^[[0m
+combine-evidence	Combine and hash-link evidence	2026-11-03T11:15:35.1796592Z ^[[36;1mmkdir -p process-evidence^[[0m
+combine-evidence	Combine and hash-link evidence	2026-11-03T11:15:35.1796954Z ^[[36;1mls -l process-evidence || true^[[0m
+combine-evidence	Combine and hash-link evidence	2026-11-03T11:15:35.1797396Z ^[[36;1mpython tests/e2e/cross_os_process_evidence.py combine \^[[0m
+combine-evidence	Combine and hash-link evidence	2026-11-03T11:15:35.1797781Z ^[[36;1m  --evidence-dir process-evidence \^[[0m
+combine-evidence	Combine and hash-link evidence	2026-11-03T11:15:35.1798177Z ^[[36;1m  --matrix tests/fixtures/cross_client/process-matrix.json \^[[0m
+combine-evidence	Combine and hash-link evidence	2026-11-03T11:15:35.1798549Z ^[[36;1m  --source-root . \^[[0m
+combine-evidence	Combine and hash-link evidence	2026-11-03T11:15:35.1798836Z ^[[36;1m  --wheel-source-root wheel-source \^[[0m
+combine-evidence	Combine and hash-link evidence	2026-11-03T11:15:35.1799329Z ^[[36;1m  --expected-wheel-sha256 "4c3029c083fecef50871636ce2d90670c5b54738a93aa141a83f558e3c6f1e77" \^[[0m
+combine-evidence	Combine and hash-link evidence	2026-11-03T11:15:35.1799988Z ^[[36;1m  --expected-wheel-source-revision "46495b43522b99d23b77125cd0a8ecfb304086d2" \^[[0m
+combine-evidence	Combine and hash-link evidence	2026-11-03T11:15:35.1800464Z ^[[36;1m  --expected-repository "FSQ-lab/amkernel" \^[[0m
+combine-evidence	Combine and hash-link evidence	2026-11-03T11:15:35.1800837Z ^[[36;1m  --expected-workflow "Cross-OS process evidence" \^[[0m
+combine-evidence	Combine and hash-link evidence	2026-11-03T11:15:35.1801468Z ^[[36;1m  --expected-workflow-ref "FSQ-lab/amkernel/.github/workflows/cross-os-process-evidence.yml@refs/pull/118/merge" \^[[0m
+combine-evidence	Combine and hash-link evidence	2026-11-03T11:15:35.1802032Z ^[[36;1m  --expected-run-id "41625606905" \^[[0m
+combine-evidence	Combine and hash-link evidence	2026-11-03T11:15:35.1802339Z ^[[36;1m  --expected-run-attempt "1" \^[[0m
+combine-evidence	Combine and hash-link evidence	2026-11-03T11:15:35.1802695Z ^[[36;1m  --expected-sha "46495b43522b99d23b77125cd0a8ecfb304086d2" \^[[0m
+combine-evidence	Combine and hash-link evidence	2026-11-03T11:15:35.1803143Z ^[[36;1m  --output process-evidence-index/process-evidence-index.json^[[0m
+combine-evidence	Combine and hash-link evidence	2026-11-03T11:15:35.1834444Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+combine-evidence	Combine and hash-link evidence	2026-11-03T11:15:35.1834804Z env:
+combine-evidence	Combine and hash-link evidence	2026-11-03T11:15:35.1835108Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.17/x64
+combine-evidence	Combine and hash-link evidence	2026-11-03T11:15:35.1835787Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib/pkgconfig
+combine-evidence	Combine and hash-link evidence	2026-11-03T11:15:35.1836281Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+combine-evidence	Combine and hash-link evidence	2026-11-03T11:15:35.1836665Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+combine-evidence	Combine and hash-link evidence	2026-11-03T11:15:35.1837069Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.17/x64
+combine-evidence	Combine and hash-link evidence	2026-11-03T11:15:35.1837459Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.17/x64/lib
+combine-evidence	Combine and hash-link evidence	2026-11-03T11:15:35.1837817Z ##[endgroup]
+combine-evidence	Combine and hash-link evidence	2026-11-03T11:15:35.1961969Z total 176
+combine-evidence	Combine and hash-link evidence	2026-11-03T11:15:35.1962786Z -rw-r--r-- 1 runner runner 41312 Nov  3 11:15 process-evidence-macos-latest-cpython-3.11.json
+combine-evidence	Combine and hash-link evidence	2026-11-03T11:15:35.1963909Z -rw-r--r-- 1 runner runner 41321 Nov  3 11:15 process-evidence-macos-latest-cpython-3.13.json
+combine-evidence	Combine and hash-link evidence	2026-11-03T11:15:35.1964540Z -rw-r--r-- 1 runner runner 41286 Nov  3 11:15 process-evidence-ubuntu-latest-cpython-3.11.json
+combine-evidence	Combine and hash-link evidence	2026-11-03T11:15:35.1965158Z -rw-r--r-- 1 runner runner 41281 Nov  3 11:15 process-evidence-ubuntu-latest-cpython-3.13.json
+combine-evidence	Combine and hash-link evidence	2026-11-03T11:15:35.6295793Z {
+combine-evidence	Combine and hash-link evidence	2026-11-03T11:15:35.6296272Z   "outcome": "observed",
+combine-evidence	Combine and hash-link evidence	2026-11-03T11:15:35.6296741Z   "totals": {
+combine-evidence	Combine and hash-link evidence	2026-11-03T11:15:35.6296962Z     "environments": 4,
+combine-evidence	Combine and hash-link evidence	2026-11-03T11:15:35.6297195Z     "cells": 36,
+combine-evidence	Combine and hash-link evidence	2026-11-03T11:15:35.6297447Z     "passedCells": 36,
+combine-evidence	Combine and hash-link evidence	2026-11-03T11:15:35.6297668Z     "failedCells": 0
+combine-evidence	Combine and hash-link evidence	2026-11-03T11:15:35.6297886Z   },
+combine-evidence	Combine and hash-link evidence	2026-11-03T11:15:35.6298078Z   "review": {
+combine-evidence	Combine and hash-link evidence	2026-11-03T11:15:35.6298282Z     "required": true,
+combine-evidence	Combine and hash-link evidence	2026-11-03T11:15:35.6298595Z     "disposition": "pending-independent-lifecycle-review"
+combine-evidence	Combine and hash-link evidence	2026-11-03T11:15:35.6298931Z   },
+combine-evidence	Combine and hash-link evidence	2026-11-03T11:15:35.6299268Z   "indexSha256": "3a3199a9bab97f715554318b9bb7e17cba4041cac331c9b03cb54a4b6daa3fbc"
+combine-evidence	Combine and hash-link evidence	2026-11-03T11:15:35.6299678Z }
