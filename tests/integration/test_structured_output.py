@@ -1,18 +1,23 @@
 from __future__ import annotations
 
+import asyncio
+import hashlib
 import io
 import json
+import time
 from pathlib import Path
 
 import pytest
 from PIL import Image
 
 import amkernel.output as output_module
+import amkernel.supervisor as supervisor_module
 from amkernel.artifact_store import ArtifactBundle, ArtifactStoreError
-from amkernel.protocol import MAX_STRUCTURED_RESULT_BYTES
+from amkernel.protocol import MAX_STRUCTURED_RESULT_BYTES, ArtifactBeginResponse, Response
 from amkernel.runtime import KernelRuntime
 from amkernel.server import _structured_result
 from amkernel.structured_output import StructuredOutputError
+from amkernel.supervisor import KernelSupervisor
 
 pytestmark = pytest.mark.anyio
 
@@ -237,16 +242,81 @@ async def test_publish_failure_exposes_no_unpublished_artifact_references(
     assert (await runtime.shutdown()).cleaned
 
 
-async def test_artifact_transaction_stays_atomic_across_deadline(tmp_path: Path) -> None:
+@pytest.mark.parametrize("settles_after_interrupt", [True, False])
+async def test_artifact_deadline_preserves_complete_items_and_honest_lifecycle(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, settles_after_interrupt: bool
+) -> None:
     runtime = KernelRuntime(tmp_path)
+    boundary = asyncio.Event()
     try:
-        prepared = await runtime.execute("payload = b'x' * (32 * 1024 * 1024)")
+        prepared = await runtime.execute(
+            f"""
+import signal
+import time
+from amkernel.protocol import ArtifactBeginResponse
+
+payload = bytes(range(256)) * 257
+send_frame = artifact.__self__._send
+def pause_at_transaction_begin(response):
+    send_frame(response)
+    if isinstance(response, ArtifactBeginResponse) and response.name == "boundary.bin":
+        while {not settles_after_interrupt!r} or signal.SIGINT not in signal.sigpending():
+            time.sleep(0.001)
+artifact.__self__._send = pause_at_transaction_begin
+"""
+        )
         assert prepared.status == "completed"
-        interrupted = await runtime.execute('artifact("large.bin", payload)', timeout=0.001)
-        assert interrupted.status in {"timed_out", "interrupted"}
-        assert interrupted.kernel_state == "alive"
-        assert len(interrupted.output.artifacts) in {0, 1}
-        assert (await runtime.execute("42")).result == 42
+        supervisor = runtime._supervisor
+        assert isinstance(supervisor, KernelSupervisor)
+        next_response = supervisor._next_response
+
+        async def observe_transaction_boundary() -> Response:
+            response = await next_response()
+            if isinstance(response, ArtifactBeginResponse) and response.name == "boundary.bin":
+                boundary.set()
+            return response
+
+        async def deadline_at_transaction_boundary(delay: float) -> float:
+            del delay
+            await boundary.wait()
+            return time.monotonic()
+
+        with monkeypatch.context() as patch:
+            patch.setattr(supervisor, "_next_response", observe_transaction_boundary)
+            patch.setattr(supervisor_module, "_deadline_after", deadline_at_transaction_boundary)
+            result = await asyncio.wait_for(
+                runtime.execute(
+                    'artifact("retained.bin", b"pre-deadline")\nartifact("boundary.bin", payload)',
+                    timeout=60,
+                ),
+                timeout=10,
+            )
+
+        assert boundary.is_set()
+        assert result.status == ("timed_out" if settles_after_interrupt else "kernel_killed")
+        assert result.kernel_state == ("alive" if settles_after_interrupt else "dead")
+        assert result.error is not None
+        assert result.error.type == ("TimeoutError" if settles_after_interrupt else "KernelKilled")
+        expected = {"retained.bin": b"pre-deadline"}
+        if settles_after_interrupt:
+            expected["boundary.bin"] = bytes(range(256)) * 257
+        assert [artifact.name for artifact in result.output.artifacts] == list(expected)
+        for artifact in result.output.artifacts:
+            content = expected[artifact.name]
+            assert artifact.size == len(content)
+            assert artifact.sha256 == hashlib.sha256(content).hexdigest()
+            assert (await runtime.read_resource(artifact.uri)).data == content
+
+        next_result = await runtime.execute("42")
+        if settles_after_interrupt:
+            assert next_result.status == "completed"
+            assert next_result.result == 42
+        else:
+            assert next_result.status == "kernel_killed"
+            assert next_result.kernel_state == "dead"
+            assert next_result.execution_count == result.execution_count
+            assert next_result.error is not None
+            assert next_result.error.type == "KernelUnavailable"
     finally:
         assert (await runtime.shutdown()).cleaned
 

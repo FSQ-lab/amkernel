@@ -1337,7 +1337,7 @@ async def _settle_ready_stream_readers() -> None:
     # awakened reader tasks then run before this task resumes.
     loop = asyncio.get_running_loop()
     settled = loop.create_future()
-    handle = loop.call_later(0, settled.set_result, None)
+    handle = loop.call_later(0, _resolve_future, settled)
     try:
         await settled
     finally:

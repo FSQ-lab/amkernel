@@ -2,7 +2,7 @@
 
 ## Task
 
-Complete the owner-authorized post-0.1.1 work: ordered real-platform acceptance, real Windows Android verification, and installed-wheel Codex/cross-OS Stage 4 evaluation, without changing the public interface or support claims.
+Resolve the separately scoped post-release core CI defects #114/#115, then continue the owner-authorized ordered real-platform acceptance, real Windows Android verification, and installed-wheel Codex/cross-OS Stage 4 evaluation without changing the public interface or support claims.
 
 ## Context
 
@@ -150,6 +150,39 @@ the outstanding actual-platform sequence; #100 still requires real Windows evide
 Project #2 still has #81 In Progress, #79/#82 Ready. Available credentials have
 `read:project`, not board-write scope; issue updates do not imply board changes.
 Complex Mac #109, dynamic-list #97 and Gmail privacy expansion #99 stay deferred.
+
+## Post-release core CI defects
+
+Exact-main CI `41618289181` at `43114989275d6e287dc506c2cc2fd614d1f383da`
+failed independently of PR #113's eight passing jobs. Ubuntu/Python 3.11 reported
+an asynchronous `InvalidStateError` during storage-failure cleanup (#114);
+macOS/Python 3.13 returned `kernel_killed` in the 1 ms artifact deadline test,
+whose assertion only allowed a live Runner (#115). Do not rerun these away or
+fold production fixes into Stage 4 evidence-only ownership.
+
+#114 has a deterministic failing-before/passing-after cancellation regression.
+The zero-delay timer now reuses the existing cancellation-safe Future resolver;
+its ordering and task cancellation remain unchanged. The regression and existing
+storage-failure consumer test passed. A separate actual Runtime/spawned-Runner
+smoke first returned 42, then an injected Store failure returned
+`kernel_killed/dead` with `ArtifactStoreError`, no active artifact references,
+successful shutdown cleanup and no event-loop errors. Independent source/test
+review found 0 Blocker/Major/Minor findings. The fix is unreleased and still needs
+protected CI.
+
+#115 replaces the scheduling-dependent 32 MiB/1 ms test with two controlled
+real transaction-boundary cases. Cooperative interruption must report
+`timed_out/alive` and retain both complete artifacts; forced termination must
+report `kernel_killed/dead`, discard the incomplete transaction, preserve the
+earlier complete artifact and reject subsequent execution without replacement.
+Both cases passed; exact bytes, sizes and SHA-256 digests are checked through
+consumer resource reads. A separate actual stdio MCP smoke from a temporary
+external workspace observed the same outcomes with natural one-second deadlines,
+including a live subsequent result of 42 versus `KernelUnavailable` after death.
+Independent source/test review found 0 Blocker/Major/Minor findings. This is
+transaction atomicity/lifecycle evidence, not wall-clock deadline accuracy or
+published-wheel/platform qualification. The change is unreleased and still
+needs protected CI.
 
 ## What was tried
 
