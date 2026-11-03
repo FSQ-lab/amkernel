@@ -110,10 +110,10 @@
   },
   "review": {
     "blocker": 0,
-    "disposition": "pending",
+    "disposition": "accepted",
     "major": 0,
     "minor": 0,
-    "reviewer": "pending independent reviewer (counters are placeholders, not a zero-findings review)",
+    "reviewer": "ReviewCodexEvidence (blocked record only; neither client layer entered)",
     "source": "https://github.com/FSQ-lab/amkernel/issues/81"
   },
   "runCompletedAt": "2026-11-03T10:13:53.260700Z",

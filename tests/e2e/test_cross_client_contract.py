@@ -889,9 +889,12 @@ def test_codex_runner_classifies_execution_from_observed_events() -> None:
         attempt([{"type": "item.started", "item": {"type": "future_native_action"}}])
     )
     assert not codex_runner._attempt_executed(attempt([{"type": "turn.started"}]))
-    assert codex_runner._execution_signal(
-        [{"type": "item.started", "item": {"type": "mcp_tool_call"}}]
-    ) == "started mcp_tool_call"
+    assert (
+        codex_runner._execution_signal(
+            [{"type": "item.started", "item": {"type": "mcp_tool_call"}}]
+        )
+        == "started mcp_tool_call"
+    )
 
 
 def test_codex_runner_fails_closed_on_native_tool_before_timeout() -> None:
@@ -905,9 +908,10 @@ def test_codex_runner_fails_closed_on_native_tool_before_timeout() -> None:
     }
 
     assert codex_runner._attempt_executed(attempt)
-    assert codex_runner._execution_signal(
-        cast(list[dict[str, Any]], attempt["events"])
-    ) == "started file_change"
+    assert (
+        codex_runner._execution_signal(cast(list[dict[str, Any]], attempt["events"]))
+        == "started file_change"
+    )
 
 
 def test_codex_runner_detects_execution_beyond_retained_event_limit(
@@ -1077,7 +1081,7 @@ def test_codex_runner_retains_prose_free_execution_supplement(tmp_path: Path) ->
     executable.write_bytes(b"binary")
     wheel = tmp_path / "amkernel-0.1.1-py3-none-any.whl"
     wheel.write_bytes(b"wheel")
-    events = [
+    events: list[dict[str, Any]] = [
         {
             "type": "item.started",
             "item": {
@@ -1114,9 +1118,7 @@ def test_codex_runner_retains_prose_free_execution_supplement(tmp_path: Path) ->
     assert environment["observedExecution"] is True
     assert environment["requiresReview"] is True
     assert environment["frozenLayersEntered"] is False
-    assert environment["publishedSourceRevision"] == (
-        "e16f42727b32a30fd431e4504712a5f31c28b408"
-    )
+    assert environment["publishedSourceRevision"] == ("e16f42727b32a30fd431e4504712a5f31c28b408")
     assert environment["persistentConfigurationChanged"] is True
     assert environment["repositorySourceChanged"] is False
     assert environment["toolAuditIncomplete"] is False
@@ -1139,7 +1141,7 @@ def test_codex_runner_retains_prose_free_execution_supplement(tmp_path: Path) ->
     metadata = load_json(root / "attempt-01" / "metadata.json")
     assert metadata["execution"] == "completed model turn"
     assert metadata["capture"]["retainedFilename"] == "capture-resources.redacted.json"
-    retained_capture = (root / "attempt-01" / metadata["capture"]["retainedFilename"])
+    retained_capture = root / "attempt-01" / metadata["capture"]["retainedFilename"]
     retention_text = (
         "\n".join(lines)
         + (root / "attempt-01" / "stderr.txt").read_text()

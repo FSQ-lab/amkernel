@@ -151,6 +151,38 @@ Project #2 still has #81 In Progress, #79/#82 Ready. Available credentials have
 `read:project`, not board-write scope; issue updates do not imply board changes.
 Complex Mac #109, dynamic-list #97 and Gmail privacy expansion #99 stay deferred.
 
+## Stage 4 Codex blocked reference
+
+`evidence/stage-4/codex/evidence.json` records two real supplementary Codex
+`0.162.0-alpha.17.2` launches using the published 0.1.1 wheel above. The configured
+model-provider route at `http://127.0.0.1:23333/api/openai/v1` was unreachable.
+Both launches timed out near 180 seconds with null recorded exit codes. Client
+`turn.started` events exist, but no completed model turn, model-generated response
+or tool call was observed. Neither frozen client layer was entered; outcome stays
+`blocked`. Cleanup flags describe only those unentered layers, not independently
+observed supplementary process-tree cleanup. Historical launch logs are unchanged.
+
+The separate `validation/` report records 21 server-level MCP checks. It is not
+Codex execution or naturalistic #82 evidence. Omitted multipart payloads prevent
+replaying historical part reads from the retained directory alone; the executable
+digest identifies the launch file, not independently the native binary behind it.
+Independent blocked-record review found 0 Blocker/Major/Minor findings.
+
+The runner now verifies exact published-wheel bytes, keeps wheel source identity
+separate from harness identity, and stops supplementary launches at the first
+observed item execution. It retains prose-free, bounded diagnostics before raising
+mutation, incomplete-audit or execution failures; it never silently relaunches or
+labels those failures blocked/passed. Independent static harness review found
+0 Blocker/Major/Minor findings; no real-model positive-path execution was observed.
+A separate actual external-wheel installation/stdio smoke verified the inferred
+interpreter, distinct source/harness provenance, persistence and exact artifact
+resource reads. A synthetic external CLI process verified a late tool event is
+retained, only one launch occurs and no raw model prose/arguments or false
+blocked/pass record is retained. Synthetic checks are not client qualification.
+Issue #81 remains open until the configured provider and client can execute the
+unchanged deterministic and naturalistic layers; no alternate provider, credential
+or persistent configuration was silently introduced.
+
 ## Post-release core CI defects
 
 Exact-main CI `41618289181` at `43114989275d6e287dc506c2cc2fd614d1f383da`

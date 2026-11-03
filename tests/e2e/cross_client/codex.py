@@ -145,9 +145,7 @@ def _redact_structure(value: Any) -> Any:
     if isinstance(value, dict):
         return {
             str(key): (
-                "<redacted>"
-                if str(key).lower() in _SENSITIVE_KEYS
-                else _redact_structure(item)
+                "<redacted>" if str(key).lower() in _SENSITIVE_KEYS else _redact_structure(item)
             )
             for key, item in value.items()
         }
@@ -402,9 +400,7 @@ def _client_environment(codex_home: Path) -> dict[str, str]:
     return env
 
 
-def _codex_command(
-    server: Path, capture: Path, client_dir: Path, executable: str
-) -> list[str]:
+def _codex_command(server: Path, capture: Path, client_dir: Path, executable: str) -> list[str]:
     proxy_command = [
         sys.executable,
         str(PROXY),
@@ -1444,21 +1440,15 @@ def _write_execution_supplement(
     for index, attempt in enumerate(attempts, start=1):
         attempt_dir = directory / f"attempt-{index:02d}"
         attempt_dir.mkdir()
-        lines = _diagnostic_lines(
-            cast(list[dict[str, Any]], attempt.get("diagnostics", []))
-        )
+        lines = _diagnostic_lines(cast(list[dict[str, Any]], attempt.get("diagnostics", [])))
         tool_lines = _diagnostic_lines(
             cast(list[dict[str, Any]], attempt.get("toolDiagnostics", []))
         )
-        (attempt_dir / "diagnostics.jsonl").write_text(
-            "\n".join(lines) + ("\n" if lines else "")
-        )
+        (attempt_dir / "diagnostics.jsonl").write_text("\n".join(lines) + ("\n" if lines else ""))
         (attempt_dir / "tool-events.jsonl").write_text(
             "\n".join(tool_lines) + ("\n" if tool_lines else "")
         )
-        (attempt_dir / "stderr.txt").write_text(
-            _bounded(cast(str, attempt.get("stderr", "")))
-        )
+        (attempt_dir / "stderr.txt").write_text(_bounded(cast(str, attempt.get("stderr", ""))))
         capture: dict[str, Any] = {}
         capture_file = temp / f"attempt-{index}-capture" / "resources.json"
         if capture_file.is_file():
@@ -1678,9 +1668,7 @@ def run(output: Path, wheel_path: Path | None = None) -> None:
             if executed is not None:
                 config_changed = _persistent_config() != config_before
                 source_changed = _source_snapshot(output) != source_before
-                dropped = sum(
-                    int(attempt.get("toolDiagnosticsDropped", 0)) for attempt in attempts
-                )
+                dropped = sum(int(attempt.get("toolDiagnosticsDropped", 0)) for attempt in attempts)
                 _write_execution_supplement(
                     output,
                     attempts=attempts,
@@ -1722,9 +1710,7 @@ def run(output: Path, wheel_path: Path | None = None) -> None:
             run_started = attempts[0]["startedAt"]
             run_completed = attempts[-1]["completedAt"]
             if _persistent_config() != config_before:
-                raise RuntimeError(
-                    "persistent Codex configuration changed during the attempts"
-                )
+                raise RuntimeError("persistent Codex configuration changed during the attempts")
             if _source_snapshot(output) != source_before:
                 raise RuntimeError("repository source snapshot changed during the attempts")
             _build_blocked_evidence(
