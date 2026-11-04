@@ -38,6 +38,12 @@ After the immutable `v0.1.2` assets are published and independently verified, a 
 
 Normal tests remain offline. Archive validators accept local paths and never download release assets. Workflows may download an explicitly identified release asset for release or audit jobs, but product tests do not depend on network availability.
 
+## Published Migration Record
+
+The immutable [`v0.1.2` release](https://github.com/FSQ-lab/amkernel/releases/tag/v0.1.2) published the complete 203-file corpus from commit `8438198f97e0442a3869e9f32d4213adef3dc766`. The evidence archive SHA-256 is `4e03ceb4cdc9462b8960a184725290f6a202a20389c7742af0d97d4d38384c4a`; the external manifest SHA-256 is `2e848e0a1541a37476248ff6080fb71ec97a3d23cb29692b6463b5ca6b162c11`.
+
+`evidence/archive-v0.1.2.json` is the offline provenance boundary. It records the immutable release and all three asset identities, preserves every original member path, size, and digest, and classifies each member as either retained in Git or release-only. Tests verify every retained file byte-for-byte against that index and reject reintroduced raw-output paths. Historical commits remain unchanged.
+
 ## Consequences
 
 Published raw evidence remains durable and content-addressed without increasing every future checkout. The release grows by one compressed archive and one manifest. The `v0.1.2` release must not be published until authoritative CI has generated and validated both assets from the exact release commit.

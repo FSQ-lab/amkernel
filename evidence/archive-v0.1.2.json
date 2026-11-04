@@ -1,0 +1,1052 @@
+{
+  "assets": {
+    "archive": {
+      "name": "amkernel-evidence-0.1.2.tar.gz",
+      "sha256": "4e03ceb4cdc9462b8960a184725290f6a202a20389c7742af0d97d4d38384c4a",
+      "sizeBytes": 8216839,
+      "url": "https://github.com/FSQ-lab/amkernel/releases/download/v0.1.2/amkernel-evidence-0.1.2.tar.gz"
+    },
+    "externalManifest": {
+      "name": "amkernel-evidence-0.1.2.manifest.json",
+      "sha256": "2e848e0a1541a37476248ff6080fb71ec97a3d23cb29692b6463b5ca6b162c11",
+      "sizeBytes": 39596,
+      "url": "https://github.com/FSQ-lab/amkernel/releases/download/v0.1.2/amkernel-evidence-0.1.2.manifest.json"
+    },
+    "wheel": {
+      "name": "amkernel-0.1.2-py3-none-any.whl",
+      "sha256": "dac88ff4b36129b9b375f1abcba43342187fc9ef3b4fc54de5b6fced604c8158",
+      "sizeBytes": 188031,
+      "url": "https://github.com/FSQ-lab/amkernel/releases/download/v0.1.2/amkernel-0.1.2-py3-none-any.whl"
+    }
+  },
+  "release": {
+    "commit": "8438198f97e0442a3869e9f32d4213adef3dc766",
+    "immutable": true,
+    "publishedAt": "2026-11-04T04:12:37Z",
+    "tag": "v0.1.2",
+    "url": "https://github.com/FSQ-lab/amkernel/releases/tag/v0.1.2"
+  },
+  "retention": {
+    "contract": "Git retains normalized indexes, manifests, decision reports, independent reviews, bounded final summaries, and bounded structured records required by offline validators. The immutable release archive retains the complete pre-migration corpus, including raw logs, screenshots, binaries, full transcripts, source captures, intermediate attempts, and per-environment outputs.",
+    "gitAndRelease": [
+      {
+        "path": "appium-skill/agent-behavior-review-20261103.json",
+        "sha256": "c8111a56d2d0472dc269452f80411376a4fc33c5854751e6875297c336a59aa5",
+        "sizeBytes": 2106
+      },
+      {
+        "path": "appium-skill/compatibility-20261102.json",
+        "sha256": "aea4bb0240192f481dca65c42916a3b59f1c81aa9896517443b3a942ad96607d",
+        "sizeBytes": 16470
+      },
+      {
+        "path": "appium-skill/conversation-review-20261103.json",
+        "sha256": "4375839654f21cd3159e1f79ad9b51a8a79705acb4606bc28ca4e0e468297545",
+        "sizeBytes": 3460
+      },
+      {
+        "path": "appium-skill/copilot-install-20261102.json",
+        "sha256": "3db63aeffa2b0a2880f860236b7dcd9dea5fbf99f098844d49f300a2393badd6",
+        "sizeBytes": 33252
+      },
+      {
+        "path": "appium-skill/environment-20261102.json",
+        "sha256": "d441b3850b13b804c3cbab873272a8cb9bee255fb357d8c64b60aeeec68f177f",
+        "sizeBytes": 5124
+      },
+      {
+        "path": "appium-skill/environment-discovery-review-20261103.json",
+        "sha256": "294722a02b50d86115319579347863307a5ae2f910e06b930f18ef8fbcaf77c3",
+        "sizeBytes": 2411
+      },
+      {
+        "path": "appium-skill/final-android-discovery-20261103.json",
+        "sha256": "b8e7f8b8364cbbd5ff805b44bb44721e024c787be8b93ccdf18875be541b71b2",
+        "sizeBytes": 5616
+      },
+      {
+        "path": "appium-skill/final-install-20261103.json",
+        "sha256": "24e0e3b3240ddbef6e20f65390d98450e3bbf4a43ffe475a3a9a21a900d0bc29",
+        "sizeBytes": 28280
+      },
+      {
+        "path": "appium-skill/final-ios-device-discovery-20261103.json",
+        "sha256": "c5cb4a7a996dd8e6d462439002c0ef138fcb8c030c60a0e55f5cf51987cb060d",
+        "sizeBytes": 5463
+      },
+      {
+        "path": "appium-skill/final-ios-simulator-discovery-20261103.json",
+        "sha256": "843b114e43d8c4b73b60f6c76924abfd653e0d78b3b9bd0e4fe1561e1ecadef7",
+        "sizeBytes": 5305
+      },
+      {
+        "path": "appium-skill/final-mac2-20261103.json",
+        "sha256": "2e3aff4438c8dbce3647f3ab334914c0afa5de49b962d9e3735fc62e3ff7ca8f",
+        "sizeBytes": 10666
+      },
+      {
+        "path": "appium-skill/final-mac2-packages-20261103.json",
+        "sha256": "b05586886545a2f4cdcbf3a70f34600dc2d1a03c5a613afd4261c79520f63df1",
+        "sizeBytes": 1971
+      },
+      {
+        "path": "appium-skill/final-platform-review-20261103.json",
+        "sha256": "96b7fb3d877f97aea0a135f7ec91e2bd416ff3d6c14a1349fdd726889f7fcd69",
+        "sizeBytes": 2466
+      },
+      {
+        "path": "appium-skill/final-provenance-20261103.json",
+        "sha256": "663433f37fb424ad8c5e66cd44b2d088a4721953709ad16980c5c0ebdeb9d596",
+        "sizeBytes": 4093
+      },
+      {
+        "path": "appium-skill/mac2-applications-review-20261103.json",
+        "sha256": "aa9880c129eb4aa5bfb8b792014e97e9e2f4e04185be8acfd8cf83ea6213d4f2",
+        "sizeBytes": 4606
+      },
+      {
+        "path": "appium-skill/mac2-desktop-prerequisite-20261103.json",
+        "sha256": "6afa22a1510b0e4c0a07f82fc626f10570b1807edef3e5fc10027ed846f00f9a",
+        "sizeBytes": 1322
+      },
+      {
+        "path": "appium-skill/mac2-m0-20261103.json",
+        "sha256": "9b470b0973cc56ef7da0bb64bb79dfbc28156a57fb5b752a7e7ece755390accb",
+        "sizeBytes": 18013
+      },
+      {
+        "path": "appium-skill/mac2-m1-review-20261103.json",
+        "sha256": "0173bc14fecc879c5efe182f3bbc9708925dcec9208be9da3461de9ed76006be",
+        "sizeBytes": 1685
+      },
+      {
+        "path": "appium-skill/mac2-m1-visible-review-20261103.json",
+        "sha256": "b7c64747aa18c5974704da9e850d641ba7a9922afb10c67993b8710da093b6ef",
+        "sizeBytes": 3072
+      },
+      {
+        "path": "appium-skill/mac2-recovery-review-20261103.json",
+        "sha256": "a17e9ae8ee85a7b75a2fbed1a27087588b8e7399b32d101e625c9a60aafc4e50",
+        "sizeBytes": 2013
+      },
+      {
+        "path": "appium-skill/mac2-retry-20261103.json",
+        "sha256": "30dba273f4071e6c821f82ddf6ccc9409696a653ff689ac541d62834fe9f6f5a",
+        "sizeBytes": 14983
+      },
+      {
+        "path": "appium-skill/mac2-routing-20261102.json",
+        "sha256": "1371eb09da95aa936cc65aeaa89cc51d1a310b836b1ae94d2b6e8fc18a2c812b",
+        "sizeBytes": 3677
+      },
+      {
+        "path": "appium-skill/published-011-install-20261103.json",
+        "sha256": "702979a018121ef5d24f9df38e9cc4845aab751d817bbb00085804816878496f",
+        "sizeBytes": 1834
+      },
+      {
+        "path": "appium-skill/published-011-mac2-20261103.json",
+        "sha256": "c2495d305822fb3a5a1cc5b759f6b59cba5e49b69f456f535f0667c45bff5831",
+        "sizeBytes": 16927
+      },
+      {
+        "path": "appium-skill/published-011-review-20261103.json",
+        "sha256": "6962d2e0a0578390e5d87cc22a6937a3dfd1b5f62b72e74612a9177da12e47b5",
+        "sizeBytes": 2671
+      },
+      {
+        "path": "appium-skill/published-011-windows-readiness-20261103.json",
+        "sha256": "47cfcd8ce066ae7de3ca2dc21e38a912ea2e6d76b3a7af5eac074ddd3d3c07f4",
+        "sizeBytes": 2844
+      },
+      {
+        "path": "stage-3/decision-report.md",
+        "sha256": "6970b2c47a5986a1a8004e9860670be39cae3f0f1c3561a08e970829a27ef365",
+        "sizeBytes": 5407
+      },
+      {
+        "path": "stage-3/index.json",
+        "sha256": "69db9b2cbc9c4cb859cc169d2eaec16bf2003a4b9c700a71b33eeb67161d6f52",
+        "sizeBytes": 199008
+      },
+      {
+        "path": "stage-3/lifecycle.json",
+        "sha256": "c208b33279ee46a3b69082a2c61d2545aa56ede8e37dc98a4139b995b53474b2",
+        "sizeBytes": 146468
+      },
+      {
+        "path": "stage-3/occurrences/app-crash-android.json",
+        "sha256": "b8ec9ad73d32588f7910d3842e0f8b38c591b293f85769385d39ee2fbbb5a1a3",
+        "sizeBytes": 3117
+      },
+      {
+        "path": "stage-3/occurrences/app-crash-ios.json",
+        "sha256": "f721d24e1b5080b153c8beaa1b1e19941ec3d248a7e6d07ecc51a88f6edc7207",
+        "sizeBytes": 3107
+      },
+      {
+        "path": "stage-3/occurrences/appium-command-timeout-android.json",
+        "sha256": "e975a2d786e1575f09632f5b0ed8c692e12eafb9a0bfb03e1f31090950723c2a",
+        "sizeBytes": 10036
+      },
+      {
+        "path": "stage-3/occurrences/appium-command-timeout-ios.json",
+        "sha256": "c88bfa80d18c48b6417b81a172b6bdf10e06aa11754447b75dd0377b2ba2cb5e",
+        "sizeBytes": 9953
+      },
+      {
+        "path": "stage-3/occurrences/appium-endpoint-unavailable-android.json",
+        "sha256": "706e4366e2825c5299d74675dd43bf237757a83683c819ae655f1b8933d1edf2",
+        "sizeBytes": 9540
+      },
+      {
+        "path": "stage-3/occurrences/appium-endpoint-unavailable-ios.json",
+        "sha256": "92efd846ac7b1d0b0933d114fdd7ba9093c85fb62868b3c663110b110f37100c",
+        "sizeBytes": 9529
+      },
+      {
+        "path": "stage-3/occurrences/appium-server-restart-android.json",
+        "sha256": "a651b3906d8c6ae2799b462c41a2e67229a6d44a7d5aea6c72b74d84bc9aa0db",
+        "sizeBytes": 5621
+      },
+      {
+        "path": "stage-3/occurrences/appium-server-restart-ios.json",
+        "sha256": "70568b4f48c85aed5f24f354696397c39aa3da9ec1e61584972cc3a36e1ed3d2",
+        "sizeBytes": 5611
+      },
+      {
+        "path": "stage-3/occurrences/artifact-write-failure-android.json",
+        "sha256": "0d415df38832b3fda1285786f181b2b36c28e393ae72a5780205b9f8df9accbe",
+        "sizeBytes": 1758
+      },
+      {
+        "path": "stage-3/occurrences/device-offline-android.json",
+        "sha256": "a3ddb9c405a80a05a8a4bf118520468b1048da1ad8ed4595ce25d8773c740ccb",
+        "sizeBytes": 3391
+      },
+      {
+        "path": "stage-3/occurrences/device-offline-ios.json",
+        "sha256": "1a8635d135766efe1286e679d73b8a9b7efafd1517754f415b847dc4461883df",
+        "sizeBytes": 1238
+      },
+      {
+        "path": "stage-3/occurrences/driver-quit-during-kernel-shutdown-android.json",
+        "sha256": "7ff9f85b76b5c8ce9ec634031ff6e8a4beb1bc2cbaf624ec5a5cc328c41eaf27",
+        "sizeBytes": 1229
+      },
+      {
+        "path": "stage-3/occurrences/driver-quit-during-kernel-shutdown-ios.json",
+        "sha256": "8d5af7ea0ddd028bea4bdbc0a7033ffd5d7a7812811fdbcc362b975cfb2c9fd5",
+        "sizeBytes": 1219
+      },
+      {
+        "path": "stage-3/occurrences/incompatible-client-selenium-android.json",
+        "sha256": "35222a18c7427be853b38762342af9f8e33913ce97f3f8b911034a001014bf6f",
+        "sizeBytes": 2167
+      },
+      {
+        "path": "stage-3/occurrences/invalid-app-target-android.json",
+        "sha256": "27144c267ce69b12aee82d2ac2ca0d92742bbd6fb2fbd3caa29b793445d613f5",
+        "sizeBytes": 4461
+      },
+      {
+        "path": "stage-3/occurrences/invalid-app-target-ios.json",
+        "sha256": "668d1ba8a9de885a73d10e8f30d8a550547085d4ee8749fff3de121c12616d31",
+        "sizeBytes": 5577
+      },
+      {
+        "path": "stage-3/occurrences/kernel-hard-kill-android.json",
+        "sha256": "94d5a867c39e7c0fee3d13f9d6c0a59a5f0235a9d69b2d634b5d4c8eec3382dc",
+        "sizeBytes": 2719
+      },
+      {
+        "path": "stage-3/occurrences/missing-ambiguous-element-android.json",
+        "sha256": "7d80cf9cebc77928bcc080f27f6c7e5c209c3a1820053cf2f5abe2edf0c35731",
+        "sizeBytes": 4033
+      },
+      {
+        "path": "stage-3/occurrences/missing-ambiguous-element-ios.json",
+        "sha256": "ff8ee440a993330e01f765bc025fa4c148b91c4a6ae7b66d819c993b30b08823",
+        "sizeBytes": 4023
+      },
+      {
+        "path": "stage-3/occurrences/missing-appium-driver-android.json",
+        "sha256": "8f650d0df7ca420cdaacac1296021d568451ba020bdb52ea0966e1b79faed8fb",
+        "sizeBytes": 3176
+      },
+      {
+        "path": "stage-3/occurrences/missing-appium-driver-ios.json",
+        "sha256": "4d3ec5d8f4ac4069db6e20190c49e12cd4dfb6ba315e794b5f068508bf0c7aae",
+        "sizeBytes": 3165
+      },
+      {
+        "path": "stage-3/occurrences/module-changed-after-import-android.json",
+        "sha256": "5e734142d6e2d19ff67d7ba736fc0e18faa18427b806bb29a285ac43c7ff28c8",
+        "sizeBytes": 1835
+      },
+      {
+        "path": "stage-3/occurrences/oversized-output-android.json",
+        "sha256": "546a9b7dd7d44db33c83556a4be3a4187fc8fc4278222a2e376f39b14be99156",
+        "sizeBytes": 1965
+      },
+      {
+        "path": "stage-3/occurrences/platform-driver-failure-android.json",
+        "sha256": "07882d1acc517deb64b1eccab11b5f553d151c3de56da20d6c77bc0993d42845",
+        "sizeBytes": 4081
+      },
+      {
+        "path": "stage-3/occurrences/platform-driver-failure-ios.json",
+        "sha256": "cfbc5a2bc6722d9a8d2ff1912da6193c9740384ba202fe1fc6be1a5104f5f73c",
+        "sizeBytes": 4018
+      },
+      {
+        "path": "stage-3/occurrences/python-exception-android.json",
+        "sha256": "deb3cb2716a36071251aee02138fd93b88159179d2d3d9e74da00d3fd51b9e3a",
+        "sizeBytes": 3117
+      },
+      {
+        "path": "stage-3/occurrences/python-exception-ios.json",
+        "sha256": "aed8590c55c1baeb5dcf783bcbb3191a24c8ce029b1a86a8bb8a1ceb80c0712b",
+        "sizeBytes": 3107
+      },
+      {
+        "path": "stage-3/occurrences/python-timeout-surviving-kernel-android.json",
+        "sha256": "56fd86004337c1dbc4cddc915fa6f37764db724d8f7e76c9fceb2751b5f654b7",
+        "sizeBytes": 2550
+      },
+      {
+        "path": "stage-3/occurrences/python-timeout-surviving-kernel-ios.json",
+        "sha256": "fb14f882f16606ffd2fa8db2b35bcee81175159666a1f4f77d839db5a9edeeae",
+        "sizeBytes": 2540
+      },
+      {
+        "path": "stage-3/occurrences/session-creation-failure-android.json",
+        "sha256": "456db075afd406c6df41fdda36d3965569a27df839daf75f8b8b4a0260b4209d",
+        "sizeBytes": 3202
+      },
+      {
+        "path": "stage-3/occurrences/session-creation-failure-ios.json",
+        "sha256": "2ceb0903dde1f425be4b43bf8516aae119cf68598d2666c6135c3eaad26dcd64",
+        "sizeBytes": 3192
+      },
+      {
+        "path": "stage-3/occurrences/stale-element-android.json",
+        "sha256": "b830cfe3eb414f174bec330b32af8904ac5ba334df9d5a75043b3da8aa3ccdf5",
+        "sizeBytes": 4229
+      },
+      {
+        "path": "stage-3/occurrences/stale-element-ios.json",
+        "sha256": "abbae6f87b9ebf10adbce7eee7696b5ddfcf2f3cf34bb001ce89e71b4f1687d8",
+        "sizeBytes": 4219
+      },
+      {
+        "path": "stage-3/references/android-evidence.json",
+        "sha256": "9d0a9b7abba3c27f60d480937467f887170408932dcb372a7c545a318636b732",
+        "sizeBytes": 50454
+      },
+      {
+        "path": "stage-3/references/ios-evidence.json",
+        "sha256": "5777eedf082ca9fa8899c728b34de7bb8c2a3d57f1cf9500b342a44e64135b85",
+        "sizeBytes": 48913
+      },
+      {
+        "path": "stage-4/codex/evidence.json",
+        "sha256": "3707669c9d2efcc46f6f33f900940e248c6f15ccb68813f94d468c030039251b",
+        "sizeBytes": 4823
+      },
+      {
+        "path": "stage-4/codex/validation/artifact-manifest.json",
+        "sha256": "9441fc24f28b94402cabcb4ff380297fb55d31ce4c632e861413103d35c256e8",
+        "sizeBytes": 596
+      },
+      {
+        "path": "stage-4/codex/validation/omitted-parts.json",
+        "sha256": "d042bc91650acb529055c8067ce8d45083be61a8748e839f782b4db5c6a3a9c7",
+        "sizeBytes": 719
+      },
+      {
+        "path": "stage-4/codex/validation/report.json",
+        "sha256": "ac26dcfdd7d072adf67fc2cb6dd90c6698b0c535d7b31816ef51bc77f5e2f282",
+        "sizeBytes": 32058
+      },
+      {
+        "path": "stage-4/codex/validation/validation.json",
+        "sha256": "fcfb23667e3fa4602b1b3e1aaa109c296df450826a6e51cf667d0a23aaf906b2",
+        "sizeBytes": 7243
+      },
+      {
+        "path": "stage-4/process/source-41625606905/index.json",
+        "sha256": "caeb9e3803ee07154e41634b7eb01e2665f41f72d3e11f0de8a530231b9ad095",
+        "sizeBytes": 16881
+      },
+      {
+        "path": "stage-4/process/source-41625606905/review.json",
+        "sha256": "c10835f3b742c6e8d2d9139c401d8b2c72f007cababfac6fc119e00eb591d016",
+        "sizeBytes": 3595
+      }
+    ],
+    "releaseOnly": [
+      {
+        "path": "appium-skill/agent-behavior-20261103.json",
+        "sha256": "601d3b633bafb994699245c9741bb46ac8f34b32536503cef0f402d33ad17922",
+        "sizeBytes": 186390
+      },
+      {
+        "path": "appium-skill/agent-behavior-before-20261103.json",
+        "sha256": "d0772bcdab9c8bfffc0d72413e393770d44c1e8036d1b277f9294935e9370d96",
+        "sizeBytes": 173435
+      },
+      {
+        "path": "appium-skill/agent-behavior-contract-before-20261103.json",
+        "sha256": "e4026fa4db5a4b2dd8c47d73fa421f7f9e9fd927bf0075e5cba8e299d2a5dbfd",
+        "sizeBytes": 187112
+      },
+      {
+        "path": "appium-skill/conversation-final-20261103.json",
+        "sha256": "ef1828b0fd406d51cefb6d62b3e76d9302b5cc131a2634c88641d83369427348",
+        "sizeBytes": 248771
+      },
+      {
+        "path": "appium-skill/conversation-first-20261103.json",
+        "sha256": "f7fe4a0334fc6072322f81a08316e1da424b4115dae4b34fde3441b9b239be7b",
+        "sizeBytes": 67855
+      },
+      {
+        "path": "appium-skill/conversation-matrix-first-20261103.json",
+        "sha256": "0c2313efa9088151d259d421c5e911ccaeeeaa04c727415790bb0d5e1c53df4d",
+        "sizeBytes": 243247
+      },
+      {
+        "path": "appium-skill/conversation-matrix-fourth-20261103.json",
+        "sha256": "330acd42286a3f22a70fef0c764697dc1872c9b3faa4be22d510d954228d5924",
+        "sizeBytes": 255560
+      },
+      {
+        "path": "appium-skill/conversation-matrix-second-20261103.json",
+        "sha256": "16679150e8d4f45ee86ad925d117451325fb3c876b7f38429738d065db7b6cfb",
+        "sizeBytes": 246648
+      },
+      {
+        "path": "appium-skill/conversation-matrix-third-pre-review-20261103.json",
+        "sha256": "4270a8dd5c8dcae65c10baa47288bc6e339cac5534399b9fea189c45f8eddbc4",
+        "sizeBytes": 239588
+      },
+      {
+        "path": "appium-skill/environment-discovery-20261103.json",
+        "sha256": "5a54fad0b7cce8655e53d253a6c423646d6fe512f79d4fac2ee6cd40e0c9bb63",
+        "sizeBytes": 100686
+      },
+      {
+        "path": "appium-skill/environment-discovery-before-20261103.json",
+        "sha256": "e8ab2371731f1fc02025ded49c6a947e18cd556f7eb13ddff40091f3a262b551",
+        "sizeBytes": 103643
+      },
+      {
+        "path": "appium-skill/environment-discovery-first-20261103.json",
+        "sha256": "44a10194b7f8987439e7d60909225f405c8ffcc36149f534061e4f3b832b0fdc",
+        "sizeBytes": 106833
+      },
+      {
+        "path": "appium-skill/final-verification-source-20261103.json",
+        "sha256": "c9394bd7a6a202bcbf3096a6e9629eec0a828b4091132ec494c79ac7b7b12e65",
+        "sizeBytes": 101406
+      },
+      {
+        "path": "appium-skill/mac2-applications-initial-source-20261103.json",
+        "sha256": "73ad801189e2521f5cedb1f8b1ab52136ef5d8c351e348503207e0348a7726c4",
+        "sizeBytes": 98085
+      },
+      {
+        "path": "appium-skill/mac2-applications-source-20261103.json",
+        "sha256": "eb0399f95ed42d1211de2902ddd71c25bb4e28cea29915661e8ac768d0d9d203",
+        "sizeBytes": 132909
+      },
+      {
+        "path": "appium-skill/mac2-m1-20261103.json",
+        "sha256": "31c70bfc61b5d69e2231b84ca4a50fd9dc302ec14f15547c883e1b1ef5e99dba",
+        "sizeBytes": 91838
+      },
+      {
+        "path": "appium-skill/mac2-m1-retry-20261103.json",
+        "sha256": "d7eb8a92f0ba07f19273ea65c9d3823594b7169c7daa62d76fa842ae0180b9de",
+        "sizeBytes": 74233
+      },
+      {
+        "path": "appium-skill/mac2-m1-retry-source-20261103.json",
+        "sha256": "0732588bbb66bbd3a37773ef3d772adbd1bf3a2f709e0df3663e7f799bd495fa",
+        "sizeBytes": 131579
+      },
+      {
+        "path": "appium-skill/mac2-m1-visible-20261103.json",
+        "sha256": "506b9ff1dcaa61fccf78327917f76eb2b8e3dff094b25b806a510038ab746f3e",
+        "sizeBytes": 229660
+      },
+      {
+        "path": "appium-skill/mac2-m1-visible-source-20261103.json",
+        "sha256": "bebaff1b085b2cad98d868c52a2deafd22e4d2dd7bcbbc1690309b8ff9ce9372",
+        "sizeBytes": 1311
+      },
+      {
+        "path": "appium-skill/mac2-recovery-source-20261103.json",
+        "sha256": "9199ccb350bee957f7db302a8f491689b9bf5c7bf932d1c95fb0d8b2b5608f50",
+        "sizeBytes": 41275
+      },
+      {
+        "path": "appium-skill/mac2-textedit-diagnostic-20261103.json",
+        "sha256": "c0dbdc69b7f3f5857c45d20958ecd10d2bf08beb500185516a623f2a429b2a3a",
+        "sizeBytes": 40550
+      },
+      {
+        "path": "appium-skill/mac2-textedit-diagnostic-source-20261103.json",
+        "sha256": "e2336379fa445c5b0051da1d08cf00f3c2d3e7b04cfc927aeb7fcd6e7af7235b",
+        "sizeBytes": 6423
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/amkernel-result.json",
+        "sha256": "2e18b5249b891b950b495fb0f86e5f139a45ce32199c1f2e01fae5e07afaab87",
+        "sizeBytes": 45644
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/amkernel.log",
+        "sha256": "e235f8da6f7adf7c8c262a3a2704ab55dbdda5746003d3673db45f25299845d9",
+        "sizeBytes": 27
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/android-capture-large-tree.xml",
+        "sha256": "146f1f1086126370f322f5a731edc0103edced3dadcc0514f8d810a7294c646c",
+        "sizeBytes": 17182
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/android-confirm-modal-dismissed.png",
+        "sha256": "08eb5b0d027bc0598783c7473965ffebbb6225d5b16d18fcc45de1b7e529c334",
+        "sizeBytes": 127741
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/android-confirm-success.png",
+        "sha256": "4628149dfa3c55b6730c6ac5121f78a803d15757afceb5fd94f260e8d7c186b8",
+        "sizeBytes": 114670
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/android-confirm-text.png",
+        "sha256": "2976db8d99aa1e62c63196cd60b28a0376e5a3133fd9a3b9d6e1f66dcb3724c7",
+        "sizeBytes": 187680
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/android-launch.png",
+        "sha256": "2de337fc6ee27362e2951d448abcfdfaa4343e2a81e8497fcf730e021f6d6811",
+        "sizeBytes": 69525
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/android-wait-chronometer-change.png",
+        "sha256": "cfd16696fa819b5a779402d4a23a42edeeebb8de967a58e3a8d495778444f252",
+        "sizeBytes": 63632
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/appium.log",
+        "sha256": "b21309cf99b1f9778559c983d071c0c164ae742b00abc0fdc89e4356f8557935",
+        "sizeBytes": 464269
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/device.log",
+        "sha256": "6525f44fe8ba51753c8770358f6365403595dfd825e10dd60355a7f0e1e2395b",
+        "sizeBytes": 448803
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/driver.log",
+        "sha256": "fcacc933040c00b539c24071ebb6cb97cb0e337f9ee6b12fc2f51de6c66bc366",
+        "sizeBytes": 42
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/evidence.json",
+        "sha256": "9d0a9b7abba3c27f60d480937467f887170408932dcb372a7c545a318636b732",
+        "sizeBytes": 50454
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/public-call-2-artifact-1.bin",
+        "sha256": "2de337fc6ee27362e2951d448abcfdfaa4343e2a81e8497fcf730e021f6d6811",
+        "sizeBytes": 69525
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/public-call-2-artifact-10.png",
+        "sha256": "4628149dfa3c55b6730c6ac5121f78a803d15757afceb5fd94f260e8d7c186b8",
+        "sizeBytes": 114670
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/public-call-2-artifact-11.xml",
+        "sha256": "146f1f1086126370f322f5a731edc0103edced3dadcc0514f8d810a7294c646c",
+        "sizeBytes": 17182
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/public-call-2-artifact-2.png",
+        "sha256": "2de337fc6ee27362e2951d448abcfdfaa4343e2a81e8497fcf730e021f6d6811",
+        "sizeBytes": 69525
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/public-call-2-artifact-3.bin",
+        "sha256": "2976db8d99aa1e62c63196cd60b28a0376e5a3133fd9a3b9d6e1f66dcb3724c7",
+        "sizeBytes": 187680
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/public-call-2-artifact-4.png",
+        "sha256": "2976db8d99aa1e62c63196cd60b28a0376e5a3133fd9a3b9d6e1f66dcb3724c7",
+        "sizeBytes": 187680
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/public-call-2-artifact-5.bin",
+        "sha256": "08eb5b0d027bc0598783c7473965ffebbb6225d5b16d18fcc45de1b7e529c334",
+        "sizeBytes": 127741
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/public-call-2-artifact-6.png",
+        "sha256": "08eb5b0d027bc0598783c7473965ffebbb6225d5b16d18fcc45de1b7e529c334",
+        "sizeBytes": 127741
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/public-call-2-artifact-7.bin",
+        "sha256": "cfd16696fa819b5a779402d4a23a42edeeebb8de967a58e3a8d495778444f252",
+        "sizeBytes": 63632
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/public-call-2-artifact-8.png",
+        "sha256": "cfd16696fa819b5a779402d4a23a42edeeebb8de967a58e3a8d495778444f252",
+        "sizeBytes": 63632
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/public-call-2-artifact-9.bin",
+        "sha256": "4628149dfa3c55b6730c6ac5121f78a803d15757afceb5fd94f260e8d7c186b8",
+        "sizeBytes": 114670
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/public-call-2-display-12.bin",
+        "sha256": "2de337fc6ee27362e2951d448abcfdfaa4343e2a81e8497fcf730e021f6d6811",
+        "sizeBytes": 69525
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/public-call-2-display-13.bin",
+        "sha256": "2976db8d99aa1e62c63196cd60b28a0376e5a3133fd9a3b9d6e1f66dcb3724c7",
+        "sizeBytes": 187680
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/public-call-2-display-14.bin",
+        "sha256": "08eb5b0d027bc0598783c7473965ffebbb6225d5b16d18fcc45de1b7e529c334",
+        "sizeBytes": 127741
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/public-call-2-display-15.bin",
+        "sha256": "cfd16696fa819b5a779402d4a23a42edeeebb8de967a58e3a8d495778444f252",
+        "sizeBytes": 63632
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/public-call-2-display-16.bin",
+        "sha256": "4628149dfa3c55b6730c6ac5121f78a803d15757afceb5fd94f260e8d7c186b8",
+        "sizeBytes": 114670
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/screenshot-01.png",
+        "sha256": "737aba173a326489cc457356259638e14f82317bcf8bfcf335047779a0f0987f",
+        "sizeBytes": 70689
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/screenshot-02.png",
+        "sha256": "737aba173a326489cc457356259638e14f82317bcf8bfcf335047779a0f0987f",
+        "sizeBytes": 70689
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/screenshot-03.png",
+        "sha256": "737aba173a326489cc457356259638e14f82317bcf8bfcf335047779a0f0987f",
+        "sizeBytes": 70689
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/screenshot-04.png",
+        "sha256": "737aba173a326489cc457356259638e14f82317bcf8bfcf335047779a0f0987f",
+        "sizeBytes": 70689
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/screenshot-05.png",
+        "sha256": "737aba173a326489cc457356259638e14f82317bcf8bfcf335047779a0f0987f",
+        "sizeBytes": 70689
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/screenshot-06.png",
+        "sha256": "737aba173a326489cc457356259638e14f82317bcf8bfcf335047779a0f0987f",
+        "sizeBytes": 70689
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/screenshot-07.png",
+        "sha256": "737aba173a326489cc457356259638e14f82317bcf8bfcf335047779a0f0987f",
+        "sizeBytes": 70689
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/screenshot-08.png",
+        "sha256": "737aba173a326489cc457356259638e14f82317bcf8bfcf335047779a0f0987f",
+        "sizeBytes": 70689
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/screenshot-09.png",
+        "sha256": "737aba173a326489cc457356259638e14f82317bcf8bfcf335047779a0f0987f",
+        "sizeBytes": 70689
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/screenshot-10.png",
+        "sha256": "737aba173a326489cc457356259638e14f82317bcf8bfcf335047779a0f0987f",
+        "sizeBytes": 70689
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/source-01.xml",
+        "sha256": "b1f5964069d0459a12785c8f063ac31793bb82786e2cfd3c06d613f9954f65f0",
+        "sizeBytes": 13605
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/source-02.xml",
+        "sha256": "b1f5964069d0459a12785c8f063ac31793bb82786e2cfd3c06d613f9954f65f0",
+        "sizeBytes": 13605
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/source-03.xml",
+        "sha256": "b1f5964069d0459a12785c8f063ac31793bb82786e2cfd3c06d613f9954f65f0",
+        "sizeBytes": 13605
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/source-04.xml",
+        "sha256": "b1f5964069d0459a12785c8f063ac31793bb82786e2cfd3c06d613f9954f65f0",
+        "sizeBytes": 13605
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/source-05.xml",
+        "sha256": "b1f5964069d0459a12785c8f063ac31793bb82786e2cfd3c06d613f9954f65f0",
+        "sizeBytes": 13605
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/source-06.xml",
+        "sha256": "b1f5964069d0459a12785c8f063ac31793bb82786e2cfd3c06d613f9954f65f0",
+        "sizeBytes": 13605
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/source-07.xml",
+        "sha256": "b1f5964069d0459a12785c8f063ac31793bb82786e2cfd3c06d613f9954f65f0",
+        "sizeBytes": 13605
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/source-08.xml",
+        "sha256": "b1f5964069d0459a12785c8f063ac31793bb82786e2cfd3c06d613f9954f65f0",
+        "sizeBytes": 13605
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/source-09.xml",
+        "sha256": "b1f5964069d0459a12785c8f063ac31793bb82786e2cfd3c06d613f9954f65f0",
+        "sizeBytes": 13605
+      },
+      {
+        "path": "mobile-appium/android/reference-20261030/source-10.xml",
+        "sha256": "b1f5964069d0459a12785c8f063ac31793bb82786e2cfd3c06d613f9954f65f0",
+        "sizeBytes": 13605
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/amkernel-result.json",
+        "sha256": "83e838d93ad08e32364371c378b4379f5193159f1d10bc917efd192749294e14",
+        "sizeBytes": 65179
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/amkernel.log",
+        "sha256": "e235f8da6f7adf7c8c262a3a2704ab55dbdda5746003d3673db45f25299845d9",
+        "sizeBytes": 27
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/appium.log",
+        "sha256": "fb36482cab7a3498b4b1db2566f487e97a188833f0270571cd9cb1dcef8cf65b",
+        "sizeBytes": 578800
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/device.log",
+        "sha256": "3e8e8fa5221fff3e72feda6152009985e62ae62bacef3cab421d1f1ef3abc70f",
+        "sizeBytes": 2371397
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/driver.log",
+        "sha256": "80e69a9a4760cf92faba19305b4032a2a6e5caeafd7239f820d5af409d963bcc",
+        "sizeBytes": 474808
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/evidence.json",
+        "sha256": "5777eedf082ca9fa8899c728b34de7bb8c2a3d57f1cf9500b342a44e64135b85",
+        "sizeBytes": 48913
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/ios-capture-large-tree.xml",
+        "sha256": "11b24e8f2cf3cdfe3fc46f8c9778f11aad531e374b01e4518e5b4073235bc631",
+        "sizeBytes": 38377
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/ios-confirm-modal-dismissed.png",
+        "sha256": "8ecdbba8e5d56fd77057f2c366a6bdddd470c217987ff216d334f866e80f64c5",
+        "sizeBytes": 124758
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/ios-confirm-success.png",
+        "sha256": "093f1148d19544f1673b5d87089bf3086cdfc38c9c97f8c840c9296e9cdf8696",
+        "sizeBytes": 257523
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/ios-confirm-text.png",
+        "sha256": "125034dcf889da4910da58d4714dbc8d120a150cd3d0b5491264bb8802f13472",
+        "sizeBytes": 150067
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/ios-launch.png",
+        "sha256": "b52fb1a776e859ad2a8a7ceb5a6f7f1daae05de063734fbe8eec7fd6caf3bfde",
+        "sizeBytes": 259504
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/ios-wait-progress-change.png",
+        "sha256": "0e595e1d76196249930c7b45e7133430f496c3f4aeb8d2f60e6d4f950a3171eb",
+        "sizeBytes": 88007
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/public-call-2-artifact-1.bin",
+        "sha256": "b52fb1a776e859ad2a8a7ceb5a6f7f1daae05de063734fbe8eec7fd6caf3bfde",
+        "sizeBytes": 259504
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/public-call-2-artifact-10.png",
+        "sha256": "093f1148d19544f1673b5d87089bf3086cdfc38c9c97f8c840c9296e9cdf8696",
+        "sizeBytes": 257523
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/public-call-2-artifact-11.xml",
+        "sha256": "11b24e8f2cf3cdfe3fc46f8c9778f11aad531e374b01e4518e5b4073235bc631",
+        "sizeBytes": 38377
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/public-call-2-artifact-2.png",
+        "sha256": "b52fb1a776e859ad2a8a7ceb5a6f7f1daae05de063734fbe8eec7fd6caf3bfde",
+        "sizeBytes": 259504
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/public-call-2-artifact-3.bin",
+        "sha256": "125034dcf889da4910da58d4714dbc8d120a150cd3d0b5491264bb8802f13472",
+        "sizeBytes": 150067
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/public-call-2-artifact-4.png",
+        "sha256": "125034dcf889da4910da58d4714dbc8d120a150cd3d0b5491264bb8802f13472",
+        "sizeBytes": 150067
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/public-call-2-artifact-5.bin",
+        "sha256": "8ecdbba8e5d56fd77057f2c366a6bdddd470c217987ff216d334f866e80f64c5",
+        "sizeBytes": 124758
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/public-call-2-artifact-6.png",
+        "sha256": "8ecdbba8e5d56fd77057f2c366a6bdddd470c217987ff216d334f866e80f64c5",
+        "sizeBytes": 124758
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/public-call-2-artifact-7.bin",
+        "sha256": "0e595e1d76196249930c7b45e7133430f496c3f4aeb8d2f60e6d4f950a3171eb",
+        "sizeBytes": 88007
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/public-call-2-artifact-8.png",
+        "sha256": "0e595e1d76196249930c7b45e7133430f496c3f4aeb8d2f60e6d4f950a3171eb",
+        "sizeBytes": 88007
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/public-call-2-artifact-9.bin",
+        "sha256": "093f1148d19544f1673b5d87089bf3086cdfc38c9c97f8c840c9296e9cdf8696",
+        "sizeBytes": 257523
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/public-call-2-display-12.bin",
+        "sha256": "b52fb1a776e859ad2a8a7ceb5a6f7f1daae05de063734fbe8eec7fd6caf3bfde",
+        "sizeBytes": 259504
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/public-call-2-display-13.bin",
+        "sha256": "125034dcf889da4910da58d4714dbc8d120a150cd3d0b5491264bb8802f13472",
+        "sizeBytes": 150067
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/public-call-2-display-14.bin",
+        "sha256": "8ecdbba8e5d56fd77057f2c366a6bdddd470c217987ff216d334f866e80f64c5",
+        "sizeBytes": 124758
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/public-call-2-display-15.bin",
+        "sha256": "0e595e1d76196249930c7b45e7133430f496c3f4aeb8d2f60e6d4f950a3171eb",
+        "sizeBytes": 88007
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/public-call-2-display-16.bin",
+        "sha256": "093f1148d19544f1673b5d87089bf3086cdfc38c9c97f8c840c9296e9cdf8696",
+        "sizeBytes": 257523
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/screenshot-01.png",
+        "sha256": "53895d6f5c90e51a48851f053efce2facecb14af7cabe17000368fe1e7bb388f",
+        "sizeBytes": 257981
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/screenshot-02.png",
+        "sha256": "53895d6f5c90e51a48851f053efce2facecb14af7cabe17000368fe1e7bb388f",
+        "sizeBytes": 257981
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/screenshot-03.png",
+        "sha256": "53895d6f5c90e51a48851f053efce2facecb14af7cabe17000368fe1e7bb388f",
+        "sizeBytes": 257981
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/screenshot-04.png",
+        "sha256": "53895d6f5c90e51a48851f053efce2facecb14af7cabe17000368fe1e7bb388f",
+        "sizeBytes": 257981
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/screenshot-05.png",
+        "sha256": "53895d6f5c90e51a48851f053efce2facecb14af7cabe17000368fe1e7bb388f",
+        "sizeBytes": 257981
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/screenshot-06.png",
+        "sha256": "53895d6f5c90e51a48851f053efce2facecb14af7cabe17000368fe1e7bb388f",
+        "sizeBytes": 257981
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/screenshot-07.png",
+        "sha256": "0fc8d8680a6271d837cab789cfbdffa045fbffb0ff81f54d73586ed543c087a8",
+        "sizeBytes": 257092
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/screenshot-08.png",
+        "sha256": "0fc8d8680a6271d837cab789cfbdffa045fbffb0ff81f54d73586ed543c087a8",
+        "sizeBytes": 257092
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/screenshot-09.png",
+        "sha256": "0fc8d8680a6271d837cab789cfbdffa045fbffb0ff81f54d73586ed543c087a8",
+        "sizeBytes": 257092
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/screenshot-10.png",
+        "sha256": "0fc8d8680a6271d837cab789cfbdffa045fbffb0ff81f54d73586ed543c087a8",
+        "sizeBytes": 257092
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/source-01.xml",
+        "sha256": "205d11aee5cce46abcad4299cd337b19bf5df81f3ef339c52507f0862d1764c7",
+        "sizeBytes": 38377
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/source-02.xml",
+        "sha256": "205d11aee5cce46abcad4299cd337b19bf5df81f3ef339c52507f0862d1764c7",
+        "sizeBytes": 38377
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/source-03.xml",
+        "sha256": "205d11aee5cce46abcad4299cd337b19bf5df81f3ef339c52507f0862d1764c7",
+        "sizeBytes": 38377
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/source-04.xml",
+        "sha256": "205d11aee5cce46abcad4299cd337b19bf5df81f3ef339c52507f0862d1764c7",
+        "sizeBytes": 38377
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/source-05.xml",
+        "sha256": "205d11aee5cce46abcad4299cd337b19bf5df81f3ef339c52507f0862d1764c7",
+        "sizeBytes": 38377
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/source-06.xml",
+        "sha256": "205d11aee5cce46abcad4299cd337b19bf5df81f3ef339c52507f0862d1764c7",
+        "sizeBytes": 38377
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/source-07.xml",
+        "sha256": "205d11aee5cce46abcad4299cd337b19bf5df81f3ef339c52507f0862d1764c7",
+        "sizeBytes": 38377
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/source-08.xml",
+        "sha256": "205d11aee5cce46abcad4299cd337b19bf5df81f3ef339c52507f0862d1764c7",
+        "sizeBytes": 38377
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/source-09.xml",
+        "sha256": "205d11aee5cce46abcad4299cd337b19bf5df81f3ef339c52507f0862d1764c7",
+        "sizeBytes": 38377
+      },
+      {
+        "path": "mobile-appium/ios/reference-20261030/source-10.xml",
+        "sha256": "205d11aee5cce46abcad4299cd337b19bf5df81f3ef339c52507f0862d1764c7",
+        "sizeBytes": 38377
+      },
+      {
+        "path": "stage-4/codex/attempts/environment.json",
+        "sha256": "cdb0b0c27759d0644c1c3818cc023334414c731f5f5e0e32198577afd0d05f3b",
+        "sizeBytes": 744
+      },
+      {
+        "path": "stage-4/codex/attempts/launch-01-events.jsonl",
+        "sha256": "01c0f4c9b628a1497fec1a97f777432bcfa9b8c44f9410b0cef97523899313af",
+        "sizeBytes": 771
+      },
+      {
+        "path": "stage-4/codex/attempts/launch-01-stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sizeBytes": 0
+      },
+      {
+        "path": "stage-4/codex/attempts/launch-01.json",
+        "sha256": "b613b6c23299c0116887da9b936293b20eb76cf47e4dfb17255dd508bca990d0",
+        "sizeBytes": 208
+      },
+      {
+        "path": "stage-4/codex/attempts/launch-02-events.jsonl",
+        "sha256": "421c18de9505cbe5b24328ba1385517dd5bb73ede4246bf7c823c9565707bdf9",
+        "sizeBytes": 771
+      },
+      {
+        "path": "stage-4/codex/attempts/launch-02-stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "sizeBytes": 0
+      },
+      {
+        "path": "stage-4/codex/attempts/launch-02.json",
+        "sha256": "47ba8d8e5a80d65608b9ddf678b756c08f33b0127f70e506f5794d9afed56246",
+        "sizeBytes": 208
+      },
+      {
+        "path": "stage-4/codex/validation/display.png",
+        "sha256": "18d0dcd567c88738923774a8dfaa470edd635d66c16ace15ab0331a6f57e02b5",
+        "sizeBytes": 74
+      },
+      {
+        "path": "stage-4/process/source-41625606905/process-evidence-macos-latest-cpython-3.11.json",
+        "sha256": "deef0a3f47d2966e01ef176e16024dc65025c4bf7c576988e58bc216d7d31e6c",
+        "sizeBytes": 41312
+      },
+      {
+        "path": "stage-4/process/source-41625606905/process-evidence-macos-latest-cpython-3.13.json",
+        "sha256": "ef9fd428703394916605bcdd6c25c6f42ae868cb2670b426531e279eb69ae411",
+        "sizeBytes": 41321
+      },
+      {
+        "path": "stage-4/process/source-41625606905/process-evidence-ubuntu-latest-cpython-3.11.json",
+        "sha256": "4d274d8a0dedfdddf6d2d919141e5cbc719d6d40fbb80c1d9dc34166d517ab17",
+        "sizeBytes": 41286
+      },
+      {
+        "path": "stage-4/process/source-41625606905/process-evidence-ubuntu-latest-cpython-3.13.json",
+        "sha256": "d9fc3cf5d814c899fb2a9ff472c08425516d7ac39edada3a0c469c398c91adbf",
+        "sizeBytes": 41281
+      },
+      {
+        "path": "stage-4/process/source-41625606905/workflow-steps.log",
+        "sha256": "0cbdb8cf3dabce347d5d26af81234ae23c1d58fdb4151b3ec69bcd8497a7b4f4",
+        "sizeBytes": 63783
+      }
+    ]
+  },
+  "schemaVersion": 1
+}

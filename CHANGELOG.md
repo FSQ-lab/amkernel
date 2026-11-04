@@ -2,6 +2,12 @@
 
 All notable changes to AMKernel are recorded here. Public releases use semantic `0.MINOR.PATCH` versions under the pre-1.0 policy in `docs/development.md`.
 
+## [Unreleased]
+
+### Changed
+
+- Replace repository-retained raw verification outputs with the immutable `v0.1.2` evidence archive. Keep normalized records and an offline provenance index in Git, classify all 203 original members by retention, and ignore future raw output locations without rewriting history ([#120](https://github.com/FSQ-lab/amkernel/issues/120); [ADR-0008](docs/decisions/0008-release-evidence-retention.md)).
+
 ## [0.1.2] - 2026-11-04
 
 Backward-compatible reliability, installation and release-evidence corrections. Runtime, MCP and qualified platform contracts are unchanged.
