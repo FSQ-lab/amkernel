@@ -154,6 +154,17 @@ A new authorized hosted Windows job can supply lifecycle-only evidence, not the
 required Android-device scenario. Missing existing jobs do not prove hosted
 execution impossible. Issue #100 records the investigated limits and dependencies.
 
+The unreleased #98 Skill revision now presents one novice-first interface: the user supplies a
+plain-language outcome while the Agent discovers safe facts, chooses one platform route, avoids
+duplicate approval for explicitly requested effects, and continues through verification and owned
+cleanup. Official-skill provenance, official-document fallback, exact five-way compatibility
+classification, Runtime lifecycle truth, and bounded short-flow execution remain explicit. The
+reduced Android prompt now tests rather than teaches those behaviors. Focused Skill/evaluator tests
+passed 82 scenarios, distribution tests passed 58, and native Copilot installed-wheel runs passed
+both the novice Android short flow and compatibility classification. Independent rereview found
+0 Blocker / 0 Major / 0 Minor findings. This is local behavior evidence, not new platform support
+or completion of the outstanding actual-platform sequence.
+
 Issues #102, #103, #104, #106, #107 and #108 are closed against their completed,
 merged and independently reviewed defect contracts. #98 and #105 remain open for
 the outstanding actual-platform sequence; #100 still requires real Windows evidence.
