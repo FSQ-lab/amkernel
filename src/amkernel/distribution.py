@@ -519,29 +519,27 @@ class DistributionManager:
         if not self.project.is_dir():
             raise DistributionError(f"project directory does not exist: {self.project}")
 
-    def select_client(self, requested: str) -> Client:
-        if requested in SUPPORTED_CLIENTS:
-            return requested
-        if requested != "auto":
-            raise DistributionError(f"unsupported client: {requested}")
+    def client_candidates(self) -> tuple[Client, ...]:
         candidates: tuple[tuple[Client, Path], ...] = (
             ("omp", self.project / ".omp"),
             ("pi", self.project / ".pi"),
             ("codex", self.project / ".codex"),
             ("copilot", self.project / ".mcp.json"),
         )
-        marked = [client for client, marker in candidates if marker.exists()]
-        if len(marked) == 1:
-            return marked[0]
-        if len(marked) > 1:
-            raise DistributionError(
-                "multiple Coding Agents detected for this project; "
-                "pass --client omp, pi, codex, or copilot"
-            )
-        installed = [client for client in SUPPORTED_CLIENTS if self._client_installed(client)]
-        if len(installed) == 1:
-            return installed[0]
-        if len(installed) > 1:
+        marked = tuple(client for client, marker in candidates if marker.exists())
+        if marked:
+            return marked
+        return tuple(client for client in SUPPORTED_CLIENTS if self._client_installed(client))
+
+    def select_client(self, requested: str) -> Client:
+        if requested in SUPPORTED_CLIENTS:
+            return requested
+        if requested != "auto":
+            raise DistributionError(f"unsupported client: {requested}")
+        candidates = self.client_candidates()
+        if len(candidates) == 1:
+            return candidates[0]
+        if len(candidates) > 1:
             raise DistributionError(
                 "multiple Coding Agents detected; pass --client omp, pi, codex, or copilot"
             )
@@ -629,11 +627,11 @@ class DistributionManager:
 
     def planned_changes(self, client: Client) -> tuple[str, ...]:
         return (
-            f"Runtime: {self.runtime_executable()}",
-            f"Skill: {self.project / '.agents' / 'skills' / 'amkernel'}",
-            f"Official Skills: {self.project / '.agents' / 'skills'}",
-            f"Official source: {self.project / '.agents' / 'vendor' / 'appium-skills'}",
-            f"MCP ({client}): {self._config_path(client)}",
+            f"User Runtime: {self.runtime_executable()}",
+            f"Project Skill: {self.project / '.agents' / 'skills' / 'amkernel'}",
+            f"Project Official Skills: {self.project / '.agents' / 'skills'}",
+            f"Project Official source: {self.project / '.agents' / 'vendor' / 'appium-skills'}",
+            f"Project MCP ({client}): {self._config_path(client)}",
         )
 
     def _skill_source(self) -> Any:

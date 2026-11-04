@@ -2,10 +2,18 @@
 
 All notable changes to AMKernel are recorded here. Public releases use semantic `0.MINOR.PATCH` versions under the pre-1.0 policy in `docs/development.md`.
 
-## [Unreleased]
+## [0.1.2] - 2026-11-04
+
+Backward-compatible reliability, installation and release-evidence corrections. Runtime, MCP and qualified platform contracts are unchanged.
+
+### Changed
+
+- Build the complete pre-migration evidence corpus into a deterministic, content-addressed archive from authoritative CI and require the exact archive and manifest beside the tested wheel in the immutable GitHub Release. Keep normal tests offline and defer raw-evidence removal until the published assets verify independently ([#120](https://github.com/FSQ-lab/amkernel/issues/120); [ADR-0008](docs/decisions/0008-release-evidence-retention.md)).
+- Ignore every generated official-Skill copy, installer receipt and transient lock while preserving authored project content. Remove the obsolete `amkernel-appium` unignore rule after the clean cutover ([#120](https://github.com/FSQ-lab/amkernel/issues/120)).
 
 ### Fixed
 
+- Prompt for one Coding Agent during interactive project installation when detection is ambiguous or empty, while keeping non-interactive installation fail-closed without an explicit `--client`. Label the shared user Runtime and project-local Skill/source/MCP activation separately in the install plan ([#119](https://github.com/FSQ-lab/amkernel/issues/119)).
 - Make ready-stream settlement cancellation-safe so a queued zero-delay timer cannot raise an unhandled `InvalidStateError` after its waiter is cancelled. Preserve terminal ordering, cancellation propagation and storage-failure cleanup ([#114](https://github.com/FSQ-lab/amkernel/issues/114)).
 - Replace the scheduling-dependent 32 MiB/1 ms artifact deadline test with controlled real transaction boundaries. Verify complete consumer-readable artifacts and truthful `timed_out/alive` versus `kernel_killed/dead` outcomes without requiring survival after forced termination ([#115](https://github.com/FSQ-lab/amkernel/issues/115)).
 - Keep Stage 4 Codex evaluation pinned to the published wheel with separate harness provenance; preserve bounded, redacted diagnostics and stop without replay or false blocked/pass classification after observed client execution. Retain the actual provider-blocked attempts and separate server-only validation without claiming either client layer passed ([#81](https://github.com/FSQ-lab/amkernel/issues/81)).

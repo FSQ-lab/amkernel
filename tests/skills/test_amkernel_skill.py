@@ -49,6 +49,26 @@ def _write_manifest(tmp_path: Path, manifest: dict[str, Any]) -> Path:
     return path
 
 
+def test_generated_skill_state_is_ignored_by_git() -> None:
+    manifest = json.loads((SKILL_ROOT / "references" / "official-skills.json").read_text())
+    generated = {
+        f"{manifest['source']['generatedLocation']}/.generated",
+        *(f"{item['generatedLocation']}/.generated" for item in manifest["installedSkills"]),
+        *(f"{item['selectedAgentLocation']}/.generated" for item in manifest["installedSkills"]),
+        ".agents/amkernel-official.json",
+        ".amkernel.install.lock",
+        "skills-lock.json",
+    }
+
+    for location in sorted(generated):
+        result = subprocess.run(
+            ["git", "check-ignore", "--no-index", "--quiet", location],
+            cwd=ROOT,
+            check=False,
+        )
+        assert result.returncode == 0, f"generated path is not ignored: {location}"
+
+
 def _install_receipt(
     project_root: Path, manifest: dict[str, Any], runtime_version: str = "0.1.0"
 ) -> Path:

@@ -80,6 +80,76 @@ def test_automated_project_mutation_requires_explicit_scope(
     )
 
 
+@pytest.mark.parametrize(
+    ("candidates", "answers", "expected", "prompts"),
+    (
+        (("omp", "codex"), ("2", "y"), "codex", True),
+        ((), ("3", "y"), "codex", True),
+        (("codex",), ("y",), "codex", False),
+    ),
+)
+def test_interactive_install_selects_one_client(
+    project_path: Path,
+    capsys: pytest.CaptureFixture[str],
+    monkeypatch: pytest.MonkeyPatch,
+    candidates: tuple[Client, ...],
+    answers: tuple[str, ...],
+    expected: Client,
+    prompts: bool,
+) -> None:
+    installed: list[Client] = []
+
+    class InteractiveInput:
+        def isatty(self) -> bool:
+            return True
+
+    class FakeManager:
+        def __init__(self, project: Path) -> None:
+            self.project = project
+
+        def client_candidates(self) -> tuple[Client, ...]:
+            return candidates
+
+        def planned_changes(self, client: Client) -> tuple[str, ...]:
+            return (f"Project MCP ({client}): config",)
+
+        def install(self, requested_client: Client) -> ProjectStatus:
+            installed.append(requested_client)
+            return ProjectStatus(
+                str(self.project), requested_client, "/managed/bin/amkernel", True, True, True, True
+            )
+
+    responses = iter(answers)
+    monkeypatch.setattr("amkernel.cli.DistributionManager", FakeManager)
+    monkeypatch.setattr("amkernel.cli.sys.stdin", InteractiveInput())
+    monkeypatch.setattr("builtins.input", lambda: next(responses))
+
+    result = main(["install", "--project", str(project_path), "--json"])
+
+    output = capsys.readouterr()
+    assert result == 0
+    assert installed == [expected]
+    assert ("Select the Coding Agent" in output.err) is prompts
+    assert json.loads(output.out)["client"] == expected
+
+
+def test_non_interactive_install_requires_explicit_client(
+    project_path: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    class NonInteractiveInput:
+        def isatty(self) -> bool:
+            return False
+
+    monkeypatch.setattr("amkernel.cli.sys.stdin", NonInteractiveInput())
+
+    result = main(["install", "--project", str(project_path)])
+
+    assert result == 2
+    assert capsys.readouterr().err == (
+        "amkernel: non-interactive installation requires an explicit --client\n"
+    )
+
+
 def test_install_discloses_exact_changes_before_assumed_consent(
     project_path: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -92,9 +162,9 @@ def test_install_discloses_exact_changes_before_assumed_consent(
 
         def planned_changes(self, client: Client) -> tuple[str, ...]:
             return (
-                "Runtime: /managed/bin/amkernel",
-                f"Skill: {self.project / '.agents/skills/amkernel'}",
-                f"MCP ({client}): {self.project / '.omp/mcp.json'}",
+                "User Runtime: /managed/bin/amkernel",
+                f"Project Skill: {self.project / '.agents/skills/amkernel'}",
+                f"Project MCP ({client}): {self.project / '.omp/mcp.json'}",
             )
 
         def install(self, requested_client: str) -> ProjectStatus:
@@ -129,9 +199,9 @@ def test_install_discloses_exact_changes_before_assumed_consent(
 
     output = capsys.readouterr()
     assert result == 0
-    assert "Runtime: /managed/bin/amkernel" in output.err
-    assert f"Skill: {project_path / '.agents/skills/amkernel'}" in output.err
-    assert f"MCP (omp): {project_path / '.omp/mcp.json'}" in output.err
+    assert "User Runtime: /managed/bin/amkernel" in output.err
+    assert f"Project Skill: {project_path / '.agents/skills/amkernel'}" in output.err
+    assert f"Project MCP (omp): {project_path / '.omp/mcp.json'}" in output.err
     assert json.loads(output.out)["mcp_configured"] is True
 
 

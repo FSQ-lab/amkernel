@@ -153,6 +153,7 @@ def test_auto_client_detection_rejects_ambiguous_project_markers(
     (project / ".omp").mkdir()
     (project / ".pi").mkdir()
     subject = manager(project, tmp_path / "bin")
+    assert subject.client_candidates() == ("omp", "pi")
 
     with pytest.raises(DistributionError, match="multiple Coding Agents detected"):
         subject.select_client("auto")
@@ -165,6 +166,7 @@ def test_auto_client_detection_rejects_ambiguous_installed_clients(
 ) -> None:
     monkeypatch.setattr("amkernel.distribution.shutil.which", lambda name: f"/bin/{name}")
     subject = manager(project, tmp_path / "bin")
+    assert subject.client_candidates() == ("omp", "pi", "codex")
 
     with pytest.raises(DistributionError, match="multiple Coding Agents detected"):
         subject.select_client("auto")
@@ -312,6 +314,7 @@ def test_auto_client_detection_accepts_copilot_and_ignores_aws_copilot(
         return CommandResult(tuple(argv), 0, "AWS Copilot CLI", "", False)
 
     aws_subject = DistributionManager(project, runner=aws, data_home=tmp_path / "data")
+    assert aws_subject.client_candidates() == ()
     with pytest.raises(DistributionError, match="no supported Coding Agent"):
         aws_subject.select_client("auto")
 
@@ -319,6 +322,7 @@ def test_auto_client_detection_accepts_copilot_and_ignores_aws_copilot(
         return CommandResult(tuple(argv), 0, "GitHub Copilot CLI", "", False)
 
     github_subject = DistributionManager(project, runner=github, data_home=tmp_path / "data")
+    assert github_subject.client_candidates() == ("copilot",)
     assert github_subject.select_client("auto") == "copilot"
 
     config = project / ".mcp.json"
