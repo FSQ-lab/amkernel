@@ -64,11 +64,11 @@ The formal repository was intentionally created design-only. A sibling spike exi
 - S3-010 pins `appium/skills` commit `e907024c210fe024c956ed9c74146fc27b1dd013` and Skills CLI 1.7.4, verifies the canonical detached Git tree plus `.agents` runtime and `.claude` selected-agent copies, and provides one project-local direct Appium Python procedure. The skill keeps server/device ownership external, reuses one persistent driver, uses explicit waits, bounds status/source/screenshot evidence, fails closed on source drift, prohibits automatic SDK bootstrap/shared ADB resets/unscoped mutations, and preserves cleanup identity until `driver.quit()` succeeds. Focused verification passed 5 tests plus Ruff, mypy, the real 134-file/copy verifier, and local Skills CLI discovery; independent security/workflow review found 0 Blocker / 0 Major / 0 Minor.
 - Issue #88 and ADR-0007 replace the interim separately installed `amkernel-appium` entry with one packaged `amkernel` skill and CLI. `amkernel install` installs or reuses one global uv tool, copies the version-matched skill into the project, writes one native project MCP entry, and records only managed project references. Update, project uninstall, and global uninstall preserve explicit scope, consent, rollback, and ownership.
 - Issue #119 keeps ADR-0007's single-client ownership while improving interactive installation: one detected client remains automatic, ambiguous candidates open a single-choice prompt, no candidates offer all supported clients, and non-interactive installation still requires explicit `--client`. Install plans distinguish the shared user Runtime from project-local Skill, official-source, and native MCP activation.
-- Issue #120 and ADR-0008 make `v0.1.2` the safe evidence-migration boundary. Authoritative CI builds one deterministic archive and external member manifest from the exact release commit; release preparation and immutable-release verification require both assets beside the tested wheel while PyPI receives only the wheel. Generated official-Skill copies, receipts and locks are ignored. Raw repository evidence remains intentionally tracked until the immutable `v0.1.2` assets publish and verify; only then may a follow-up commit remove it without rewriting history.
+- Issue #120 and ADR-0008 used immutable `v0.1.2` as the safe evidence-migration boundary. Release run `41771753135` published the exact tested wheel plus the complete 203-member archive and external manifest from commit `8438198f97e0442a3869e9f32d4213adef3dc766`; GitHub reports the release immutable and all three asset digests independently matched. `evidence/archive-v0.1.2.json` now records every original member and its Git-retained or release-only classification. Raw logs, images, binaries, full transcripts, source captures, intermediate attempts, and per-environment outputs have left the default branch without history rewriting; future raw paths are ignored and tested.
 - S3-020, S3-030, and S3-040 are complete: frozen fixture/evidence contracts and passing Android
-  and iOS reference records are retained under `evidence/mobile-appium/`. Independent review
-  findings on baseline provenance, fresh-start identities, post-transport kernel state, and portable
-  artifact paths were fixed; both retained records validate in place.
+  and iOS normalized reference records remain under `evidence/stage-3/references/` and validate
+  offline. Their raw workflow steps, images, page sources, logs, binaries, and duplicate records are
+  release-only members indexed by `evidence/archive-v0.1.2.json`.
 - S3-050 exercises all 19 frozen lifecycle failures as 33 platform-tagged occurrences. The aggregate
   `evidence/stage-3/lifecycle.json` validates against the frozen evidence definitions, hash-links every
   bounded transcript and both platform reference manifests, preserves failure-time state separately
@@ -99,6 +99,14 @@ The formal repository was intentionally created design-only. A sibling spike exi
   0 Blocker / 0 Major / 0 Minor findings.
 - Global OMP memory is disabled; this project uses local project-scoped memory.
 - The sibling `/Users/qunmi/Documents/FSQ_LAB/omp` remains untouched as historical discussion/prototype material.
+
+## Release 0.1.2 and evidence migration
+
+PR #121 merged as `8438198f97e0442a3869e9f32d4213adef3dc766`. Authoritative main CI run `41770720567` passed quality, package smoke, and all Ubuntu/macOS CPython 3.11–3.13 jobs. Release run `41771753135` published immutable [`v0.1.2`](https://github.com/FSQ-lab/amkernel/releases/tag/v0.1.2) and the same wheel to PyPI.
+
+The release has exactly three assets: wheel SHA-256 `dac88ff4b36129b9b375f1abcba43342187fc9ef3b4fc54de5b6fced604c8158`, evidence archive SHA-256 `4e03ceb4cdc9462b8960a184725290f6a202a20389c7742af0d97d4d38384c4a`, and external manifest SHA-256 `2e848e0a1541a37476248ff6080fb71ec97a3d23cb29692b6463b5ca6b162c11`. PyPI reports the identical wheel digest. `evidence/archive-v0.1.2.json` is the permanent offline provenance and retention index.
+
+The post-release cleanup retains 71 normalized records in Git and classifies 132 raw or duplicate members as release-only. The clean external `uvx` install retry reached the official PyPI wheel URL but this workstation's network failed with `Socket is not connected`; authoritative package smoke and successful trusted publication remain the exercised package-delivery evidence.
 
 ## Release 0.1.1 and post-release verification
 
@@ -162,7 +170,7 @@ Both launches timed out near 180 seconds with null recorded exit codes. Client
 `turn.started` events exist, but no completed model turn, model-generated response
 or tool call was observed. Neither frozen client layer was entered; outcome stays
 `blocked`. Cleanup flags describe only those unentered layers, not independently
-observed supplementary process-tree cleanup. Historical launch logs are unchanged.
+observed supplementary process-tree cleanup. Historical launch logs are release-only members in `evidence/archive-v0.1.2.json`.
 
 The separate `validation/` report records 21 server-level MCP checks. It is not
 Codex execution or naturalistic #82 evidence. Omitted multipart payloads prevent
@@ -253,10 +261,10 @@ and contradictory timeout transition status. Those mutations are synthetic
 validator checks, not platform observations.
 
 Hosted run `41625606905`, attempt 1, observed all 36 cells passing across the four
-environments. Original reports, the unchanged pending-review index and selected
-actual matrix/validation/aggregation logs are retained under
-`evidence/stage-4/process/source-41625606905/`. Parent aggregation reproduced
-index hash `3a3199a9bab97f715554318b9bb7e17cba4041cac331c9b03cb54a4b6daa3fbc`.
+environments. The normalized index and independent review remain under
+`evidence/stage-4/process/source-41625606905/`; four per-environment reports and the
+selected matrix/validation/aggregation log are release-only members in
+`evidence/archive-v0.1.2.json`. Parent aggregation reproduced index hash `3a3199a9bab97f715554318b9bb7e17cba4041cac331c9b03cb54a4b6daa3fbc`.
 This run built current source at PR merge SHA
 `46495b43522b99d23b77125cd0a8ecfb304086d2`, not head-branch SHA
 `737bbd09a5874d1b0131b9dafaa4ab6f4db4dc9e`. Its wheel digest is
@@ -344,13 +352,11 @@ and missing-copy repair, and native MCP coexistence in both existing-file layout
 This is installation evidence, not physical Mac2/Android/iOS or Windows qualification.
 Retained installation evidence is `evidence/appium-skill/copilot-install-20261102.json` (#105).
 
-#98 now has observed native installed-Skill/MCP behavior for all 16 synthetic
-scenarios through Copilot CLI 1.0.105 / gpt-6.1-sol. Retained evidence is
-`evidence/appium-skill/agent-behavior-20261103.json`; earlier failed runs remain
-unchanged beside it. The initial matrix also exposed a real Mac2 action-limit
+#98 observed native installed-Skill/MCP behavior for all 16 synthetic scenarios through Copilot CLI 1.0.105 / gpt-6.1-sol. The final and failed full native matrices are release-only members in `evidence/archive-v0.1.2.json`; the bounded independent review remains in Git. The initial matrix also exposed a real Mac2 action-limit
 violation hidden by its old oracle: cleanup clicked a second time. Skill guidance
 and the final oracle preserve requested end state and enforce action limits across
-execution and cleanup. Exact report controls replace prose-based status inference;
+execution and cleanup.
+Exact report controls replace prose-based status inference;
 ambiguous-submit reconciliation requires a later successful completed/alive call
 observing the actual result. Global cleanup claims are checked against observed
 session, server and restored state. User configuration hashes remained unchanged;
@@ -362,12 +368,12 @@ Independent final source/protocol/guidance and all-scenario evidence review foun
 0 Blocker / 0 Major / 0 P2; the retained review and source/evidence digests are in
 `evidence/appium-skill/agent-behavior-review-20261103.json`.
 
-#106 now has four passing native installed-Skill/MCP discovery cases: read-only
+#106 has four passing native installed-Skill/MCP discovery cases: read-only
 actual-host discovery and synthetic explicit-Java preference, bundled-JBR fallback,
-and missing-capability environments. Final evidence is
-`evidence/appium-skill/environment-discovery-20261103.json`; the first run and the
-second run's two contract/oracle failures remain separately retained. Executable
-journals cross-check candidate existence, exit codes, actual version/home facts,
+and missing-capability environments. The final run and two failed/intermediate full
+discovery records are release-only members in `evidence/archive-v0.1.2.json`; the
+bounded independent review remains in Git.
+Those release-only journals cross-check candidate existence, exit codes, actual version/home facts,
 and separate physical/simulator inventories against both printed and final facts.
 Approval flags concern the current request; readiness counts concern listed targets,
 so an independently observed empty population permits zero without qualifying the
@@ -394,9 +400,7 @@ remain observed contracts, not Runtime workflow APIs.
 (60 source files), wheel build passed, and the full installed-wheel/native Copilot
 matrix **18/18 passed** with unchanged recorded user configuration and observed
 owned Runner exits. Independent final source/artifact review: **0 Blocker / 0
-Major / 0 P2**. Final evidence, failed/intermediate iterations, source digests and
-review limits live in `evidence/appium-skill/conversation-final-20261103.json`,
-`conversation-review-20261103.json` and `final-provenance-20261103.json`. The final
+Major / 0 P2**. The final and failed/intermediate full native matrices are release-only members indexed by `evidence/archive-v0.1.2.json`; bounded review limits and source/evidence digests remain in `evidence/appium-skill/conversation-review-20261103.json` and `final-provenance-20261103.json`. The final
 native uncertainty case covers coarse timestamps; other temporal/incomplete-search
 branches have regression coverage, not an additional physical-platform claim.
 
@@ -429,9 +433,9 @@ listing before server stop, and owned server/group/ports/Runner exit were observ
 All 24 flags pass; the final report is completed/restored/cleaned/not-owned.
 Independent source and actual-evidence review: 0 Blocker / 0 Major / 0 Minor.
 Review record: `evidence/appium-skill/mac2-recovery-review-20261103.json`.
-Source/wheel/client identities and frozen verifier source are retained in
-`mac2-recovery-source-20261103.json`. This is not a Runtime, dependency-conflict or
-tablet finding; the preparation error's exact cause remains unestablished.
+Source/wheel/client identities and frozen verifier source are a release-only member named
+`appium-skill/mac2-recovery-source-20261103.json` in `evidence/archive-v0.1.2.json`.
+This is not a Runtime, dependency-conflict or tablet finding; the preparation error's exact cause remains unestablished.
 See `docs/experiments/appium-agent-behavior.md` §13 for evidence boundaries.
 
 **Deferred by owner:** complex Mac scenarios under
@@ -445,10 +449,8 @@ not run. The retained evidence below is historical, not an instruction to resume
 this supplement. Earlier 57 isolated boundary checks and a clean source review
 missed the Major verifier defect later exposed by actual execution.
 
-The owner-observed unchanged-procedure retry is retained in
-`evidence/appium-skill/mac2-m1-visible-20261103.json`, with source/preflight in
-`mac2-m1-visible-source-20261103.json` and independent review in
-`mac2-m1-visible-review-20261103.json` (0 Blocker / 1 Major / 0 Minor).
+The owner-observed unchanged-procedure retry and its source/preflight capture are release-only members named `appium-skill/mac2-m1-visible-20261103.json` and `appium-skill/mac2-m1-visible-source-20261103.json` in `evidence/archive-v0.1.2.json`. The bounded independent review remains in
+`evidence/appium-skill/mac2-m1-visible-review-20261103.json` (0 Blocker / 1 Major / 0 Minor).
 Unlike the earlier empty-window attempt, it observed actual Mac2 window clicks
 and scoped descendant-content reads. Its four failed flags share a predicate
 that incorrectly requires a query-local window ID to survive re-query. However,
@@ -479,8 +481,7 @@ Keep #109 for later evaluation, with no deadline or release gate inferred. The
 unresolved verifier/identity issues are retained, not repaired or waived by this
 deferral. Subsequent task-only isolation and identity work stopped as unverified
 temporary drafts; no new UI run, source qualification or permanent setting change
-followed. Retained procedure/reviews remain in `mac2-applications-source-20261103.json`
-and `mac2-applications-review-20261103.json`. No Runtime, public tool or support
+followed. The procedure is the release-only member `appium-skill/mac2-applications-source-20261103.json` in `evidence/archive-v0.1.2.json`; its review remains in `evidence/appium-skill/mac2-applications-review-20261103.json`. No Runtime, public tool or support
 claim changes.
 
 Owner-supervised ordinary mobile operations subsequently completed on Android

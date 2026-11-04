@@ -407,9 +407,9 @@ the actual stdio MCP interface, and unchanged user configuration hashes.
 
 | Retained run | Passed | Failed | Observation |
 | --- | ---: | ---: | --- |
-| [Initial](../../evidence/appium-skill/agent-behavior-before-20261103.json) | 12 | 4 | Underspecified status controls and missing standard inventory/enabled endpoints; independent review also found a second Mac2 click incorrectly accepted as cleanup. |
-| [Before report-contract clarification](../../evidence/appium-skill/agent-behavior-contract-before-20261103.json) | 15 | 1 | Correct compatibility labels used an unspecified plural output key; a no-server scenario claimed server preservation. |
-| [Final](../../evidence/appium-skill/agent-behavior-20261103.json) | 16 | 0 | Exact prompted report controls, observed action limits and post-timeout result reconciliation, and evidence-backed cleanup claims. |
+| [Initial archived member: `appium-skill/agent-behavior-before-20261103.json`](../../evidence/archive-v0.1.2.json) | 12 | 4 | Underspecified status controls and missing standard inventory/enabled endpoints; independent review also found a second Mac2 click incorrectly accepted as cleanup. |
+| [Pre-clarification archived member: `appium-skill/agent-behavior-contract-before-20261103.json`](../../evidence/archive-v0.1.2.json) | 15 | 1 | Correct compatibility labels used an unspecified plural output key; a no-server scenario claimed server preservation. |
+| [Final archived member: `appium-skill/agent-behavior-20261103.json`](../../evidence/archive-v0.1.2.json) | 16 | 0 | Exact prompted report controls, observed action limits and post-timeout result reconciliation, and evidence-backed cleanup claims. |
 
 Earlier observations and verdicts are retained unchanged, including the initial
 Mac2 false positive. The final matrix requires exactly one Mac2 click and a changed
@@ -475,15 +475,14 @@ and conservative unknown counts are both valid; neither qualifies the host.
 Failed/unknown inventories and nonempty populations without readiness evidence
 do not receive this exception.
 
-Final rebuilt-wheel discovery evidence is
-`evidence/appium-skill/environment-discovery-20261103.json`: four native cases
-passed through Copilot CLI 1.0.105 / gpt-6.1-sol. User configuration and the
-recorded external-state snapshots were unchanged; owned Runner exits were
-observed. Full pytest: 469 passed; Ruff, mypy (58 source files), and wheel build
-passed. The first run remains in `environment-discovery-first-20261103.json`;
-the second run's two contract/oracle failures remain in
-`environment-discovery-before-20261103.json` without retroactive relabeling.
-These are discovery observations, not live Appium/driver qualification.
+Final rebuilt-wheel discovery evidence is the release-only member
+`appium-skill/environment-discovery-20261103.json` indexed by
+`evidence/archive-v0.1.2.json`: four native cases passed through Copilot CLI
+1.0.105 / gpt-6.1-sol. User configuration and the recorded external-state
+snapshots were unchanged; owned Runner exits were observed. Full pytest: 469
+passed; Ruff, mypy (58 source files), and wheel build passed. The first and
+second failed/contract-oracle runs are release-only members in the same index
+and retain their original labels. These are discovery observations, not live Appium/driver qualification.
 
 Independent final source and all-four-case evidence review found no Blocker,
 Major or P2 findings. Review scope, source/evidence digests and limitations are
@@ -522,23 +521,21 @@ outcome, restoration, session deletion and server cleanup. Standard targeted
 `value` and `selected` queries observe the same control state as page source.
 Each session-bearing execution window counts toward compact-flow limits.
 
-Earlier failures remain in `conversation-first-20261103.json`,
-`conversation-matrix-first-20261103.json` and
-`conversation-matrix-second-20261103.json` under `evidence/appium-skill/`.
-Independent review also reproduced metadata-as-time, manufactured identity and
-narrowed-query false-negative paths before correction. Those regression tests
-remain; the pre-correction native pass is not the final corrected-oracle proof.
-The third matrix passed before those oracle corrections; it is retained as
-`conversation-matrix-third-pre-review-20261103.json`, not final proof. The fourth
-matrix exercised the corrected conversation paths successfully but exposed a
+Earlier failed and pre-correction native matrices are release-only members in
+`evidence/archive-v0.1.2.json`: `appium-skill/conversation-first-20261103.json`,
+`conversation-matrix-first-20261103.json`, `conversation-matrix-second-20261103.json`,
+`conversation-matrix-third-pre-review-20261103.json`, and
+`conversation-matrix-fourth-20261103.json`. Independent review reproduced
+metadata-as-time, manufactured identity and narrowed-query false-negative paths
+before correction. Those regression tests remain; the pre-correction native
+passes are not final corrected-oracle proof. The fourth matrix also exposed a
 legacy prose-based Windows refusal false negative ("scope excludes" was rejected).
-`conversation-matrix-fourth-20261103.json` retains it. That wording test was
-removed in favor of the explicit unsupported report control above, with negative
-coverage for missing classification, a contradictory completion claim and a
-recorded session attempt.
+That wording test was removed in favor of the explicit unsupported report control
+above, with negative coverage for missing classification, a contradictory
+completion claim and a recorded session attempt.
 
-Final current-source acceptance is retained in
-`conversation-final-20261103.json`: **18/18 passed**, zero failed/blocked scenarios,
+Final current-source acceptance is the release-only member
+`appium-skill/conversation-final-20261103.json` indexed by `evidence/archive-v0.1.2.json`: **18/18 passed**, zero failed/blocked scenarios,
 unchanged recorded user-configuration hashes and observed exit for every recorded
 owned Runner. Full pytest: **514 passed**; Ruff, mypy (60 source files) and wheel
 build passed. Source hashes, independent final review (0 Blocker / 0 Major / 0 P2)
@@ -579,9 +576,8 @@ are outside that claim.
 The retained final platform-discovery records show one successful expected-hash
 `python_exec`, completed/alive status, permitted tools, unchanged recorded config,
 and a nonempty observed Runner-exit record. The probe verifies its own exact byte
-digest inside the actual Kernel before compilation. Static verifier sources and
-original/retained source digests are retained in
-`final-verification-source-20261103.json`; only checkout/home path constants are
+digest inside the actual Kernel before compilation. Static verifier sources and original source digests are recorded in the release-only member
+`appium-skill/final-verification-source-20261103.json` indexed by `evidence/archive-v0.1.2.json`; only checkout/home path constants are
 redacted. Source strings are verification programs, not captured model tool code
 or user data. Independent source/evidence re-review found no remaining findings
 in these discovery predicates; it did not itself run device commands.
@@ -635,7 +631,7 @@ the historical retry. The error type/hash does not establish its underlying caus
 
 Independent source and actual-evidence review found 0 Blocker / 0 Major / 0 Minor.
 The review is retained in `mac2-recovery-review-20261103.json`.
-`mac2-recovery-source-20261103.json` retains exact source/evidence/wheel identities,
+The release-only member `appium-skill/mac2-recovery-source-20261103.json` retains exact source/evidence/wheel identities,
 the frozen Calculator verifier (checkout-path constant redacted), client/model
 identity and verified installed-project provenance. Desktop and cleanup limits
 remain those in the evidence; unrelated apps/services, complex-app scenarios,
@@ -711,10 +707,7 @@ performed no execution; the subsequently authorized observations follow below.
 
 ### Observed M1 attempts and corrected procedure
 
-The original M1 result remains unchanged in `mac2-m1-20261103.json` and remains
-not-qualified. The separate `mac2-textedit-diagnostic-20261103.json` is diagnostic
-evidence, not a passing recovery or substitute M1. Initial source remains in
-`mac2-applications-initial-source-20261103.json`.
+The original M1 result, separate TextEdit diagnostic, and initial source capture remain unchanged as release-only members `appium-skill/mac2-m1-20261103.json`, `appium-skill/mac2-textedit-diagnostic-20261103.json`, and `appium-skill/mac2-applications-initial-source-20261103.json` in `evidence/archive-v0.1.2.json`. M1 remains not-qualified; the diagnostic is not a passing recovery or substitute M1.
 
 The corrected experiment procedure distinguishes actual actions from observed
 labels, counts literal save invocations, binds title/content observations to their
@@ -731,12 +724,11 @@ Earlier assigned independent source review found 0 Blocker / Major / Minor
 findings after repairs, and 57 unique throwaway behavioral boundary checks passed
 without UI execution. The later owner-observed retry below exposed a new Major
 verifier defect; those checks and the earlier review were insufficient to prove
-M1 readiness. Current procedure and review are retained in
-`mac2-applications-source-20261103.json` and `mac2-applications-review-20261103.json`.
+M1 readiness. The current procedure is the release-only member
+`appium-skill/mac2-applications-source-20261103.json`; its bounded review remains in
+`mac2-applications-review-20261103.json`.
 
-The exact new actual native Copilot/Mac2 attempt is retained in
-`mac2-m1-retry-20261103.json`, with the pre-run source snapshot in
-`mac2-m1-retry-source-20261103.json`. Its result is **not-qualified**, with final
+The exact native Copilot/Mac2 attempt and pre-run source snapshot are release-only members `appium-skill/mac2-m1-retry-20261103.json` and `appium-skill/mac2-m1-retry-source-20261103.json` in `evidence/archive-v0.1.2.json`. Its result is **not-qualified**, with final
 report `blocked/restored/cleaned/not-owned`. It created one actual TextEdit/Mac2
 session and submitted the synthetic target deep link, but every window query
 returned zero windows. Initial and final foreground were `com.apple.loginwindow`.
@@ -763,11 +755,12 @@ The owner subsequently reported disabling lock and requested one visible rerun.
 
 ### Owner-observed unchanged-procedure M1 retry
 
-`mac2-m1-visible-source-20261103.json` records preflight with Ghostty foreground,
-an active console, no TextEdit instance and no returned lock key; absence is not
-an explicit false. The unchanged-procedure actual result is retained in
-`mac2-m1-visible-20261103.json` and remains **not-qualified**, notwithstanding
-the native client's final `completed/restored/cleaned/not-owned` report.
+The preflight and unchanged-procedure actual result are release-only members
+`appium-skill/mac2-m1-visible-source-20261103.json` and
+`appium-skill/mac2-m1-visible-20261103.json` in `evidence/archive-v0.1.2.json`.
+They record Ghostty foreground, an active console, no TextEdit instance, no returned
+lock key, and a final **not-qualified** result notwithstanding the native client's
+`completed/restored/cleaned/not-owned` report.
 
 Actual Appium/Mac2 evidence includes title-observed window clicks followed by
 scoped descendant-content reads: target at protocol 52/55/57/58, distractor at

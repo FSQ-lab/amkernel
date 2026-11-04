@@ -259,7 +259,7 @@ The Integration Lead may create a release only when all of these facts hold for 
 
 PyPI publication uses the repository-scoped trusted publisher for `.github/workflows/release.yml` and the protected `pypi` GitHub environment—never a long-lived local token. The Release workflow is manually dispatched from `main` with the authoritative successful main CI run ID. It downloads `distribution-<commit SHA>` directly from that run, validates the run, lock, package-smoke evidence, wheel, deterministic evidence archive, manifest, embedded metadata and every required SHA-256, creates or verifies the immutable tag and three-asset GitHub Release, and gives only the validated wheel to PyPI's trusted-publishing action. It fails closed on any mismatch and never builds a release asset.
 
-ADR-0008 governs evidence retention. Git keeps bounded indexes, manifests, decision reports, reviews and final summaries. Raw logs, screenshots, binaries, full transcripts and repeated intermediate captures may leave the default branch only after the exact corpus is present in an immutable release evidence archive and its Git-tracked provenance verifies. Normal tests never download release assets.
+ADR-0008 governs evidence retention. Git keeps bounded indexes, manifests, decision reports, reviews and final summaries. Raw logs, screenshots, binaries, full transcripts and repeated intermediate captures may leave the default branch only after the exact corpus is present in an immutable release evidence archive. `evidence/archive-v0.1.2.json` records that completed migration boundary, every original member digest, and the Git-retained versus release-only classification; normal tests verify it without downloading release assets.
 
 For a release:
 

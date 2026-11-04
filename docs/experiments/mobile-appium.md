@@ -412,13 +412,14 @@ all frozen measurement gates pass.
 
 Each startup observation retains distinct server PID, runner PID, and Appium session identity plus
 post-trial client-close, managed-process-exit, and session-absence observations. All ten raw baseline
-calls remain available and their retained median is checked against every derived latency group.
-Iteration-5-to-10 plateau checks passed independently for AMKernel, Appium Server, and each
-platform driver: identities remained stable, descendant counts did not grow, open-file/task deltas
-stayed within bounds, and the largest positive RSS delta was 4,259,840 bytes. Complete raw samples,
-workflow steps, images, page sources, hashes, logs, cleanup observations, and provenance are retained
-under `evidence/mobile-appium/android/reference-20261030/` and
-`evidence/mobile-appium/ios/reference-20261030/`.
+calls remain available in the immutable release archive; normalized records check their median against
+every derived latency group. Iteration-5-to-10 plateau checks passed independently for AMKernel,
+Appium Server, and each platform driver/helper process set.
+The normalized evidence records remain under `evidence/stage-3/references/` and validate
+offline against the frozen schema. Original workflow steps, images, page sources, hashes, logs,
+cleanup observations, binaries, and duplicate records are release-only members under
+`mobile-appium/android/reference-20261030/` and `mobile-appium/ios/reference-20261030/`,
+with every path, size, and digest recorded by `evidence/archive-v0.1.2.json`.
 
 Decision: direct Appium Python use through the existing `python_exec` interface is sufficient for
 both reference verticals. No Appium-specific production dependency, action interface, normalized

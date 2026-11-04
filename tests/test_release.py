@@ -18,6 +18,7 @@ SCRIPT = ROOT / "scripts" / "prepare_release.py"
 VERIFY_SCRIPT = ROOT / "scripts" / "verify_github_release.py"
 EVIDENCE_SCRIPT = ROOT / "scripts" / "prepare_evidence_archive.py"
 VERSION = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))["project"]["version"]
+ARCHIVE_INDEX = ROOT / "evidence" / "archive-v0.1.2.json"
 WHEEL_NAME = f"amkernel-{VERSION}-py3-none-any.whl"
 COMMIT = "a" * 40
 RUN_ID = "12345"
@@ -228,6 +229,98 @@ def test_evidence_archive_is_deterministic_and_safe(tmp_path: Path) -> None:
     assert [member.name for member in members] == ["evidence/nested/report.json"]
     assert members[0].isfile()
     assert members[0].mtime == 0
+
+
+def test_post_release_evidence_matches_immutable_archive_index() -> None:
+    provenance = json.loads(ARCHIVE_INDEX.read_text(encoding="utf-8"))
+    release = provenance["release"]
+    assets = provenance["assets"]
+    retention = provenance["retention"]
+
+    assert release == {
+        "commit": "8438198f97e0442a3869e9f32d4213adef3dc766",
+        "immutable": True,
+        "publishedAt": "2026-11-04T04:12:37Z",
+        "tag": "v0.1.2",
+        "url": "https://github.com/FSQ-lab/amkernel/releases/tag/v0.1.2",
+    }
+    assert assets["archive"]["sha256"] == (
+        "4e03ceb4cdc9462b8960a184725290f6a202a20389c7742af0d97d4d38384c4a"
+    )
+    assert assets["externalManifest"]["sha256"] == (
+        "2e848e0a1541a37476248ff6080fb71ec97a3d23cb29692b6463b5ca6b162c11"
+    )
+    assert assets["wheel"]["sha256"] == (
+        "dac88ff4b36129b9b375f1abcba43342187fc9ef3b4fc54de5b6fced604c8158"
+    )
+
+    retained = {item["path"]: item for item in retention["gitAndRelease"]}
+    archived = {item["path"]: item for item in retention["releaseOnly"]}
+    assert len(retained) == 71
+    assert len(archived) == 132
+    assert retained.keys().isdisjoint(archived)
+    published_manifest = {
+        "archive": {key: assets["archive"][key] for key in ("name", "sha256", "sizeBytes")},
+        "commit": release["commit"],
+        "members": sorted([*retained.values(), *archived.values()], key=lambda item: item["path"]),
+        "schemaVersion": 1,
+        "version": "0.1.2",
+    }
+    manifest_bytes = (json.dumps(published_manifest, indent=2, sort_keys=True) + "\n").encode()
+    assert hashlib.sha256(manifest_bytes).hexdigest() == assets["externalManifest"]["sha256"]
+
+    evidence_root = ARCHIVE_INDEX.parent
+    completed = subprocess.run(
+        ["git", "ls-files", "-z", "--", "evidence"],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    tracked = {
+        Path(path).relative_to("evidence").as_posix()
+        for path in completed.stdout.split("\0")
+        if path and path != ARCHIVE_INDEX.relative_to(ROOT).as_posix()
+    }
+    present = {relative: evidence_root / relative for relative in tracked}
+    assert present.keys() == retained.keys()
+    assert not (present.keys() & archived.keys())
+    for relative, path in present.items():
+        expected = retained[relative]
+        assert path.stat().st_size == expected["sizeBytes"]
+        assert hashlib.sha256(path.read_bytes()).hexdigest() == expected["sha256"]
+
+
+def test_raw_evidence_paths_are_ignored_without_hiding_retained_records() -> None:
+    raw_paths = (
+        "evidence/mobile-appium/android/run/screenshot.png",
+        "evidence/stage-4/codex/attempts/events.jsonl",
+        "evidence/stage-4/process/source/run/process-evidence-linux.json",
+        "evidence/appium-skill/conversation-final-20990101.json",
+        "evidence/appium-skill/environment-discovery-20990101.json",
+        "evidence/appium-skill/mac2-m1-visible-20990101.json",
+    )
+    retained_paths = (
+        "evidence/archive-v0.1.2.json",
+        "evidence/stage-3/index.json",
+        "evidence/appium-skill/final-platform-review-20261103.json",
+        "evidence/stage-4/codex/validation/report.json",
+    )
+
+    for path in raw_paths:
+        completed = subprocess.run(
+            ["git", "check-ignore", "--no-index", "--quiet", path],
+            cwd=ROOT,
+            check=False,
+        )
+        assert completed.returncode == 0, f"raw evidence path is not ignored: {path}"
+    for path in retained_paths:
+        completed = subprocess.run(
+            ["git", "check-ignore", "--no-index", "--quiet", path],
+            cwd=ROOT,
+            check=False,
+        )
+        assert completed.returncode == 1, f"retained evidence path is ignored: {path}"
 
 
 def test_release_candidate_rejects_evidence_substitution(tmp_path: Path) -> None:
