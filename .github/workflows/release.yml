@@ -28,6 +28,10 @@ jobs:
       tag: ${{ steps.candidate.outputs.tag }}
       wheel: ${{ steps.candidate.outputs.wheel }}
       sha256: ${{ steps.candidate.outputs.sha256 }}
+      evidence_archive: ${{ steps.candidate.outputs.evidence_archive }}
+      evidence_archive_sha256: ${{ steps.candidate.outputs.evidence_archive_sha256 }}
+      evidence_manifest: ${{ steps.candidate.outputs.evidence_manifest }}
+      evidence_manifest_sha256: ${{ steps.candidate.outputs.evidence_manifest_sha256 }}
     steps:
       - name: Check out release commit
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -84,11 +88,23 @@ jobs:
           mkdir publish
           cp "candidate/dist/$wheel" publish/
           echo "$sha256  publish/$wheel" | sha256sum --check
+          mkdir evidence-publish
+          cp "candidate/evidence-dist/$evidence_archive" evidence-publish/
+          cp "candidate/evidence-dist/$evidence_manifest" evidence-publish/
+          echo "$evidence_archive_sha256  evidence-publish/$evidence_archive" | sha256sum --check
+          echo "$evidence_manifest_sha256  evidence-publish/$evidence_manifest" | sha256sum --check
       - name: Retain validated wheel for privileged jobs
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: release-wheel-${{ github.sha }}-${{ github.run_attempt }}
           path: publish/*.whl
+          if-no-files-found: error
+          retention-days: 1
+      - name: Retain validated evidence for GitHub release
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: release-evidence-${{ github.sha }}-${{ github.run_attempt }}
+          path: evidence-publish/*
           if-no-files-found: error
           retention-days: 1
       - name: Retain release metadata
@@ -125,6 +141,11 @@ jobs:
         with:
           name: release-metadata-${{ github.sha }}-${{ github.run_attempt }}
           path: release-metadata
+      - name: Download validated evidence
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          name: release-evidence-${{ github.sha }}-${{ github.run_attempt }}
+          path: evidence-publish
       - name: Create or verify immutable GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
@@ -133,9 +154,15 @@ jobs:
           WHEEL: ${{ needs.prepare.outputs.wheel }}
           TITLE: AMKernel ${{ needs.prepare.outputs.version }}
           SHA256: ${{ needs.prepare.outputs.sha256 }}
+          EVIDENCE_ARCHIVE: ${{ needs.prepare.outputs.evidence_archive }}
+          EVIDENCE_ARCHIVE_SHA256: ${{ needs.prepare.outputs.evidence_archive_sha256 }}
+          EVIDENCE_MANIFEST: ${{ needs.prepare.outputs.evidence_manifest }}
+          EVIDENCE_MANIFEST_SHA256: ${{ needs.prepare.outputs.evidence_manifest_sha256 }}
         run: |
           cp release-metadata/release-notes.md release-notes.md
           echo "$SHA256  publish/$WHEEL" | sha256sum --check
+          echo "$EVIDENCE_ARCHIVE_SHA256  evidence-publish/$EVIDENCE_ARCHIVE" | sha256sum --check
+          echo "$EVIDENCE_MANIFEST_SHA256  evidence-publish/$EVIDENCE_MANIFEST" | sha256sum --check
           git fetch --force --tags origin
           if git rev-parse --verify --quiet "refs/tags/$TAG"; then
             test "$(git cat-file -t "$TAG")" = "tag"
@@ -151,10 +178,8 @@ jobs:
               --repo "$GITHUB_REPOSITORY" \
               --json assets,body,isDraft,isPrerelease,name,tagName \
               > existing-release.json
-            mkdir existing-release
             gh release download "$TAG" \
               --repo "$GITHUB_REPOSITORY" \
-              --pattern "$WHEEL" \
               --dir existing-release
             python scripts/verify_github_release.py \
               --release-json existing-release.json \
@@ -163,9 +188,16 @@ jobs:
               --tag "$TAG" \
               --title "$TITLE" \
               --wheel "$WHEEL" \
-              --sha256 "$SHA256"
+              --sha256 "$SHA256" \
+              --evidence-archive "$EVIDENCE_ARCHIVE" \
+              --evidence-archive-sha256 "$EVIDENCE_ARCHIVE_SHA256" \
+              --evidence-manifest "$EVIDENCE_MANIFEST" \
+              --evidence-manifest-sha256 "$EVIDENCE_MANIFEST_SHA256"
           else
-            gh release create "$TAG" "publish/$WHEEL" \
+            gh release create "$TAG" \
+              "publish/$WHEEL" \
+              "evidence-publish/$EVIDENCE_ARCHIVE" \
+              "evidence-publish/$EVIDENCE_MANIFEST" \
               --repo "$GITHUB_REPOSITORY" \
               --verify-tag \
               --title "$TITLE" \

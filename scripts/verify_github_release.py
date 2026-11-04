@@ -39,6 +39,10 @@ def verify(
     title: str,
     wheel: str,
     sha256: str,
+    evidence_archive: str,
+    evidence_archive_sha256: str,
+    evidence_manifest: str,
+    evidence_manifest_sha256: str,
 ) -> None:
     """Reject any metadata, asset-set, or content difference."""
     release = _object(release_json)
@@ -55,18 +59,30 @@ def verify(
                 f"existing release {field} must be {value!r}, got {release.get(field)!r}"
             )
     assets = release.get("assets")
-    if not isinstance(assets, list) or len(assets) != 1:
+    expected_assets = {
+        wheel: sha256,
+        evidence_archive: evidence_archive_sha256,
+        evidence_manifest: evidence_manifest_sha256,
+    }
+    if not isinstance(assets, list) or len(assets) != len(expected_assets):
         count = len(assets) if isinstance(assets, list) else "non-list"
-        raise GitHubReleaseError(f"existing release must have exactly one asset, got {count}")
-    asset = assets[0]
-    if not isinstance(asset, dict) or asset.get("name") != wheel:
-        raise GitHubReleaseError(f"existing release asset must be {wheel!r}")
-    downloaded = asset_dir / wheel
-    if not downloaded.is_file():
-        raise GitHubReleaseError(f"downloaded release asset is missing: {downloaded}")
-    actual = _sha256(downloaded)
-    if actual != sha256:
-        raise GitHubReleaseError(f"existing release wheel SHA-256 must be {sha256}, got {actual}")
+        raise GitHubReleaseError(
+            f"existing release must have exactly {len(expected_assets)} assets, got {count}"
+        )
+    names = [asset.get("name") for asset in assets if isinstance(asset, dict)]
+    if len(names) != len(assets) or set(names) != set(expected_assets):
+        raise GitHubReleaseError(
+            f"existing release assets must be {sorted(expected_assets)!r}, got {sorted(names)!r}"
+        )
+    for name, expected_digest in expected_assets.items():
+        downloaded = asset_dir / name
+        if not downloaded.is_file():
+            raise GitHubReleaseError(f"downloaded release asset is missing: {downloaded}")
+        actual = _sha256(downloaded)
+        if actual != expected_digest:
+            raise GitHubReleaseError(
+                f"existing release asset {name} SHA-256 must be {expected_digest}, got {actual}"
+            )
 
 
 def main() -> int:
@@ -79,6 +95,10 @@ def main() -> int:
     parser.add_argument("--title", required=True)
     parser.add_argument("--wheel", required=True)
     parser.add_argument("--sha256", required=True)
+    parser.add_argument("--evidence-archive", required=True)
+    parser.add_argument("--evidence-archive-sha256", required=True)
+    parser.add_argument("--evidence-manifest", required=True)
+    parser.add_argument("--evidence-manifest-sha256", required=True)
     args = parser.parse_args()
     try:
         verify(
@@ -89,6 +109,10 @@ def main() -> int:
             args.title,
             args.wheel,
             args.sha256,
+            args.evidence_archive,
+            args.evidence_archive_sha256,
+            args.evidence_manifest,
+            args.evidence_manifest_sha256,
         )
     except (OSError, UnicodeError, GitHubReleaseError) as error:
         parser.error(str(error))

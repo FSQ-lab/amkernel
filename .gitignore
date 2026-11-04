@@ -10,10 +10,12 @@ __pycache__/
 dist/
 *.egg-info/
 .agents/skills/*
-!.agents/skills/amkernel-appium/
-!.agents/skills/amkernel-appium/**
 .agents/vendor/
+.agents/amkernel-official.json
+.amkernel.install.lock
 .claude/skills/setup-uiautomator2/
 .claude/skills/setup-xcuitest/
 .claude/skills/appium-troubleshooting/
+.claude/skills/setup-mac2/
+.claude/skills/xcuitest-real-device-config/
 skills-lock.json

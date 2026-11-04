@@ -12,7 +12,9 @@ from email.parser import BytesParser
 from pathlib import Path
 from typing import Any
 
-_VERSION = re.compile(r"[0-9]+\.[0-9]+\.[0-9]+")
+from prepare_evidence_archive import EvidenceArchiveError
+from prepare_evidence_archive import validate as validate_evidence_archive
+
 _COMMIT = re.compile(r"[0-9a-f]{40}")
 
 _VERSION = re.compile(r"0\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)")
@@ -144,6 +146,19 @@ def prepare(
             raise ReleaseCandidateError(f"package smoke {field} must be a non-empty string")
         provenance[field] = value
 
+    evidence_archive = artifact_dir / "evidence-dist" / f"amkernel-evidence-{version}.tar.gz"
+    evidence_manifest = (
+        artifact_dir / "evidence-dist" / f"amkernel-evidence-{version}.manifest.json"
+    )
+    validate_evidence_archive(
+        evidence_archive,
+        evidence_manifest,
+        version=version,
+        commit=commit,
+    )
+    evidence_archive_digest = _sha256(evidence_archive)
+    evidence_manifest_digest = _sha256(evidence_manifest)
+
     changelog = (root / "CHANGELOG.md").read_text(encoding="utf-8")
     section = _release_section(changelog, version)
     notes = (
@@ -156,6 +171,10 @@ def prepare(
         f"- SHA-256: `{digest}`\n"
         f"- Build Python: `{provenance['buildPython']}`\n"
         f"- Build host: `{provenance['host']}`\n"
+        f"- Evidence archive: `{evidence_archive.name}`\n"
+        f"- Evidence archive SHA-256: `{evidence_archive_digest}`\n"
+        f"- Evidence manifest: `{evidence_manifest.name}`\n"
+        f"- Evidence manifest SHA-256: `{evidence_manifest_digest}`\n"
         "- Verified support: CPython 3.11-3.13 on current GitHub-hosted Ubuntu "
         "and macOS runners.\n"
         "- Excluded: source distribution, CPython 3.14, Windows, and stable "
@@ -163,7 +182,14 @@ def prepare(
     )
     notes_output.write_text(notes, encoding="utf-8")
     github_output.write_text(
-        f"version={version}\ntag=v{version}\nwheel={wheel.name}\nsha256={digest}\n",
+        f"version={version}\n"
+        f"tag=v{version}\n"
+        f"wheel={wheel.name}\n"
+        f"sha256={digest}\n"
+        f"evidence_archive={evidence_archive.name}\n"
+        f"evidence_archive_sha256={evidence_archive_digest}\n"
+        f"evidence_manifest={evidence_manifest.name}\n"
+        f"evidence_manifest_sha256={evidence_manifest_digest}\n",
         encoding="utf-8",
     )
 
@@ -195,6 +221,7 @@ def main() -> int:
         KeyError,
         tomllib.TOMLDecodeError,
         ReleaseCandidateError,
+        EvidenceArchiveError,
     ) as error:
         parser.error(str(error))
     return 0

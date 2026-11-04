@@ -2,7 +2,14 @@
 
 All notable changes to AMKernel are recorded here. Public releases use semantic `0.MINOR.PATCH` versions under the pre-1.0 policy in `docs/development.md`.
 
-## [Unreleased]
+## [0.1.2] - 2026-11-04
+
+Backward-compatible reliability, installation and release-evidence corrections. Runtime, MCP and qualified platform contracts are unchanged.
+
+### Changed
+
+- Build the complete pre-migration evidence corpus into a deterministic, content-addressed archive from authoritative CI and require the exact archive and manifest beside the tested wheel in the immutable GitHub Release. Keep normal tests offline and defer raw-evidence removal until the published assets verify independently ([#120](https://github.com/FSQ-lab/amkernel/issues/120); [ADR-0008](docs/decisions/0008-release-evidence-retention.md)).
+- Ignore every generated official-Skill copy, installer receipt and transient lock while preserving authored project content. Remove the obsolete `amkernel-appium` unignore rule after the clean cutover ([#120](https://github.com/FSQ-lab/amkernel/issues/120)).
 
 ### Fixed
 

@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import hashlib
 import json
+import shutil
 import subprocess
 import sys
+import tarfile
 import tomllib
 import zipfile
 from pathlib import Path
@@ -14,6 +16,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "prepare_release.py"
 VERIFY_SCRIPT = ROOT / "scripts" / "verify_github_release.py"
+EVIDENCE_SCRIPT = ROOT / "scripts" / "prepare_evidence_archive.py"
 VERSION = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))["project"]["version"]
 WHEEL_NAME = f"amkernel-{VERSION}-py3-none-any.whl"
 COMMIT = "a" * 40
@@ -41,6 +44,26 @@ def _candidate(tmp_path: Path) -> tuple[Path, Path]:
         "host": "Linux-test",
     }
     (artifact_dir / "package-smoke.json").write_text(json.dumps(evidence), encoding="utf-8")
+    source_evidence = tmp_path / "source-evidence"
+    source_evidence.mkdir()
+    (source_evidence / "summary.json").write_text('{"result":"pass"}\n', encoding="utf-8")
+    subprocess.run(
+        [
+            sys.executable,
+            str(EVIDENCE_SCRIPT),
+            "--evidence-dir",
+            str(source_evidence),
+            "--output-dir",
+            str(artifact_dir / "evidence-dist"),
+            "--version",
+            VERSION,
+            "--commit",
+            COMMIT,
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
     run = {
         "head_sha": COMMIT,
         "head_branch": "main",
@@ -92,13 +115,22 @@ def test_release_candidate_records_exact_tested_wheel(tmp_path: Path) -> None:
     assert completed.returncode == 0, completed.stderr
     wheel = artifact_dir / "dist" / WHEEL_NAME
     digest = hashlib.sha256(wheel.read_bytes()).hexdigest()
+    archive = artifact_dir / "evidence-dist" / f"amkernel-evidence-{VERSION}.tar.gz"
+    manifest = artifact_dir / "evidence-dist" / f"amkernel-evidence-{VERSION}.manifest.json"
+    archive_digest = hashlib.sha256(archive.read_bytes()).hexdigest()
+    manifest_digest = hashlib.sha256(manifest.read_bytes()).hexdigest()
     assert (tmp_path / "outputs.txt").read_text() == (
         f"version={VERSION}\ntag=v{VERSION}\nwheel={wheel.name}\nsha256={digest}\n"
+        f"evidence_archive={archive.name}\n"
+        f"evidence_archive_sha256={archive_digest}\n"
+        f"evidence_manifest={manifest.name}\n"
+        f"evidence_manifest_sha256={manifest_digest}\n"
     )
     notes = (tmp_path / "notes.md").read_text()
     assert f"## [{VERSION}]" in notes
     assert f"- Commit: `{COMMIT}`" in notes
     assert f"- SHA-256: `{digest}`" in notes
+    assert f"- Evidence archive SHA-256: `{archive_digest}`" in notes
     assert "Excluded: source distribution" in notes
 
 
@@ -160,14 +192,70 @@ def test_release_candidate_rejects_nonzero_major_version(tmp_path: Path) -> None
     assert "project.version must be one publishable 0.MINOR.PATCH version" in completed.stderr
 
 
+def test_evidence_archive_is_deterministic_and_safe(tmp_path: Path) -> None:
+    source = tmp_path / "evidence"
+    (source / "nested").mkdir(parents=True)
+    (source / "nested" / "report.json").write_text('{"result":"pass"}\n')
+    outputs = []
+    for name in ("first", "second"):
+        output = tmp_path / name
+        completed = subprocess.run(
+            [
+                sys.executable,
+                str(EVIDENCE_SCRIPT),
+                "--evidence-dir",
+                str(source),
+                "--output-dir",
+                str(output),
+                "--version",
+                VERSION,
+                "--commit",
+                COMMIT,
+            ],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        assert completed.returncode == 0, completed.stderr
+        outputs.append(output)
+
+    archive_name = f"amkernel-evidence-{VERSION}.tar.gz"
+    manifest_name = f"amkernel-evidence-{VERSION}.manifest.json"
+    assert (outputs[0] / archive_name).read_bytes() == (outputs[1] / archive_name).read_bytes()
+    assert (outputs[0] / manifest_name).read_bytes() == (outputs[1] / manifest_name).read_bytes()
+    with tarfile.open(outputs[0] / archive_name, "r:gz") as archive:
+        members = archive.getmembers()
+    assert [member.name for member in members] == ["evidence/nested/report.json"]
+    assert members[0].isfile()
+    assert members[0].mtime == 0
+
+
+def test_release_candidate_rejects_evidence_substitution(tmp_path: Path) -> None:
+    artifact_dir, run_json = _candidate(tmp_path)
+    archive = artifact_dir / "evidence-dist" / f"amkernel-evidence-{VERSION}.tar.gz"
+    with archive.open("ab") as stream:
+        stream.write(b"substituted")
+
+    completed = _run(tmp_path, artifact_dir, run_json)
+
+    assert completed.returncode == 2
+    assert "evidence archive metadata or SHA-256 mismatch" in completed.stderr
+
+
 def test_existing_release_must_match_metadata_asset_set_and_digest(tmp_path: Path) -> None:
     artifact_dir, _ = _candidate(tmp_path)
     wheel = artifact_dir / "dist" / WHEEL_NAME
-    digest = hashlib.sha256(wheel.read_bytes()).hexdigest()
+    archive = artifact_dir / "evidence-dist" / f"amkernel-evidence-{VERSION}.tar.gz"
+    manifest = artifact_dir / "evidence-dist" / f"amkernel-evidence-{VERSION}.manifest.json"
+    assets_by_name = {path.name: path for path in (wheel, archive, manifest)}
+    asset_dir = tmp_path / "release-assets"
+    asset_dir.mkdir()
+    for path in assets_by_name.values():
+        shutil.copy2(path, asset_dir / path.name)
     notes = tmp_path / "notes.md"
     notes.write_text("release evidence\n", encoding="utf-8")
     release_json = tmp_path / "release.json"
-    assets = [{"name": WHEEL_NAME}]
+    assets = [{"name": name} for name in assets_by_name]
     release: dict[str, Any] = {
         "tagName": f"v{VERSION}",
         "name": f"AMKernel {VERSION}",
@@ -185,7 +273,7 @@ def test_existing_release_must_match_metadata_asset_set_and_digest(tmp_path: Pat
         "--notes",
         str(notes),
         "--asset-dir",
-        str(wheel.parent),
+        str(asset_dir),
         "--tag",
         f"v{VERSION}",
         "--title",
@@ -193,7 +281,15 @@ def test_existing_release_must_match_metadata_asset_set_and_digest(tmp_path: Pat
         "--wheel",
         WHEEL_NAME,
         "--sha256",
-        digest,
+        hashlib.sha256(wheel.read_bytes()).hexdigest(),
+        "--evidence-archive",
+        archive.name,
+        "--evidence-archive-sha256",
+        hashlib.sha256(archive.read_bytes()).hexdigest(),
+        "--evidence-manifest",
+        manifest.name,
+        "--evidence-manifest-sha256",
+        hashlib.sha256(manifest.read_bytes()).hexdigest(),
     ]
 
     assert subprocess.run(command, check=False).returncode == 0
@@ -202,7 +298,7 @@ def test_existing_release_must_match_metadata_asset_set_and_digest(tmp_path: Pat
     rejected = subprocess.run(command, check=False, capture_output=True, text=True)
 
     assert rejected.returncode == 2
-    assert "must have exactly one asset" in rejected.stderr
+    assert "must have exactly 3 assets" in rejected.stderr
 
 
 def test_release_workflow_uses_trusted_exact_artifact_path() -> None:
@@ -237,10 +333,14 @@ def test_release_workflow_uses_trusted_exact_artifact_path() -> None:
     assert "name: distribution-${{ github.sha }}" not in workflow
     assert "run-id: ${{ inputs.ci_run_id }}" in workflow
     assert "repos/$GITHUB_REPOSITORY/actions/runs/$CI_RUN_ID" in workflow
-    assert workflow.count("actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333") == 4
+    assert workflow.count("actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333") == 5
     assert "git -c user.name=github-actions[bot]" in workflow
     assert 'tag --annotate "$TAG"' in workflow
     assert '--jq \'.immutable\')" = "true"' in workflow
+    assert "name: release-evidence-${{ github.sha }}-${{ github.run_attempt }}" in workflow
+    assert '"evidence-publish/$EVIDENCE_ARCHIVE"' in github_release_job
+    assert "release-evidence-" not in pypi_job
+    assert "scripts/prepare_evidence_archive.py" in ci_workflow
     assert "pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086" in pypi_job
     assert "password:" not in workflow
     assert "uv build" not in workflow
