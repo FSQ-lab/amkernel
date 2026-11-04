@@ -11,7 +11,13 @@ from dataclasses import replace
 from pathlib import Path
 
 from amkernel import __version__
-from amkernel.distribution import Client, DistributionError, DistributionManager, ProjectStatus
+from amkernel.distribution import (
+    SUPPORTED_CLIENTS,
+    Client,
+    DistributionError,
+    DistributionManager,
+    ProjectStatus,
+)
 from amkernel.server import serve_stdio
 
 
@@ -50,7 +56,11 @@ def _confirm(message: str, assumed: bool) -> None:
         return
     if not sys.stdin.isatty():
         raise DistributionError("confirmation required; rerun with --yes")
-    answer = input(f"{message} [y/N] ").strip().lower()
+    print(f"{message} [y/N] ", end="", file=sys.stderr, flush=True)
+    try:
+        answer = input().strip().lower()
+    except EOFError:
+        raise DistributionError("cancelled") from None
     if answer not in {"y", "yes"}:
         raise DistributionError("cancelled")
 
@@ -92,6 +102,42 @@ def _client(manager: DistributionManager, requested: str) -> Client:
     return manager.select_client(requested)
 
 
+def _prompt_client(candidates: tuple[Client, ...]) -> Client:
+    labels = {
+        "omp": "OMP",
+        "pi": "Pi",
+        "codex": "Codex",
+        "copilot": "GitHub Copilot",
+    }
+    print("Select the Coding Agent that should load AMKernel:", file=sys.stderr)
+    for index, candidate in enumerate(candidates, start=1):
+        print(f"  {index}. {labels[candidate]}", file=sys.stderr)
+    while True:
+        print(f"Choice [1-{len(candidates)}]: ", end="", file=sys.stderr, flush=True)
+        try:
+            answer = input().strip().lower()
+        except EOFError:
+            raise DistributionError("Coding Agent selection cancelled") from None
+        if answer in candidates:
+            return answer
+        if answer.isdecimal():
+            index = int(answer)
+            if 1 <= index <= len(candidates):
+                return candidates[index - 1]
+        print("Enter a listed number or client name.", file=sys.stderr)
+
+
+def _install_client(manager: DistributionManager, requested: str) -> Client:
+    if requested != "auto":
+        return manager.select_client(requested)
+    if not sys.stdin.isatty():
+        raise DistributionError("non-interactive installation requires an explicit --client")
+    candidates = manager.client_candidates() or SUPPORTED_CLIENTS
+    if len(candidates) == 1:
+        return candidates[0]
+    return _prompt_client(candidates)
+
+
 def _require_automation_contract(args: argparse.Namespace) -> None:
     if not getattr(args, "yes", False):
         return
@@ -115,10 +161,10 @@ def _run_distribution(args: argparse.Namespace) -> int:
     manager = DistributionManager(args.project)
     _require_automation_contract(args)
     if args.command == "install":
-        client = _client(manager, args.client)
+        client = _install_client(manager, args.client)
         _print_plan(manager, client)
         _confirm(
-            f"Install AMKernel globally and enable it for {manager.project}?",
+            f"Install the user-level AMKernel Runtime and activate it for {manager.project}?",
             args.yes,
         )
         status = manager.install(client)

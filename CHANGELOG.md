@@ -6,6 +6,7 @@ All notable changes to AMKernel are recorded here. Public releases use semantic 
 
 ### Fixed
 
+- Prompt for one Coding Agent during interactive project installation when detection is ambiguous or empty, while keeping non-interactive installation fail-closed without an explicit `--client`. Label the shared user Runtime and project-local Skill/source/MCP activation separately in the install plan ([#119](https://github.com/FSQ-lab/amkernel/issues/119)).
 - Make ready-stream settlement cancellation-safe so a queued zero-delay timer cannot raise an unhandled `InvalidStateError` after its waiter is cancelled. Preserve terminal ordering, cancellation propagation and storage-failure cleanup ([#114](https://github.com/FSQ-lab/amkernel/issues/114)).
 - Replace the scheduling-dependent 32 MiB/1 ms artifact deadline test with controlled real transaction boundaries. Verify complete consumer-readable artifacts and truthful `timed_out/alive` versus `kernel_killed/dead` outcomes without requiring survival after forced termination ([#115](https://github.com/FSQ-lab/amkernel/issues/115)).
 - Keep Stage 4 Codex evaluation pinned to the published wheel with separate harness provenance; preserve bounded, redacted diagnostics and stop without replay or false blocked/pass classification after observed client execution. Retain the actual provider-blocked attempts and separate server-only validation without claiming either client layer passed ([#81](https://github.com/FSQ-lab/amkernel/issues/81)).

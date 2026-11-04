@@ -58,7 +58,15 @@ AMKernel uses one user-level `uv`-managed Runtime and project-scoped Agent activ
 uvx --from amkernel amkernel install
 ```
 
-The installer explains the changes, installs `.agents/skills/amkernel` plus every pinned official Skill selected by the manifest, extracts the complete pinned Appium Skills source under `.agents/vendor/appium-skills`, and writes the detected OMP, Pi, Codex, or GitHub Copilot project MCP entry. Copilot applies one project MCP file at a time with whole-file precedence: the installer uses an existing `.mcp.json`, otherwise an existing `.github/mcp.json`, otherwise it creates `.mcp.json`. It preserves every other entry in the selected file, never creates a duplicate file or migrates between them, and leaves an inactive file untouched when both exist. Copilot also requires explicit folder trust before loading project MCP servers, so status reports that notice instead of claiming readiness. Auto-detection identifies GitHub Copilot CLI from its help output, so an unrelated AWS Copilot binary named `copilot` is not treated as GitHub Copilot. The installer verifies the source archive digest and every file hash; it does not require a source checkout or git. The packaged verifier requires the managed receipt and its archive/source/Skill hashes, and binds the receipt runtime version to the installed main Skill metadata. It does not modify the project's `.venv`, install Appium Server or platform drivers, start a device, or create a session.
+Client detection prefers project markers and otherwise considers installed Agent CLIs. One candidate is selected automatically; multiple candidates open a single-choice prompt; no candidates offer all supported OMP, Pi, Codex, and GitHub Copilot clients. Non-interactive installation requires the complete automation contract; for example:
+
+```bash
+uvx --from amkernel amkernel install --client codex --scope project --yes --json
+```
+
+The installation plan labels its two scopes. `User Runtime` is the shared `uv tool` installation. `Project Skill`, `Project Official Skills`, `Project Official source`, and `Project MCP` belong to the current project. Each activated project still starts an independent Server, Runner, and kernel even though projects share the user-level executable.
+
+The installer adds `.agents/skills/amkernel` plus every pinned official Skill selected by the manifest, extracts the complete pinned Appium Skills source under `.agents/vendor/appium-skills`, and writes only the selected Agent's native project MCP entry. Copilot applies one project MCP file at a time with whole-file precedence: the installer uses an existing `.mcp.json`, otherwise an existing `.github/mcp.json`, otherwise it creates `.mcp.json`. It preserves every other entry in the selected file, never creates a duplicate file or migrates between them, and leaves an inactive file untouched when both exist. Copilot also requires explicit folder trust before loading project MCP servers, so status reports that notice instead of claiming activation.
 
 Use `amkernel status`, `amkernel doctor`, `amkernel update`, and `amkernel uninstall` for the managed lifecycle. `amkernel uninstall --global` is explicit because it affects every activated project.
 
