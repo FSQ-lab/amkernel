@@ -1014,6 +1014,7 @@ def test_status_detects_modified_or_version_drifted_skill(project: Path, tmp_pat
     (
         "references/official-skills.json",
         "references/android-setup.md",
+        "references/ios-setup.md",
         "scripts/verify_official_skills.py",
     ),
 )
