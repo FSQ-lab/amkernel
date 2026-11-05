@@ -542,6 +542,32 @@ exercised evidence and its ordinary-functional, non-qualification limits.
 The deduplicated installed-wheel native Agent smoke also passed all six unchanged scenarios,
 with user/client isolation unchanged.
 
+### Target-scoped physical-iPhone Skill (#131)
+
+The packaged Skill routes physical-iPhone preparation through `ios-setup.md` before verified
+official XCUITest/real-device guidance. It reuses applicable Runtime/Xcode/Appium/driver/WDA
+assets, discloses dependency and security changes, and keeps account, passcode and keychain
+actions native and user-owned. Setup-only neither launches WDA nor creates a session. Static
+signature/profile candidacy, target readiness, reachable transport and live proof remain distinct;
+connection failure is not grounds for re-signing. Simulator/Mac2 routes, official provenance and
+core interfaces are unchanged.
+
+Focused distribution/CLI/Skill/Android/iPhone regressions passed 146 tests; protocol/oracle
+self-check passed 116 checks. Ruff check/format and full source/test Mypy (73 files) passed.
+Two independent final source reviews found no remaining blocking findings. The final wheel's
+managed distribution/Skill files match source bytes; actual stdio MCP advertised only
+`python_exec`, preserved state across two completed calls and closed transport with the kernel
+last observed alive. All 13 native Agent synthetic scenarios have passing observations: 12
+passed in the full run; a narrow partial-approval outcome oracle correction was independently
+reviewed and the remaining case passed a fresh single-scenario run. The original full run
+remains failed, not rescored. The live case completed real MCP → official Python Client →
+synthetic HTTP create/read/delete without mutation; setup-only cases created no sessions.
+See `docs/experiments/appium-agent-behavior.md` §18 and the normalized
+[evidence record](../evidence/appium-skill/ios-setup-20261105.json) for exact artifacts and limits.
+No real signing, device security change, WDA launch or physical-iPhone readiness is established;
+#98 qualification is separate.
+
+
 ## Acceptance criteria
 
 - [x] M3 and S3-001 through S3-060 are registered in GitHub Project #2 with exact dependencies and work-item contracts.

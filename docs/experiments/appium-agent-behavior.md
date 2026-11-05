@@ -962,3 +962,106 @@ user/client isolation unchanged. Wheel SHA-256:
 Normalized local reports are `/tmp/amkernel-android-dedup-native.json` and
 `/tmp/amkernel-android-dedup-selfcheck.json` (temporary, not durable raw evidence).
 
+
+## 18. iPhone setup Skill (#131)
+
+The owner accepted `ios-setup-proposal.md` and authorized implementation. The single packaged
+Skill now routes physical-iPhone setup through `references/ios-setup.md` and then verified official
+XCUITest/real-device guidance; simulator/Mac2 routes and official provenance stay unchanged. The
+reference belongs to the existing distribution installation/integrity contract, not a new installer.
+
+The procedure distinguishes requested scope, prepared dependency/device/signing readiness,
+static WDA artifact candidacy, reachable endpoints, and verified live sessions. Existing applicable
+Runtime, Node/Appium/driver/Xcode and signing assets are reused. Runtime repair preserves Python,
+AMKernel source/version, package extras and other `--with` requirements. Device-service discovery
+disables current `devicectl ddiServices`' default DDI automount; preparation changes require scoped
+approval. Native account, trust, Developer Mode, passcode and keychain confirmations stay with the
+user, one action at a time, without collecting secrets or widening keychain access. Final runner
+identity is distinct from its build/base Bundle ID, and setup retains products required by a
+prepared `.app`/`.xctestrun` route. A transport failure does not erase static artifact candidacy or
+justify re-signing. Setup-only does not launch WDA or create a session, and does not require a live
+server merely to prove installed/prepared prerequisites.
+
+`tests/e2e/ios_setup.py` reuses the existing installed-wheel/native Copilot orchestration. Its
+test-only host in `ios_setup_fixture.py` exposes bounded synthetic inspection, exact installation
+and repair disclosures, single-use grants, native-user action waits/rechecks, and append-only
+observations. It executes no actual installers, signing, device security actions or iPhone launches.
+The thirteen cases cover physical reuse, stale paired/developer history, approved/unapproved missing
+driver setup, shared Runtime client repair, warning versus constraint violation, reusable WDA,
+expired/non-covering profile repair, PIN waiting, transport timeout, shared/unknown ownership, and
+explicit live validation. Only the live-validation case enables real `amkernel/python_exec`; that
+case uses the installed official Python Client against a task-owned synthetic Appium endpoint.
+Journal observations and endpoint requests—not the final model prose or scripted echoes—must
+substantiate claims. Xcode/Appium observations, source consumption, exact grants, stale state,
+secret persistence, readiness, session/ownership and cleanup have negative oracle mutations.
+
+Run the protocol/oracle self-check and then the rebuilt-wheel native scenarios:
+
+```bash
+uv run --no-sync python tests/e2e/ios_setup.py --self-check --output /tmp/ios-self-check.json
+uv run --no-sync python tests/e2e/ios_setup.py \
+  --wheel /absolute/path/to/amkernel.whl \
+  --copilot /absolute/path/to/github-copilot \
+  --output /tmp/ios-native.json
+```
+
+The CLI also accepts `--list` and selected `--scenario` cases. Native availability and authorization
+are separate: the launcher grants the fixture host explicitly even when it is already advertised.
+Permanent regressions focus on exact-scope/single-use consumption, secret refusal without payload
+persistence, continued actual fixture RPC service after malformed repair input, false-positive
+oracle mutations, and post-preflight exception classification/scrubbing/cleanup.
+
+The pre-change wheel's observed transport case had an unreachable endpoint, a valid covering
+profile and zero installation, signing repair or session events. Its `candidate=true` was legitimate
+static artifact evidence, not launch success: an initial oracle that required `candidate=false` was
+corrected rather than used as a fabricated regression. The baseline also omitted a historical
+Developer Mode field that the original report schema never declared; that was another oracle
+mismatch, not evidence of incorrect current-device reporting. Neither observation establishes
+physical-iPhone qualification.
+
+Independent source review resolved runner/base identity and artifact retention issues, plus native
+tool authorization, Xcode/Appium evidence binding, sensitive disclosure persistence, malformed
+repair methods and duplicate grant consumption.
+
+Final focused distribution/CLI/Skill/Android/iPhone regressions passed **146 tests**. The
+protocol/oracle self-check passed **116 checks**; Ruff check and format check passed, and Mypy
+passed all **73 production-and-test files**. Two independent final read-only reviews found no
+remaining blocking findings after correcting exact repair scope, native-action argument handling,
+fresh doctor evidence, partial readiness, and read-only HTTP validation.
+
+A later native attempt recorded 13 failures with zero fixture-host calls: an undeclared
+`packaging` import prevented the standalone host from starting in the managed Runtime.
+`python -S` reproduced the import failure. The fixture was restored to standard-library-only
+imports; both existing subprocess protocol checks now run with `-S`, and Node boundary tests
+cover accepted patch/minor versions as well as malformed and out-of-range versions. This
+failed attempt remains failed evidence, not an observation of Skill decision behavior.
+
+Final wheel SHA-256 is `97fbe5ed03eb51d71e93e55b74c5572a39ca0057f9f69ca89061446db960535d`.
+Its distribution module and three changed Skill/reference files match the working source bytes.
+A real final-wheel stdio smoke advertised only `python_exec`, completed two calls with an alive
+kernel and persistent `['initial', 'persisted']` namespace result, then closed transport.
+
+With the standard-library-only host, the full native run passed 12 of 13 scenarios. The sole
+failure rejected a truthful `approval-required` outcome after the approved driver was installed
+and verified but separate WDA signing approval was denied. Independent review approved accepting
+either `blocked` or `approval-required` for that partial setup, while readiness must remain false,
+approval true and WDA blockers present. A positive mutation accepts the pending state; a negative
+mutation still rejects `completed`. A fresh driver-only native run passed with that correction.
+All 13 scenarios therefore have passing observations across those two runs; this is **not** a
+single all-green full run, and the original failed row was neither changed nor rescored.
+
+Both native runs installed the wheel in external temporary projects and passed official
+provenance/content verification. The live case used three real `python_exec` calls and observed
+HTTP 200 create/source/delete, zero remaining active sessions, unchanged fixture state and zero
+submissions; the task-owned endpoint remained available during the proof. Setup-only cases
+created no sessions. Both runs reported unchanged user configuration/isolation. Exact hashes,
+normalized observations, prior failed attempts and scope limits are retained in
+[`ios-setup-20261105.json`](../../evidence/appium-skill/ios-setup-20261105.json).
+
+
+The profile inspection snippet was exercised in the actual Runtime for matching legacy App ID
+prefix, wrong wildcard prefix, uncovered device, wrong Team and expiry; all fifteen shell blocks
+passed syntax parsing. These checks do not prove certificate revocation, current trust, real
+signing or WDA launch. Synthetic fixture evidence remains separate from any future explicitly
+authorized physical-device verification.
+

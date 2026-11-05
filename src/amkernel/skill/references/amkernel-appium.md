@@ -1,6 +1,6 @@
 # Appium through AMKernel
 
-This reference contains only the AMKernel-specific seam. Android dependency provisioning and target-scoped readiness belong to `references/android-setup.md`; other platform setup and Appium diagnosis belong to the routed official skills. For Android preparation and readiness, read that reference before the verified official Android setup skill.
+This reference contains only the AMKernel-specific seam. Android dependency provisioning and target-scoped readiness belong to `references/android-setup.md`; physical iPhone target discovery, dependency/signing reuse, and WebDriverAgent route selection belong to `references/ios-setup.md`; other platform setup and Appium diagnosis belong to the routed official skills. For Android preparation and readiness, read that reference before the verified official Android setup skill. For physical iPhone preparation and readiness, read the iPhone reference before the verified XCUITest setup and real-device skills.
 
 ## Runtime contract
 
@@ -36,7 +36,9 @@ Report physical Apple targets in separate evidence layers: **discovered** (liste
 (observed pairing/trust, Developer Mode and required development services), and
 **ready-for-xcuitest** (the selected driver, signing/provisioning and WebDriverAgent
 path verified for that target). Preserve unknown/not-checked states and their
-reasons; never promote an earlier layer into a later one. Do not create a session
+reasons; never promote an earlier layer into a later one. For physical iPhone
+dependency ownership, signing/WDA reuse, and failure classification, apply
+`ios-setup.md`. Do not create a session
 for setup-only discovery, change signing, pair devices or dismiss permission
 prompts to manufacture readiness. Live XCUITest proof belongs to an explicitly
 requested validation/scenario. Keep platform, dependency and Runtime readiness

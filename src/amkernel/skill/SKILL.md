@@ -113,12 +113,18 @@ Select from the requested target and observed host; do not silently substitute a
 - Android setup/readiness: read `references/android-setup.md` first for discovery,
   target-scoped component selection, approvals, and applicability; then use verified
   `setup-uiautomator2` guidance for the selected driver and server.
-- iOS/tvOS setup/readiness on macOS: verified `setup-xcuitest` guidance.
+- iOS simulator or tvOS setup/readiness on macOS: verified `setup-xcuitest` guidance; simulator
+  and tvOS applicability is unchanged.
 - Native macOS desktop: verified `setup-mac2` guidance and the Mac2 driver, never XCUITest.
 - Existing UiAutomator2/XCUITest session, launch, transport, WebDriverAgent, source, or locator
   failure: verified `appium-troubleshooting` guidance.
-- Physical iOS trust, signing, provisioning, or WebDriverAgent deployment: continue to verified
-  `xcuitest-real-device-config` guidance after shared XCUITest prerequisites pass.
+- Physical iPhone setup/readiness, including trust, signing, provisioning, or WebDriverAgent
+  deployment: read
+  `references/ios-setup.md` first for target discovery, dependency ownership, reuse, and approval;
+  then use verified `setup-xcuitest` guidance and continue to verified
+  `xcuitest-real-device-config` guidance after shared XCUITest prerequisites pass. For tvOS, keep
+  the existing verified `setup-xcuitest` → `xcuitest-real-device-config` route without the iPhone
+  reference.
 
 AMKernel's current Runtime qualification is Ubuntu and macOS on CPython 3.11–3.13; Windows is
 not a supported AMKernel host. Official Android guidance may include Windows commands, but that
@@ -143,8 +149,9 @@ precondition for an already-ready scenario that does not consume official guidan
 
 Use the routed official skill's checks and completion criteria for the scope those criteria
 actually cover; do not invent a parallel driver or server checklist. Apply the Android
-setup route's applicability rules before executing its official checks; iOS/tvOS and Mac2
-applicability is unchanged.
+setup route's applicability rules before executing its official checks; apply the iPhone
+reference's target applicability before executing XCUITest checks for a physical iPhone.
+Simulator, tvOS, and Mac2 applicability is unchanged.
 Read only the relevant sections of `references/amkernel-appium.md` for AMKernel's connection,
 bounded evidence, conversation targeting, and cleanup seam.
 If verified skills do not cover the observed behavior, use primary official documentation:
@@ -167,8 +174,10 @@ Check only layers that can block the requested target:
 
 A server without the selected driver is not platform-ready. Android component selection,
 authorization, raw-check applicability, and target readiness belong to `references/android-setup.md`.
-Keep physical devices and simulators separate. A status endpoint, driver/client listing, or
-target inventory is not live-session, target-compatibility, or execution proof.
+Physical iPhone target layers, dependency/signing reuse, raw-check applicability, and
+WebDriverAgent route selection belong to `references/ios-setup.md`; simulator and tvOS applicability
+is unchanged. Keep physical devices and simulators separate. A status endpoint, driver/client
+listing, or target inventory is not live-session, target-compatibility, or execution proof.
 
 Use the selected task environment consistently for tools, doctor, and the Appium server.
 Persist environment variables only after the disclosed, approved change; do not edit profiles

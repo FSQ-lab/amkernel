@@ -218,6 +218,16 @@ Agent scenarios are documented in `docs/experiments/appium-agent-behavior.md`; t
 host tool cannot execute real installers or device commands. Synthetic approval and readiness
 evidence does not qualify real JDK/SDK installation, Appium sessions or a new host platform.
 
+iPhone Skill setup changes additionally run `tests/e2e/test_ios_setup.py` and
+`tests/e2e/ios_setup.py --self-check`, plus the installed-wheel native scenarios documented in
+`docs/experiments/appium-agent-behavior.md`. The test-only iPhone host must not run real installers,
+Xcode/signing commands, security prompts or device operations. Approval, user-action, target and
+WDA evidence is cross-checked against its journal; synthetic setup evidence is not real signing,
+WDA startup, iPhone readiness or completion of the existing physical-platform qualification.
+The standalone fixture is standard-library-only. Its protocol self-check and subprocess
+regression launch Python with `-S`; the project environment must not mask a dependency missing
+from the managed Runtime that launches the native MCP host.
+
 ### Gate 3: Actual stdio MCP end to end
 
 An MCP client must launch the packaged server over stdio and exercise the changed public path. Unit tests or direct calls into implementation classes do not satisfy this gate.

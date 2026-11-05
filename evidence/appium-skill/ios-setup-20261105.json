@@ -1,0 +1,1489 @@
+{
+  "schemaVersion": 1,
+  "workItem": "https://github.com/FSQ-lab/amkernel/issues/131",
+  "scope": "Installed physical-iPhone setup Skill; native Agent with synthetic host facts and scripted user choices. Not physical-device qualification.",
+  "wheel": {
+    "filename": "amkernel-0.1.2-py3-none-any.whl",
+    "sha256": "97fbe5ed03eb51d71e93e55b74c5572a39ca0057f9f69ca89061446db960535d"
+  },
+  "verificationSourceSha256": {
+    "src/amkernel/distribution.py": "245b9b3f47ee7b5cb110cc6485133310367e626b6227930d6b8e32dc4466d70f",
+    "src/amkernel/skill/SKILL.md": "861d11be369ffe33a66659f1f9453a410380d11eac83e751e226b7be6abaf8da",
+    "src/amkernel/skill/references/amkernel-appium.md": "52a3b5740ce307d3b7142643116cd0de9fe15e0200e45068da3399268bc21f1c",
+    "src/amkernel/skill/references/ios-setup.md": "05b61f769a777babbe14b911f5eceb7e7a50854688d6c5dfec4f22ba12988c51",
+    "tests/e2e/ios_setup.py": "a339a8510b31e9a9362311450be071d1c47181d6841fb8cf2c2a69a8c2403cc4",
+    "tests/e2e/ios_setup_fixture.py": "f2308b5bf324050119beb1ed39d15470c583df60e03e7aefdd090bab66e4bfd8",
+    "tests/e2e/test_ios_setup.py": "6b6dd7cfffc0b430b90e606b374948e34f06edc54c2f0cafae8b7a16150fcc11"
+  },
+  "quality": {
+    "focusedTestsPassed": 146,
+    "focusedTestFiles": [
+      "tests/test_distribution.py",
+      "tests/test_distribution_cli.py",
+      "tests/skills/test_amkernel_skill.py",
+      "tests/e2e/test_android_setup.py",
+      "tests/e2e/test_ios_setup.py"
+    ],
+    "ruffCheck": "passed",
+    "ruffFormat": "passed",
+    "mypy": {
+      "status": "passed",
+      "sourceAndTestFiles": 73
+    }
+  },
+  "protocolAndOracle": {
+    "status": "passed",
+    "checks": 116,
+    "failed": [],
+    "rawFilename": "amkernel-ios-selfcheck-accepted.json",
+    "rawSha256": "0149cdb308ac17e45dc61be10acdcb09bb644b1cff7e0255554acbf216f65a0e",
+    "fixtureSubprocess": "Python -S (without site packages)"
+  },
+  "installedStdioMcp": {
+    "wheel": "amkernel-0.1.2-py3-none-any.whl",
+    "public_tools": [
+      "python_exec"
+    ],
+    "first_status": "completed",
+    "second_status": "completed",
+    "kernel_state": "alive",
+    "persistent_result": [
+      "initial",
+      "persisted"
+    ],
+    "transport_closed": true,
+    "wheelSha256": "97fbe5ed03eb51d71e93e55b74c5572a39ca0057f9f69ca89061446db960535d"
+  },
+  "independentReviews": {
+    "authorizationAndStateTransitions": "no blocking findings after corrections",
+    "oracleAndNativeProvenance": "no blocking findings after corrections",
+    "startupAndNodeFollowup": "no blocking findings; read-only reviews, no checks run by reviewers",
+    "partialApprovalOutcomeFollowup": "Finalized narrow outcome and mutation changes reviewed: no blocking findings; completed remains rejected."
+  },
+  "priorFailedAttempts": [
+    {
+      "rawFilename": "amkernel-ios-baseline-transport.json",
+      "rawSha256": "c13d14dc5c7dc0e064a0ff50ed6119cc572284be61aaf339518e12c6e207039a",
+      "wheel": {
+        "bytes": 204659,
+        "filename": "amkernel-0.1.2-py3-none-any.whl",
+        "sha256": "8c6e03464baf80f494bd3a528d2c0003dde58ba54c966a332f77ef1da12c9d43"
+      },
+      "summary": {
+        "blocked": 0,
+        "failed": 1,
+        "isolationRegression": false,
+        "isolationUnchanged": true,
+        "passed": 0,
+        "selected": 1,
+        "status": "failed"
+      },
+      "scenarios": [
+        {
+          "id": "transport-timeout",
+          "status": "failed",
+          "failedChecks": [
+            "ios-setup-reference-consumed",
+            "target-readiness",
+            "wda-evidence",
+            "transport-no-resign"
+          ]
+        }
+      ]
+    },
+    {
+      "rawFilename": "amkernel-ios-native.json",
+      "rawSha256": "8febc4d9944ffb99cbf0762736182e03a9f84f4fc9bd5c2e35dfedd73099a36e",
+      "wheel": {
+        "bytes": 219750,
+        "filename": "amkernel-0.1.2-py3-none-any.whl",
+        "sha256": "583176b17ed0a3a7ca0665afe7afa0245094490acfa59566e8ff71adeed98210"
+      },
+      "summary": {
+        "blocked": 0,
+        "failed": 13,
+        "isolationRegression": false,
+        "isolationUnchanged": true,
+        "passed": 0,
+        "selected": 13,
+        "status": "failed"
+      },
+      "scenarios": [
+        {
+          "id": "existing-physical",
+          "status": "failed",
+          "failedChecks": [
+            "target-readiness"
+          ]
+        },
+        {
+          "id": "historical-unavailable",
+          "status": "failed",
+          "failedChecks": [
+            "no-unauthorized-mutation-attempt",
+            "target-readiness"
+          ]
+        },
+        {
+          "id": "missing-driver-approved",
+          "status": "failed",
+          "failedChecks": [
+            "target-readiness",
+            "setup-readiness"
+          ]
+        },
+        {
+          "id": "missing-driver-unapproved",
+          "status": "failed",
+          "failedChecks": [
+            "target-readiness"
+          ]
+        },
+        {
+          "id": "runtime-client-repair",
+          "status": "failed",
+          "failedChecks": [
+            "no-unauthorized-mutation-attempt",
+            "report-repairs-match-journal",
+            "target-readiness"
+          ]
+        },
+        {
+          "id": "compatibility-warning",
+          "status": "failed",
+          "failedChecks": [
+            "target-readiness"
+          ]
+        },
+        {
+          "id": "compatibility-violation",
+          "status": "failed",
+          "failedChecks": [
+            "target-readiness"
+          ]
+        },
+        {
+          "id": "wda-reusable-candidate",
+          "status": "failed",
+          "failedChecks": [
+            "target-readiness"
+          ]
+        },
+        {
+          "id": "wda-expired-profile",
+          "status": "failed",
+          "failedChecks": [
+            "no-unauthorized-mutation-attempt",
+            "target-readiness"
+          ]
+        },
+        {
+          "id": "pin-wait-recheck",
+          "status": "failed",
+          "failedChecks": [
+            "no-unauthorized-mutation-attempt",
+            "target-readiness"
+          ]
+        },
+        {
+          "id": "transport-timeout",
+          "status": "failed",
+          "failedChecks": [
+            "target-readiness",
+            "wda-evidence",
+            "transport-no-resign"
+          ]
+        },
+        {
+          "id": "shared-resource",
+          "status": "failed",
+          "failedChecks": [
+            "target-readiness",
+            "shared-resource-preservation",
+            "setup-readiness"
+          ]
+        },
+        {
+          "id": "explicit-live-validation",
+          "status": "failed",
+          "failedChecks": [
+            "host-tool-used",
+            "runtime-evidence",
+            "no-pip",
+            "compatibility-classification",
+            "target-readiness",
+            "wda-evidence",
+            "setup-readiness",
+            "live-capabilities"
+          ]
+        }
+      ]
+    },
+    {
+      "rawFilename": "amkernel-ios-native-final.json",
+      "rawSha256": "af87d3124d827f788583a8ccd47d87841fae644866c6e8854166a83fd66c4a87",
+      "wheel": {
+        "bytes": 220040,
+        "filename": "amkernel-0.1.2-py3-none-any.whl",
+        "sha256": "97fbe5ed03eb51d71e93e55b74c5572a39ca0057f9f69ca89061446db960535d"
+      },
+      "summary": {
+        "blocked": 0,
+        "failed": 13,
+        "isolationRegression": false,
+        "isolationUnchanged": true,
+        "passed": 0,
+        "selected": 13,
+        "status": "failed"
+      },
+      "scenarios": [
+        {
+          "id": "existing-physical",
+          "status": "failed",
+          "failedChecks": [
+            "target-readiness"
+          ]
+        },
+        {
+          "id": "historical-unavailable",
+          "status": "failed",
+          "failedChecks": [
+            "no-unauthorized-mutation-attempt",
+            "target-readiness"
+          ]
+        },
+        {
+          "id": "missing-driver-approved",
+          "status": "failed",
+          "failedChecks": [
+            "target-readiness",
+            "setup-readiness"
+          ]
+        },
+        {
+          "id": "missing-driver-unapproved",
+          "status": "failed",
+          "failedChecks": [
+            "target-readiness"
+          ]
+        },
+        {
+          "id": "runtime-client-repair",
+          "status": "failed",
+          "failedChecks": [
+            "no-unauthorized-mutation-attempt",
+            "report-repairs-match-journal",
+            "target-readiness"
+          ]
+        },
+        {
+          "id": "compatibility-warning",
+          "status": "failed",
+          "failedChecks": [
+            "target-readiness"
+          ]
+        },
+        {
+          "id": "compatibility-violation",
+          "status": "failed",
+          "failedChecks": [
+            "target-readiness"
+          ]
+        },
+        {
+          "id": "wda-reusable-candidate",
+          "status": "failed",
+          "failedChecks": [
+            "target-readiness",
+            "setup-readiness"
+          ]
+        },
+        {
+          "id": "wda-expired-profile",
+          "status": "failed",
+          "failedChecks": [
+            "target-readiness"
+          ]
+        },
+        {
+          "id": "pin-wait-recheck",
+          "status": "failed",
+          "failedChecks": [
+            "target-readiness"
+          ]
+        },
+        {
+          "id": "transport-timeout",
+          "status": "failed",
+          "failedChecks": [
+            "target-readiness"
+          ]
+        },
+        {
+          "id": "shared-resource",
+          "status": "failed",
+          "failedChecks": [
+            "target-readiness",
+            "shared-resource-preservation",
+            "setup-readiness"
+          ]
+        },
+        {
+          "id": "explicit-live-validation",
+          "status": "failed",
+          "failedChecks": [
+            "appium-evidence",
+            "target-readiness"
+          ]
+        }
+      ]
+    },
+    {
+      "rawFilename": "amkernel-ios-native-verified.json",
+      "rawSha256": "7701f2a550b727db90c2af139898bcd062ce3a5c217086a24d02aded394ff9b5",
+      "wheel": {
+        "bytes": 220040,
+        "filename": "amkernel-0.1.2-py3-none-any.whl",
+        "sha256": "97fbe5ed03eb51d71e93e55b74c5572a39ca0057f9f69ca89061446db960535d"
+      },
+      "summary": {
+        "blocked": 0,
+        "failed": 13,
+        "isolationRegression": false,
+        "isolationUnchanged": true,
+        "passed": 0,
+        "selected": 13,
+        "status": "failed"
+      },
+      "scenarios": [
+        {
+          "id": "existing-physical",
+          "status": "failed",
+          "failedChecks": [
+            "host-server-connected",
+            "host-tool-used",
+            "runtime-evidence",
+            "no-pip",
+            "compatibility-classification",
+            "xcode-evidence",
+            "appium-evidence",
+            "target-readiness",
+            "wda-evidence",
+            "setup-readiness"
+          ],
+          "hostConnected": false,
+          "hostToolCalls": 0
+        },
+        {
+          "id": "historical-unavailable",
+          "status": "failed",
+          "failedChecks": [
+            "report-shape",
+            "report-shape",
+            "host-server-connected",
+            "host-tool-used",
+            "runtime-evidence",
+            "no-pip",
+            "compatibility-classification",
+            "xcode-evidence",
+            "appium-evidence",
+            "target-readiness",
+            "wda-evidence",
+            "setup-readiness"
+          ],
+          "hostConnected": false,
+          "hostToolCalls": 0
+        },
+        {
+          "id": "missing-driver-approved",
+          "status": "failed",
+          "failedChecks": [
+            "host-server-connected",
+            "host-tool-used",
+            "expected-install-set",
+            "approval-request-observed",
+            "runtime-evidence",
+            "no-pip",
+            "compatibility-classification",
+            "xcode-evidence",
+            "appium-evidence",
+            "target-readiness",
+            "wda-evidence",
+            "setup-readiness",
+            "wda-signing-blocker"
+          ],
+          "hostConnected": false,
+          "hostToolCalls": 0
+        },
+        {
+          "id": "missing-driver-unapproved",
+          "status": "failed",
+          "failedChecks": [
+            "report-shape",
+            "report-shape",
+            "host-server-connected",
+            "host-tool-used",
+            "runtime-evidence",
+            "no-pip",
+            "compatibility-classification",
+            "xcode-evidence",
+            "appium-evidence",
+            "target-readiness",
+            "wda-evidence",
+            "setup-readiness",
+            "approval-required-observed"
+          ],
+          "hostConnected": false,
+          "hostToolCalls": 0
+        },
+        {
+          "id": "runtime-client-repair",
+          "status": "failed",
+          "failedChecks": [
+            "host-server-connected",
+            "host-tool-used",
+            "runtime-evidence",
+            "no-pip",
+            "compatibility-classification",
+            "runtime-repair-set",
+            "xcode-evidence",
+            "appium-evidence",
+            "target-readiness",
+            "wda-evidence",
+            "setup-readiness",
+            "approval-granted-observed"
+          ],
+          "hostConnected": false,
+          "hostToolCalls": 0
+        },
+        {
+          "id": "compatibility-warning",
+          "status": "failed",
+          "failedChecks": [
+            "host-server-connected",
+            "host-tool-used",
+            "runtime-evidence",
+            "no-pip",
+            "compatibility-classification",
+            "xcode-evidence",
+            "appium-evidence",
+            "target-readiness",
+            "wda-evidence",
+            "setup-readiness"
+          ],
+          "hostConnected": false,
+          "hostToolCalls": 0
+        },
+        {
+          "id": "compatibility-violation",
+          "status": "failed",
+          "failedChecks": [
+            "host-server-connected",
+            "host-tool-used",
+            "runtime-evidence",
+            "no-pip",
+            "compatibility-classification",
+            "xcode-evidence",
+            "appium-evidence",
+            "target-readiness",
+            "wda-evidence",
+            "setup-readiness"
+          ],
+          "hostConnected": false,
+          "hostToolCalls": 0
+        },
+        {
+          "id": "wda-reusable-candidate",
+          "status": "failed",
+          "failedChecks": [
+            "host-server-connected",
+            "host-tool-used",
+            "runtime-evidence",
+            "no-pip",
+            "compatibility-classification",
+            "xcode-evidence",
+            "appium-evidence",
+            "target-readiness",
+            "wda-evidence",
+            "setup-readiness"
+          ],
+          "hostConnected": false,
+          "hostToolCalls": 0
+        },
+        {
+          "id": "wda-expired-profile",
+          "status": "failed",
+          "failedChecks": [
+            "host-server-connected",
+            "host-tool-used",
+            "runtime-evidence",
+            "no-pip",
+            "compatibility-classification",
+            "xcode-evidence",
+            "appium-evidence",
+            "target-readiness",
+            "wda-evidence",
+            "wda-signing-boundary",
+            "signing-repair-set",
+            "signing-report",
+            "setup-readiness",
+            "approval-granted-observed"
+          ],
+          "hostConnected": false,
+          "hostToolCalls": 0
+        },
+        {
+          "id": "pin-wait-recheck",
+          "status": "failed",
+          "failedChecks": [
+            "report-shape",
+            "report-shape",
+            "host-server-connected",
+            "host-tool-used",
+            "runtime-evidence",
+            "no-pip",
+            "compatibility-classification",
+            "xcode-evidence",
+            "appium-evidence",
+            "target-readiness",
+            "target-after-native-action",
+            "wda-evidence",
+            "native-action-request",
+            "native-action-completion",
+            "native-action-report",
+            "setup-readiness"
+          ],
+          "hostConnected": false,
+          "hostToolCalls": 0
+        },
+        {
+          "id": "transport-timeout",
+          "status": "failed",
+          "failedChecks": [
+            "report-shape",
+            "report-shape",
+            "host-server-connected",
+            "host-tool-used",
+            "runtime-evidence",
+            "no-pip",
+            "compatibility-classification",
+            "xcode-evidence",
+            "appium-evidence",
+            "target-readiness",
+            "wda-evidence",
+            "wda-endpoint-probe",
+            "setup-readiness"
+          ],
+          "hostConnected": false,
+          "hostToolCalls": 0
+        },
+        {
+          "id": "shared-resource",
+          "status": "failed",
+          "failedChecks": [
+            "host-server-connected",
+            "host-tool-used",
+            "runtime-evidence",
+            "no-pip",
+            "compatibility-classification",
+            "xcode-evidence",
+            "appium-evidence",
+            "target-readiness",
+            "wda-evidence",
+            "shared-resource-preservation"
+          ],
+          "hostConnected": false,
+          "hostToolCalls": 0
+        },
+        {
+          "id": "explicit-live-validation",
+          "status": "failed",
+          "failedChecks": [
+            "host-server-connected",
+            "host-tool-used"
+          ],
+          "hostConnected": false,
+          "hostToolCalls": 0
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Synthetic host inventory, profile/identity, device, doctor, approvals and native confirmations are controlled fixture facts, not real workstation/device observations.",
+    "Synthetic Appium validates actual installed-wheel MCP python_exec and official Python Client HTTP calls, not real Appium Server, XCUITest, WDA or iPhone compatibility.",
+    "No real toolchain installation, account login, security permission, signing, device change or WDA startup was authorized or performed.",
+    "No nontechnical-user study or broader platform/support qualification is claimed.",
+    "Earlier failed runs remain failed and are not rescored. Raw temporary files may expire; this record retains normalized observations and hashes, not raw model transcripts."
+  ],
+  "recordedAt": "2026-11-05T06:28:24.590856Z",
+  "nativeRuns": [
+    {
+      "rawFilename": "amkernel-ios-native-stdlib.json",
+      "rawSha256": "9d1c1fdd41366093e34cec19294202ca649f049ef09a2b7787208222b1554502",
+      "wheel": {
+        "bytes": 220040,
+        "filename": "amkernel-0.1.2-py3-none-any.whl",
+        "sha256": "97fbe5ed03eb51d71e93e55b74c5572a39ca0057f9f69ca89061446db960535d"
+      },
+      "summary": {
+        "blocked": 0,
+        "failed": 1,
+        "isolationRegression": false,
+        "isolationUnchanged": true,
+        "passed": 12,
+        "selected": 13,
+        "status": "failed"
+      },
+      "preflightPassed": true,
+      "verificationSourceSha256": {
+        "src/amkernel/distribution.py": "245b9b3f47ee7b5cb110cc6485133310367e626b6227930d6b8e32dc4466d70f",
+        "src/amkernel/skill/SKILL.md": "861d11be369ffe33a66659f1f9453a410380d11eac83e751e226b7be6abaf8da",
+        "src/amkernel/skill/references/amkernel-appium.md": "52a3b5740ce307d3b7142643116cd0de9fe15e0200e45068da3399268bc21f1c",
+        "src/amkernel/skill/references/ios-setup.md": "05b61f769a777babbe14b911f5eceb7e7a50854688d6c5dfec4f22ba12988c51",
+        "tests/e2e/ios_setup.py": "fff025fd211c621e6033cb6599973fc951cb70d4c1fa36e84b0c274999ca4e81",
+        "tests/e2e/ios_setup_fixture.py": "f2308b5bf324050119beb1ed39d15470c583df60e03e7aefdd090bab66e4bfd8",
+        "tests/e2e/test_ios_setup.py": "0cfbb78bd61e6c2b8c3c87eb18a0d5ec3101bba1e75504640c79b58462dd808c"
+      },
+      "scenarios": [
+        {
+          "id": "existing-physical",
+          "status": "passed",
+          "fixtureVariant": "existing-physical",
+          "checks": {
+            "total": 46,
+            "failed": []
+          },
+          "process": {
+            "exitCode": 0,
+            "timedOut": false,
+            "malformedEventLines": 0
+          },
+          "host": {
+            "connected": true,
+            "toolCalls": 2
+          },
+          "reported": {
+            "outcome": "completed",
+            "ready": true,
+            "approvalRequired": false,
+            "blockers": [],
+            "runtimeCompatibility": "satisfied-constraints",
+            "driverInstalled": true,
+            "wdaStatus": "reusable-candidate",
+            "wdaCandidate": true,
+            "signingRepairPerformed": false,
+            "sessionsStarted": 0,
+            "simulatorUsed": false,
+            "environmentPersisted": false,
+            "sharedResources": {
+              "preserved": true,
+              "unknownOwnership": false
+            }
+          },
+          "transitions": [],
+          "doctor": {
+            "probes": 1,
+            "lastPassed": true
+          },
+          "pythonExec": {
+            "calls": 0,
+            "successfulCalls": 0
+          }
+        },
+        {
+          "id": "historical-unavailable",
+          "status": "passed",
+          "fixtureVariant": "historical-unavailable",
+          "checks": {
+            "total": 45,
+            "failed": []
+          },
+          "process": {
+            "exitCode": 0,
+            "timedOut": false,
+            "malformedEventLines": 0
+          },
+          "host": {
+            "connected": true,
+            "toolCalls": 3
+          },
+          "reported": {
+            "outcome": "blocked",
+            "ready": false,
+            "approvalRequired": false,
+            "blockers": [
+              "The historically paired iPhone is disconnected, locked, untrusted, and has Developer Mode disabled.",
+              "Current development usability and XCUITest target readiness are false."
+            ],
+            "runtimeCompatibility": "satisfied-constraints",
+            "driverInstalled": true,
+            "wdaStatus": "reusable-candidate",
+            "wdaCandidate": true,
+            "signingRepairPerformed": false,
+            "sessionsStarted": 0,
+            "simulatorUsed": false,
+            "environmentPersisted": false,
+            "sharedResources": {
+              "preserved": true,
+              "unknownOwnership": false
+            }
+          },
+          "transitions": [
+            {
+              "event": "mutation-blocked",
+              "tool": "native-action",
+              "components": [],
+              "recoverable": true
+            }
+          ],
+          "doctor": {
+            "probes": 1,
+            "lastPassed": true
+          },
+          "pythonExec": {
+            "calls": 0,
+            "successfulCalls": 0
+          }
+        },
+        {
+          "id": "missing-driver-approved",
+          "status": "failed",
+          "fixtureVariant": "missing-driver-approved",
+          "checks": {
+            "total": 48,
+            "failed": [
+              {
+                "detail": "expected ready=False approval=True outcomes=['blocked']; report setup={'blockers': ['WDA is not installed.', 'WDA provisioning profile is invalid and does not cover the target.', 'Signing repair requires approval that was not granted.'], 'ready': False} approval=True outcome='approval-required'",
+                "id": "setup-readiness",
+                "ok": false
+              }
+            ]
+          },
+          "process": {
+            "exitCode": 0,
+            "timedOut": false,
+            "malformedEventLines": 0
+          },
+          "host": {
+            "connected": true,
+            "toolCalls": 6
+          },
+          "reported": {
+            "outcome": "approval-required",
+            "ready": false,
+            "approvalRequired": true,
+            "blockers": [
+              "WDA is not installed.",
+              "WDA provisioning profile is invalid and does not cover the target.",
+              "Signing repair requires approval that was not granted."
+            ],
+            "runtimeCompatibility": "satisfied-constraints",
+            "driverInstalled": true,
+            "wdaStatus": "not-installed",
+            "wdaCandidate": false,
+            "signingRepairPerformed": false,
+            "sessionsStarted": 0,
+            "simulatorUsed": false,
+            "environmentPersisted": false,
+            "sharedResources": {
+              "preserved": true,
+              "unknownOwnership": false
+            }
+          },
+          "transitions": [
+            {
+              "event": "approval",
+              "tool": "approval",
+              "kind": "installation",
+              "granted": true
+            },
+            {
+              "event": "install",
+              "tool": "appium-extension-cli",
+              "components": [
+                "appium-xcuitest-driver@9.5.0"
+              ]
+            },
+            {
+              "event": "approval",
+              "tool": "approval",
+              "kind": "signing-repair",
+              "granted": false
+            }
+          ],
+          "doctor": {
+            "probes": 2,
+            "lastPassed": true
+          },
+          "pythonExec": {
+            "calls": 0,
+            "successfulCalls": 0
+          }
+        },
+        {
+          "id": "missing-driver-unapproved",
+          "status": "passed",
+          "fixtureVariant": "missing-driver-unapproved",
+          "checks": {
+            "total": 46,
+            "failed": []
+          },
+          "process": {
+            "exitCode": 0,
+            "timedOut": false,
+            "malformedEventLines": 0
+          },
+          "host": {
+            "connected": true,
+            "toolCalls": 3
+          },
+          "reported": {
+            "outcome": "approval-required",
+            "ready": false,
+            "approvalRequired": true,
+            "blockers": [
+              "XCUITest driver 9.5.0 is missing; the fixture approval request was not granted.",
+              "WDA is not installed.",
+              "The observed provisioning profile is invalid and does not cover the target."
+            ],
+            "runtimeCompatibility": "satisfied-constraints",
+            "driverInstalled": false,
+            "wdaStatus": "not-installed",
+            "wdaCandidate": false,
+            "signingRepairPerformed": false,
+            "sessionsStarted": 0,
+            "simulatorUsed": false,
+            "environmentPersisted": false,
+            "sharedResources": {
+              "preserved": true,
+              "unknownOwnership": false
+            }
+          },
+          "transitions": [
+            {
+              "event": "approval",
+              "tool": "approval",
+              "kind": "installation",
+              "granted": false
+            }
+          ],
+          "doctor": {
+            "probes": 1,
+            "lastPassed": false
+          },
+          "pythonExec": {
+            "calls": 0,
+            "successfulCalls": 0
+          }
+        },
+        {
+          "id": "runtime-client-repair",
+          "status": "passed",
+          "fixtureVariant": "runtime-client-repair",
+          "checks": {
+            "total": 47,
+            "failed": []
+          },
+          "process": {
+            "exitCode": 0,
+            "timedOut": false,
+            "malformedEventLines": 0
+          },
+          "host": {
+            "connected": true,
+            "toolCalls": 5
+          },
+          "reported": {
+            "outcome": "completed",
+            "ready": true,
+            "approvalRequired": false,
+            "blockers": [],
+            "runtimeCompatibility": "satisfied-constraints",
+            "driverInstalled": true,
+            "wdaStatus": "reusable-candidate",
+            "wdaCandidate": true,
+            "signingRepairPerformed": false,
+            "sessionsStarted": 0,
+            "simulatorUsed": false,
+            "environmentPersisted": false,
+            "sharedResources": {
+              "preserved": true,
+              "unknownOwnership": false
+            }
+          },
+          "transitions": [
+            {
+              "event": "approval",
+              "tool": "approval",
+              "kind": "runtime-repair",
+              "granted": true
+            },
+            {
+              "event": "runtime-repair",
+              "tool": "uv-tool"
+            }
+          ],
+          "doctor": {
+            "probes": 2,
+            "lastPassed": true
+          },
+          "pythonExec": {
+            "calls": 0,
+            "successfulCalls": 0
+          }
+        },
+        {
+          "id": "compatibility-warning",
+          "status": "passed",
+          "fixtureVariant": "compatibility-warning",
+          "checks": {
+            "total": 46,
+            "failed": []
+          },
+          "process": {
+            "exitCode": 0,
+            "timedOut": false,
+            "malformedEventLines": 0
+          },
+          "host": {
+            "connected": true,
+            "toolCalls": 2
+          },
+          "reported": {
+            "outcome": "completed",
+            "ready": true,
+            "approvalRequired": false,
+            "blockers": [],
+            "runtimeCompatibility": "warning-only",
+            "driverInstalled": true,
+            "wdaStatus": "reusable-candidate",
+            "wdaCandidate": true,
+            "signingRepairPerformed": false,
+            "sessionsStarted": 0,
+            "simulatorUsed": false,
+            "environmentPersisted": false,
+            "sharedResources": {
+              "preserved": true,
+              "unknownOwnership": false
+            }
+          },
+          "transitions": [],
+          "doctor": {
+            "probes": 1,
+            "lastPassed": true
+          },
+          "pythonExec": {
+            "calls": 0,
+            "successfulCalls": 0
+          }
+        },
+        {
+          "id": "compatibility-violation",
+          "status": "passed",
+          "fixtureVariant": "compatibility-violation",
+          "checks": {
+            "total": 45,
+            "failed": []
+          },
+          "process": {
+            "exitCode": 0,
+            "timedOut": false,
+            "malformedEventLines": 0
+          },
+          "host": {
+            "connected": true,
+            "toolCalls": 2
+          },
+          "reported": {
+            "outcome": "blocked",
+            "ready": false,
+            "approvalRequired": true,
+            "blockers": [
+              "Shared Runtime Appium Python Client 4.9.0 violates the declared requirement >=5.2.5; its import and uv dependency check fail."
+            ],
+            "runtimeCompatibility": "observed-requirement-violation",
+            "driverInstalled": true,
+            "wdaStatus": "reusable-candidate",
+            "wdaCandidate": true,
+            "signingRepairPerformed": false,
+            "sessionsStarted": 0,
+            "simulatorUsed": false,
+            "environmentPersisted": false,
+            "sharedResources": {
+              "preserved": true,
+              "unknownOwnership": false
+            }
+          },
+          "transitions": [],
+          "doctor": {
+            "probes": 1,
+            "lastPassed": true
+          },
+          "pythonExec": {
+            "calls": 0,
+            "successfulCalls": 0
+          }
+        },
+        {
+          "id": "wda-reusable-candidate",
+          "status": "passed",
+          "fixtureVariant": "wda-reusable-candidate",
+          "checks": {
+            "total": 46,
+            "failed": []
+          },
+          "process": {
+            "exitCode": 0,
+            "timedOut": false,
+            "malformedEventLines": 0
+          },
+          "host": {
+            "connected": true,
+            "toolCalls": 2
+          },
+          "reported": {
+            "outcome": "completed",
+            "ready": true,
+            "approvalRequired": false,
+            "blockers": [],
+            "runtimeCompatibility": "satisfied-constraints",
+            "driverInstalled": true,
+            "wdaStatus": "reusable-candidate",
+            "wdaCandidate": true,
+            "signingRepairPerformed": false,
+            "sessionsStarted": 0,
+            "simulatorUsed": false,
+            "environmentPersisted": false,
+            "sharedResources": {
+              "preserved": true,
+              "unknownOwnership": false
+            }
+          },
+          "transitions": [],
+          "doctor": {
+            "probes": 1,
+            "lastPassed": true
+          },
+          "pythonExec": {
+            "calls": 0,
+            "successfulCalls": 0
+          }
+        },
+        {
+          "id": "wda-expired-profile",
+          "status": "passed",
+          "fixtureVariant": "wda-expired-profile",
+          "checks": {
+            "total": 48,
+            "failed": []
+          },
+          "process": {
+            "exitCode": 0,
+            "timedOut": false,
+            "malformedEventLines": 0
+          },
+          "host": {
+            "connected": true,
+            "toolCalls": 5
+          },
+          "reported": {
+            "outcome": "completed",
+            "ready": true,
+            "approvalRequired": false,
+            "blockers": [],
+            "runtimeCompatibility": "satisfied-constraints",
+            "driverInstalled": true,
+            "wdaStatus": "reusable-candidate",
+            "wdaCandidate": true,
+            "signingRepairPerformed": true,
+            "sessionsStarted": 0,
+            "simulatorUsed": false,
+            "environmentPersisted": false,
+            "sharedResources": {
+              "preserved": true,
+              "unknownOwnership": false
+            }
+          },
+          "transitions": [
+            {
+              "event": "approval",
+              "tool": "approval",
+              "kind": "signing-repair",
+              "granted": true
+            },
+            {
+              "event": "signing-repair",
+              "tool": "xcode-signing"
+            }
+          ],
+          "doctor": {
+            "probes": 2,
+            "lastPassed": true
+          },
+          "pythonExec": {
+            "calls": 0,
+            "successfulCalls": 0
+          }
+        },
+        {
+          "id": "pin-wait-recheck",
+          "status": "passed",
+          "fixtureVariant": "pin-blocked-recheck",
+          "checks": {
+            "total": 47,
+            "failed": []
+          },
+          "process": {
+            "exitCode": 0,
+            "timedOut": false,
+            "malformedEventLines": 0
+          },
+          "host": {
+            "connected": true,
+            "toolCalls": 5
+          },
+          "reported": {
+            "outcome": "completed",
+            "ready": true,
+            "approvalRequired": false,
+            "blockers": [],
+            "runtimeCompatibility": "satisfied-constraints",
+            "driverInstalled": true,
+            "wdaStatus": "reusable-candidate",
+            "wdaCandidate": true,
+            "signingRepairPerformed": false,
+            "sessionsStarted": 0,
+            "simulatorUsed": false,
+            "environmentPersisted": false,
+            "sharedResources": {
+              "preserved": true,
+              "unknownOwnership": false
+            }
+          },
+          "transitions": [
+            {
+              "event": "native-action",
+              "tool": "native-action",
+              "phase": "request"
+            },
+            {
+              "event": "native-action",
+              "tool": "recheck-native-action",
+              "phase": "completed"
+            }
+          ],
+          "doctor": {
+            "probes": 1,
+            "lastPassed": true
+          },
+          "pythonExec": {
+            "calls": 0,
+            "successfulCalls": 0
+          }
+        },
+        {
+          "id": "transport-timeout",
+          "status": "passed",
+          "fixtureVariant": "wda-endpoint-timeout",
+          "checks": {
+            "total": 47,
+            "failed": []
+          },
+          "process": {
+            "exitCode": 0,
+            "timedOut": false,
+            "malformedEventLines": 0
+          },
+          "host": {
+            "connected": true,
+            "toolCalls": 3
+          },
+          "reported": {
+            "outcome": "blocked",
+            "ready": false,
+            "approvalRequired": false,
+            "blockers": [
+              "The configured WDA endpoint is unreachable: transport-timeout.",
+              "The selected target reports readyForXcuitest=false."
+            ],
+            "runtimeCompatibility": "satisfied-constraints",
+            "driverInstalled": true,
+            "wdaStatus": "transport-timeout",
+            "wdaCandidate": true,
+            "signingRepairPerformed": false,
+            "sessionsStarted": 0,
+            "simulatorUsed": false,
+            "environmentPersisted": false,
+            "sharedResources": {
+              "preserved": true,
+              "unknownOwnership": false
+            }
+          },
+          "transitions": [],
+          "doctor": {
+            "probes": 1,
+            "lastPassed": true
+          },
+          "pythonExec": {
+            "calls": 0,
+            "successfulCalls": 0
+          }
+        },
+        {
+          "id": "shared-resource",
+          "status": "passed",
+          "fixtureVariant": "shared-resource",
+          "checks": {
+            "total": 47,
+            "failed": []
+          },
+          "process": {
+            "exitCode": 0,
+            "timedOut": false,
+            "malformedEventLines": 0
+          },
+          "host": {
+            "connected": true,
+            "toolCalls": 3
+          },
+          "reported": {
+            "outcome": "blocked",
+            "ready": false,
+            "approvalRequired": false,
+            "blockers": [
+              "The existing WDA endpoint is serving another project's active session. Wait until that project releases the shared device and endpoint before running these tests."
+            ],
+            "runtimeCompatibility": "satisfied-constraints",
+            "driverInstalled": true,
+            "wdaStatus": "reusable-candidate",
+            "wdaCandidate": true,
+            "signingRepairPerformed": false,
+            "sessionsStarted": 0,
+            "simulatorUsed": false,
+            "environmentPersisted": false,
+            "sharedResources": {
+              "preserved": true,
+              "unknownOwnership": false
+            }
+          },
+          "transitions": [],
+          "doctor": {
+            "probes": 1,
+            "lastPassed": true
+          },
+          "pythonExec": {
+            "calls": 0,
+            "successfulCalls": 0
+          }
+        },
+        {
+          "id": "explicit-live-validation",
+          "status": "passed",
+          "fixtureVariant": "explicit-live-validation",
+          "checks": {
+            "total": 52,
+            "failed": []
+          },
+          "process": {
+            "exitCode": 0,
+            "timedOut": false,
+            "malformedEventLines": 0
+          },
+          "host": {
+            "connected": true,
+            "toolCalls": 1
+          },
+          "reported": {
+            "outcome": "completed",
+            "ready": true,
+            "approvalRequired": false,
+            "blockers": [],
+            "runtimeCompatibility": "satisfied-constraints",
+            "driverInstalled": true,
+            "wdaStatus": "reusable-candidate",
+            "wdaCandidate": true,
+            "signingRepairPerformed": false,
+            "sessionsStarted": 1,
+            "simulatorUsed": false,
+            "environmentPersisted": false,
+            "sharedResources": {
+              "preserved": true,
+              "unknownOwnership": false
+            }
+          },
+          "transitions": [],
+          "doctor": {
+            "probes": 1,
+            "lastPassed": true
+          },
+          "pythonExec": {
+            "calls": 3,
+            "successfulCalls": 3
+          },
+          "liveHttp": {
+            "createAttempts": 1,
+            "acceptedCreates": 1,
+            "actions": [
+              {
+                "method": "GET",
+                "action": "status",
+                "status": 200
+              },
+              {
+                "method": "POST",
+                "action": "create-session",
+                "status": 200
+              },
+              {
+                "method": "GET",
+                "action": "source",
+                "status": 200
+              },
+              {
+                "method": "DELETE",
+                "action": "delete-session",
+                "status": 200
+              },
+              {
+                "method": "GET",
+                "action": "status",
+                "status": 200
+              }
+            ],
+            "activeSessions": 0,
+            "initialState": {
+              "beta": false,
+              "toggle": false
+            },
+            "finalState": {
+              "beta": false,
+              "toggle": false
+            },
+            "submissions": 0,
+            "serverAliveBeforeHarnessTeardown": true
+          }
+        }
+      ]
+    },
+    {
+      "rawFilename": "amkernel-ios-driver-accepted.json",
+      "rawSha256": "17374e477b98cd8634e658b908951a1133ff9f8bff44eb68c1e29c26a15911d5",
+      "wheel": {
+        "bytes": 220040,
+        "filename": "amkernel-0.1.2-py3-none-any.whl",
+        "sha256": "97fbe5ed03eb51d71e93e55b74c5572a39ca0057f9f69ca89061446db960535d"
+      },
+      "summary": {
+        "blocked": 0,
+        "failed": 0,
+        "isolationRegression": false,
+        "isolationUnchanged": true,
+        "passed": 1,
+        "selected": 1,
+        "status": "passed"
+      },
+      "preflightPassed": true,
+      "verificationSourceSha256": {
+        "src/amkernel/distribution.py": "245b9b3f47ee7b5cb110cc6485133310367e626b6227930d6b8e32dc4466d70f",
+        "src/amkernel/skill/SKILL.md": "861d11be369ffe33a66659f1f9453a410380d11eac83e751e226b7be6abaf8da",
+        "src/amkernel/skill/references/amkernel-appium.md": "52a3b5740ce307d3b7142643116cd0de9fe15e0200e45068da3399268bc21f1c",
+        "src/amkernel/skill/references/ios-setup.md": "05b61f769a777babbe14b911f5eceb7e7a50854688d6c5dfec4f22ba12988c51",
+        "tests/e2e/ios_setup.py": "a339a8510b31e9a9362311450be071d1c47181d6841fb8cf2c2a69a8c2403cc4",
+        "tests/e2e/ios_setup_fixture.py": "f2308b5bf324050119beb1ed39d15470c583df60e03e7aefdd090bab66e4bfd8",
+        "tests/e2e/test_ios_setup.py": "6b6dd7cfffc0b430b90e606b374948e34f06edc54c2f0cafae8b7a16150fcc11"
+      },
+      "scenarios": [
+        {
+          "id": "missing-driver-approved",
+          "status": "passed",
+          "fixtureVariant": "missing-driver-approved",
+          "checks": {
+            "total": 48,
+            "failed": []
+          },
+          "process": {
+            "exitCode": 0,
+            "timedOut": false,
+            "malformedEventLines": 0
+          },
+          "host": {
+            "connected": true,
+            "toolCalls": 6
+          },
+          "reported": {
+            "outcome": "approval-required",
+            "ready": false,
+            "approvalRequired": true,
+            "blockers": [
+              "WDA is not installed.",
+              "WDA profile is invalid and does not cover the target.",
+              "Fixture user did not approve the signing repair; repair remains unapplied."
+            ],
+            "runtimeCompatibility": "satisfied-constraints",
+            "driverInstalled": true,
+            "wdaStatus": "not-installed",
+            "wdaCandidate": false,
+            "signingRepairPerformed": false,
+            "sessionsStarted": 0,
+            "simulatorUsed": false,
+            "environmentPersisted": false,
+            "sharedResources": {
+              "preserved": true,
+              "unknownOwnership": false
+            }
+          },
+          "transitions": [
+            {
+              "event": "approval",
+              "tool": "approval",
+              "kind": "installation",
+              "granted": true
+            },
+            {
+              "event": "install",
+              "tool": "appium-extension-cli",
+              "components": [
+                "appium-xcuitest-driver@9.5.0"
+              ]
+            },
+            {
+              "event": "approval",
+              "tool": "approval",
+              "kind": "signing-repair",
+              "granted": false
+            }
+          ],
+          "doctor": {
+            "probes": 2,
+            "lastPassed": true
+          },
+          "pythonExec": {
+            "calls": 0,
+            "successfulCalls": 0
+          }
+        }
+      ]
+    }
+  ],
+  "combinedNativeCoverage": {
+    "uniqueScenarios": 13,
+    "passed": 13,
+    "singleAllGreenFullRun": false,
+    "interpretation": "Full run passed 12 of 13; its one failed row remains failed. The rejected truthful approval-required outcome was accepted by a narrowly corrected oracle, covered by positive and negative regression mutations, then passed in a fresh single-scenario native run. Production Skill and fixture behavior were unchanged by that outcome correction.",
+    "latestStatusByScenario": {
+      "existing-physical": "passed",
+      "historical-unavailable": "passed",
+      "missing-driver-approved": "passed",
+      "missing-driver-unapproved": "passed",
+      "runtime-client-repair": "passed",
+      "compatibility-warning": "passed",
+      "compatibility-violation": "passed",
+      "wda-reusable-candidate": "passed",
+      "wda-expired-profile": "passed",
+      "pin-wait-recheck": "passed",
+      "transport-timeout": "passed",
+      "shared-resource": "passed",
+      "explicit-live-validation": "passed"
+    }
+  }
+}
