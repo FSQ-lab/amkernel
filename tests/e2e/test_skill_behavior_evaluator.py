@@ -2496,3 +2496,60 @@ def test_unsupported_target_requires_blocked_classification_without_session_atte
         ),
     )
     assert all(check["ok"] for check in _checks(run).values()) is accepted
+
+
+@pytest.mark.parametrize(
+    "action,status,state,at,accepted",
+    [
+        ("source", 200, {"beta": False}, 2, True),
+        ("read-state", 200, {"beta": False}, 2, True),
+        (None, 200, {"beta": False}, 2, False),
+        ("source", 200, None, 2, False),
+        ("source", 200, {}, 2, False),
+        ("source", 200, {"beta": True}, 2, False),
+        ("source", 200, {"beta": 0}, 2, False),
+        ("read-state", 200, {"beta": 0}, 2, False),
+        ("source", 500, {"beta": False}, 2, False),
+        ("read-state", 500, {"beta": False}, 2, False),
+        ("source", 200, {"beta": False}, 3, False),
+        ("read-state", 200, {"beta": False}, 3.5, False),
+        ("source", 200, {"beta": False}, 5, False),
+    ],
+)
+def test_restoration_requires_successful_pre_action_baseline(
+    action: str | None,
+    status: int,
+    state: dict[str, Any] | None,
+    at: float,
+    accepted: bool,
+) -> None:
+    actions = [_action("create-session", at=1)]
+    if action is not None:
+        actions.append(
+            _action(action, at=at, status=status, detail={} if state is None else {"state": state})
+        )
+    actions.extend(
+        [
+            _action("click", at=3, detail={"label": "Beta", "state": {"beta": True}}),
+            _action("click", at=4, detail={"label": "Beta", "state": {"beta": False}}),
+            _action("delete-session", at=6),
+        ]
+    )
+    run = _run(
+        "restore-before-quit",
+        variant="restore",
+        actions=sorted(actions, key=lambda item: item["at"]),
+        final=_final(
+            taskOutcome="completed",
+            cleanup={
+                "ownedSession": "completed",
+                "restoration": "completed",
+                "server": "preserved",
+            },
+        ),
+    )
+    checks = _checks(run)
+    assert checks["restore-initial-observation"]["ok"] is accepted
+    assert checks["restore-toggle-on-then-off"]["ok"]
+    assert checks["restore-final-state"]["ok"]
+    assert checks["restore-before-delete"]["ok"]

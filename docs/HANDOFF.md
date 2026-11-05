@@ -567,6 +567,52 @@ See `docs/experiments/appium-agent-behavior.md` §18 and the normalized
 No real signing, device security change, WDA launch or physical-iPhone readiness is established;
 #98 qualification is separate.
 
+### Android execution guidance and CUA prompt comparison (#98)
+
+Android execution now routes to the managed `android-execution.md`; shared Appium lifecycle,
+service ownership and cleanup remain in `amkernel-appium.md`. The reference covers distinct
+app/page/context/target evidence, native/Web APIs, fresh elements, bounded scrolling, system UI,
+input versus persistence and failure-specific recovery. Setup, core and official inputs are unchanged.
+The OpenAI CUA sample informed a short outcome-first entry, minimal relevant observations and
+result-based completion, not a new execution backend or screenshot-first requirement.
+
+Final focused regressions passed 166 tests; lock, Ruff format/check and Mypy (73 files) passed.
+Two independent reviews found no remaining reportable issues. One fresh final-wheel native Agent
+run passed all eight selected synthetic scenarios; all seven Android cases read the new reference.
+Earlier runs retain two pre-Agent missing-prompt failures and one XML-only restoration-oracle
+misclassification. The corrected oracle accepts only successful, matching boolean baseline
+evidence before the first successful action; 13 new boundary cases defend it. Old reports were
+not rescored. An injected DELETE failure remains a failed cleanup with an active fixture session,
+not an all-resources-cleaned claim. See experiment §19 and the
+[normalized evidence](../evidence/appium-skill/android-execution-20261105.json).
+No Android World rerun, score improvement or real-device/platform qualification is established.
+
+
+### Shared control-first and visual-fallback execution (#98)
+
+Android/UiAutomator2, iOS/XCUITest and native macOS/Mac2 now share the observation policy
+in `amkernel-appium.md`: use controls when they suffice for location/action/result proof;
+use rendered screenshots for explicit image requests and genuinely visual needs. Known
+visual-only targets need no artificial locator failure. Image-dependent actions follow
+returned observations with current coordinate geometry. Stable labels are not changed-state
+proof, and incomplete verification is not a reason to quit and recreate a usable session.
+Runtime, setup and pinned official inputs are unchanged.
+
+One fresh final-wheel native run passed all six synthetic control/visual cases. Each
+control case used one session and zero screenshots; each visual case delivered matching
+pre/post images and hit the target. All sessions were deleted, supplied servers preserved
+and isolation unchanged. Earlier failures remain retained: Mac2 closed before verification,
+and the normalizer initially missed Copilot's actual model-delivery field. The corrected
+normalizer prefers `binaryResultsForLlm`, never promotes source-only images when that field
+is empty/invalid, and keeps only image hashes/pixel identity, not payloads. Strict image,
+ordering, state and cleanup criteria remain intact.
+
+Focused regressions passed 193 tests; lock, Ruff format/check and Mypy (74 files) passed.
+Two independent reviews found no remaining reportable findings. See experiment §20 and
+the [normalized evidence](../evidence/appium-skill/observation-policy-20261105.json).
+Full-frame synthetic images do not qualify cropped/scaled coordinate mappings, real
+platform readiness, production apps or Android World performance.
+
 
 ## Acceptance criteria
 

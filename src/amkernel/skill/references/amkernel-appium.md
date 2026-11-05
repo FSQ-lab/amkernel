@@ -1,13 +1,13 @@
 # Appium through AMKernel
 
-This reference contains only the AMKernel-specific seam. Android dependency provisioning and target-scoped readiness belong to `references/android-setup.md`; physical iPhone target discovery, dependency/signing reuse, and WebDriverAgent route selection belong to `references/ios-setup.md`; other platform setup and Appium diagnosis belong to the routed official skills. For Android preparation and readiness, read that reference before the verified official Android setup skill. For physical iPhone preparation and readiness, read the iPhone reference before the verified XCUITest setup and real-device skills.
+This reference owns the shared AMKernel/Appium seam. Android preparation belongs to `android-setup.md`; Android connection, platform state, locators, input, navigation and recovery decisions belong to `android-execution.md`. Read the execution reference for an Android scenario, even when setup is already complete. Physical-iPhone preparation belongs to `ios-setup.md`; other platform setup and diagnosis use the routed verified official skills. These platform references do not replace the shared lifecycle, evidence or ownership contract below.
 
 ## Runtime contract
 
 - Appium session creation, live queries, actions, verification, recovery, and cleanup use `python_exec`; do not add a wrapper, mobile-specific MCP tool, or AMKernel core API. Installation, host discovery, dependency provisioning, and MCP diagnosis may use any suitable tool, including shell, file tools, or a focused SDK probe.
 - Use the official Appium Python Client and its observed platform options classes. Do not require a particular major version without an applicable dependency constraint. Never use removed `desired_capabilities`.
 - The Appium Server, device/simulator, WebDriverAgent, and platform driver are externally owned resources.
-- Keep one top-level `driver` object across calls. Before reuse, require a session ID and one small live query.
+- Keep a top-level `driver` when continuity helps. After an Appium error, timeout, interruption or uncertain session state, require a relevant live query before continuation; fold it into the next needed observation. Do not add a separate health check before every successful continuous action. Local session identity alone is not remote liveness proof.
 - A kernel reset or death makes external session state unknown. Reconcile it before replacement.
 - Importing the client proves dependency presence, not full compatibility. A ready `/status` or a driver listing is not a live-session proof. Setup-only and status-only requests create no session.
 
@@ -71,73 +71,68 @@ session or external target state was cleaned.
 
 Use a reviewed loopback Appium URL without credentials. Populate target and app identifiers from observed state or the user's selection; never invent them.
 
-```python
-from appium import webdriver
-from appium.options.android import UiAutomator2Options
-
-options = UiAutomator2Options().load_capabilities({
-    "platformName": "Android",
-    "appium:automationName": "UiAutomator2",
-    "appium:udid": "<observed adb serial>",
-    "appium:app": "<selected absolute app path>",
-})
-driver = webdriver.Remote("http://127.0.0.1:4723", options=options)
-```
+For Android, use the connection and native/Web execution guidance in `android-execution.md`.
 
 For iOS, use `XCUITestOptions`, `automationName: XCUITest`, and the observed simulator/device identifier. Follow the official XCUITest procedure for signing and real-device requirements.
 
 For native macOS desktop, use `from appium.options.mac import Mac2Options`, `platformName: Mac`, and `appium:automationName: Mac2`. Observe the requested app's bundle identifier and pass it as `appium:bundleId`; do not invent an iOS UDID or XCUITest capabilities. Record the session's returned platform and automation name, and confirm the requested app with a small live query. If Mac2 cannot start, retain the exact blocker instead of falling back to another driver. The Calculator regression must retain returned Mac2 capability evidence; an app opening alone is not proof of the driver used.
 
-## Interact and return evidence
+## Observe and act: controls first, visual fallback
 
-Prefer accessibility ID, stable platform ID, iOS predicate/class chain, then XPath. Use explicit waits instead of sleeps.
+This policy applies equally to Android/UiAutomator2, iOS/XCUITest and native macOS/Mac2.
+Choose the least observation sufficient to locate the intended target, perform the authorized
+action and verify the user's requested result. If current control semantics cover all three,
+do not capture screenshots or request image analysis, including routine before/after evidence.
 
-Use Appium's locator constants, not Selenium-only `By` attributes. In an existing
-native Android session, these are direct Python Client calls through `python_exec`:
+### Use current control evidence first
 
-```python
-from appium.webdriver.common.appiumby import AppiumBy
+Prefer supported semantic locators, relevant attributes and a bounded accessibility/page-source
+view. Android's locator/API and context rules live in `android-execution.md`. On iOS, prefer
+accessibility ID or an appropriate predicate/class chain over XPath when the observed UI supports
+it. On macOS, use the requested window/app's observed accessible identifiers, labels and roles
+through supported Mac2 locators; do not import mobile selectors or infer identity from row order.
 
-accessibility_element = driver.find_element(AppiumBy.ACCESSIBILITY_ID, accessibility_id)
-uiautomator_element = driver.find_element(AppiumBy.ANDROID_UIAUTOMATOR, uiautomator_selector)
-```
+Verify a state change with a relevant changing property or business result, not a stable
+label, name or identifier. If an observation does not yet prove the requested result, keep
+the usable session available for further observation; do not quit and recreate it merely
+to finish verification.
 
-Supply both locator values from bounded current UI evidence. Selenium `By` remains
-appropriate for supported Web locators such as `By.CSS_SELECTOR`, but has no
-`ACCESSIBILITY_ID` or `ANDROID_UIAUTOMATOR` constants.
+A missing element is not an automatic reason to take a screenshot. First check the applicable
+app/window, page/context, element freshness, visible range and relevant blocking UI from bounded
+current evidence. Use explicit waits only for state expected to change. Do not exhaust every
+locator family, guess selectors or repeat equivalent waits to avoid a justified visual fallback.
 
-Native Android is not a Web page: never use `driver.title` as a native state or
-session probe. Check local identity and applicable live package/activity queries:
+### Use visual evidence when semantics are insufficient
 
-```python
-if not driver.session_id:
-    raise RuntimeError("No local session identity; reconcile before replacement")
-native_state = {"package": driver.current_package, "activity": driver.current_activity}
-```
+Use a relevant screenshot when the user explicitly requests an image, the current structured
+evidence cannot resolve a needed visual question, the target is unexposed custom-drawn/canvas/image
+content, or acceptance is inherently visual, such as a color, layout or rendered picture. Known visual-only
+content can take this path directly; no artificial locator failure or exhaustive tree walk is
+required. If an authoritative control property already proves the requested fact, use it; an
+unrelated checked/saved flag is not proof of rendered appearance.
 
-A nonempty local `session_id` is not remote liveness proof. A failed live query
-leaves no verified usable session; preserve its identity for reconciliation.
-Use Web APIs only after observing and explicitly selecting an available Web
-context; do not assume a native app exposes one:
+Capture only the relevant app/window/region and render it with
+`display(png_bytes, mime_type="image/png")`. Avoid unrelated personal content and full-desktop
+captures when a narrower image answers the question. Acquiring PNG/base64 or saving a path is
+not observing the image. When the next action requires interpreting a new image, return the
+displayed observation before choosing that action; do not capture and blindly click remembered
+coordinates in the same call. If the image cannot be displayed or understood, report that limit.
 
-```python
-available_contexts = driver.contexts
-if web_context not in available_contexts or not (
-    web_context.startswith("WEBVIEW") or web_context == "CHROMIUM"
-):
-    raise RuntimeError("Requested Web context is not available")
-driver.switch_to.context(web_context)
-if driver.current_context != web_context:
-    raise RuntimeError("Web context selection was not verified")
-web_title = driver.title
-```
+Screenshot observation does not require coordinate interaction. If it reveals an actionable
+semantic target, return to that locator. Use visual/coordinate interaction only when no reliable
+exposed target suffices and the current image identifies an unambiguous authorized target.
+Establish the screenshot-to-driver mapping: image dimensions, crop offset, scale, and the selected
+screen/window/viewport origin. Do not assume screenshot pixels equal desktop points, copy Android
+coordinates to iOS/Mac2, or guess a mapping. Navigation, scrolling, window movement/resizing,
+rotation or other relevant layout changes invalidate prior visual coordinates; obtain a current
+observation and re-establish the mapping before acting.
 
-Return to the observed native context before native operations. Navigation/context
-changes invalidate previous element assumptions: reacquire relevant elements.
-After a locator timeout, obtain bounded fresh package/activity and relevant source
-facts before changing strategy; do not blindly repeat an equivalent wait.
+Verify the actual requested outcome, not just the successful click. Use control state when it
+proves that outcome; obtain a relevant post-action image when visual acceptance needs it. Return
+to the semantic path whenever it becomes sufficient. Do not treat screenshot count as a task
+success metric or silently fall back to another execution backend.
 
-Keep returned values bounded:
+### Keep evidence bounded
 
 - render screenshots with `display(png_bytes, mime_type="image/png")`;
 - extract only relevant page-source element facts and cap item/field counts;
@@ -185,9 +180,11 @@ independent failure states. A simple continuous flow does not need a call per Ap
 Do not put the entire long scenario and all cleanup into one unobservable call.
 
 Read the actual `python_exec` envelope after every call, especially `status` and `kernelState`.
-Do not infer success from printed output when execution timed out or failed. If the Kernel
-survived and a `driver` exists, use a small relevant live query to establish current remote
-session state before continuation; checking only local `session_id` is insufficient.
+Do not infer success from printed output when execution timed out or failed. After an Appium
+error, timeout, interruption or uncertain session state, if the Kernel survived and a `driver`
+exists, use a small relevant live query before continuation. An already-needed current-state
+observation can serve this purpose; local `session_id` is insufficient. Reuse valid evidence
+during successful continuous actions rather than inserting a separate health-check loop.
 If the object is missing, the session is empty, or the live query fails, report that there
 is no verified usable session. Preserve any known remote identity for reconciliation;
 create another session only when safe for the requested scenario. Kernel death loses

@@ -1065,3 +1065,126 @@ passed syntax parsing. These checks do not prove certificate revocation, current
 signing or WDA launch. Synthetic fixture evidence remains separate from any future explicitly
 authorized physical-device verification.
 
+## 19. Android execution guidance and CUA prompt comparison (#98)
+
+The installed Skill now routes Android scenarios, including existing-session work, to
+`references/android-execution.md`. Android connection and native/Web locator/API examples move
+from the shared Appium seam into that reference. The managed file list, tamper detection and
+executable Client examples follow the migration. Core execution, setup and pinned official
+Appium inputs are unchanged.
+
+### Reference and design choices
+
+The comparison used OpenAI's `openai-cua-sample-app` at immutable commit
+[`6dd34b40acc1d002696ccd41aaf0a1f2f2be290c`](https://github.com/openai/openai-cua-sample-app/tree/6dd34b40acc1d002696ccd41aaf0a1f2f2be290c):
+
+- [`labs/catalog.json`](https://github.com/openai/openai-cua-sample-app/blob/6dd34b40acc1d002696ccd41aaf0a1f2f2be290c/labs/catalog.json)
+  anchors tasks to the operator's requested final state and explicit visible completion conditions.
+- [`javascript-app/src/executor-registry.ts`](https://github.com/openai/openai-cua-sample-app/blob/6dd34b40acc1d002696ccd41aaf0a1f2f2be290c/javascript-app/src/executor-registry.ts)
+  and [`python-app/app/lab_catalog.py`](https://github.com/openai/openai-cua-sample-app/blob/6dd34b40acc1d002696ccd41aaf0a1f2f2be290c/python-app/app/lab_catalog.py)
+  make the available execution surface explicit instead of prescribing a large generic workflow.
+- The README and Responses loops distinguish persistent code execution, selected observations and
+  recorded artifacts from proof that the user's task succeeded.
+
+The Android adaptation keeps a short outcome-first entry followed by platform decision details:
+minimal relevant UI observations, useful action groups and verified requested results. It does not
+copy lab task steps, benchmark answers, PyAutoGUI/Playwright execution, automatic per-call screenshot
+capture or a mandatory full-desktop first screenshot. App/page/context/element identity, keyboard
+and system-UI decisions, bounded scrolling, input/persistence and failure-specific recovery remain
+Android guidance. No new task-state engine or core behavior was introduced.
+
+### Verification and failed attempts
+
+Final focused Skill/distribution/CLI/Client-example/evaluator regressions passed **166 tests**.
+Lock consistency, Ruff format/check and Mypy for all 73 source/test files passed. An intermediate
+Ruff check found one overlong evaluator diagnostic; shortening it resolved the check. Independent
+correctness/distribution and safety/lifecycle reviews found no remaining reportable findings.
+
+The first installed-wheel native run passed six of eight cases. The other two failed before Agent
+execution because `scenario_prompt` lacked `restore-before-quit` and `cleanup-failure-truthful`.
+Adding their user-goal prompts did not change fixture or evaluator behavior. A fresh two-case run
+passed truthful cleanup failure but rejected restoration solely for using the fixture's published
+read-only state query instead of XML source. Its journal contained a successful pre-action false
+Beta observation, followed by true, restored false and successful DELETE in order.
+
+Independent review identified implementation coupling in that oracle: it required source but did
+not require successful matching state evidence. The corrected baseline predicate accepts source
+or read-state only with HTTP 200, a dictionary state containing an exact boolean matching the
+fixture's initial Beta, and a timestamp strictly before the first successful Beta click. Other
+restoration and cleanup criteria are unchanged. Thirteen regression cases cover both accepted
+observations and missing/malformed/wrong/numeric/failed/equal-time/late evidence; before the fix,
+six failed and seven passed. Old native reports remain failed and were not rescored.
+
+A single fresh final-wheel run passed all eight selected cases: Android and iOS short flow,
+stale-element recovery, stale-session live query, timeout inspection, ambiguous submission without
+duplication, restoration before quit, and truthful failed cleanup. All seven Android cases read
+the new execution reference. Installation/provenance checks passed and user/client isolation was
+unchanged. The injected DELETE-failure case truthfully reported failed cleanup with one active
+fixture session; it does not prove that every session was cleaned. Ambiguous submission occurred
+exactly once; restoration was observed before successful session deletion.
+
+Final wheel SHA-256: `adf0b3c77f680add0ce8b541c72d6ad66f2ff921c48223503c0c31e7ebbd4030`.
+The native client identified itself as GitHub Copilot CLI 1.0.105 using `gpt-6.1-sol`.
+The bounded [evidence record](../../evidence/appium-skill/android-execution-20261105.json)
+retains scenario outcomes, prior failures, review decisions and report digests. Its `/tmp` report
+paths are local, temporary evidence, not durable release assets.
+
+This is actual native Agent → installed Skill → stdio MCP → official Appium Python Client →
+synthetic W3C endpoint behavior, not a real Appium Server, driver, device or emulator run.
+No Android World campaign, score improvement, real keyboard/permission interaction, scrolling
+coverage or real-app persistence qualification is claimed.
+
+
+## 20. Controls first, visual fallback across Android, iOS and macOS (#98)
+
+The shared Appium seam now owns the same observation policy for Android/UiAutomator2,
+iOS/XCUITest and native macOS/Mac2. Current control semantics take precedence when they
+suffice to locate, act and verify the requested result. A changing property or business
+result proves a state change; a stable label does not. An incomplete observation is not
+a reason to close and recreate a usable session.
+
+Explicit image requests, unresolved visual questions, unexposed custom-drawn targets and
+inherently visual acceptance use the screenshot path. Known visual-only content needs no
+artificial failed locator probe. Screenshots are rendered through `display`, not merely
+downloaded or saved; image-dependent actions follow a returned observation. Coordinates
+must use the current frame and account for scale/crop/origin. Permission, privacy and
+ownership rules still apply. The Android reference links this shared policy instead of
+keeping a competing observation decision tree; Runtime, setup and official inputs remain
+unchanged.
+
+Three synthetic visual fixtures withhold the target and its appearance from semantic
+queries, render a real full-frame 400×300 PNG and accept supported platform pointer
+actions. The oracle requires a delivered matching pre-action image, a later coordinate
+hit, a delivered matching post-action image with changed appearance, and truthful cleanup.
+It accepts identical PNG bytes or identical canonical RGBA pixels after lossless encoding,
+but rejects unrelated/changed pixels, resized images, download-only paths, blind same-call
+actions, stale observations and false cleanup claims. Cropped-frame matching and physical
+device behavior are not qualified by these fixtures.
+
+The first native run passed Android and iOS control flows and failed four cases. Mac2
+closed a session after reading a stable label, then created another to finish verification;
+the existing single-session criterion rejected this. All three visual cases reached their
+target but failed image-delivery checks. A bounded diagnostic established that Copilot
+CLI exposes images in `result.binaryResultsForLlm` with mirrored MCP `result.contents`,
+while `result.content` is a text summary. The normalizer now prefers the explicit model
+delivery field, then the actual MCP blocks; it neither double-counts mirrors nor treats
+display metadata or artifact links as image delivery. An explicitly empty or malformed
+delivery field does not fall back to source-only images. Prior failed reports remain
+failed and are not rescored.
+
+A single fresh final-wheel native run passed all six scenarios with Copilot CLI 1.0.105
+and `gpt-6.1-sol`. Android, iOS and Mac2 control flows each used one session and zero
+screenshots. Each visual flow delivered matching pre/post images in separate observations,
+hit the visual target and verified the changed appearance. All six sessions were deleted;
+the supplied fixture server stayed alive and user/client isolation was unchanged.
+
+Focused observation-policy/evaluator/Client/Skill/distribution/CLI regressions passed
+193 tests. Lock consistency, Ruff format/check and Mypy for all 74 source/test files passed;
+an explicit event-fixture type annotation resolved an intermediate Mypy narrowing error.
+Independent policy/correctness and safety/image-delivery reviews found no remaining
+reportable issues. Final wheel SHA-256:
+`65e8cc7055bcebc7f014ebeb01d2dc47314605312c3cc27d18f28ae27502c78d`.
+The [bounded evidence record](../../evidence/appium-skill/observation-policy-20261105.json)
+retains report/harness digests, prior failures, observations and limits. This proves native
+Agent → installed Skill → stdio MCP → official Appium Python Client → synthetic endpoint
+behavior, not real-device/driver qualification or an Android World score improvement.

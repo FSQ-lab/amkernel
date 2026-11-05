@@ -17,7 +17,9 @@ from __future__ import annotations
 
 import argparse
 import base64
+import binascii
 import hashlib
+import io
 import json
 import os
 import platform
@@ -25,11 +27,13 @@ import re
 import shlex
 import shutil
 import signal
+import struct
 import subprocess
 import sys
 import tempfile
 import threading
 import time
+import zlib
 from collections.abc import Callable, Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
@@ -37,6 +41,8 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any, cast
 from urllib.parse import urlsplit
+
+from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[2]
 ISSUE = 98
@@ -49,10 +55,74 @@ MAX_CALL_SECONDS = 30.0
 TINY_PNG = base64.b64decode(
     "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
 )
+VISUAL_SCREEN_WIDTH = 400
+VISUAL_SCREEN_HEIGHT = 300
+VISUAL_TARGET_CENTER = (200, 150)
+VISUAL_TARGET_RADIUS = 64
+_VISUAL_VARIANTS = frozenset({"android-visual", "ios-visual", "mac2-visual"})
+_VISUAL_SCENARIOS = {
+    "android-visual-fallback": ("android", "uiautomator2"),
+    "ios-visual-fallback": ("ios", "xcuitest"),
+    "mac2-visual-fallback": ("mac", "mac2"),
+}
+
+
+def _png_chunk(kind: bytes, data: bytes) -> bytes:
+    return (
+        struct.pack(">I", len(data))
+        + kind
+        + data
+        + struct.pack(">I", zlib.crc32(kind + data) & 0xFFFFFFFF)
+    )
+
+
+def _visual_screenshot_png(toggle: bool) -> bytes:
+    """Render the fixture screen as a real PNG using only the standard library.
+
+    The screen is deliberately bitmap-only: one large circular switch on a flat
+    background. Its color is the only visual state, and the geometry is never
+    exposed through the accessibility source.
+    """
+    width = VISUAL_SCREEN_WIDTH
+    height = VISUAL_SCREEN_HEIGHT
+    center_x, center_y = VISUAL_TARGET_CENTER
+    radius = VISUAL_TARGET_RADIUS
+    background = bytes((245, 246, 248))
+    ring = bytes((70, 74, 80))
+    fill = bytes((47, 158, 68) if toggle else (204, 51, 51))
+    outer_squared = (radius + 4) ** 2
+    inner_squared = radius**2
+    rows = bytearray()
+    for y in range(height):
+        row = bytearray(width * 3)
+        for x in range(width):
+            distance = (x - center_x) ** 2 + (y - center_y) ** 2
+            if distance <= inner_squared:
+                color = fill
+            elif distance <= outer_squared:
+                color = ring
+            else:
+                color = background
+            offset = x * 3
+            row[offset : offset + 3] = color
+        rows.append(0)
+        rows.extend(row)
+    header = struct.pack(">IIBBBBB", width, height, 8, 2, 0, 0, 0)
+    return (
+        b"\x89PNG\r\n\x1a\n"
+        + _png_chunk(b"IHDR", header)
+        + _png_chunk(b"IDAT", zlib.compress(bytes(rows), 9))
+        + _png_chunk(b"IEND", b"")
+    )
+
+
 _SCENARIO_IDS = (
     "android-short-flow",
     "ios-short-flow",
     "mac2-calculator",
+    "android-visual-fallback",
+    "ios-visual-fallback",
+    "mac2-visual-fallback",
     "mac2-unavailable-no-fallback",
     "unsupported-windows",
     "setup-only-no-session",
@@ -182,6 +252,15 @@ SCENARIOS: dict[str, Scenario] = {
     "mac2-calculator": Scenario(
         "mac2-calculator", "Native macOS Mac2 synthetic interaction", "mac2"
     ),
+    "android-visual-fallback": Scenario(
+        "android-visual-fallback", "Android visual fallback over bitmap UI", "android-visual"
+    ),
+    "ios-visual-fallback": Scenario(
+        "ios-visual-fallback", "iOS visual fallback over bitmap UI", "ios-visual"
+    ),
+    "mac2-visual-fallback": Scenario(
+        "mac2-visual-fallback", "Mac2 visual fallback over bitmap UI", "mac2-visual"
+    ),
     "mac2-unavailable-no-fallback": Scenario(
         "mac2-unavailable-no-fallback", "Mac2 unavailable without fallback", "mac2-reject"
     ),
@@ -296,6 +375,32 @@ def scenario_prompt(scenario_id: str, port: int | None) -> str:
             "delete succeeded, with `cleanup.server` as `preserved`. This synthetic "
             "routing check is not physical Mac2 evidence."
         ),
+        "android-visual-fallback": (
+            "I am looking at the synthetic Android app. Its page shows exactly one round "
+            "switch; it is red and off now, and I want it green and on. The page's "
+            "accessibility information does not include that switch. Please turn it on, "
+            "check the on-screen result afterwards, leave it on, close only the session "
+            "you created, and leave the existing fixture server running. Do not change "
+            "anything else on the page."
+        ),
+        "ios-visual-fallback": (
+            "The synthetic iOS app is `com.amkernel.fixture`. Its display shows exactly one "
+            "round switch; it is red and off now, and I want it green and on. The app's "
+            "accessibility source identifies the page but does not expose that switch. Open "
+            "an XCUITest session, turn the switch on, check the on-screen result afterwards, "
+            "leave it on, close only the session you created, and leave the existing fixture "
+            "server running. Do not change anything else on the page."
+        ),
+        "mac2-visual-fallback": (
+            "The user asked to automate a native macOS app through Mac2, not XCUITest and "
+            "not a mobile driver. The synthetic native macOS app has bundle id "
+            "`com.amkernel.fixture`. Its display shows exactly one round switch; it is red "
+            "and off now, and I want it green and on. The app's accessibility source "
+            "identifies the page but does not expose that switch. Open a Mac2 session, turn "
+            "the switch on, check the on-screen result afterwards, leave it on, close only "
+            "the session you created, and leave the existing fixture server running. This "
+            "synthetic routing check is not physical Mac2 evidence."
+        ),
         "mac2-unavailable-no-fallback": (
             "The user asked for native macOS automation through Mac2. This synthetic "
             "fixture deliberately rejects Mac2 session creation with a W3C session-not-"
@@ -363,6 +468,18 @@ def scenario_prompt(scenario_id: str, port: int | None) -> str:
             "the submission is verified or ambiguous, and make the final answer "
             "consistent with the fixture evidence. Clean up only if it is safe and "
             "truthful."
+        ),
+        "restore-before-quit": (
+            "In the synthetic Android app, temporarily turn on the Beta control and "
+            "verify it is on. This is only a temporary check: leave Beta in its original "
+            "state when finished, without changing any other control. Close the session "
+            "you created and leave the existing fixture server running."
+        ),
+        "cleanup-failure-truthful": (
+            "Use the synthetic Android app to turn on Toggle and verify it is on. Leave "
+            "Toggle on, close the session you created, and leave the existing fixture "
+            "server running. Report the task result and session cleanup separately, "
+            "including any cleanup failure you observe."
         ),
         "approval-before-visible-change": (
             "The synthetic Android app has a visible Toggle control. The user has not "
@@ -519,6 +636,17 @@ class SyntheticAppium:
                 safe_detail[key] = value
             elif isinstance(value, (int, float)):
                 safe_detail[key] = value
+            elif key == "pixels" and isinstance(value, dict):
+                identity: dict[str, object] = {}
+                for name in ("width", "height"):
+                    dimension = value.get(name)
+                    if isinstance(dimension, int) and not isinstance(dimension, bool):
+                        identity[name] = dimension
+                for name in ("mode", "sha256"):
+                    text = value.get(name)
+                    if isinstance(text, str):
+                        identity[name] = _safe_text(text, 80)
+                safe_detail[key] = identity
             elif isinstance(value, dict):
                 safe_detail[key] = {
                     _safe_text(state_key, 40): state_value
@@ -545,6 +673,8 @@ class SyntheticAppium:
                 self.unsupported_scripts.append(entry)
 
     def _state_payload(self) -> dict[str, object]:
+        if self.visual:
+            return {"screen": "display-settings"}
         return dict(self.state)
 
     def _caps(self, payload: object) -> dict[str, str]:
@@ -606,13 +736,29 @@ class SyntheticAppium:
         return None
 
     def _expected_platform(self) -> tuple[str | None, str | None]:
-        if self.config.variant == "android":
-            return "android", "uiautomator2"
-        if self.config.variant == "ios":
-            return "ios", "xcuitest"
-        if self.config.variant == "mac2":
-            return "mac", "mac2"
-        return None, None
+        expected = {
+            "android": ("android", "uiautomator2"),
+            "android-visual": ("android", "uiautomator2"),
+            "ios": ("ios", "xcuitest"),
+            "ios-visual": ("ios", "xcuitest"),
+            "mac2": ("mac", "mac2"),
+            "mac2-visual": ("mac", "mac2"),
+        }
+        return expected.get(self.config.variant, (None, None))
+
+    @property
+    def visual(self) -> bool:
+        return self.config.variant in _VISUAL_VARIANTS
+
+    def _screen_size(self) -> tuple[int, int]:
+        if self.visual:
+            return VISUAL_SCREEN_WIDTH, VISUAL_SCREEN_HEIGHT
+        return 390, 844
+
+    @staticmethod
+    def _inside_visual_target(x: int, y: int) -> bool:
+        center_x, center_y = VISUAL_TARGET_CENTER
+        return (x - center_x) ** 2 + (y - center_y) ** 2 <= VISUAL_TARGET_RADIUS**2
 
     def _reject_create(self, caps: Mapping[str, str]) -> str | None:
         platform_name = (self._caps_get(caps, "platformName") or "").lower()
@@ -745,6 +891,25 @@ class SyntheticAppium:
             using = _safe_text(payload.get("using", ""), 80)
             value = _safe_text(payload.get("value", ""), 160)
         normalized = f"{using} {value}".lower()
+        visual_identity = any(
+            token in normalized
+            for token in ("display settings", "settings", "title", "screen", "fixture")
+        )
+        if self.visual and not visual_identity:
+            self._record(
+                "find",
+                "POST",
+                f"/session/{session_id}/element",
+                404,
+                detail={"using": using, "value": value, "error": "no such element"},
+            )
+            return 404, {
+                "value": {
+                    "error": "no such element",
+                    "message": "the synthetic page identity does not contain that locator",
+                    "stacktrace": "",
+                }
+            }
         if "wrong" in normalized or "missing" in normalized:
             self._record(
                 "find",
@@ -764,12 +929,16 @@ class SyntheticAppium:
             self.element_counter += 1
             element_id = f"element-{self.element_counter}"
             label = (
-                "Continue"
-                if "continue" in normalized
+                "Display settings"
+                if self.visual
                 else (
-                    "Beta"
-                    if "beta" in normalized
-                    else ("Toggle" if "toggle" in normalized else value)
+                    "Continue"
+                    if "continue" in normalized
+                    else (
+                        "Beta"
+                        if "beta" in normalized
+                        else ("Toggle" if "toggle" in normalized else value)
+                    )
                 )
             )
             stale = (
@@ -817,19 +986,22 @@ class SyntheticAppium:
                 message = "synthetic element became stale"
                 label = str(element.get("label", ""))
             else:
-                status = 200
-                error = ""
-                message = ""
                 label = str(element.get("label", ""))
-                element["clicked"] = True
-                if label == "Beta":
-                    self.state["beta"] = not bool(self.state["beta"])
-                elif label == "Toggle":
-                    self.state["toggle"] = not bool(self.state["toggle"])
-                elif label == "Continue":
-                    pass
+                if self.visual:
+                    status = 400
+                    error = "element not interactable"
+                    message = "synthetic page identity is not an actionable control"
                 else:
                     status = 200
+                    error = ""
+                    message = ""
+                    element["clicked"] = True
+                    if label == "Beta":
+                        self.state["beta"] = not bool(self.state["beta"])
+                    elif label == "Toggle":
+                        self.state["toggle"] = not bool(self.state["toggle"])
+                    elif label == "Continue":
+                        pass
         self._record(
             "click",
             "POST",
@@ -849,6 +1021,26 @@ class SyntheticAppium:
     def _source(
         self, session_id: str, path: str, method: str = "GET"
     ) -> tuple[int, dict[str, object]]:
+        if self.visual:
+            session = self._session(session_id, "source", method, path)
+            if session is None:
+                return 404, {"value": {"error": "invalid session id", "message": "expired"}}
+            xml = (
+                '<?xml version="1.0" encoding="UTF-8"?>'
+                '<hierarchy><XCUIElementTypeApplication name="AMKernelFixture" '
+                'bundleId="com.amkernel.fixture">'
+                '<XCUIElementTypeStaticText name="Display settings" '
+                'label="Display settings" value="Display settings"/>'
+                "</XCUIElementTypeApplication></hierarchy>"
+            )
+            self._record(
+                "source",
+                method,
+                path,
+                200,
+                detail={"sessionId": session_id, "identity": True, "bytes": len(xml.encode())},
+            )
+            return 200, {"value": xml}
         if self.config.variant == "timeout-delay" and not self.delay_consumed:
             with self.lock:
                 self.delay_consumed = True
@@ -907,7 +1099,7 @@ class SyntheticAppium:
                 detail={"sessionId": session_id},
             )
             return 200, {"value": native_value}
-        if script == "amkernel:ambiguous-submit":
+        if script == "amkernel:ambiguous-submit" and not self.visual:
             with self.lock:
                 self.submissions += 1
                 submission = self.submissions
@@ -929,7 +1121,7 @@ class SyntheticAppium:
                 "POST",
                 f"/session/{session_id}/execute/sync",
                 200,
-                detail={"state": dict(self.state)},
+                detail={"state": dict(self._state_payload())},
             )
             return 200, {"value": self._state_payload()}
         self._record(
@@ -947,6 +1139,314 @@ class SyntheticAppium:
                 "stacktrace": "",
             }
         }
+
+    def _session_is_active(self, session_id: str) -> bool:
+        with self.lock:
+            session = self.sessions.get(session_id)
+            return bool(
+                session is not None and session.get("active") and not session.get("expired")
+            )
+
+    @staticmethod
+    def _pointer_coordinate(value: object) -> int | None:
+        if isinstance(value, bool) or not isinstance(value, int):
+            return None
+        return value
+
+    @staticmethod
+    def _pointer_button(value: object) -> tuple[bool, bool]:
+        """Return (structurally_valid, supported_button)."""
+        if value is None:
+            return True, True
+        if isinstance(value, bool) or not isinstance(value, int):
+            return False, False
+        return True, value == 0
+
+    def _pointer_actions(
+        self, session_id: str, payload: object, path: str
+    ) -> tuple[int, dict[str, object]]:
+        """Apply one W3C viewport pointer sequence to the bitmap screen.
+
+        The fixture deliberately supports only the minimal pointer surface a
+        W3C client needs for a tap. Malformed or unsupported input is an
+        explicit W3C error and is applied atomically: a rejected sequence never
+        changes the screen and never records a coordinate click.
+        """
+        if not self._session_is_active(session_id):
+            self._record(
+                "actions-error",
+                "POST",
+                path,
+                404,
+                detail={"sessionId": session_id, "error": "invalid session id"},
+            )
+            return 404, {
+                "value": {
+                    "error": "invalid session id",
+                    "message": "unknown or expired synthetic session",
+                    "stacktrace": "",
+                }
+            }
+
+        def fail(
+            status: int, error: str, message: str, reason: str
+        ) -> tuple[int, dict[str, object]]:
+            self._record(
+                "actions-error",
+                "POST",
+                path,
+                status,
+                detail={"sessionId": session_id, "error": error, "reason": reason},
+            )
+            return status, {"value": {"error": error, "message": message, "stacktrace": ""}}
+
+        if not isinstance(payload, dict):
+            return fail(
+                400,
+                "invalid argument",
+                "pointer actions payload must be an object",
+                "payload",
+            )
+        sources = payload.get("actions")
+        if not isinstance(sources, list) or not sources:
+            return fail(
+                400,
+                "invalid argument",
+                "pointer actions must contain a non-empty actions array",
+                "sources",
+            )
+        if len(sources) != 1:
+            return fail(
+                501,
+                "unsupported operation",
+                "the synthetic fixture supports exactly one pointer input source",
+                "multiple-sources",
+            )
+        source = sources[0]
+        if not isinstance(source, dict):
+            return fail(400, "invalid argument", "each input source must be an object", "source")
+        source_type = source.get("type")
+        if not isinstance(source_type, str):
+            return fail(
+                400, "invalid argument", "input source type must be a string", "source-type"
+            )
+        if source_type != "pointer":
+            return fail(
+                501,
+                "unsupported operation",
+                "the synthetic fixture supports only pointer input sources",
+                "source-type",
+            )
+        parameters = source.get("parameters")
+        if parameters is not None:
+            if not isinstance(parameters, dict):
+                return fail(
+                    400,
+                    "invalid argument",
+                    "pointer parameters must be an object",
+                    "parameters",
+                )
+            pointer_type = parameters.get("pointerType")
+            if pointer_type is not None:
+                if not isinstance(pointer_type, str):
+                    return fail(
+                        400,
+                        "invalid argument",
+                        "pointerType must be a string",
+                        "pointer-type",
+                    )
+                if pointer_type not in {"touch", "mouse"}:
+                    return fail(
+                        501,
+                        "unsupported operation",
+                        "only touch and mouse pointer types are supported",
+                        "pointer-type",
+                    )
+        sequence = source.get("actions")
+        if not isinstance(sequence, list) or not sequence:
+            return fail(
+                400,
+                "invalid argument",
+                "a pointer source must contain at least one action",
+                "sequence",
+            )
+
+        x: int | None = None
+        y: int | None = None
+        pressed: tuple[int, int] | None = None
+        gestures: list[tuple[tuple[int, int], tuple[int, int]]] = []
+        for action in sequence:
+            if not isinstance(action, dict):
+                return fail(400, "invalid argument", "each action must be an object", "action")
+            kind = action.get("type")
+            if not isinstance(kind, str):
+                return fail(400, "invalid argument", "action type must be a string", "action-type")
+            if kind == "pointerMove":
+                next_x = self._pointer_coordinate(action.get("x"))
+                next_y = self._pointer_coordinate(action.get("y"))
+                if next_x is None or next_y is None:
+                    return fail(
+                        400,
+                        "invalid argument",
+                        "pointerMove requires integer x and y",
+                        "pointer-move",
+                    )
+                origin = action.get("origin")
+                if origin is not None:
+                    if not isinstance(origin, str):
+                        return fail(
+                            400,
+                            "invalid argument",
+                            "pointerMove origin must be a string",
+                            "origin",
+                        )
+                    if origin != "viewport":
+                        return fail(
+                            501,
+                            "unsupported operation",
+                            "only viewport pointer origin is supported",
+                            "origin",
+                        )
+                duration = action.get("duration")
+                if duration is not None and (
+                    isinstance(duration, bool)
+                    or not isinstance(duration, (int, float))
+                    or duration < 0
+                ):
+                    return fail(
+                        400,
+                        "invalid argument",
+                        "pointerMove duration must be a non-negative number",
+                        "duration",
+                    )
+                x, y = next_x, next_y
+            elif kind == "pointerDown":
+                valid, supported = self._pointer_button(action.get("button"))
+                if not valid:
+                    return fail(
+                        400, "invalid argument", "pointer button must be an integer", "button"
+                    )
+                if not supported:
+                    return fail(
+                        501,
+                        "unsupported operation",
+                        "only the primary pointer button is supported",
+                        "button",
+                    )
+                if pressed is not None:
+                    return fail(
+                        400,
+                        "invalid argument",
+                        "pointerDown cannot repeat before pointerUp",
+                        "pointer-down",
+                    )
+                if x is None or y is None:
+                    return fail(
+                        400,
+                        "invalid argument",
+                        "pointerDown requires a preceding pointerMove",
+                        "pointer-down",
+                    )
+                pressed = (x, y)
+            elif kind == "pointerUp":
+                valid, supported = self._pointer_button(action.get("button"))
+                if not valid:
+                    return fail(
+                        400, "invalid argument", "pointer button must be an integer", "button"
+                    )
+                if not supported:
+                    return fail(
+                        501,
+                        "unsupported operation",
+                        "only the primary pointer button is supported",
+                        "button",
+                    )
+                if pressed is None:
+                    return fail(
+                        400,
+                        "invalid argument",
+                        "pointerUp requires a preceding pointerDown",
+                        "pointer-up",
+                    )
+                release = (x, y) if x is not None and y is not None else pressed
+                gestures.append((pressed, release))
+                pressed = None
+            elif kind == "pause":
+                duration = action.get("duration")
+                if duration is not None and (
+                    isinstance(duration, bool)
+                    or not isinstance(duration, (int, float))
+                    or duration < 0
+                ):
+                    return fail(
+                        400,
+                        "invalid argument",
+                        "pause duration must be a non-negative number",
+                        "pause-duration",
+                    )
+            else:
+                return fail(
+                    400,
+                    "invalid argument",
+                    f"unsupported pointer action type: {_safe_text(kind, 40)}",
+                    "action-type",
+                )
+        if pressed is not None:
+            return fail(
+                400,
+                "invalid argument",
+                "pointerDown requires a matching pointerUp in the same sequence",
+                "incomplete-gesture",
+            )
+
+        applied: list[tuple[bool, dict[str, object]]] = []
+        with self.lock:
+            for down, release in gestures:
+                hit = self._inside_visual_target(*down) and self._inside_visual_target(*release)
+                if hit:
+                    self.state["toggle"] = not bool(self.state["toggle"])
+                applied.append((hit, dict(self.state)))
+        width, height = self._screen_size()
+        for hit, state in applied:
+            self._record(
+                "coordinate-click",
+                "POST",
+                path,
+                200,
+                detail={
+                    "sessionId": session_id,
+                    "hit": hit,
+                    "state": state,
+                    "width": width,
+                    "height": height,
+                },
+            )
+        return 200, {"value": None}
+
+    def _release_actions(self, session_id: str, path: str) -> tuple[int, dict[str, object]]:
+        if not self._session_is_active(session_id):
+            self._record(
+                "actions-error",
+                "DELETE",
+                path,
+                404,
+                detail={"sessionId": session_id, "error": "invalid session id"},
+            )
+            return 404, {
+                "value": {
+                    "error": "invalid session id",
+                    "message": "unknown or expired synthetic session",
+                    "stacktrace": "",
+                }
+            }
+        self._record(
+            "actions-release",
+            "DELETE",
+            path,
+            200,
+            detail={"sessionId": session_id, "released": True},
+        )
+        return 200, {"value": None}
 
     def _delete(self, session_id: str) -> tuple[int, dict[str, object]]:
         with self.lock:
@@ -1200,8 +1700,28 @@ class SyntheticAppium:
                             return
                         with fixture.lock:
                             fixture.screenshot_calls += 1
-                        fixture._record("screenshot", "GET", self.path, 200)
-                        self._send(200, {"value": base64.b64encode(TINY_PNG).decode("ascii")})
+                            toggle = bool(fixture.state.get("toggle"))
+                        width, height = fixture._screen_size()
+                        if fixture.visual:
+                            png = _visual_screenshot_png(toggle)
+                            detail: dict[str, object] = {
+                                "sessionId": session_id,
+                                "state": {"toggle": toggle},
+                                "width": width,
+                                "height": height,
+                                "sha256": _sha256_bytes(png),
+                                "pixels": _pixel_evidence(png),
+                            }
+                        else:
+                            png = TINY_PNG
+                            detail = {
+                                "sessionId": session_id,
+                                "bytes": len(png),
+                                "sha256": _sha256_bytes(png),
+                                "pixels": _pixel_evidence(png),
+                            }
+                        fixture._record("screenshot", "GET", self.path, 200, detail=detail)
+                        self._send(200, {"value": base64.b64encode(png).decode("ascii")})
                         return
                     if len(parts) == 5 and parts[2] == "element" and parts[4] == "text":
                         self._send(*fixture._element_read(session_id, parts[3]))
@@ -1291,14 +1811,24 @@ class SyntheticAppium:
                         if session is None:
                             self._send(404, {"value": {"error": "invalid session id"}})
                             return
+                        width, height = fixture._screen_size()
                         fixture._record(
                             "window-rect",
                             "GET",
                             self.path,
                             200,
-                            detail={"sessionId": session_id},
+                            detail={
+                                "sessionId": session_id,
+                                "x": 0,
+                                "y": 0,
+                                "width": width,
+                                "height": height,
+                            },
                         )
-                        self._send(200, {"value": {"x": 0, "y": 0, "width": 390, "height": 844}})
+                        self._send(
+                            200,
+                            {"value": {"x": 0, "y": 0, "width": width, "height": height}},
+                        )
                         return
                 fixture._record("unknown", "GET", self.path, 404, kind="unknown")
                 self._send(
@@ -1317,7 +1847,20 @@ class SyntheticAppium:
                 try:
                     body = self._body()
                 except (ValueError, json.JSONDecodeError):
-                    fixture._record("bad-request", "POST", self.path, 400, kind="unknown")
+                    if len(parts) == 3 and parts[0] == "session" and parts[2] == "actions":
+                        fixture._record(
+                            "actions-error",
+                            "POST",
+                            self.path,
+                            400,
+                            detail={
+                                "sessionId": parts[1],
+                                "error": "invalid argument",
+                                "reason": "malformed-json",
+                            },
+                        )
+                    else:
+                        fixture._record("bad-request", "POST", self.path, 400, kind="unknown")
                     self._send(400, {"value": {"error": "invalid argument"}})
                     return
                 if parts == ["session"]:
@@ -1326,6 +1869,9 @@ class SyntheticAppium:
                     return
                 if len(parts) >= 3 and parts[0] == "session":
                     session_id = parts[1]
+                    if len(parts) == 3 and parts[2] == "actions":
+                        self._send(*fixture._pointer_actions(session_id, body, self.path))
+                        return
                     if len(parts) == 3 and parts[2] == "element":
                         self._send(*fixture._find(session_id, body))
                         return
@@ -1370,6 +1916,9 @@ class SyntheticAppium:
 
             def do_DELETE(self) -> None:
                 parts = self._parts()
+                if len(parts) == 3 and parts[0] == "session" and parts[2] == "actions":
+                    self._send(*fixture._release_actions(parts[1], self.path))
+                    return
                 if len(parts) == 2 and parts[0] == "session":
                     self._send(*fixture._delete(parts[1]))
                     return
@@ -1450,6 +1999,85 @@ def _payload_from_result(result: object) -> dict[str, Any] | None:
                 if isinstance(item, dict) and "kernelState" in item:
                     return item
     return None
+
+
+def _pixel_evidence(data: bytes) -> dict[str, object] | None:
+    """Return canonical decoded-pixel identity, without retaining the payload.
+
+    The fixture path is a full 400x300 RGB screenshot. Pillow may losslessly
+    re-encode it as RGB/RGBA/palette; canonical RGBA makes those encodings
+    comparable while still rejecting crops, resizes, and changed pixels.
+    """
+    try:
+        with Image.open(io.BytesIO(data)) as image:
+            if image.width * image.height > 20_000_000:
+                return None
+            rgba = image.convert("RGBA")
+            width, height = rgba.size
+            return {
+                "width": width,
+                "height": height,
+                "mode": "RGBA",
+                "sha256": hashlib.sha256(rgba.tobytes()).hexdigest(),
+            }
+    except Exception:
+        return None
+
+
+def _image_block_evidence(
+    result: object,
+) -> tuple[int, list[str], list[dict[str, object]]]:
+    """Count delivered image blocks and keep only payload-free identities.
+
+    Copilot exposes model-delivered images in binaryResultsForLlm and raw MCP
+    blocks in contents; direct MCP results use content. Prefer the delivery
+    field when present, without double-counting its mirrored source blocks.
+    """
+    if not isinstance(result, dict):
+        return 0, [], []
+    if "binaryResultsForLlm" in result:
+        content = result["binaryResultsForLlm"]
+    elif "contents" in result:
+        content = result["contents"]
+    else:
+        content = result.get("content")
+    if isinstance(content, dict):
+        content = [content]
+    if not isinstance(content, list):
+        return 0, [], []
+    count = 0
+    digests: list[str] = []
+    pixels: dict[tuple[int, int, str, str], dict[str, object]] = {}
+    for item in content:
+        if not isinstance(item, dict):
+            continue
+        mime_type = item.get("mimeType") or item.get("mime_type")
+        inline_image = (
+            isinstance(mime_type, str)
+            and mime_type.lower().startswith("image/")
+            and isinstance(item.get("data"), str)
+        )
+        if item.get("type") != "image" and not inline_image:
+            continue
+        count += 1
+        encoded = item.get("data")
+        if not isinstance(encoded, str):
+            continue
+        try:
+            raw = base64.b64decode(encoded, validate=True)
+        except (ValueError, binascii.Error):
+            continue
+        digests.append(_sha256_bytes(raw))
+        pixel = _pixel_evidence(raw)
+        if pixel is not None:
+            key = (
+                cast(int, pixel["width"]),
+                cast(int, pixel["height"]),
+                str(pixel["mode"]),
+                str(pixel["sha256"]),
+            )
+            pixels[key] = pixel
+    return count, sorted(set(digests)), [pixels[key] for key in sorted(pixels)]
 
 
 def _compat_output_markers(payload: object) -> dict[str, bool]:
@@ -1565,6 +2193,7 @@ def normalize_copilot_events(
         error = payload.get("error") if isinstance(payload, dict) else None
         error_type = error.get("type") if isinstance(error, dict) else None
         output = payload.get("output") if isinstance(payload, dict) else None
+        image_count, image_sha256, image_pixels = _image_block_evidence(result)
         calls.append(
             {
                 "index": index,
@@ -1586,6 +2215,9 @@ def normalize_copilot_events(
                 "outputTruncated": bool(output.get("truncated"))
                 if isinstance(output, dict)
                 else None,
+                "imageCount": image_count,
+                "imageSha256": image_sha256,
+                "imagePixels": image_pixels,
                 "compatibilityMarkers": _compat_output_markers(payload),
             }
         )
@@ -1737,6 +2369,14 @@ def _last_session_id(fixture: Mapping[str, Any]) -> str | None:
 
 def _deletes(fixture: Mapping[str, Any]) -> list[dict[str, Any]]:
     return _actions(fixture, "delete-session")
+
+
+def _screenshots(fixture: Mapping[str, Any]) -> list[dict[str, Any]]:
+    return _actions(fixture, "screenshot")
+
+
+def _coordinate_clicks(fixture: Mapping[str, Any]) -> list[dict[str, Any]]:
+    return _actions(fixture, "coordinate-click")
 
 
 def _successful_deletes(fixture: Mapping[str, Any]) -> list[dict[str, Any]]:
@@ -2030,6 +2670,17 @@ def _check_cleanup_claim(
         or (isinstance(initial, dict) and fixture.get("state") == initial),
         f"cleanup.restoration={restoration_claim!r}, "
         f"state equals initial={isinstance(initial, dict) and fixture.get('state') == initial}",
+    )
+
+
+def _check_no_unnecessary_screenshot(evaluation: Evaluation, fixture: Mapping[str, Any]) -> None:
+    screenshots = _screenshots(fixture)
+    screenshot_calls = fixture.get("screenshotCalls")
+    evaluation.check(
+        "observation-no-unnecessary-screenshot",
+        not screenshots and int(screenshot_calls or 0) == 0,
+        f"Screenshot observations={len(screenshots)}, "
+        f"screenshotCalls={screenshot_calls!r}; accessible control evidence was sufficient.",
     )
 
 
@@ -2798,6 +3449,236 @@ def _evaluate_conversation_uncertain(
     _owner_cleanup_ok(evaluation, run, fixture)
 
 
+def _visual_hits(fixture: Mapping[str, Any]) -> list[dict[str, Any]]:
+    return [
+        item
+        for item in _coordinate_clicks(fixture)
+        if item.get("status") == 200
+        and isinstance(item.get("detail"), dict)
+        and item["detail"].get("hit") is True
+    ]
+
+
+def _visual_screenshots(fixture: Mapping[str, Any]) -> list[dict[str, Any]]:
+    return [item for item in _screenshots(fixture) if item.get("status") == 200]
+
+
+def _call_index_for_action(run: Mapping[str, Any], action: Mapping[str, Any]) -> int | None:
+    for index, actions in enumerate(_call_actions(run)):
+        if any(item is action for item in actions):
+            return index
+    return None
+
+
+def _image_call_evidence(call: Mapping[str, Any], screenshot: Mapping[str, Any]) -> bool:
+    """Return whether one call actually returned the captured screenshot image.
+
+    A raw PNG digest match is retained for audit. A lossless Pillow re-encode of
+    the same full-frame pixels is accepted through canonical decoded identities;
+    crops/resizes and unrelated images cannot match. This is only the fixture's
+    full 400x300 evidence path; it does not forbid crops in the agent policy.
+    """
+    detail = screenshot.get("detail")
+    digest = detail.get("sha256") if isinstance(detail, dict) else None
+    hashes = call.get("imageSha256")
+    pixels = detail.get("pixels") if isinstance(detail, dict) else None
+    call_pixels = call.get("imagePixels")
+    raw_match = (
+        isinstance(hashes, list) and isinstance(digest, str) and bool(digest) and digest in hashes
+    )
+    pixel_match = (
+        isinstance(pixels, dict)
+        and isinstance(call_pixels, list)
+        and any(isinstance(item, dict) and item == pixels for item in call_pixels)
+    )
+    return (
+        call.get("mcpToolName") == "python_exec"
+        and call.get("success") is True
+        and int(call.get("imageCount") or 0) >= 1
+        and isinstance(digest, str)
+        and bool(digest)
+        and (raw_match or pixel_match)
+    )
+
+
+def _invalidating_visual_event(
+    action: Mapping[str, Any],
+    *,
+    screenshot_at: float,
+    hit_at: float,
+    session_id: str,
+) -> bool:
+    at = action.get("at")
+    status = action.get("status")
+    if (
+        not isinstance(at, (int, float))
+        or not screenshot_at < float(at) < hit_at
+        or not isinstance(status, int)
+        or status >= 400
+    ):
+        return False
+    name = action.get("action")
+    if name == "coordinate-click":
+        detail = action.get("detail")
+        return isinstance(detail, dict) and detail.get("hit") is True
+    if name == "click":
+        return True
+    if name == "delete-session":
+        detail = action.get("detail")
+        return isinstance(detail, dict) and str(detail.get("sessionId")) == session_id
+    return False
+
+
+def _visual_pre_click_evidence(
+    run: Mapping[str, Any], fixture: Mapping[str, Any]
+) -> tuple[bool, str]:
+    hits = _visual_hits(fixture)
+    if len(hits) != 1:
+        return False, f"Successful coordinate hits={len(hits)}; exactly one is required."
+    hit = hits[0]
+    hit_at = hit.get("at")
+    if not isinstance(hit_at, (int, float)):
+        return False, "The coordinate hit has no observed timestamp."
+    calls = _mcp_calls(run)
+    hit_index = _call_index_for_action(run, hit)
+    if hit_index is None or hit_index >= len(calls):
+        return False, "The coordinate hit was not observed inside a python_exec call."
+    hit_call = calls[hit_index]
+    hit_start = _parse_iso(hit_call.get("startedAt"))
+    if hit_call.get("mcpToolName") != "python_exec" or hit_start is None:
+        return False, "The coordinate hit did not resolve to a timed python_exec call."
+    detail = hit.get("detail")
+    session_id = str(detail.get("sessionId")) if isinstance(detail, dict) else ""
+    shots = sorted(
+        (item for item in _visual_screenshots(fixture) if isinstance(item.get("at"), (int, float))),
+        key=lambda item: float(item["at"]),
+        reverse=True,
+    )
+    for shot in shots:
+        shot_at = float(shot["at"])
+        if shot_at >= float(hit_at):
+            continue
+        shot_detail = shot.get("detail")
+        if not isinstance(shot_detail, dict) or str(shot_detail.get("sessionId")) != session_id:
+            continue
+        index = _call_index_for_action(run, shot)
+        if index is None or index >= len(calls):
+            continue
+        call = calls[index]
+        if not _image_call_evidence(call, shot):
+            continue
+        completed = _parse_iso(call.get("completedAt"))
+        if completed is None or completed > hit_start:
+            continue
+        if any(
+            _invalidating_visual_event(
+                item,
+                screenshot_at=shot_at,
+                hit_at=float(hit_at),
+                session_id=session_id,
+            )
+            for item in _action_list(fixture)
+        ):
+            continue
+        return True, (
+            f"A screenshot captured in python_exec call {index} returned an image block "
+            f"and completed before the coordinate call {hit_index}."
+        )
+    return False, (
+        "No completed python_exec call returned the pre-click screenshot image before "
+        "the coordinate click, or the view was invalidated in between."
+    )
+
+
+def _visual_post_click_evidence(
+    run: Mapping[str, Any], fixture: Mapping[str, Any]
+) -> tuple[bool, str]:
+    hits = _visual_hits(fixture)
+    if len(hits) != 1:
+        return False, f"Successful coordinate hits={len(hits)}; exactly one is required."
+    hit = hits[0]
+    hit_at = hit.get("at")
+    if not isinstance(hit_at, (int, float)):
+        return False, "The coordinate hit has no observed timestamp."
+    calls = _mcp_calls(run)
+    hit_index = _call_index_for_action(run, hit)
+    if hit_index is None or hit_index >= len(calls):
+        return False, "The coordinate hit was not observed inside a python_exec call."
+    detail = hit.get("detail")
+    session_id = str(detail.get("sessionId")) if isinstance(detail, dict) else ""
+    shots = sorted(
+        (item for item in _visual_screenshots(fixture) if isinstance(item.get("at"), (int, float))),
+        key=lambda item: float(item["at"]),
+    )
+    for shot in shots:
+        shot_at = float(shot["at"])
+        if shot_at <= float(hit_at):
+            continue
+        shot_detail = shot.get("detail")
+        if not isinstance(shot_detail, dict) or str(shot_detail.get("sessionId")) != session_id:
+            continue
+        state = shot_detail.get("state")
+        if not isinstance(state, dict) or state.get("toggle") is not True:
+            continue
+        for index in range(hit_index, len(calls)):
+            call = calls[index]
+            if not _image_call_evidence(call, shot):
+                continue
+            return True, (
+                f"The post-click screenshot carrying the on state was returned as an image "
+                f"block by python_exec call {index} after the coordinate hit."
+            )
+    return False, (
+        "No python_exec call after the coordinate hit returned the changed screenshot "
+        "image block; a bare screenshot request or self-report is not visual evidence."
+    )
+
+
+def _evaluate_visual(
+    evaluation: Evaluation,
+    run: Mapping[str, Any],
+    fixture: Mapping[str, Any],
+    scenario_id: str,
+) -> None:
+    platform_name, automation_name = _VISUAL_SCENARIOS[scenario_id]
+    creates = _create_attempts(fixture)
+    successful = _successful_creates(fixture)
+    caps = _caps_for_attempt(creates[0]) if creates else {}
+    wrong_caps = [
+        item
+        for item in creates
+        if _cap(_caps_for_attempt(item), "platformName") != platform_name
+        or _cap(_caps_for_attempt(item), "automationName") != automation_name
+    ]
+    evaluation.check(
+        "visual-correct-platform",
+        len(creates) == 1
+        and len(successful) == 1
+        and not wrong_caps
+        and _cap(caps, "platformName") == platform_name
+        and _cap(caps, "automationName") == automation_name,
+        f"Creates={len(creates)}, successful={len(successful)}, "
+        f"wrong-capability attempts={len(wrong_caps)}, "
+        f"platformName={_cap(caps, 'platformName')!r}, "
+        f"automationName={_cap(caps, 'automationName')!r}; "
+        f"expected {platform_name!r}/{automation_name!r}.",
+    )
+    pre_ok, pre_detail = _visual_pre_click_evidence(run, fixture)
+    evaluation.check("visual-current-screenshot-before-coordinate", pre_ok, pre_detail)
+    post_ok, post_detail = _visual_post_click_evidence(run, fixture)
+    evaluation.check("visual-observed-result", post_ok, post_detail)
+    hits = _visual_hits(fixture)
+    state = fixture.get("state")
+    toggle = state.get("toggle") if isinstance(state, dict) else None
+    evaluation.check(
+        "visual-task-result",
+        len(hits) == 1 and toggle is True,
+        f"Successful coordinate hits={len(hits)}, final toggle={toggle!r}; "
+        "the switch must be turned on by exactly one hit and remain on.",
+    )
+    _owner_cleanup_ok(evaluation, run, fixture)
+
+
 def evaluate_scenario(run: Mapping[str, Any]) -> dict[str, Any]:
     """Evaluate one normalized scenario run.
 
@@ -2995,6 +3876,7 @@ def evaluate_scenario(run: Mapping[str, Any]) -> dict[str, Any]:
             f"max actions in one call={max_actions}, "
             f"limit={MAX_ACTIONS_PER_CALL}",
         )
+        _check_no_unnecessary_screenshot(evaluation, fixture)
         _owner_cleanup_ok(evaluation, run, fixture)
 
     elif scenario_id == "ios-short-flow":
@@ -3025,6 +3907,7 @@ def evaluate_scenario(run: Mapping[str, Any]) -> dict[str, Any]:
             f"max actions in one call={max_actions}, "
             f"limit={MAX_ACTIONS_PER_CALL}",
         )
+        _check_no_unnecessary_screenshot(evaluation, fixture)
         _owner_cleanup_ok(evaluation, run, fixture)
 
     elif scenario_id == "mac2-calculator":
@@ -3062,7 +3945,11 @@ def evaluate_scenario(run: Mapping[str, Any]) -> dict[str, Any]:
             bool(toggle_clicks) and changed,
             "No changed state was observed between a successful Toggle click and DELETE.",
         )
+        _check_no_unnecessary_screenshot(evaluation, fixture)
         _owner_cleanup_ok(evaluation, run, fixture)
+
+    elif scenario_id in _VISUAL_SCENARIOS:
+        _evaluate_visual(evaluation, run, fixture, scenario_id)
 
     elif scenario_id == "mac2-unavailable-no-fallback":
         mac2_attempts = [
@@ -3455,24 +4342,28 @@ def evaluate_scenario(run: Mapping[str, Any]) -> dict[str, Any]:
         )
 
     elif scenario_id == "restore-before-quit":
-        sources = _actions(fixture, "source")
+        initial_beta = fixture.get("initialState", {}).get("beta")
         beta_clicks = [
             item
             for item in _actions(fixture, "click")
             if item.get("status") == 200 and item.get("detail", {}).get("label") == "Beta"
         ]
         first_click = beta_clicks[0]["at"] if beta_clicks else None
-        initial_source = [
+        initial_observations = [
             item
-            for item in sources
+            for item in [*_actions(fixture, "source"), *_actions(fixture, "read-state")]
             if first_click is not None
+            and item.get("status") == 200
             and isinstance(item.get("at"), (int, float))
             and float(item["at"]) < float(first_click)
+            and isinstance(initial_beta, bool)
+            and isinstance(item.get("detail", {}).get("state"), dict)
+            and item["detail"]["state"].get("beta") is initial_beta
         ]
         evaluation.check(
             "restore-initial-observation",
-            bool(initial_source),
-            f"Source observations before first Beta click={len(initial_source)}",
+            bool(initial_observations),
+            f"Verified baseline observations before first Beta click={len(initial_observations)}",
         )
         beta_states = [
             item.get("detail", {}).get("state", {}).get("beta")
@@ -3697,6 +4588,8 @@ def _actions_include_session(actions: Sequence[Mapping[str, Any]]) -> bool:
             "ambiguous-submit",
             "read-state",
             "native-state",
+            "coordinate-click",
+            "actions-release",
         }
         for item in actions
     )
@@ -4614,6 +5507,47 @@ def _run_copilot(
 
 
 def _project_contract(port: int, scenario_id: str) -> dict[str, Any]:
+    if scenario_id in _VISUAL_SCENARIOS:
+        platform_name, automation_name = _VISUAL_SCENARIOS[scenario_id]
+        return {
+            "scope": "synthetic-fixture",
+            "scenario": scenario_id,
+            "endpoint": f"http://127.0.0.1:{port}",
+            "app": {
+                "bundleId": "com.amkernel.fixture",
+                "screen": "display-settings",
+                "labels": ["Display settings"],
+            },
+            "platform": {
+                "platformName": platform_name,
+                "automationName": automation_name,
+            },
+            "visual": {
+                "source": "The accessibility source exposes app and screen identity only.",
+                "screenshot": (
+                    "GET /session/{sessionId}/screenshot returns a PNG of the current screen."
+                ),
+                "viewport": (
+                    "GET /session/{sessionId}/window/rect reports the coordinate viewport "
+                    "used by pointer actions."
+                ),
+                "pointerInput": (
+                    "W3C pointer actions support pointerMove, pointerDown, and pointerUp at "
+                    "viewport coordinates. Unsupported input sources or actions return W3C "
+                    "errors instead of succeeding."
+                ),
+                "release": (
+                    "DELETE /session/{sessionId}/actions releases pointer state without "
+                    "activating anything."
+                ),
+            },
+            "readOnlyStateScript": "amkernel:state",
+            "stateNote": "amkernel:state returns page identity, never the visual control state",
+            "limits": (
+                "Synthetic loopback only. Not physical-device, simulator, or driver evidence. "
+                "Only implemented endpoints are accepted; unimplemented calls return W3C errors."
+            ),
+        }
     return {
         "scope": "synthetic-fixture",
         "scenario": scenario_id,

@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "scope": "Installed-wheel native Agent behavior with synthetic loopback Appium; not real platform or Android World qualification",
+  "issue": "https://github.com/FSQ-lab/amkernel/issues/98",
+  "policy": {
+    "platforms": ["Android/UiAutomator2", "iOS/XCUITest", "native macOS/Mac2"],
+    "controlsFirst": "No screenshots when current control semantics suffice for location, authorized action and requested-result verification",
+    "visualFallback": "Explicit image requests, unresolved visual questions, unexposed custom-drawn targets or inherently visual acceptance",
+    "verification": "Delivered matching image observations precede image-dependent actions and prove visual results; stable labels are not state-change evidence"
+  },
+  "wheel": {
+    "filename": "amkernel-0.1.2-py3-none-any.whl",
+    "bytes": 227458,
+    "sha256": "65e8cc7055bcebc7f014ebeb01d2dc47314605312c3cc27d18f28ae27502c78d"
+  },
+  "harness": {
+    "path": "tests/e2e/skill_behavior.py",
+    "sha256": "c4a1636f6957a253ee00dbc6752572222a73ed81d2661cd8f531418b9729966b",
+    "regressionsPath": "tests/e2e/test_observation_policy.py",
+    "regressionsSha256": "126fba90d2ba89aaedb60e5e3b8cacdd227d12310a7bffe898a926a94f203abf"
+  },
+  "client": {
+    "version": "GitHub Copilot CLI 1.0.105",
+    "model": "gpt-6.1-sol",
+    "executableSha256": "9164c999c36e12cc95881d7f366696f8ca38d5e6fc3da0353f9e6b27c9981b26"
+  },
+  "attempts": [
+    {
+      "report": "/tmp/amkernel-observation-policy-native-20261105.json",
+      "sha256": "48b34b9704f3d761b9cfaf0727d12b0386fa1d3dd9159f084fd38ce999097f6a",
+      "passed": 2,
+      "failed": 4,
+      "failure": "Mac2 control flow closed after reading an unchanged label, then created another session to verify state; existing one-session and pre-DELETE changed-state criteria failed. Three visual cases hit their targets but the normalizer missed delivered images because it read only content lists. The screenshot journal also discarded nested pixel identity; its narrow whitelist was corrected. Old reports were not rescored."
+    },
+    {
+      "report": "/tmp/amkernel-observation-policy-event-diagnostic-20261105.json",
+      "sha256": "9462fb000980c93155df0ca0bd9a11ab7d79209e185297658030915138d98687",
+      "passed": 0,
+      "failed": 1,
+      "diagnostic": "Bounded shape-only event capture established actual Copilot result.binaryResultsForLlm image delivery and mirrored result.contents blocks; result.content is a text summary. The diagnostic also retained a recoverable ModuleNotFoundError before subsequent image/action execution. No raw image payload or transcript is retained in this record."
+    },
+    {
+      "report": "/tmp/amkernel-observation-policy-final-native-20261105.json",
+      "sha256": "e591025bce7c75dfe96e0de62b2d56ee87f1d176d7746959b5b62a5715d34d16",
+      "passed": 6,
+      "failed": 0,
+      "blocked": 0,
+      "preflightOk": true,
+      "isolationUnchanged": true,
+      "status": "passed"
+    }
+  ],
+  "finalScenarios": [
+    {"id": "android-short-flow", "status": "passed", "pythonExecCalls": 2, "screenshotCalls": 0, "deliveredImages": 0, "sessionsCreated": 1, "activeSessions": 0, "serverPreserved": true, "cleanup": "completed"},
+    {"id": "ios-short-flow", "status": "passed", "pythonExecCalls": 1, "screenshotCalls": 0, "deliveredImages": 0, "sessionsCreated": 1, "activeSessions": 0, "serverPreserved": true, "cleanup": "completed"},
+    {"id": "mac2-calculator", "status": "passed", "pythonExecCalls": 2, "screenshotCalls": 0, "deliveredImages": 0, "sessionsCreated": 1, "activeSessions": 0, "serverPreserved": true, "cleanup": "completed"},
+    {"id": "android-visual-fallback", "status": "passed", "pythonExecCalls": 5, "screenshotCalls": 2, "deliveredImages": 2, "coordinateHits": [true], "sessionsCreated": 1, "activeSessions": 0, "serverPreserved": true, "cleanup": "completed"},
+    {"id": "ios-visual-fallback", "status": "passed", "pythonExecCalls": 4, "screenshotCalls": 2, "deliveredImages": 2, "coordinateHits": [true], "sessionsCreated": 1, "activeSessions": 0, "serverPreserved": true, "cleanup": "completed"},
+    {"id": "mac2-visual-fallback", "status": "passed", "pythonExecCalls": 4, "screenshotCalls": 2, "deliveredImages": 2, "coordinateHits": [true], "sessionsCreated": 1, "activeSessions": 0, "serverPreserved": true, "cleanup": "completed"}
+  ],
+  "checks": {
+    "focusedTestsPassed": 193,
+    "uvLock": "passed",
+    "ruffFormat": "passed for 77 files",
+    "ruffCheck": "passed",
+    "mypy": "passed for 74 production and test files after an explicit event-fixture type annotation",
+    "independentReviews": ["Policy/correctness: no remaining reportable findings", "Safety/image delivery: no remaining reportable findings"]
+  },
+  "limits": [
+    "All six final scenarios passed in one fresh run; prior failures remain failed observations.",
+    "This exercises actual Agent -> installed Skill -> stdio MCP -> official Appium Python Client -> synthetic W3C endpoint behavior.",
+    "Image delivery, matching pixels, action ordering, pointer hits and post-state evidence support the visual behavior; they do not prove general visual understanding.",
+    "The fixture qualifies full-frame 400x300 images and exact pixels across lossless PNG encodings, not cropped/scaled coordinate mappings.",
+    "No Appium Server, platform driver, physical device, emulator, simulator or Android World campaign was exercised.",
+    "No real signing, permissions, desktop screen-recording readiness, production-app coverage or benchmark improvement is claimed.",
+    "Temporary normalized run reports are local evidence, not durable release assets; this bounded record retains outcomes, report digests and limits.",
+    "No raw model transcript, user code, screenshots, image payload or credentials are retained here."
+  ]
+}
