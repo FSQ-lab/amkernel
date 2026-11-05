@@ -496,14 +496,20 @@ def _string_set(value: object) -> set[str]:
 def _last_probe(probes: Sequence[Mapping[str, Any]], tool: str) -> Mapping[str, Any] | None:
     for probe in reversed(probes):
         if probe.get("tool") == tool:
-            return probe
+            return cast(Mapping[str, Any], probe)
     return None
 
 
 def _catalog_version(snapshot: Mapping[str, Any], component: str) -> str | None:
-    state = snapshot.get("state") if isinstance(snapshot.get("state"), dict) else {}
-    sdk = state.get("sdk") if isinstance(state.get("sdk"), dict) else {}
-    catalog = state.get("catalog") if isinstance(state.get("catalog"), dict) else {}
+    state = snapshot.get("state")
+    if not isinstance(state, dict):
+        state = {}
+    sdk = state.get("sdk")
+    if not isinstance(sdk, dict):
+        sdk = {}
+    catalog = state.get("catalog")
+    if not isinstance(catalog, dict):
+        catalog = {}
     for item in [*sdk.get("catalog", []), *catalog.get("homebrew", [])]:
         if isinstance(item, dict) and item.get("component") == component:
             return cast(str | None, item.get("version"))
@@ -561,7 +567,9 @@ def _install_verified(
     for later in journal[install_index + 1 :]:
         if later.get("event") != "probe":
             continue
-        facts = later.get("facts") if isinstance(later.get("facts"), dict) else {}
+        facts = later.get("facts")
+        if not isinstance(facts, dict):
+            facts = {}
         if component == _JAVA_COMPONENT:
             if (
                 later.get("tool") == "java"
@@ -627,8 +635,12 @@ def _setup_only_checks(
     )
     adb_starts = [entry for entry in journal if entry.get("event") == "adb-start"]
     emulator_starts = [entry for entry in journal if entry.get("event") == "emulator-start"]
-    state = snapshot.get("state") if isinstance(snapshot.get("state"), dict) else {}
-    mutations = state.get("mutations") if isinstance(state.get("mutations"), dict) else {}
+    state = snapshot.get("state")
+    if not isinstance(state, dict):
+        state = {}
+    mutations = state.get("mutations")
+    if not isinstance(mutations, dict):
+        mutations = {}
     _check(
         checks,
         "no-adb-or-emulator-start",
@@ -793,8 +805,12 @@ def _java_checks(
             for _index, entry in observed
         )
         major = re.match(r"(\d+)(?:[.\-+]|$)", _version_core(observed_version) or "")
-        ok = ok and matching_probe and major is not None
-        ok = ok and int(major.group(1)) >= spec["javaRequiredMajor"]
+        ok = (
+            ok
+            and matching_probe
+            and major is not None
+            and int(major.group(1)) >= spec["javaRequiredMajor"]
+        )
         ok = ok and java.get("source") == _EXPECTATIONS[scenario_id]["javaSource"]
         detail = (
             f"java version={java.get('version')!r}, executable={java.get('executable')!r}, "
@@ -926,8 +942,12 @@ def _doctor_checks(
     report: Mapping[str, Any],
     checks: list[dict[str, Any]],
 ) -> None:
-    raw = snapshot.get("rawDoctor") if isinstance(snapshot.get("rawDoctor"), dict) else {}
-    raw_checks = raw.get("checks") if isinstance(raw.get("checks"), list) else []
+    raw = snapshot.get("rawDoctor")
+    if not isinstance(raw, dict):
+        raw = {}
+    raw_checks = raw.get("checks")
+    if not isinstance(raw_checks, list):
+        raw_checks = []
     failing = {
         str(item.get("id"))
         for item in raw_checks
@@ -965,8 +985,12 @@ def _observed_physical(
     for entry in reversed(journal):
         if entry.get("event") != "probe" or entry.get("tool") != "adb":
             continue
-        facts = entry.get("facts") if isinstance(entry.get("facts"), dict) else {}
-        devices = facts.get("devices") if isinstance(facts.get("devices"), list) else []
+        facts = entry.get("facts")
+        if not isinstance(facts, dict):
+            facts = {}
+        devices = facts.get("devices")
+        if not isinstance(devices, list):
+            devices = []
         for device in devices:
             if isinstance(device, dict) and device.get("state") == "device":
                 return device
@@ -1005,7 +1029,9 @@ def _target_checks(
         ok = ok and not blockers_lower and report.get("taskOutcome") in expectation["taskOutcome"]
         detail += "; physical readiness is not gated on emulator availability"
     if expectation["targetKind"] == "physical":
-        doctor = report.get("doctor") if isinstance(report.get("doctor"), dict) else {}
+        doctor = report.get("doctor")
+        if not isinstance(doctor, dict):
+            doctor = {}
         ok = ok and doctor.get("emulatorApplicability") == "not-applicable"
         if expectation["targetReady"]:
             observed_ok = (
@@ -1022,7 +1048,10 @@ def _target_checks(
                 and target.get("taskLockReady") is True
             )
             matches = (
-                reported_ok and observed_ok and target.get("apiLevel") == observed.get("apiLevel")
+                reported_ok
+                and observed_ok
+                and observed is not None
+                and target.get("apiLevel") == observed.get("apiLevel")
             )
             ok = ok and matches
             detail += (
@@ -1108,7 +1137,9 @@ def _evaluate(run: Mapping[str, Any]) -> dict[str, Any]:
     report = run.get("final_json")
     calls = cast(Sequence[Mapping[str, Any]], run.get("calls") or [])
     servers = cast(Sequence[Mapping[str, Any]], run.get("servers") or [])
-    process = run.get("process") if isinstance(run.get("process"), dict) else {}
+    process = run.get("process")
+    if not isinstance(process, dict):
+        process = {}
     _check(
         checks,
         "process-finished",
@@ -1419,6 +1450,7 @@ def _report_from_snapshot(snapshot: Mapping[str, Any]) -> dict[str, Any]:
         "apiLevel": observed.get("apiLevel") if isinstance(observed, dict) else None,
         "taskLockReady": observed.get("taskLockReady") if isinstance(observed, dict) else None,
     }
+    target: dict[str, Any]
     if avd is not None:
         target = {
             "kind": "emulator",
@@ -1458,7 +1490,9 @@ def _report_from_snapshot(snapshot: Mapping[str, Any]) -> dict[str, Any]:
                 }
             )
     raw = snapshot.get("rawDoctor") or {}
-    raw_checks = raw.get("checks") if isinstance(raw.get("checks"), list) else []
+    raw_checks = raw.get("checks")
+    if not isinstance(raw_checks, list):
+        raw_checks = []
     return {
         "taskOutcome": "completed" if setup["ready"] else "approval-required",
         "scope": "synthetic-fixture",

@@ -1008,7 +1008,9 @@ def _serve(root: Path) -> int:
             continue
         method = message.get("method")
         message_id = message.get("id")
-        params = message.get("params") if isinstance(message.get("params"), dict) else {}
+        params = message.get("params")
+        if not isinstance(params, dict):
+            params = {}
         if method == "ping":
             result = {}
         elif method == "initialize":
@@ -1021,7 +1023,9 @@ def _serve(root: Path) -> int:
             result = {"tools": _tool_specs()}
         elif method == "tools/call":
             name = params.get("name")
-            arguments = params.get("arguments") if isinstance(params.get("arguments"), dict) else {}
+            arguments = params.get("arguments")
+            if not isinstance(arguments, dict):
+                arguments = {}
             if name == "inspect_host":
                 result = _inspect(fixture, str(arguments.get("area", "all")))
             elif name == "request_installation_approval":

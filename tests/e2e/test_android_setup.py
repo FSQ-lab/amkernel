@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import copy
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -16,12 +17,13 @@ from tests.e2e.android_setup_fixture import (
     _CMDLINE_COMPONENT,
     _JAVA_COMPONENT,
     _SDK_COMPONENT,
+    AndroidSetupFixture,
     FixtureHost,
     build_fixture,
 )
 
 
-def _request(fixture, components: list[str]) -> dict:
+def _request(fixture: AndroidSetupFixture, components: list[str]) -> dict[str, Any]:
     plans = fixture.snapshot()["installationPlans"]
     return {
         "components": components,
@@ -44,7 +46,9 @@ def _request(fixture, components: list[str]) -> dict:
         ("rollback", ""),
     ],
 )
-def test_approval_rejects_changed_installation_scope(tmp_path: Path, field: str, value) -> None:
+def test_approval_rejects_changed_installation_scope(
+    tmp_path: Path, field: str, value: object
+) -> None:
     fixture = build_fixture(tmp_path / "fixture", "missing-java-approved")
     host = FixtureHost(fixture.root)
     request = _request(fixture, [_JAVA_COMPONENT])
@@ -178,7 +182,7 @@ def test_connected_phone_does_not_clear_missing_java_setup_blocker(tmp_path: Pat
 
 
 @pytest.mark.parametrize("blockers", [None, "java", [None]])
-def test_malformed_setup_blockers_are_failed_evidence(tmp_path: Path, blockers) -> None:
+def test_malformed_setup_blockers_are_failed_evidence(tmp_path: Path, blockers: object) -> None:
     run, _fixture = _scripted_scenario(tmp_path / "fixture", "missing-java-no-approval")
     run["final_json"]["setup"]["blockers"] = blockers
     evaluation = _evaluate(run)
