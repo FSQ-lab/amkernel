@@ -89,7 +89,54 @@ For native macOS desktop, use `from appium.options.mac import Mac2Options`, `pla
 
 ## Interact and return evidence
 
-Prefer accessibility ID, stable platform ID, iOS predicate/class chain, then XPath. Use explicit waits instead of sleeps. Keep returned values bounded:
+Prefer accessibility ID, stable platform ID, iOS predicate/class chain, then XPath. Use explicit waits instead of sleeps.
+
+Use Appium's locator constants, not Selenium-only `By` attributes. In an existing
+native Android session, these are direct Python Client calls through `python_exec`:
+
+```python
+from appium.webdriver.common.appiumby import AppiumBy
+
+accessibility_element = driver.find_element(AppiumBy.ACCESSIBILITY_ID, accessibility_id)
+uiautomator_element = driver.find_element(AppiumBy.ANDROID_UIAUTOMATOR, uiautomator_selector)
+```
+
+Supply both locator values from bounded current UI evidence. Selenium `By` remains
+appropriate for supported Web locators such as `By.CSS_SELECTOR`, but has no
+`ACCESSIBILITY_ID` or `ANDROID_UIAUTOMATOR` constants.
+
+Native Android is not a Web page: never use `driver.title` as a native state or
+session probe. Check local identity and applicable live package/activity queries:
+
+```python
+if not driver.session_id:
+    raise RuntimeError("No local session identity; reconcile before replacement")
+native_state = {"package": driver.current_package, "activity": driver.current_activity}
+```
+
+A nonempty local `session_id` is not remote liveness proof. A failed live query
+leaves no verified usable session; preserve its identity for reconciliation.
+Use Web APIs only after observing and explicitly selecting an available Web
+context; do not assume a native app exposes one:
+
+```python
+available_contexts = driver.contexts
+if web_context not in available_contexts or not (
+    web_context.startswith("WEBVIEW") or web_context == "CHROMIUM"
+):
+    raise RuntimeError("Requested Web context is not available")
+driver.switch_to.context(web_context)
+if driver.current_context != web_context:
+    raise RuntimeError("Web context selection was not verified")
+web_title = driver.title
+```
+
+Return to the observed native context before native operations. Navigation/context
+changes invalidate previous element assumptions: reacquire relevant elements.
+After a locator timeout, obtain bounded fresh package/activity and relevant source
+facts before changing strategy; do not blindly repeat an equivalent wait.
+
+Keep returned values bounded:
 
 - render screenshots with `display(png_bytes, mime_type="image/png")`;
 - extract only relevant page-source element facts and cap item/field counts;

@@ -714,11 +714,14 @@ def _timeout_calls(
     ]
 
 
-def test_timeout_requires_completed_live_post_timeout_observation() -> None:
+@pytest.mark.parametrize("query_action", ["source", "native-state"])
+def test_timeout_requires_completed_live_post_timeout_observation(query_action: str) -> None:
+    actions = _timeout_actions(cleanup=True)
+    actions[2]["action"] = query_action
     run = _run(
         "kernel-timeout-inspection",
         variant="timeout-delay",
-        actions=_timeout_actions(cleanup=True),
+        actions=actions,
         calls=_timeout_calls(),
         sessions=[{"id": "s1", "preexisting": False, "active": False}],
         final=_final(

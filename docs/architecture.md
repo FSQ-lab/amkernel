@@ -154,6 +154,25 @@ type PythonExecResult = {
 
 The central invariant is state truth. After every call, the Agent must know whether objects from earlier cells can still be used.
 
+Exception normalization never invokes third-party rendering or dynamically evaluated
+fields. Arbitrary custom `__str__` remains omitted. A closed Selenium/Appium
+exception-shape allowlist may read only an exact built-in string `msg` from inert
+instance storage; module/class names identify untrusted shape, not authenticity.
+Missing, non-string, descriptor-backed or oversized storage fails closed. No
+Client import, driver operation, screenshot, stacktrace, response or capability
+inspection occurs while formatting an error.
+
+Recognized messages are limited to 2,048 UTF-8 bytes. Sensitive markers (including
+session identifiers, authentication/credentials, capabilities, images, source,
+paths, URLs and long opaque tokens) withhold the whole message; oversized input is
+not scanned. A fixed Selenium documentation suffix and subsequent lines are not
+returned. Recognized exception chains suppress external frame paths, source text
+and SyntaxError-specific path/source fields while retaining existing global
+traceback/chain/frame bounds. These conservative rules can omit benign diagnostics;
+they do not promise to detect an unlabeled secret in arbitrary prose. Ordinary
+non-WebDriver errors and successful result serialization retain their contracts.
+The MCP result schema and kernel-survival semantics are unchanged.
+
 ## 6. Persistent kernel semantics
 
 ### 6.1 Namespace

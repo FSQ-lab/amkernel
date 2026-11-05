@@ -894,6 +894,19 @@ class SyntheticAppium:
         script = ""
         if isinstance(payload, dict):
             script = _safe_text(payload.get("script", ""), 240)
+        native_value = {
+            "mobile: getCurrentPackage": "com.amkernel.fixture",
+            "mobile: getCurrentActivity": ".MainActivity",
+        }.get(script)
+        if native_value is not None:
+            self._record(
+                "native-state",
+                "POST",
+                f"/session/{session_id}/execute/sync",
+                200,
+                detail={"sessionId": session_id},
+            )
+            return 200, {"value": native_value}
         if script == "amkernel:ambiguous-submit":
             with self.lock:
                 self.submissions += 1
@@ -1164,6 +1177,19 @@ class SyntheticAppium:
                     return
                 if len(parts) >= 3 and parts[0] == "session":
                     session_id = parts[1]
+                    native_queries: dict[tuple[str, ...], str] = {
+                        ("appium", "device", "current_package"): "com.amkernel.fixture",
+                        ("appium", "device", "current_activity"): ".MainActivity",
+                    }
+                    native_value = native_queries.get(tuple(parts[2:]))
+                    if native_value is not None:
+                        session = fixture._session(session_id, "native-state", "GET", self.path)
+                        if session is None:
+                            self._send(404, {"value": {"error": "invalid session id"}})
+                        else:
+                            fixture._record("native-state", "GET", self.path, 200)
+                            self._send(200, {"value": native_value})
+                        return
                     if parts[2:] == ["source"]:
                         self._send(*fixture._source(session_id, self.path))
                         return
@@ -1787,7 +1813,7 @@ def _call_bound_violations(run: Mapping[str, Any]) -> list[dict[str, object]]:
     return violations
 
 
-_SESSION_QUERY_ACTIONS = frozenset({"source", "find", "read-state"})
+_SESSION_QUERY_ACTIONS = frozenset({"source", "find", "read-state", "native-state"})
 
 
 def _observed_reset(call: Mapping[str, Any]) -> bool:
@@ -3670,6 +3696,7 @@ def _actions_include_session(actions: Sequence[Mapping[str, Any]]) -> bool:
             "sessions",
             "ambiguous-submit",
             "read-state",
+            "native-state",
         }
         for item in actions
     )
