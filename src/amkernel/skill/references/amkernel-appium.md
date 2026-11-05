@@ -4,7 +4,7 @@ This reference contains only the AMKernel-specific seam. Platform setup and Appi
 
 ## Runtime contract
 
-- Use `python_exec`; do not add a wrapper, mobile-specific MCP tool, or AMKernel core API.
+- Appium session creation, live queries, actions, verification, recovery, and cleanup use `python_exec`; do not add a wrapper, mobile-specific MCP tool, or AMKernel core API. Installation, host discovery, dependency provisioning, and MCP diagnosis may use any suitable tool, including shell, PowerShell, or native Windows tools.
 - Use the official Appium Python Client and its observed platform options classes. Do not require a particular major version without an applicable dependency constraint. Never use removed `desired_capabilities`.
 - The Appium Server, device/simulator, WebDriverAgent, and platform driver are externally owned resources.
 - Keep one top-level `driver` object across calls. Before reuse, require a session ID and one small live query.
@@ -14,8 +14,8 @@ This reference contains only the AMKernel-specific seam. Platform setup and Appi
 
 Use the requested target and observed host OS to choose relevant checks. Preserve
 existing working installations; discovery is not permission to repair them. Keep
-the following evidence bounded and obtain it in the actual `python_exec`
-environment when it determines Runtime behavior, not an unrelated shell Python.
+the following evidence bounded. When it determines Runtime behavior, use the actual AMKernel
+Runtime through `python_exec` or its verified managed interpreter, not an unrelated shell Python.
 
 - **Java:** enumerate explicit `JAVA_HOME`, current `java` on `PATH`, registered
   macOS JDKs (`/usr/libexec/java_home -V`), then Android Studio bundled JBR in
