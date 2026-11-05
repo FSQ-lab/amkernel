@@ -10,15 +10,15 @@ AMKernel is a persistent Python execution MCP for agentic automation. Mobile aut
 
 AMKernel 是一个面向 Agent 自动化的持久 Python Execution MCP。基于 Appium 的移动自动化是它的第一个实验方向。
 
-**AMKernel 0.1.2 is a technical preview.** It tests whether Coding Agents can use one persistent local Python Runtime and existing automation libraries to complete continuous, multi-step work in real applications and devices.
+**AMKernel 0.1.3 is a technical preview.** It tests whether Coding Agents can use one persistent local Python Runtime and existing automation libraries to complete continuous, multi-step work in real applications and devices.
 
-**AMKernel 0.1.2 是技术预览版。** 它正在验证 Coding Agent 能否通过一个持久的本地 Python Runtime，直接使用现有自动化库，在真实应用和设备中完成连续、多步骤任务。
+**AMKernel 0.1.3 是技术预览版。** 它正在验证 Coding Agent 能否通过一个持久的本地 Python Runtime，直接使用现有自动化库，在真实应用和设备中完成连续、多步骤任务。
 
 This is not yet a finished Mobile Use or Computer Use product. We invite developers and early users to try it, tell us what works and what fails, and help identify the scenarios that should be evaluated next. Those experiments and evaluations will inform future Mobile Use and Computer Use tools.
 
 它目前还不是一个已经完成的 Mobile Use 或 Computer Use 产品。我们希望开发者和早期用户实际试用，反馈哪些场景有效、哪些场景失败，以及下一步应该测评什么。后续的实验和系统化测评将为真正的 Mobile Use 与 Computer Use 工具提供依据。
 
-Latest release: [`0.1.2`](https://github.com/FSQ-lab/amkernel/releases/tag/v0.1.2) · [PyPI](https://pypi.org/project/amkernel/0.1.2/) · [Changelog](https://github.com/FSQ-lab/amkernel/blob/main/CHANGELOG.md)
+Latest release: [`0.1.3`](https://github.com/FSQ-lab/amkernel/releases/tag/v0.1.3) · [PyPI](https://pypi.org/project/amkernel/0.1.3/) · [Changelog](https://github.com/FSQ-lab/amkernel/blob/main/CHANGELOG.md)
 
 ## Technical preview demos / 技术预览演示
 
@@ -55,7 +55,7 @@ The first completed experiment uses Appium with Android and iOS. Future experime
 
 首个已完成实验使用 Appium 操作 Android 和 iOS。未来可能继续测试浏览器、Windows 和 macOS 自动化生态。实验的目标是验证底层技术，而不是把所有平台操作封装进 AMKernel 核心。
 
-## Try AMKernel 0.1.2 / 开始试用
+## Try AMKernel 0.1.3 / 开始试用
 
 AMKernel uses one user-level `uv`-managed Runtime and project-scoped Coding Agent activation. From the project directory, run:
 
