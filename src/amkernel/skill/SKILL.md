@@ -33,9 +33,9 @@ harmless live observation, and explicit cleanup.
 ## Install or repair AMKernel without a platform detour
 
 Installation, environment discovery, dependency provisioning, and MCP diagnosis may use any
-suitable available tool: shell, PowerShell, Windows-native tools, file tools, or a focused SDK
-probe. Setup does not require a working `python_exec` connection. This freedom does not change
-authorization, the uv-managed installer contract, or the supported-platform boundary.
+suitable available tool: shell, file tools, or a focused SDK probe. Setup does not require a
+working `python_exec` connection. This freedom does not change authorization, the uv-managed
+installer contract, or the supported-platform boundary.
 
 Appium execution is different: session creation, live device/application queries, actions,
 scenario verification, recovery, and `driver.quit()` must use the official Appium Python Client
@@ -63,9 +63,9 @@ uvx --from amkernel amkernel install --client omp --scope project --yes --json
 
 Use the observed client (`omp`, `pi`, `codex`, or `copilot`); add `--project "<project>"` when
 not running in that project. Prefer the existing managed launcher with the same install flags
-for project activation or repair. Quote paths for the host shell; PowerShell invokes a quoted
-executable path with `&`. If an older launcher rejects an option, consult that command's help
-once or use the intended installer source; do not discover required flags by repeated failures.
+for project activation or repair. Quote paths for the host shell. If an older launcher rejects an
+option, consult that command's help once or use the intended installer source; do not discover
+required flags by repeated failures.
 An intentionally staged Skill is not stale merely because the published Skill differs.
 
 For a missing entry or wrong launcher/project path, once the correct managed launcher and the
@@ -94,20 +94,28 @@ Ask only when the answer cannot be observed and materially changes the action. I
   include a serial or UDID only when needed to distinguish them.
 - Never ask the user to select Appium, a driver, a capability set, Python, ADB, or a setup skill.
 - Ask before dependency installation, persistent configuration, privilege elevation, license or
-  trust acceptance, signing changes, emulator/simulator creation, device erasure, broad resets,
-  or changes outside the requested end state.
+  trust acceptance, signing changes, emulator/simulator creation or launch, starting an
+  unauthorized ADB server, device authorization or erasure, broad resets, or changes outside the
+  requested end state.
 - Before dependency repair, identify the actual managed Runtime from observed MCP/CLI evidence
   or `python_exec` when available; explain changes, cross-project effects, and rollback.
   Setup may use that Runtime's verified interpreter; the project `.venv` is not the Runtime.
+- After that scoped approval, perform the disclosed installation yourself in the same task and
+  verify each layer; do not hand the technical setup back to the user. For Android,
+  `references/android-setup.md` defines the disclosure fields and install routes.
 
-Do not expose manifests, hashes, source acquisition, internal handoffs, or raw diagnostic dumps
-unless their verification fails or the user requests technical evidence.
+Do not expose manifests, hashes, source acquisition, internal handoffs, or unrelated raw
+diagnostic dumps unless their verification fails or the user requests technical evidence. Retain
+and report the raw doctor/helper required-fix findings needed for Android applicability; never
+replace them with a filtered result described as an official pass.
 
 ## Choose one route
 
 Select from the requested target and observed host; do not silently substitute a platform:
 
-- Android setup/readiness: verified `setup-uiautomator2` guidance.
+- Android setup/readiness: read `references/android-setup.md` first for discovery,
+  target-scoped component selection, approvals, and applicability; then use verified
+  `setup-uiautomator2` guidance for the selected driver and server.
 - iOS/tvOS setup/readiness on macOS: verified `setup-xcuitest` guidance.
 - Native macOS desktop: verified `setup-mac2` guidance and the Mac2 driver, never XCUITest.
 - Existing UiAutomator2/XCUITest session, launch, transport, WebDriverAgent, source, or locator
@@ -115,9 +123,12 @@ Select from the requested target and observed host; do not silently substitute a
 - Physical iOS trust, signing, provisioning, or WebDriverAgent deployment: continue to verified
   `xcuitest-real-device-config` guidance after shared XCUITest prerequisites pass.
 
-Windows first-release scope is Android through UiAutomator2 only. Windows desktop, XCUITest,
-and Mac2 on Windows are unsupported. A blocked requested route stays blocked; do not replace it
-with a different driver or vague generic advice.
+AMKernel's current Runtime qualification is Ubuntu and macOS on CPython 3.11–3.13; Windows is
+not a supported AMKernel host. Official Android guidance may include Windows commands, but that
+is platform documentation, not AMKernel Windows qualification, and must not be presented as a
+supported AMKernel route. Windows desktop, XCUITest, and Mac2 on Windows are unsupported. A
+blocked requested route stays blocked; do not replace it with a different driver or vague
+generic advice.
 
 ### Verify official guidance only when needed
 
@@ -133,8 +144,12 @@ contexts and helpers from `source.generatedLocation` in the verified manifest an
 relative helpers from that source checkout. Do not run provenance verification as a generic
 precondition for an already-ready scenario that does not consume official guidance.
 
-Use the routed official skill's checks and completion criteria instead of inventing a second
-checklist. Read only the relevant sections of `references/amkernel-appium.md` for AMKernel's
+Use the routed official skill's checks and completion criteria for the scope those criteria
+actually cover; do not invent a parallel driver or server checklist. For Android, read
+`references/android-setup.md` before executing that official setup skill: its target-scoped
+applicability rules decide which official checks block this task, while raw doctor and helper
+output stays raw and is never reported as an official pass. iOS/tvOS and Mac2 applicability is
+unchanged. Read only the relevant sections of `references/amkernel-appium.md` for AMKernel's
 candidate selection, connection, bounded evidence, conversation targeting, and cleanup seam.
 If verified skills do not cover the observed behavior, use primary official documentation:
 Appium installation and extension management at `appium.io`, the Appium Python Client and
@@ -154,15 +169,21 @@ Check only layers that can block the requested target:
 - The actual AMKernel Runtime can import a compatible Appium Python Client and Selenium;
   setup may check this through `python_exec` or the verified managed interpreter.
 
-A server without the selected driver is not platform-ready. A physical Android target does not
-require emulator inventory; an emulator does not require USB-device evidence. Keep physical
-devices and simulators separate. A path, package listing, device listing, or unrelated shell
-Python is not execution evidence.
+A server without the selected driver is not platform-ready. For Android, select components,
+disclose changes, and classify raw official results through `references/android-setup.md`. A
+physical Android target does not require emulator, system-image, or AVD inventory; an emulator
+does not require USB-device evidence. Keep physical devices and simulators separate. A configured
+AVD is not a launched, booted, or usable target. A ready `/status`, a driver listing, a successful
+client import, or an authorized `adb devices` entry is not a live session or target-compatibility
+proof. A path, package listing, device listing, or unrelated shell Python is not execution
+evidence.
 
-Use task-scoped `JAVA_HOME`, `PATH`, or `DEVELOPER_DIR` selections. Do not edit profiles, persist
-environment variables, switch global `xcode-select`, start ADB merely for discovery, or accept
-host/device prompts without approval. Supervise Appium Server outside `python_exec` and retain
-its identity and logs; never start it as a blocking cell.
+Use task-scoped `JAVA_HOME`, `PATH`, `ANDROID_HOME`, `APPIUM_HOME`, or `DEVELOPER_DIR` selections
+and pass the same environment to tools, doctor, and the Appium server. Persist an environment
+variable only after the disclosed, approved change; do not edit profiles merely because a variable
+is unset. Do not switch global `xcode-select`, start ADB merely for discovery, launch an emulator,
+or accept host/device permission prompts without approval. Supervise Appium Server outside
+`python_exec` and retain its identity and logs; never start it as a blocking cell.
 
 Inspect the selected package metadata in the actual Runtime. Evaluate `Requires-Python` and each
 environment-marker-qualified `Requires-Dist` only when its marker applies there; compare official

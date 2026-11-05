@@ -1009,8 +1009,16 @@ def test_status_detects_modified_or_version_drifted_skill(project: Path, tmp_pat
     assert not status.restart_required
 
 
+@pytest.mark.parametrize(
+    "relative",
+    (
+        "references/official-skills.json",
+        "references/android-setup.md",
+        "scripts/verify_official_skills.py",
+    ),
+)
 def test_status_detects_tampered_or_deleted_skill_support_files(
-    project: Path, tmp_path: Path
+    project: Path, tmp_path: Path, relative: str
 ) -> None:
     bin_dir = tmp_path / "bin"
     executable = bin_dir / "amkernel"
@@ -1019,13 +1027,12 @@ def test_status_detects_tampered_or_deleted_skill_support_files(
     subject = manager(project, bin_dir)
     assert subject.configure_project("omp", executable).detail is None
 
-    manifest = project / ".agents/skills/amkernel/references/official-skills.json"
-    manifest.write_text(manifest.read_text() + " ")
+    support_file = project / ".agents/skills/amkernel" / relative
+    support_file.write_text(support_file.read_text() + " ")
     assert subject.status("omp").detail is not None
 
     assert subject.configure_project("omp", executable).detail is None
-    verifier = project / ".agents/skills/amkernel/scripts/verify_official_skills.py"
-    verifier.unlink()
+    support_file.unlink()
     assert subject.status("omp").detail is not None
 
 

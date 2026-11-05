@@ -1,14 +1,15 @@
 # Appium through AMKernel
 
-This reference contains only the AMKernel-specific seam. Platform setup and Appium diagnosis belong to the routed official skills.
+This reference contains only the AMKernel-specific seam. Android dependency provisioning and target-scoped readiness belong to `references/android-setup.md`; other platform setup and Appium diagnosis belong to the routed official skills. For Android preparation and readiness, read that reference before the verified official Android setup skill.
 
 ## Runtime contract
 
-- Appium session creation, live queries, actions, verification, recovery, and cleanup use `python_exec`; do not add a wrapper, mobile-specific MCP tool, or AMKernel core API. Installation, host discovery, dependency provisioning, and MCP diagnosis may use any suitable tool, including shell, PowerShell, or native Windows tools.
+- Appium session creation, live queries, actions, verification, recovery, and cleanup use `python_exec`; do not add a wrapper, mobile-specific MCP tool, or AMKernel core API. Installation, host discovery, dependency provisioning, and MCP diagnosis may use any suitable tool, including shell, file tools, or a focused SDK probe.
 - Use the official Appium Python Client and its observed platform options classes. Do not require a particular major version without an applicable dependency constraint. Never use removed `desired_capabilities`.
 - The Appium Server, device/simulator, WebDriverAgent, and platform driver are externally owned resources.
 - Keep one top-level `driver` object across calls. Before reuse, require a session ID and one small live query.
 - A kernel reset or death makes external session state unknown. Reconcile it before replacement.
+- Importing the client proves dependency presence, not full compatibility. A configured AVD, a ready `/status`, or a driver listing is not a live session or target-readiness proof. Setup-only and status-only requests create no session.
 
 ## Task-scoped discovery evidence
 
@@ -17,24 +18,28 @@ existing working installations; discovery is not permission to repair them. Keep
 the following evidence bounded. When it determines Runtime behavior, use the actual AMKernel
 Runtime through `python_exec` or its verified managed interpreter, not an unrelated shell Python.
 
-- **Java:** enumerate explicit `JAVA_HOME`, current `java` on `PATH`, registered
-  macOS JDKs (`/usr/libexec/java_home -V`), then Android Studio bundled JBR in
-  installed application locations. Expand paths and resolve/deduplicate aliases
-  while retaining their origins. Execute every discovered candidate, for example
-  its `bin/java -XshowSettings:properties -version`; record exit status, actual
-  version and `java.home`. A macOS `/usr/bin/java` stub or an existing directory is
-  not a working JDK. Choose the first candidate in that order which actually runs
-  and satisfies the selected driver's observed requirements; record why earlier
-  candidates failed or were unsuitable. Do not declare Java absent after checking
-  only `JAVA_HOME` or `PATH`, and do not install merely because one candidate fails.
-- **Android tools/targets:** inspect explicit SDK settings, executable locations,
-  installed Android Studio SDK locations and conventional user SDK directories.
-  Execute selected `adb`, SDK tools or emulator binaries to verify identity and
-  version; do not infer availability from paths alone. List targets only through
-  an existing authorized ADB service, or request approval to start one first:
-  `adb devices` can start a daemon. Distinguish authorized, offline and unauthorized
-  targets, physical devices and emulators. Never start, unlock, authorize or create
-  a target as a discovery side effect; do not require emulator tools for a physical
+- **Java:** the ordered candidate enumeration, per-candidate execution evidence,
+  alias handling, and selection rules are defined in `references/android-setup.md`.
+  Enumerate every candidate actually considered—task-scoped `JAVA_HOME`, `java` on
+  `PATH`, all registered macOS JDKs (`/usr/libexec/java_home -V`), vendor JDK
+  directories, and Android Studio bundled JBR locations—and execute each
+  candidate's `bin/java`, for example with
+  `-XshowSettings:properties -version`; record exit status, actual version, and
+  `java.home`. A macOS `/usr/bin/java` stub or an existing directory is not a
+  working JDK. A missing `JAVA_HOME` or `PATH` entry is not evidence of absence;
+  never install merely because one candidate failed.
+- **Android tools/targets:** follow `references/android-setup.md` for the
+  target-scoped component route and approvals before this discovery. Inspect
+  explicit SDK settings, executable locations, installed Android Studio SDK
+  locations, and conventional user SDK directories. Execute selected `adb`, SDK
+  tools, or emulator binaries to verify identity and version; do not infer
+  availability from paths alone. List targets only through an existing authorized
+  ADB service, or request approval to start one first: `adb devices` can start a
+  daemon, so never run it or an `adb`-invoking helper as automatic read-only
+  discovery. Distinguish authorized, offline, and unauthorized targets, physical
+  devices and emulators. A configured AVD is neither launched nor booted. Never
+  start, unlock, authorize, boot, or create a target as a discovery side effect; do
+  not require emulator tools, system images, or AVD inventory for a physical
   Android task.
 - **Apple tools/targets:** observe task `DEVELOPER_DIR` and active
   `xcode-select -p`; execute the selected `xcodebuild -version` and `xcrun` tools.
@@ -65,6 +70,14 @@ valid; conservatively retaining unknown is also acceptable. A failed or unknown
 inventory, or a nonempty listing without target-specific evidence, must not be
 converted into known readiness counts.
 
+
+## Run the service with the task environment
+
+Start a task-owned Appium Server outside `python_exec` with the same task-scoped `JAVA_HOME`,
+`ANDROID_HOME` (or selected SDK root), `PATH`, and `APPIUM_HOME` used for discovery and doctor.
+Retain its port, process identity, and logs. Do not restart a shared server or silently start a
+second one. A successful `/status` proves service reachability, not a target session; a
+setup-only request still creates none.
 
 ## Connect
 
