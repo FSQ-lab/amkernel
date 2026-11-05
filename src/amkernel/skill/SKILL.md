@@ -19,8 +19,8 @@ required:
 
 1. Infer the requested outcome and target from the conversation and safe host evidence.
 2. Inspect only the facts needed for the next decision; reuse working installations and targets.
-3. Choose one platform route. Do not present implementation choices the user need not make.
-4. Establish only missing prerequisites, then perform the requested scenario directly.
+3. For Appium work, choose one platform route. Do not present unnecessary implementation choices.
+4. Establish only missing prerequisites, then perform the scenario if one was requested.
 5. Verify the user-visible result and clean up only task-owned temporary resources.
 6. Report the outcome in plain language. If blocked, give one concrete next action.
 
@@ -29,6 +29,57 @@ Do not insert an unrelated smoke scenario before an explicit user scenario. For 
 status-only requests, stop when readiness is established and do not create a session. For an
 end-to-end validation request without a scenario, use one disposable minimal session, one
 harmless live observation, and explicit cleanup.
+
+## Install or repair AMKernel without a platform detour
+
+Installation, environment discovery, dependency provisioning, and MCP diagnosis may use any
+suitable available tool: shell, PowerShell, Windows-native tools, file tools, or a focused SDK
+probe. Setup does not require a working `python_exec` connection. This freedom does not change
+authorization, the uv-managed installer contract, or the supported-platform boundary.
+
+Appium execution is different: session creation, live device/application queries, actions,
+scenario verification, recovery, and `driver.quit()` must use the official Appium Python Client
+through `python_exec`. Host setup and Appium Server supervision are not Appium execution.
+
+For "install AMKernel", "enable it in this project", or "the Agent cannot use it", resolve the
+current project and Coding Agent from the conversation and local evidence. Do not ask for a
+device or application, select an Appium route, or read platform guidance for an AMKernel-only
+request. Check only the installed launcher and the selected client's active project MCP entry.
+Use one bounded `amkernel status --client <client> --project "<project>" --json` when needed;
+use the known managed executable, or locate it with `uv tool dir --bin` if it is not on PATH.
+
+An explicit request to install, enable, or repair the project connection authorizes the
+disclosed in-scope installer change; do not ask for that same approval again. A failure report
+such as "I installed it, but the Agent cannot use it" alone authorizes diagnosis, not persistent
+configuration changes. Explain the concrete correction and obtain approval before applying it.
+
+After disclosing and authorizing the needed changes, use the AMKernel CLI, not a second install
+implementation. Automated install/repair always supplies all four mutation flags. For OMP in
+the current project, the bootstrap command is:
+
+```text
+uvx --from amkernel amkernel install --client omp --scope project --yes --json
+```
+
+Use the observed client (`omp`, `pi`, `codex`, or `copilot`); add `--project "<project>"` when
+not running in that project. Prefer the existing managed launcher with the same install flags
+for project activation or repair. Quote paths for the host shell; PowerShell invokes a quoted
+executable path with `&`. If an older launcher rejects an option, consult that command's help
+once or use the intended installer source; do not discover required flags by repeated failures.
+An intentionally staged Skill is not stale merely because the published Skill differs.
+
+For a missing entry or wrong launcher/project path, once the correct managed launcher and the
+active configuration establish the cause, run the authorized installer correction directly.
+Do not expand a solved configuration problem into package-source inspection, platform checks,
+whole-environment dumps, or a second Agent. Inspect deeper only if correction fails or leaves a
+specific unresolved startup/transport error; obtain the smallest evidence for that error.
+
+Use the install result as the configuration check; do not reflexively repeat install, status,
+and doctor. If the current client can reload its MCP connection, reload and make one harmless
+execution check. Otherwise stop at "configured; reload required" and give the one reload step.
+After reload, verify through the actual Agent connection. A shell/SDK probe may prove server
+execution, but cannot prove that the current Agent has loaded the tool. Never create an Appium
+session merely to validate AMKernel installation.
 
 ## Ask less; act within the request
 
@@ -45,8 +96,9 @@ Ask only when the answer cannot be observed and materially changes the action. I
 - Ask before dependency installation, persistent configuration, privilege elevation, license or
   trust acceptance, signing changes, emulator/simulator creation, device erasure, broad resets,
   or changes outside the requested end state.
-- Before dependency repair, identify the actual Runtime from `python_exec`; explain what will
-  change, cross-project effects, and rollback. The managed Runtime is not the project `.venv`.
+- Before dependency repair, identify the actual managed Runtime from observed MCP/CLI evidence
+  or `python_exec` when available; explain changes, cross-project effects, and rollback.
+  Setup may use that Runtime's verified interpreter; the project `.venv` is not the Runtime.
 
 Do not expose manifests, hashes, source acquisition, internal handoffs, or raw diagnostic dumps
 unless their verification fails or the user requests technical evidence.
@@ -99,7 +151,8 @@ Check only layers that can block the requested target:
 - Appium Server can start in the selected existing global or explicitly requested local mode.
 - The selected UiAutomator2, XCUITest, or Mac2 driver is installed and its relevant doctor checks pass.
 - The status endpoint is ready and the intended device, simulator, or desktop target is usable.
-- The actual `python_exec` Runtime can import a compatible Appium Python Client and Selenium.
+- The actual AMKernel Runtime can import a compatible Appium Python Client and Selenium;
+  setup may check this through `python_exec` or the verified managed interpreter.
 
 A server without the selected driver is not platform-ready. A physical Android target does not
 require emulator inventory; an emulator does not require USB-device evidence. Keep physical

@@ -84,6 +84,14 @@ amkernel uninstall
 
 `amkernel uninstall --global` is explicit because it affects every activated project. AMKernel does not itself install or supervise Appium Server, platform drivers, SDKs, devices, simulators, or WebDriverAgent; the installed Skill guides the Agent through the relevant prerequisites when a mobile experiment needs them.
 
+Agent setup and MCP repair may use shell, PowerShell, native host tools, or focused diagnostic
+probes; they do not require an already-working `python_exec` connection. Appium session and
+device/application interaction code runs through the official Python Client in `python_exec`.
+For a missing or incorrect project MCP entry, diagnose the launcher and active configuration,
+apply the authorized correction through the same installer with the complete non-interactive
+flags, then reload the Coding Agent if required. A successful CLI or SDK probe proves only its
+own check; verify the actual Agent connection after reload before calling it ready for execution.
+
 ## Share feedback / 提交反馈
 
 AMKernel needs real usage evidence, including unsuccessful experiments. Open a [GitHub Issue](https://github.com/FSQ-lab/amkernel/issues/new/choose) and describe:
