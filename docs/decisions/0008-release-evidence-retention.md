@@ -44,6 +44,8 @@ The immutable [`v0.1.2` release](https://github.com/FSQ-lab/amkernel/releases/ta
 
 `evidence/archive-v0.1.2.json` is the offline provenance boundary. It records the immutable release and all three asset identities, preserves every original member path, size, and digest, and classifies each member as either retained in Git or release-only. Tests verify every retained file byte-for-byte against that index and reject reintroduced raw-output paths. Historical commits remain unchanged.
 
+This index covers the original release corpus, not evidence added after that release. Later normalized decision and verification records may be retained in Git without changing the immutable index; they do not exempt any original release-only path from the raw-output exclusion.
+
 ## Consequences
 
 Published raw evidence remains durable and content-addressed without increasing every future checkout. The release grows by one compressed archive and one manifest. The `v0.1.2` release must not be published until authoritative CI has generated and validated both assets from the exact release commit.

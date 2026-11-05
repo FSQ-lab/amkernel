@@ -282,9 +282,9 @@ def test_post_release_evidence_matches_immutable_archive_index() -> None:
         for path in completed.stdout.split("\0")
         if path and path != ARCHIVE_INDEX.relative_to(ROOT).as_posix()
     }
-    present = {relative: evidence_root / relative for relative in tracked}
+    present = {relative: evidence_root / relative for relative in tracked & retained.keys()}
     assert present.keys() == retained.keys()
-    assert not (present.keys() & archived.keys())
+    assert not (tracked & archived.keys())
     for relative, path in present.items():
         expected = retained[relative]
         assert path.stat().st_size == expected["sizeBytes"]
