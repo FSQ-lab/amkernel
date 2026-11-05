@@ -530,6 +530,18 @@ wheels, baseline SDK overprovisioning failure and exercised qualification limits
 JDK/SDK installation, device readiness, Appium session or broader platform qualification is
 established by this synthetic run; #98 physical qualification remains separate.
 
+### Android-only Skill deduplication (#130)
+
+Android provisioning/readiness now lives in `android-setup.md`, main Skill routing points to
+that authority, and shared Appium service supervision/ownership lives in `amkernel-appium.md`.
+The existing rules, Apple-specific branches, pinned official inputs, core and test oracle are
+unchanged. Focused regressions passed 99 tests and self-check passed 16 checks; independent
+source review found no blocking findings. A repeated Pixel 6 session/query/quit smoke and
+owned-resource restoration passed. See `docs/experiments/appium-agent-behavior.md` §17 for
+exercised evidence and its ordinary-functional, non-qualification limits.
+The deduplicated installed-wheel native Agent smoke also passed all six unchanged scenarios,
+with user/client isolation unchanged.
+
 ## Acceptance criteria
 
 - [x] M3 and S3-001 through S3-060 are registered in GitHub Project #2 with exact dependencies and work-item contracts.

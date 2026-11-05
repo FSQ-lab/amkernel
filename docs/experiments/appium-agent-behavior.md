@@ -936,3 +936,29 @@ The observed full-suite run passed 699 tests and failed two existing release rep
 guards: tracked retained evidence did not match `evidence/archive-v0.1.2.json`, and that index
 was ignored. No unrelated retained evidence, ignore rules or Git index was changed, and those
 failures were not rerun to confirm. The final focused gates above do not claim a clean full suite.
+
+## 17. Android-only Skill deduplication (#130)
+
+Android provisioning and target readiness now have one procedural authority in
+`android-setup.md`; the main Skill and Appium seam retain routing instead of repeating
+Java/SDK/ADB procedures. Generic service supervision, identity, shared-server conflict and
+owned cleanup live in `amkernel-appium.md`; Android keeps its environment/executable seam.
+The three Skill files add 50 lines and remove 103, a net reduction of 53 lines.
+Apple branches, pinned official source, production Python and test/oracle code are unchanged.
+
+The existing focused regression run passed 99 tests, fixture/oracle self-check passed 16 checks,
+and Ruff check/format check passed. Independent source review found no blocking findings.
+A repeated Pixel 6 (Android 17/API 37) stdio MCP smoke created a real UiAutomator2 session,
+queried launcher package/activity and 1080 × 2400 dimensions, quit, and confirmed rejection
+of the deleted session; all four `python_exec` calls completed with a surviving shared Runner.
+Afterward, the three hidden API policies returned to their original `null` values, forwarding
+was empty, and the owned Runner, UiAutomator2 process and Appium server exited. Existing ADB
+and helper packages were retained. This is ordinary real-device functional evidence, not #98
+qualification or proof that the current Agent's MCP configuration was activated.
+
+The deduplicated installed-wheel native Copilot run passed all six unchanged scenarios with
+user/client isolation unchanged. Wheel SHA-256:
+`8c6e03464baf80f494bd3a528d2c0003dde58ba54c966a332f77ef1da12c9d43`.
+Normalized local reports are `/tmp/amkernel-android-dedup-native.json` and
+`/tmp/amkernel-android-dedup-selfcheck.json` (temporary, not durable raw evidence).
+

@@ -101,13 +101,10 @@ Ask only when the answer cannot be observed and materially changes the action. I
   or `python_exec` when available; explain changes, cross-project effects, and rollback.
   Setup may use that Runtime's verified interpreter; the project `.venv` is not the Runtime.
 - After that scoped approval, perform the disclosed installation yourself in the same task and
-  verify each layer; do not hand the technical setup back to the user. For Android,
-  `references/android-setup.md` defines the disclosure fields and install routes.
+  verify each layer; do not hand the technical setup back to the user.
 
 Do not expose manifests, hashes, source acquisition, internal handoffs, or unrelated raw
-diagnostic dumps unless their verification fails or the user requests technical evidence. Retain
-and report the raw doctor/helper required-fix findings needed for Android applicability; never
-replace them with a filtered result described as an official pass.
+diagnostic dumps unless their verification fails or the user requests technical evidence.
 
 ## Choose one route
 
@@ -145,12 +142,11 @@ relative helpers from that source checkout. Do not run provenance verification a
 precondition for an already-ready scenario that does not consume official guidance.
 
 Use the routed official skill's checks and completion criteria for the scope those criteria
-actually cover; do not invent a parallel driver or server checklist. For Android, read
-`references/android-setup.md` before executing that official setup skill: its target-scoped
-applicability rules decide which official checks block this task, while raw doctor and helper
-output stays raw and is never reported as an official pass. iOS/tvOS and Mac2 applicability is
-unchanged. Read only the relevant sections of `references/amkernel-appium.md` for AMKernel's
-candidate selection, connection, bounded evidence, conversation targeting, and cleanup seam.
+actually cover; do not invent a parallel driver or server checklist. Apply the Android
+setup route's applicability rules before executing its official checks; iOS/tvOS and Mac2
+applicability is unchanged.
+Read only the relevant sections of `references/amkernel-appium.md` for AMKernel's connection,
+bounded evidence, conversation targeting, and cleanup seam.
 If verified skills do not cover the observed behavior, use primary official documentation:
 Appium installation and extension management at `appium.io`, the Appium Python Client and
 UiAutomator2 repositories under `github.com/appium`, XCUITest at
@@ -169,21 +165,16 @@ Check only layers that can block the requested target:
 - The actual AMKernel Runtime can import a compatible Appium Python Client and Selenium;
   setup may check this through `python_exec` or the verified managed interpreter.
 
-A server without the selected driver is not platform-ready. For Android, select components,
-disclose changes, and classify raw official results through `references/android-setup.md`. A
-physical Android target does not require emulator, system-image, or AVD inventory; an emulator
-does not require USB-device evidence. Keep physical devices and simulators separate. A configured
-AVD is not a launched, booted, or usable target. A ready `/status`, a driver listing, a successful
-client import, or an authorized `adb devices` entry is not a live session or target-compatibility
-proof. A path, package listing, device listing, or unrelated shell Python is not execution
-evidence.
+A server without the selected driver is not platform-ready. Android component selection,
+authorization, raw-check applicability, and target readiness belong to `references/android-setup.md`.
+Keep physical devices and simulators separate. A status endpoint, driver/client listing, or
+target inventory is not live-session, target-compatibility, or execution proof.
 
-Use task-scoped `JAVA_HOME`, `PATH`, `ANDROID_HOME`, `APPIUM_HOME`, or `DEVELOPER_DIR` selections
-and pass the same environment to tools, doctor, and the Appium server. Persist an environment
-variable only after the disclosed, approved change; do not edit profiles merely because a variable
-is unset. Do not switch global `xcode-select`, start ADB merely for discovery, launch an emulator,
-or accept host/device permission prompts without approval. Supervise Appium Server outside
-`python_exec` and retain its identity and logs; never start it as a blocking cell.
+Use the selected task environment consistently for tools, doctor, and the Appium server.
+Persist environment variables only after the disclosed, approved change; do not edit profiles
+merely because a variable is unset. Do not switch global `xcode-select` or accept host/device
+permission prompts without approval. Service supervision and ownership are defined in
+`references/amkernel-appium.md`.
 
 Inspect the selected package metadata in the actual Runtime. Evaluate `Requires-Python` and each
 environment-marker-qualified `Requires-Dist` only when its marker applies there; compare official

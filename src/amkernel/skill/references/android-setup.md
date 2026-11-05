@@ -10,17 +10,12 @@ reference adds no server, driver, SDK wrapper, MCP tool, or AMKernel core surfac
 
 ## Boundary
 
-- Use this route on the currently qualified AMKernel hosts: Ubuntu and macOS with CPython
-  3.11–3.13. Windows is not a supported AMKernel host. Official Android guidance may include
-  Windows commands, but that is not AMKernel Windows qualification; do not present a Windows
-  Runtime as supported or claim Windows Android readiness.
-- Keep the pinned official source, manifest, archive, and verifier unchanged. Verify official
-  skills when a route is about to consume them; do not treat this reference as official content.
-- A setup-only or status-only request stops at readiness and creates no Appium session. A live
-  session, live query, action, or `driver.quit()` only occurs for an explicitly requested scenario
-  and only through the official client in `python_exec`.
-- Discovery is read-only. Installation, license acceptance, persistence, emulator work, ADB
-  start-up, and device authorization require the scoped approval described below.
+Follow the supported-host and official-source verification boundaries in `SKILL.md`; this
+reference is AMKernel-owned guidance, not pinned official content. The execution and lifecycle
+contract is in `amkernel-appium.md`; setup-only and status-only requests create no session.
+
+Discovery is read-only. Installation, license acceptance, persistence, emulator work, ADB
+start-up, and device authorization require the scoped approval described below.
 
 ## Route
 
@@ -130,11 +125,8 @@ print(md.metadata("selenium")["Requires-Python"])
 print(md.requires("selenium"))
 ```
 
-Also exercise the actual imports and, when a driver route is selected, inspect the selected
-driver's declared ranges as support evidence. Evaluate `Requires-Python` and each
-environment-marker-qualified requirement only when its marker applies in this Runtime. Use the
-classification labels defined in `SKILL.md`; do not upgrade or downgrade merely to silence a
-warning. A successful import proves dependency presence, not full compatibility.
+Exercise the actual imports and inspect the selected driver's declared ranges as support evidence.
+Evaluate and classify dependencies under `SKILL.md`'s relevant-readiness rules.
 
 ### Repair
 
@@ -184,10 +176,11 @@ audit every actually considered candidate in this order, retaining its origin:
    original location.
 3. macOS registered JDKs from `/usr/libexec/java_home -V`, plus JDK homes under
    `/Library/Java/JavaVirtualMachines` and `$HOME/Library/Java/JavaVirtualMachines`.
-4. Android Studio bundled JBR: `/Applications/Android Studio.app/Contents/jbr/Contents/Home`,
+4. Known vendor JDK homes and retained task-managed installation paths.
+5. Android Studio bundled JBR: `/Applications/Android Studio.app/Contents/jbr/Contents/Home`,
    `$HOME/Applications/Android Studio.app/Contents/jbr/Contents/Home`, `$HOME/android-studio/jbr`,
    `/opt/android-studio/jbr`, `/usr/local/android-studio/jbr` when those installations exist.
-5. On Linux, distribution JDK homes under `/usr/lib/jvm`, plus any JDK listed by
+6. On Linux, distribution JDK homes under `/usr/lib/jvm`, plus any JDK listed by
    `update-alternatives --list java`.
 
 For each candidate, execute both binaries and record exit status, actual version, and
@@ -505,37 +498,14 @@ extension or package does not undo accepted SDK licenses or other external state
 
 ## Service environment
 
-Start a task-owned Appium Server outside `python_exec`, non-blocking, with the same environment
-used for discovery and doctor:
+Follow `amkernel-appium.md#run-the-service-with-the-task-environment` for service supervision,
+readiness evidence, shared-server reuse, ownership, and cleanup.
 
-```bash
-JAVA_HOME="$JAVA_HOME" \
-ANDROID_HOME="$ANDROID_HOME" \
-APPIUM_HOME="${APPIUM_HOME:-$HOME/.appium}" \
-PATH="$JAVA_HOME/bin:$ANDROID_HOME/platform-tools:$PATH" \
-appium --address 127.0.0.1 --port "$PORT" --log "$TASK_LOG"
-```
-
-In explicitly requested local mode, run `npx --no-install appium` from the project root instead
-of the global executable. Use a reviewed loopback URL without credentials. Use the exact observed
-Node installation and `appium` entry point: include their bin directories on `PATH` or invoke the
-absolute `appium` path, so the server does not resolve a different Node/Appium pair than the one
-installed and checked.
-
-Retain the PID, port, log path, and environment identity. Wait boundedly for the service, then
-check the status endpoint and the selected driver evidence:
-
-```bash
-curl -fsS "http://127.0.0.1:$PORT/status"
-```
-
-A successful `/status` or a server log entry proves service readiness only; it does not prove
-that a target is usable or that an Appium session exists. If a server already exists, use it only when its environment and driver identity match;
-do not restart or mutate a shared server. If it does not match, do not install into its
-`APPIUM_HOME` or restart it to fit this task: use an isolated task-owned server only when that will
-not collide with its sessions/devices, otherwise report the shared-service conflict. Stop only the
-task-owned server, and remember that stopping the server does not clean a remote session or target
-state.
+Pass the selected `JAVA_HOME`, `ANDROID_HOME`, `APPIUM_HOME`, and task `PATH` from discovery and
+doctor. Use the exact observed Node installation and Appium entry point: include their bin
+directories on `PATH` or invoke the absolute Appium path, so startup does not select a different
+Node/Appium pair. In explicitly requested local mode, run `npx --no-install appium` from the
+project root instead of the global executable.
 
 ## ADB and target readiness
 
