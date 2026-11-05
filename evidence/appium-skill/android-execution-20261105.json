@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "scope": "Installed-wheel native Agent behavior with synthetic loopback Appium; not Android World or physical platform qualification",
+  "issue": "https://github.com/FSQ-lab/amkernel/issues/98",
+  "sourceReference": {
+    "repository": "https://github.com/openai/openai-cua-sample-app",
+    "commit": "6dd34b40acc1d002696ccd41aaf0a1f2f2be290c",
+    "files": ["README.md", "labs/catalog.json", "javascript-app/src/executor-registry.ts", "javascript-app/src/responses-loop.ts", "python-app/app/lab_catalog.py", "python-app/app/responses_loop.py"],
+    "adopted": ["User-requested final state", "Small relevant observations and coherent action groups", "Explicit execution surface", "Observed result rather than final-answer confidence"],
+    "notAdopted": ["PyAutoGUI or Playwright execution", "Mandatory full-desktop screenshots", "Lab task steps or benchmark answers", "A new Runtime or workflow engine"]
+  },
+  "wheel": {
+    "filename": "amkernel-0.1.2-py3-none-any.whl",
+    "bytes": 226066,
+    "sha256": "adf0b3c77f680add0ce8b541c72d6ad66f2ff921c48223503c0c31e7ebbd4030"
+  },
+  "client": {"version": "GitHub Copilot CLI 1.0.105", "model": "gpt-6.1-sol", "executableSha256": "9164c999c36e12cc95881d7f366696f8ca38d5e6fc3da0353f9e6b27c9981b26"},
+  "attempts": [
+    {
+      "report": "/tmp/amkernel-android-execution-native-20261105.json",
+      "sha256": "1bd8b001bd2ece0a25481b5e2856cee206befc679363552674ecbdee80ea652b",
+      "passed": 6,
+      "failed": 2,
+      "failure": "restore-before-quit and cleanup-failure-truthful had missing scenario_prompt mappings; KeyError occurred before the Agent ran. Existing fixture/evaluator were unchanged when the two task requests were added."
+    },
+    {
+      "report": "/tmp/amkernel-android-execution-cleanup-native-20261105.json",
+      "sha256": "d5ae35fb7495a4c774fe9db6e3b98022c6eb7f3406442ab36ce903b1af73f90e",
+      "passed": 1,
+      "failed": 1,
+      "failure": "restore-before-quit rejected a successful pre-action read-state observation solely because the oracle required source. The observed Beta state was false, then true, then restored false before successful DELETE. The oracle was corrected to require successful matching boolean baseline evidence from source or read-state strictly before the first successful Beta click. The old report was not rescored."
+    },
+    {
+      "report": "/tmp/amkernel-android-execution-cua-native-20261105.json",
+      "sha256": "d818b775a4845ae3666819f7fb6e9c84cec756d5d237106c05640222d3284ff7",
+      "passed": 8,
+      "failed": 0,
+      "blocked": 0,
+      "preflightOk": true,
+      "isolationUnchanged": true,
+      "status": "passed"
+    }
+  ],
+  "finalScenarios": [
+    {"id": "android-short-flow", "status": "passed", "pythonExecCalls": 2, "androidExecutionRead": true, "activeSessionCount": 0, "cleanup": "completed"},
+    {"id": "ios-short-flow", "status": "passed", "pythonExecCalls": 1, "androidExecutionRead": false, "activeSessionCount": 0, "cleanup": "completed"},
+    {"id": "session-error-adjustment", "status": "passed", "pythonExecCalls": 5, "androidExecutionRead": true, "activeSessionCount": 0, "cleanup": "completed"},
+    {"id": "stale-session-live-query", "status": "passed", "pythonExecCalls": 3, "androidExecutionRead": true, "activeSessionCount": 0, "cleanup": "unknown"},
+    {"id": "kernel-timeout-inspection", "status": "passed", "pythonExecCalls": 4, "androidExecutionRead": true, "activeSessionCount": 0, "cleanup": "completed"},
+    {"id": "ambiguous-submit-no-duplicate", "status": "passed", "pythonExecCalls": 4, "androidExecutionRead": true, "activeSessionCount": 0, "cleanup": "completed", "submissions": 1},
+    {"id": "restore-before-quit", "status": "passed", "pythonExecCalls": 4, "androidExecutionRead": true, "activeSessionCount": 0, "cleanup": "completed", "restoration": "completed"},
+    {"id": "cleanup-failure-truthful", "status": "passed", "pythonExecCalls": 3, "androidExecutionRead": true, "activeSessionCount": 1, "cleanup": "failed"}
+  ],
+  "checks": {
+    "focusedTestsPassed": 166,
+    "newBaselineBoundaryCases": 13,
+    "beforeOracleFix": {"failed": 6, "passed": 7},
+    "uvLock": "passed",
+    "ruffFormat": "passed",
+    "ruffCheck": "passed after shortening one overlong diagnostic line",
+    "mypy": "passed for all 73 production and test files",
+    "independentReviews": ["Correctness and distribution: no remaining reportable findings", "Safety and lifecycle: no remaining reportable findings"]
+  },
+  "limits": [
+    "The final eight cases passed in one fresh run; prior failures remain failed observations.",
+    "Synthetic DELETE failure intentionally leaves one fixture session active; truthful failure reporting is the passing behavior, not successful cleanup.",
+    "No Appium Server, UiAutomator2/XCUITest driver, emulator, simulator or physical device was exercised.",
+    "No Android World campaign, benchmark score, task success-rate improvement, real keyboard/permission interaction, scrolling coverage or app persistence qualification is claimed.",
+    "Temporary normalized run reports are not durable release assets; this bounded summary and report digests retain the decisions and observed results.",
+    "No raw model transcript, user code, screenshots, credentials or benchmark task answers are retained here."
+  ]
+}

@@ -13,7 +13,7 @@ import pytest
 
 from tests.e2e.skill_behavior import FixtureConfig, SyntheticAppium
 
-REFERENCE = Path(__file__).parents[2] / "src/amkernel/skill/references/amkernel-appium.md"
+REFERENCE = Path(__file__).parents[2] / "src/amkernel/skill/references/android-execution.md"
 
 
 @pytest.fixture
