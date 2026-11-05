@@ -580,59 +580,24 @@ resources under the existing recovery/cleanup contract. On return, re-check curr
 service state and the interrupted step's prerequisites before continuing. Preserve unchanged
 approval scope; disclose and obtain approval for any newly required effects.
 
-## Appium service and startup
+## Appium service and authorized connection
 
-Start a task-owned Appium Server outside `python_exec` with the selected `APPIUM_HOME`,
-`DEVELOPER_DIR`, Node, Appium entry point, and driver. Keep its process identity, port, environment,
-and log. Wait boundedly, then check `/status`. Reuse an existing server only when its environment
-and driver identity match; do not restart or mutate it. If it does not match, use a disclosed
-isolated task-owned server only when it will not collide with existing sessions or devices.
+Read and apply `amkernel-appium.md` sections **Runtime contract**, **Run the service with the
+task environment**, **Connect**, **Bound operations by observable failure states**, and
+**Cleanup**. They own Client execution through `python_exec`, server supervision and reuse,
+execution-result/liveness checks, interrupted-session recovery, and task-owned cleanup. The
+request scope above still governs whether service startup, WDA launch, or session creation is
+authorized.
 
-Check readiness with a bounded request against the task server's actual loopback URL:
+For iPhone, use the selected XCUITest driver with the same `APPIUM_HOME` and `DEVELOPER_DIR`
+used for discovery and doctor. Use `XCUITestOptions` with the observed device identifier and only
+capabilities applicable to the selected WDA route. Derive Team, Bundle ID, and WDA URL values from
+observed evidence or the user's selection, never guesses.
 
-```bash
-curl --fail --silent --show-error --max-time 5 "http://127.0.0.1:<port>/status"
-```
-
-A successful `/status` proves service reachability, not target readiness, WDA launch, or a session.
-For setup-only and status-only requests, stop without creating a session.
-
-### Create a session only for authorized validation or a scenario
-
-Session creation, live queries, actions, verification, recovery, and `driver.quit()` use the
-official Appium Python Client through `python_exec`:
-
-```python
-from appium import webdriver
-from appium.options.ios import XCUITestOptions
-
-options = XCUITestOptions().load_capabilities({
-    "platformName": "iOS",
-    "appium:automationName": "XCUITest",
-    "appium:udid": "<observed device identifier>",
-    # Add only the capabilities applicable to the selected WDA route.
-})
-driver = webdriver.Remote("http://127.0.0.1:4723", options=options)
-```
-
-Populate target identifiers and applicable signing/WDA values from observation or the user's
-selection. Never invent a UDID, Team, Bundle ID, or WDA URL.
-
-The first launch may build and install WDA and may take minutes. Bound the call and use the
-driver-documented launch/connection timeouts rather than an unlimited wait. Do not put session
-creation, an expected user action, and cleanup into one unobservable call. When a user prompt is
-expected, stop after the creation attempt or at the observed prompt, give one action, and resume
-with a separate bounded observation. Do not poll a stable precondition.
-
-After every call, inspect `status` and `kernelState`:
-
-- If the Kernel survived and `driver` exists, make one small relevant live query before
-  continuation.
-- A nonempty local `session_id` alone proves nothing; a failed live query leaves no verified usable
-  session.
-- A timeout does not prove that the remote session or WDA does not exist.
-- Kernel death loses the Python namespace. Do not describe former objects as resumable or rebuild
-  the Kernel implicitly.
+If the selected route requires WDA build/install, disclose those effects before launching it.
+That launch can take minutes; use the driver's documented launch/connection timeouts. Keep
+expected phone or Mac security prompts separate from creation and cleanup: pause at the observed
+prompt, give one action, then resume with a bounded observation. Do not poll a stable precondition.
 
 For the minimal validation, perform one harmless current-screen or page query. Do not click a
 business action, submit a form, or reset app data. If the home screen is needed as a launch target,
@@ -668,30 +633,22 @@ whole-environment reset. Preserve shared installations and external state.
 
 ### Reconcile ambiguous sessions and resources
 
-- If the Appium log or current state shows an existing session that this task may not own, do not
-  delete it and do not blindly create a second session. Identify ownership from the Appium service
-  logs, task-created identifiers, and current endpoint state.
-- If the Kernel died, external state is unknown. Reconcile through the task-owned server log and
-  endpoint before deciding whether another attempt is safe.
-- If the device, port, or Appium session is genuinely in use by another task, report the shared
-  conflict and block. Do not preempt the device or clear all sessions.
-- Create another session only after the previous attempt is confirmed ended, relevant resources are
-  verified, and any required user safety action is complete.
+Apply the shared interrupted-session and cleanup rules. If the device, port, or session is in use
+by another task, or ownership is unknown, stop and establish ownership from the server log and
+task-created identities; do not preempt the device or clear sessions. Retry only after the previous
+attempt is confirmed ended, relevant resources are verified, and any required user safety action
+is complete.
 
 ### Cleanup
 
 - `driver.quit()` closes the Appium session. Success does not prove the WDA process disappeared.
 - Do not uninstall WDA, delete a profile, revoke trust, or disable Developer Mode to make the
   environment look "clean". Preserve the user's requested setup result.
-- Stop only task-owned Appium Server, tunnel, port forward, and temporary device-service processes.
-  Leave shared services and the user's existing mechanism untouched.
 - Delete only task-owned disposable JSON, logs, profile scratch and build staging. Do not delete
   the `.app`, `.xctestrun`, product layout or derived-data path that the selected prepared WDA route
   still needs. Retain them in the disclosed user-owned location, report that location/lifetime and
   preserve the user's setup deliverables; keep only non-sensitive facts in the report.
 - Do not add a persistent launch agent, background daemon, or auto-start service.
-- Report the requested result, live-session cleanup, and server/tunnel cleanup separately. A
-  successful result with failed cleanup is not fully cleaned.
 
 ## Verification and reporting
 
