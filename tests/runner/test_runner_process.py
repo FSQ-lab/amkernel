@@ -818,3 +818,316 @@ def test_hostile_exception_metaclass_never_reaches_formatter(
     assert failed.outcome == "failed"
     assert failed.error is not None
     assert runner.execute("'alive'").result == "alive"
+
+
+_WEBDRIVER_ERROR_FIXTURE = """
+hooks = []
+class WebDriverException(Exception):
+    __module__ = 'selenium.common.exceptions'
+    def __init__(self, msg=None):
+        self.msg = msg
+        self.screen = 'SCREEN_SECRET'
+        self.stacktrace = ['STACK_SECRET']
+    def __str__(self):
+        hooks.append('str')
+        raise RuntimeError('rendering must not run')
+    def __repr__(self):
+        hooks.append('repr')
+        raise RuntimeError('rendering must not run')
+def webdriver_error(name, msg):
+    cls = type(name, (WebDriverException,), {'__module__': 'selenium.common.exceptions'})
+    return cls(msg)
+"""
+
+
+@pytest.mark.parametrize(
+    "name",
+    [
+        "TimeoutException",
+        "StaleElementReferenceException",
+        "NoSuchElementException",
+        "UnknownMethodException",
+        "InvalidSessionIdException",
+        "SessionNotCreatedException",
+    ],
+)
+def test_recognized_webdriver_errors_preserve_inert_message(
+    runner: RunnerProcess,
+    name: str,
+) -> None:
+    failed = runner.execute(
+        _WEBDRIVER_ERROR_FIXTURE + f"\nraise webdriver_error({name!r}, 'Element is not visible')"
+    )
+    assert failed.outcome == "failed"
+    assert failed.error is not None
+    assert failed.error.type == f"selenium.common.exceptions.{name}"
+    assert failed.error.message == "Element is not visible"
+    trace = "\n".join(failed.error.traceback)
+    assert "Element is not visible" in trace
+    assert "SCREEN_SECRET" not in trace and "STACK_SECRET" not in trace
+    assert str(runner.working_directory) not in trace
+    assert "/" not in trace and "\\" not in trace
+    assert runner.execute("hooks").result == []
+
+
+@pytest.mark.parametrize(
+    "message",
+    [
+        "Session ID: private-id",
+        "password: very private phrase",
+        "Bearer abc",
+        "Authentication failed: Basic dXNlcjpwYXNz",
+        "Basic YTpi",
+        "capabilities: private device",
+        "screenshot: encoded",
+        "page source: private content",
+        "failed at /home/private/file.py",
+        "failed at C:\\private\\file.py",
+        "https://user:password@example.test/session/private-id",
+        "<node text='private' />",
+        '{"nested": "private"}',
+        "01234567-89ab-cdef-0123-456789abcdef",
+        "a" * 24,
+        "x" * 1_000_000,
+        "private\x00payload",
+    ],
+)
+def test_webdriver_message_sensitive_and_size_boundaries(
+    runner: RunnerProcess,
+    message: str,
+) -> None:
+    failed = runner.execute(
+        _WEBDRIVER_ERROR_FIXTURE + f"\nraise webdriver_error('TimeoutException', {message!r})"
+    )
+    assert failed.outcome == "failed"
+    assert failed.error is not None
+    assert "omitted" in failed.error.message
+    wire = json.dumps({"message": failed.error.message, "traceback": failed.error.traceback})
+    assert message not in wire
+    assert "SCREEN_SECRET" not in wire and "STACK_SECRET" not in wire
+    assert len(failed.error.message.encode()) <= 2048
+    assert sum(len(line.encode()) for line in failed.error.traceback) <= 7100
+    assert runner.execute("hooks").result == []
+
+
+@pytest.mark.parametrize(
+    "setup",
+    [
+        "del error.msg",
+        "error.msg = {'nested': 'private'}",
+        "error.msg = None",
+        "error.msg = HostileStr('private')",
+        "type(error).msg = property(lambda self: hook('property'))",
+        "error = type('TimeoutException', (WebDriverException,), "
+        "{'__module__': 'selenium.common.exceptions', "
+        "'__dict__': property(lambda self: hook('dict'))})('Element is not visible')",
+        "del error.msg\nerror.__dict__[HostileKey()] = 'private'",
+        "error.__dict__.update({str(i): 'private' for i in range(20)})",
+    ],
+)
+def test_malformed_webdriver_fields_never_invoke_hooks(
+    runner: RunnerProcess,
+    setup: str,
+) -> None:
+    failed = runner.execute(
+        _WEBDRIVER_ERROR_FIXTURE
+        + """
+def hook(name):
+    hooks.append(name)
+    raise RuntimeError('hook must not run')
+class HostileStr(str):
+    def __str__(self): return hook('str-value')
+    def __repr__(self): return hook('repr-value')
+    def __iter__(self): return hook('iter-value')
+class HostileKey:
+    def __hash__(self): return hash('msg')
+    def __eq__(self, other): return hook('key-equality')
+error = webdriver_error('TimeoutException', 'Element is not visible')
+"""
+        + setup
+        + "\nraise error"
+    )
+    assert failed.outcome == "failed"
+    assert failed.error is not None
+    assert failed.error.type == "selenium.common.exceptions.TimeoutException"
+    assert runner.execute("hooks").result == []
+
+
+def test_webdriver_chain_remains_bounded_private_and_alive(runner: RunnerProcess) -> None:
+    failed = runner.execute(
+        _WEBDRIVER_ERROR_FIXTURE
+        + """
+error = webdriver_error('TimeoutException', 'Element is not visible')
+for i in range(80):
+    following = webdriver_error('StaleElementReferenceException', 'password: private')
+    following.__cause__ = error
+    error = following
+raise error
+"""
+    )
+    assert failed.outcome == "failed"
+    assert failed.error is not None
+    trace = "\n".join(failed.error.traceback)
+    assert "truncated" in trace
+    assert "password" not in trace and "private" not in trace
+    assert len(trace.encode()) <= 7100
+    assert runner.execute("hooks").result == []
+
+
+@pytest.mark.parametrize(
+    "message, expected",
+    [
+        ("", ""),
+        ("a " * 1024, ("a " * 1024).strip()),
+        ("a " * 1024 + "a", "omitted"),
+        ("元素 " * 600, None),
+        ("Element is not visible\nAdditional ordinary detail", "Element is not visible"),
+    ],
+)
+def test_webdriver_exact_text_boundaries(
+    runner: RunnerProcess,
+    message: str,
+    expected: str | None,
+) -> None:
+    failed = runner.execute(
+        _WEBDRIVER_ERROR_FIXTURE + f"\nraise webdriver_error('TimeoutException', {message!r})"
+    )
+    assert failed.outcome == "failed"
+    assert failed.error is not None
+    if expected == "omitted":
+        assert "omitted" in failed.error.message
+    elif expected is not None:
+        assert failed.error.message == expected
+    else:
+        assert failed.error.message.startswith("元素 ")
+    assert len(failed.error.message.encode()) <= 2048
+    assert runner.execute("hooks").result == []
+
+
+def test_arbitrary_exception_descriptors_and_hooks_are_not_executed(runner: RunnerProcess) -> None:
+    failed = runner.execute("""
+hooks = []
+def hook(name):
+    hooks.append(name)
+    raise RuntimeError('must not run')
+class EvilMeta(type):
+    __module__ = property(lambda cls: hook('module'))
+class Evil(Exception, metaclass=EvilMeta):
+    __str__ = property(lambda self: hook('str descriptor'))
+    __traceback__ = property(lambda self: hook('traceback descriptor'))
+    __cause__ = property(lambda self: hook('cause descriptor'))
+    def __repr__(self): return hook('repr')
+    def __json__(self): return hook('json')
+    def __getattribute__(self, name): return hook('attribute')
+raise Evil()
+""")
+    assert failed.outcome == "failed"
+    assert failed.error is not None
+    assert "custom __str__ omitted" in failed.error.message
+    assert runner.execute("hooks").result == []
+
+
+@pytest.mark.parametrize("chain_field", ["__cause__", "__context__"])
+def test_webdriver_chain_redacts_builtin_context(runner: RunnerProcess, chain_field: str) -> None:
+    failed = runner.execute(
+        _WEBDRIVER_ERROR_FIXTURE
+        + f"""
+error = webdriver_error('TimeoutException', 'Element is not visible')
+error.{chain_field} = ValueError('password: private phrase')
+raise error
+"""
+    )
+    assert failed.error is not None
+    assert "private phrase" not in "\n".join(failed.error.traceback)
+    assert runner.execute("hooks").result == []
+
+
+def test_appium_no_such_context_uses_inert_message(runner: RunnerProcess) -> None:
+    failed = runner.execute(
+        _WEBDRIVER_ERROR_FIXTURE
+        + """
+class NoSuchContextException(WebDriverException):
+    __module__ = 'appium.common.exceptions'
+raise NoSuchContextException('Requested context is not available')
+"""
+    )
+    assert failed.error is not None
+    assert failed.error.type == "appium.common.exceptions.NoSuchContextException"
+    assert failed.error.message == "Requested context is not available"
+    assert runner.execute("hooks").result == []
+
+
+@pytest.mark.parametrize("chain_field", ["__cause__", "__context__"])
+def test_webdriver_chain_omits_syntax_path_and_source(
+    runner: RunnerProcess,
+    chain_field: str,
+) -> None:
+    failed = runner.execute(
+        _WEBDRIVER_ERROR_FIXTURE
+        + f"""
+error = webdriver_error('TimeoutException', 'Element is not visible')
+error.{chain_field} = SyntaxError('invalid syntax',
+    ('/home/private/config.py', 1, 1, "password = 'private'"))
+raise error
+"""
+    )
+    assert failed.error is not None
+    trace = "\n".join(failed.error.traceback)
+    assert "SyntaxError" in trace
+    assert "/home/private" not in trace and "password" not in trace
+    assert runner.execute("hooks").result == []
+
+
+@pytest.mark.parametrize("key_name", ["msg", "__str__"])
+@pytest.mark.parametrize("recognized", [True, False])
+def test_hostile_class_namespace_keys_cannot_run_equality(
+    runner: RunnerProcess,
+    key_name: str,
+    recognized: bool,
+) -> None:
+    failed = runner.execute(
+        _WEBDRIVER_ERROR_FIXTURE
+        + f"""
+class HostileName(str):
+    def __hash__(self): return str.__hash__(self)
+    def __eq__(self, other):
+        hooks.append('class-key-equality')
+        raise RuntimeError('namespace equality must not run')
+namespace = {{'__module__': {"selenium.common.exceptions" if recognized else "third.party"!r},
+             HostileName({key_name!r}): None}}
+error_class = type({"TimeoutException" if recognized else "CustomException"!r},
+                   (WebDriverException,), namespace)
+error = error_class('Element is not visible')
+hooks.clear()
+raise error
+"""
+    )
+    assert failed.error is not None
+    assert "custom __str__ omitted" in failed.error.message
+    assert runner.execute("hooks").result == []
+
+
+def test_armed_heap_module_key_never_executes_equality(runner: RunnerProcess) -> None:
+    failed = runner.execute(
+        _WEBDRIVER_ERROR_FIXTURE
+        + """
+armed = False
+class HostileModule(str):
+    def __hash__(self): return str.__hash__(self)
+    def __eq__(self, other):
+        if armed:
+            hooks.append('module-key-equality')
+            raise RuntimeError('module equality must not run')
+        return str.__eq__(self, other)
+namespace = {HostileModule('__module__'): 'selenium.common.exceptions'}
+error_class = type('TimeoutException', (WebDriverException,), namespace)
+error = error_class('Element is not visible')
+armed = True
+raise error
+"""
+    )
+    assert failed.outcome == "failed"
+    assert failed.error is not None
+    assert failed.error.type == "<unknown>"
+    assert "unavailable" in failed.error.message
+    assert runner.execute("hooks").result == []

@@ -10,6 +10,7 @@ import hashlib
 import json
 import os
 import platform
+import re
 import signal
 import sys
 import traceback
@@ -107,8 +108,57 @@ _SIGINT = signal.SIGINT
 _SIG_BLOCK = signal.SIG_BLOCK
 _SIG_SETMASK = signal.SIG_SETMASK
 _TRACEBACK_EXCEPTION = traceback.TracebackException
+_FRAME_SUMMARY = traceback.FrameSummary
+_STACK_FROM_LIST = traceback.StackSummary.from_list
+_CELL_FILENAME = re.compile(r"<amkernel-cell-[0-9]+>\Z").fullmatch
+_EXCEPTION_TRACEBACK = BaseException.__dict__["__traceback__"].__get__
+_EXCEPTION_CAUSE = BaseException.__dict__["__cause__"].__get__
+_EXCEPTION_CONTEXT = BaseException.__dict__["__context__"].__get__
+_EXCEPTION_SUPPRESS_CONTEXT = BaseException.__dict__["__suppress_context__"].__get__
 _DISTRIBUTION_VERSION = importlib_metadata.version
 _PACKAGE_NOT_FOUND_ERROR = importlib_metadata.PackageNotFoundError
+_TYPE_MODULE = type.__dict__["__module__"].__get__
+_TYPE_FLAGS = type.__dict__["__flags__"].__get__
+_TYPE_QUALNAME = type.__dict__["__qualname__"].__get__
+_TYPE_MRO = type.__dict__["__mro__"].__get__
+_TYPE_DICT = type.__dict__["__dict__"].__get__
+_EXCEPTION_DICT = BaseException.__dict__["__dict__"].__get__
+_EXCEPTION_ARGS = BaseException.__dict__["args"].__get__
+_SYNTAX_FIELDS = {
+    name: SyntaxError.__dict__[name].__get__
+    for name in (
+        "msg",
+        "filename",
+        "text",
+        "lineno",
+        "end_lineno",
+        "offset",
+        "end_offset",
+        "print_file_and_line",
+    )
+}
+_WEBDRIVER_NAMES = frozenset(
+    {
+        "WebDriverException",
+        "TimeoutException",
+        "StaleElementReferenceException",
+        "NoSuchElementException",
+        "UnknownMethodException",
+        "InvalidSessionIdException",
+        "SessionNotCreatedException",
+        "InvalidSelectorException",
+        "NoSuchWindowException",
+        "InvalidSwitchToTargetException",
+    }
+)
+_WEBDRIVER_SENSITIVE = re.compile(
+    r"session|password|passwd|credential|secret|token|auth|basic|bearer|cookie|"
+    r"user(name)?|login|capabilit|screenshot|screen|page[ _-]?source|stacktrace|"
+    r"api[ _-]?key|path|directory|filename|udid|serial|"
+    r"https?\s*:|file\s*:|[/\\\\@<>{}\[\]=]|"
+    r"[a-z0-9_-]{24,}|[0-9a-f]{8}-[0-9a-f-]{20,}",
+    re.IGNORECASE,
+).search
 
 
 @dataclass(slots=True)
@@ -634,11 +684,17 @@ def _container_summary(
     return f"<{type_name} len={length}; {suffix}>"
 
 
-def _type_name(value: object) -> tuple[str, bool]:
+def _type_name(value: object, *, inert: bool = False) -> tuple[str, bool]:
     value_type = type(value)
     try:
-        module = type.__getattribute__(value_type, "__module__")
-        qualified_name = type.__getattribute__(value_type, "__qualname__")
+        module = (
+            _static_module(value_type) if inert else type.__getattribute__(value_type, "__module__")
+        )
+        qualified_name = (
+            _TYPE_QUALNAME(value_type)
+            if inert
+            else type.__getattribute__(value_type, "__qualname__")
+        )
     except BaseException:
         return "<unknown>", True
     if type(module) is not str or type(qualified_name) is not str or not qualified_name:
@@ -648,7 +704,7 @@ def _type_name(value: object) -> tuple[str, bool]:
 
 
 def _error_info(error: BaseException) -> ErrorInfo:
-    error_type, _ = _type_name(error)
+    error_type, _ = _type_name(error, inert=True)
     message = _bounded_exception_message(error, error_type)
     traceback_lines = _bounded_traceback_lines(error, error_type, message)
     result = ErrorInfo(error_type, message, traceback_lines)
@@ -691,11 +747,110 @@ class _TraceBudget:
     truncated: bool = False
 
 
+def _static_class_field(error_class: type, name: str) -> tuple[bool, object]:
+    fields = _TYPE_DICT(error_class)
+    if len(fields) > 64:
+        return True, None
+    for key, value in fields.items():
+        if type(key) is not str:
+            return True, None
+        if key == name:
+            return True, value
+    return False, None
+
+
+def _static_module(error_class: type) -> object:
+    # Py_TPFLAGS_HEAPTYPE: heap-type module getsets perform a dict lookup.
+    # Only immutable static types may use that accessor; heap storage is scanned.
+    if not (_TYPE_FLAGS(error_class) & (1 << 9)):
+        return _TYPE_MODULE(error_class)
+    _, module = _static_class_field(error_class, "__module__")
+    return module
+
+
+def _webdriver_shape(error_class: type[BaseException]) -> bool:
+    module = _static_module(error_class)
+    name = _TYPE_QUALNAME(error_class)
+    return (
+        type(module) is str
+        and type(name) is str
+        and (
+            (module == "selenium.common.exceptions" and name in _WEBDRIVER_NAMES)
+            or (module == "appium.common.exceptions" and name == "NoSuchContextException")
+        )
+    )
+
+
+def _webdriver_message(error: BaseException) -> str | None:
+    """Read only an exact inert msg; names identify shape, not trusted code.
+
+    Invoke captured CPython storage accessors, never instance/class lookup or
+    third-party rendering. Reject custom field descriptors and oversized maps.
+    Other fields (screen, stacktrace, response, capabilities) are never read.
+    """
+    error_class = type(error)
+    if not _webdriver_shape(error_class):
+        return None
+    lineage = _TYPE_MRO(error_class)
+    if len(lineage) > 8:
+        return None
+    webdriver_base = False
+    for ancestor in lineage:
+        has_msg, _ = _static_class_field(ancestor, "msg")
+        if has_msg:
+            return None
+        ancestor_module = _static_module(ancestor)
+        ancestor_name = _TYPE_QUALNAME(ancestor)
+        if (
+            type(ancestor_module) is str
+            and type(ancestor_name) is str
+            and ancestor_module == "selenium.common.exceptions"
+            and ancestor_name == "WebDriverException"
+        ):
+            webdriver_base = True
+    if not webdriver_base:
+        return None
+    fields = _EXCEPTION_DICT(error)
+    if type(fields) is not dict or len(fields) > 16:
+        return None
+    message = None
+    for key, value in fields.items():
+        if type(key) is str and key == "msg":
+            message = value
+            break
+    if type(message) is not str:
+        return None
+    return _redact_webdriver_message(message)
+
+
+def _redact_webdriver_message(message: str) -> str:
+    # Scan only small exact strings. Withhold the whole message rather than
+    # guessing where a sensitive multiword/nested payload ends.
+    if len(message) <= _ERROR_MESSAGE_BYTES:
+        message = message.partition("; For documentation on this error, please visit:")[0]
+    if len(message) > _ERROR_MESSAGE_BYTES or _WEBDRIVER_SENSITIVE(message):
+        return "<WebDriver message omitted: sensitive or oversized details>"
+    if any(ord(char) < 32 and char not in "\n\r\t" for char in message):
+        return "<WebDriver message omitted: control characters>"
+    bounded, _ = _truncate_utf8(message.split("\n", 1)[0].strip(), _ERROR_MESSAGE_BYTES)
+    return bounded
+
+
 def _bounded_exception_message(error: BaseException, error_type: str) -> str:
     error_class = type(error)
     try:
-        custom_string = type.__getattribute__(error_class, "__str__") is not BaseException.__str__
-        class_module = type.__getattribute__(error_class, "__module__")
+        webdriver_message = _webdriver_message(error)
+        if webdriver_message is not None:
+            return webdriver_message
+        lineage = _TYPE_MRO(error_class)
+        string_method: object = BaseException.__str__
+        for ancestor in lineage:
+            found, value = _static_class_field(ancestor, "__str__")
+            if found:
+                string_method = value
+                break
+        custom_string = string_method is not BaseException.__str__
+        class_module = _static_module(error_class)
     except BaseException:
         return f"<message unavailable for {error_type}>"
     if type(class_module) is not str:
@@ -705,7 +860,7 @@ def _bounded_exception_message(error: BaseException, error_type: str) -> str:
 
     if isinstance(error, SyntaxError):
         try:
-            syntax_message = BaseException.__getattribute__(error, "msg")
+            syntax_message = _SYNTAX_FIELDS["msg"](error)
         except BaseException:
             syntax_message = None
         if type(syntax_message) is str:
@@ -713,7 +868,7 @@ def _bounded_exception_message(error: BaseException, error_type: str) -> str:
             return bounded
 
     try:
-        arguments = BaseException.__getattribute__(error, "args")
+        arguments = _EXCEPTION_ARGS(error)
     except BaseException:
         return f"<message unavailable for {error_type}>"
     if type(arguments) is not tuple or not arguments:
@@ -759,7 +914,7 @@ def _bounded_error_argument(value: object, *, quote_string: bool) -> str:
         return repr(value)
     if type(value) in {bytes, bytearray}:
         return f"<{type(value).__name__} len={len(cast(Sized, value))}>"
-    value_type, _ = _type_name(value)
+    value_type, _ = _type_name(value, inert=True)
     return f"<{value_type}>"
 
 
@@ -768,6 +923,7 @@ def _safe_traceback_exception(
     message: str,
     seen: set[int] | None = None,
     budget: _TraceBudget | None = None,
+    redact: bool = False,
 ) -> traceback.TracebackException | None:
     if seen is None:
         seen = set()
@@ -791,15 +947,18 @@ def _safe_traceback_exception(
     budget.exceptions -= 1
 
     error_class = type(error)
-    safe_type_name, _ = _type_name(error)
+    redact = redact or _webdriver_shape(error_class)
+    if redact:
+        message = _redact_webdriver_message(message)
+    safe_type_name, _ = _type_name(error, inert=True)
     safe_error_class = _safe_exception_type(error_class, safe_type_name)
     proxy = _SafeExceptionValue(message)
     if issubclass(error_class, SyntaxError):
-        _copy_syntax_error_fields(error, proxy, message)
+        _copy_syntax_error_fields(error, proxy, message, redact)
     try:
         original_traceback = cast(
             TracebackType | None,
-            BaseException.__getattribute__(error, "__traceback__"),
+            _EXCEPTION_TRACEBACK(error),
         )
     except BaseException:
         original_traceback = None
@@ -813,30 +972,45 @@ def _safe_traceback_exception(
         capture_locals=False,
         compact=True,
     )
+    if redact:
+        rendered.stack = _STACK_FROM_LIST(
+            [
+                _FRAME_SUMMARY(
+                    frame.filename if _CELL_FILENAME(frame.filename) else "<external-frame>",
+                    frame.lineno,
+                    "<frame>",
+                    lookup_line=False,
+                    line="",
+                )
+                for frame in rendered.stack
+            ]
+        )
 
     try:
-        cause = BaseException.__getattribute__(error, "__cause__")
-        context = BaseException.__getattribute__(error, "__context__")
-        suppress_context = bool(BaseException.__getattribute__(error, "__suppress_context__"))
+        cause = _EXCEPTION_CAUSE(error)
+        context = _EXCEPTION_CONTEXT(error)
+        suppress_context = _EXCEPTION_SUPPRESS_CONTEXT(error)
     except BaseException:
         cause = None
         context = None
         suppress_context = False
     if isinstance(cause, BaseException):
-        cause_type, _ = _type_name(cause)
+        cause_type, _ = _type_name(cause, inert=True)
         rendered.__cause__ = _safe_traceback_exception(
             cause,
             _bounded_exception_message(cause, cause_type),
             seen,
             budget,
+            redact,
         )
     if isinstance(context, BaseException) and not suppress_context:
-        context_type, _ = _type_name(context)
+        context_type, _ = _type_name(context, inert=True)
         rendered.__context__ = _safe_traceback_exception(
             context,
             _bounded_exception_message(context, context_type),
             seen,
             budget,
+            redact,
         )
     rendered.__suppress_context__ = suppress_context
     return rendered
@@ -875,11 +1049,12 @@ def _copy_syntax_error_fields(
     error: BaseException,
     proxy: _SafeExceptionValue,
     message: str,
+    redact: bool = False,
 ) -> None:
     proxy.msg = message
     for field in ("filename", "text"):
         try:
-            value = BaseException.__getattribute__(error, field)
+            value = None if redact else _SYNTAX_FIELDS[field](error)
         except BaseException:
             value = None
         if type(value) is str:
@@ -889,14 +1064,14 @@ def _copy_syntax_error_fields(
         setattr(proxy, field, value)
     for field in ("lineno", "end_lineno", "offset", "end_offset"):
         try:
-            value = BaseException.__getattribute__(error, field)
+            value = None if redact else _SYNTAX_FIELDS[field](error)
         except BaseException:
             value = None
         if type(value) is not int:
             value = None
         setattr(proxy, field, value)
     try:
-        print_file_and_line = BaseException.__getattribute__(error, "print_file_and_line")
+        print_file_and_line = None if redact else _SYNTAX_FIELDS["print_file_and_line"](error)
     except BaseException:
         print_file_and_line = None
     if type(print_file_and_line) is not bool:
