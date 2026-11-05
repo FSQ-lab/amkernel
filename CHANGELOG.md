@@ -4,6 +4,13 @@ All notable changes to AMKernel are recorded here. Public releases use semantic 
 
 ## [Unreleased]
 
+## [0.1.3] - 2026-11-05
+
+Backward-compatible Skill, installation, safe-error and verification corrections under
+[Release #136](https://github.com/FSQ-lab/amkernel/issues/136). The public MCP contract
+and qualified Ubuntu/macOS CPython 3.11–3.13 support are unchanged. Mobile remains
+experimental; Windows support is not claimed.
+
 ### Changed
 
 - Replace repository-retained raw verification outputs with the immutable `v0.1.2` evidence archive. Keep normalized records and an offline provenance index in Git, classify all 203 original members by retention, and ignore future raw output locations without rewriting history ([#120](https://github.com/FSQ-lab/amkernel/issues/120); [ADR-0008](docs/decisions/0008-release-evidence-retention.md)).
