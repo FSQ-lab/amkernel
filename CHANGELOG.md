@@ -7,6 +7,7 @@ All notable changes to AMKernel are recorded here. Public releases use semantic 
 ### Changed
 
 - Replace repository-retained raw verification outputs with the immutable `v0.1.2` evidence archive. Keep normalized records and an offline provenance index in Git, classify all 203 original members by retention, and ignore future raw output locations without rewriting history ([#120](https://github.com/FSQ-lab/amkernel/issues/120); [ADR-0008](docs/decisions/0008-release-evidence-retention.md)).
+- Deepen the installed `amkernel` Skill around a plain-language outcome: infer one minimal platform route, perform safe discovery without technical questionnaires, avoid duplicate approval for explicitly requested effects, continue from readiness through the requested action, and keep provenance, lifecycle, and cleanup truth intact. The Android behavior prompt now exercises this route from a nontechnical-user request ([#98](https://github.com/FSQ-lab/amkernel/issues/98)).
 
 ## [0.1.2] - 2026-11-04
 
