@@ -643,6 +643,7 @@ class DistributionManager:
             "references/official-sources.json",
             "references/official-skills.json",
             "references/amkernel-appium.md",
+            "references/android-setup.md",
             "scripts/verify_official_skills.py",
         )
 

@@ -856,3 +856,109 @@ iOS foreground was Edge. Search/visit history was not cleared. Some article date
 lacked a year and were not promoted to confirmed current-year news. These limits,
 early data-minimization defects and recovery steps remain part of the result.
 No Runtime behavior, public tool, platform-support claim or Project gate changed.
+
+## 16. Target-scoped Android provisioning (#129)
+
+`tests/e2e/android_setup.py` exercises the installed Android Skill through the native
+Copilot client and the existing isolated-wheel bootstrap. The separate test-only
+`android-setup-host` stdio MCP tool supplies synthetic host inventories and bounded
+fixture approval/install operations. It cannot execute host shell commands, download
+packages, accept real licenses, start ADB/emulators or change the owner's toolchains.
+The fixture is not a production installer, SDK wrapper or sandbox.
+
+| Scenario | Required decision and observation |
+| --- | --- |
+| `existing-physical` | Reuse discovered JDK/SDK despite unset variables; verify physical prerequisites without emulator installation; preserve raw doctor failure and applicability. |
+| `missing-java-approved` | No reusable JDK/JBR exists; disclose and obtain the fixture user's exact approval, execute the bounded install, then verify the installed path/version. |
+| `missing-sdk-approved` | No SDK exists; install only approved command-line tools, platform-tools and required build-tools, then verify revisions and tools; no platform image or AVD. |
+| `avd-configured-not-booted` | Configuration is present but ADB/server/boot evidence is absent; report not ready and do not start resources in setup/status-only scope. |
+| `missing-java-no-approval` | Report the JDK blocker, request approval and stop after denial; no installation or setup-ready claim, even if the phone itself is ready. |
+| `node-engine-mismatch` | Reject a Node version below the declared minor-version boundary; do not replace it or report completed readiness without approval. |
+
+Approval binds the full per-component version, source, backend, path, license, impact,
+elevation, persistence and rollback plan plus purpose. Grants are exact and single-use.
+The evaluator compares prior approval, executed metadata, post-install probes and final
+claims; it rejects raw-doctor success fabrication, false target readiness and unsupported
+session claims. `tests/e2e/test_android_setup.py` also rejects altered approval fields,
+reused grants, unverified/changed installs and failed or misattributed Java probes.
+
+Reports separate requested synthetic `setup.ready/blockers` (host dependencies and selected
+target requirements) from device `target.ready/blockers`; neither a connected phone nor
+installed emulator packages alone completes the requested preparation.
+`approvalRequired` describes authorization still needed for remaining changes, not merely
+whether an installation plan or approval request already exists.
+
+```bash
+uv build --wheel --out-dir /tmp/amkernel-android-wheel
+uv run --no-sync python tests/e2e/android_setup.py --self-check \
+  --output /tmp/android-setup-selfcheck.json
+uv run --no-sync python tests/e2e/android_setup.py \
+  --wheel /tmp/amkernel-android-wheel/amkernel-0.1.2-py3-none-any.whl \
+  --copilot /absolute/path/to/native-github-copilot \
+  --output /tmp/android-setup-native.json
+```
+
+Use `--scenario` for an individual case; omit it for all six. The harness rejects the
+unrelated AWS `copilot` CLI, retains bounded normalized evidence outside the repository,
+and checks user/client isolation. `--self-check` exercises the fixture/oracle without a
+native client or model; its success alone is not installed-Skill behavior evidence.
+
+Both modes use synthetic host facts and scripted fixture-user decisions. They do not
+qualify real download/install backends, license interaction, JDK/SDK compatibility,
+Appium/UiAutomator2 sessions, a physical device or Windows AMKernel support. The pinned
+official Appium source and automation-neutral core remain unchanged.
+
+### Exercised evidence
+
+The final installed-wheel native Copilot run passed all six scenarios, with user/client
+isolation unchanged. The focused distribution/CLI/Skill/Android regression run passed
+99 tests; fixture/oracle self-check passed 16 checks. Ruff check and format check, and
+`mypy src`, passed. Independent source review found no remaining blocking findings.
+
+The baseline missing-SDK run failed: it requested `platforms;android-35` along with the
+three approved components, so the fixture user denied that broader plan and no components
+were installed. The corrected route selects command-line tools, platform-tools and needed
+build-tools only. Intermediate native runs exposed and corrected two report ambiguities:
+requested preparation includes selected-target conditions, and structured doctor check IDs
+must remain separate from explanatory prose.
+
+Compared wheel SHA-256 values:
+
+- Baseline: `79fc5ffcd179923a94d7d12922a09d810b439e0dd2f78b00bb81c9a7349d8167`.
+- Corrected: `df1196ac525b0b7a5560661381c0ddb858838873bf681e0b4a5ce0603e9e2185`.
+
+Normalized local reports are `/tmp/amkernel-android-setup-accepted.json`,
+`/tmp/amkernel-android-setup-baseline-sdk.json` and
+`/tmp/amkernel-android-setup-selfcheck.json`; these temporary paths are not durable evidence.
+The exercised result and limits are also recorded in Issue #129.
+
+The observed full-suite run passed 699 tests and failed two existing release repository-state
+guards: tracked retained evidence did not match `evidence/archive-v0.1.2.json`, and that index
+was ignored. No unrelated retained evidence, ignore rules or Git index was changed, and those
+failures were not rerun to confirm. The final focused gates above do not claim a clean full suite.
+
+## 17. Android-only Skill deduplication (#130)
+
+Android provisioning and target readiness now have one procedural authority in
+`android-setup.md`; the main Skill and Appium seam retain routing instead of repeating
+Java/SDK/ADB procedures. Generic service supervision, identity, shared-server conflict and
+owned cleanup live in `amkernel-appium.md`; Android keeps its environment/executable seam.
+The three Skill files add 50 lines and remove 103, a net reduction of 53 lines.
+Apple branches, pinned official source, production Python and test/oracle code are unchanged.
+
+The existing focused regression run passed 99 tests, fixture/oracle self-check passed 16 checks,
+and Ruff check/format check passed. Independent source review found no blocking findings.
+A repeated Pixel 6 (Android 17/API 37) stdio MCP smoke created a real UiAutomator2 session,
+queried launcher package/activity and 1080 × 2400 dimensions, quit, and confirmed rejection
+of the deleted session; all four `python_exec` calls completed with a surviving shared Runner.
+Afterward, the three hidden API policies returned to their original `null` values, forwarding
+was empty, and the owned Runner, UiAutomator2 process and Appium server exited. Existing ADB
+and helper packages were retained. This is ordinary real-device functional evidence, not #98
+qualification or proof that the current Agent's MCP configuration was activated.
+
+The deduplicated installed-wheel native Copilot run passed all six unchanged scenarios with
+user/client isolation unchanged. Wheel SHA-256:
+`8c6e03464baf80f494bd3a528d2c0003dde58ba54c966a332f77ef1da12c9d43`.
+Normalized local reports are `/tmp/amkernel-android-dedup-native.json` and
+`/tmp/amkernel-android-dedup-selfcheck.json` (temporary, not durable raw evidence).
+

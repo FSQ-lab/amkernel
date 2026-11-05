@@ -84,6 +84,8 @@ amkernel uninstall
 
 `amkernel uninstall --global` is explicit because it affects every activated project. AMKernel does not itself install or supervise Appium Server, platform drivers, SDKs, devices, simulators, or WebDriverAgent; the installed Skill guides the Agent through the relevant prerequisites when a mobile experiment needs them.
 
+For Android, the [packaged setup procedure](src/amkernel/skill/references/android-setup.md) first reuses verified JDK/SDK installations, then selects only target-relevant components. The Agent discloses installation methods, versions, locations and impact, executes approved changes through host tools, and verifies them. Physical-device readiness does not require emulator/AVD inventory; configured AVDs and successful doctor/status checks do not prove a live session. Setup does not expand AMKernel's platform support.
+
 Agent setup and MCP repair may use shell, PowerShell, native host tools, or focused diagnostic
 probes; they do not require an already-working `python_exec` connection. Appium session and
 device/application interaction code runs through the official Python Client in `python_exec`.

@@ -513,6 +513,35 @@ evidence-only items do not own these production changes. After remediation, resu
 both client-neutral layers through the installed wheel; preserve the experimental mobile support
 boundary and external Appium/device ownership.
 
+### Target-scoped Android Skill implementation (#129)
+
+The packaged `amkernel` Skill now routes Android preparation through
+`src/amkernel/skill/references/android-setup.md`: verified existing installations first,
+exact selected package constraints, scoped approval followed by Agent installation and
+verification, task-relevant SDK components, separate physical/emulator requirements, and
+truthful raw doctor and requested-preparation readiness. Setup-only does not create a session;
+the pinned official Appium source and automation-neutral core remain unchanged.
+
+Installed-wheel native Copilot synthetic smoke passed all six cases with user/client isolation
+unchanged. Focused distribution/CLI/Skill/Android regressions passed 99 tests; the fixture/oracle
+self-check passed 16 checks; Ruff and source Mypy passed. Independent source review found no
+remaining blocking findings. See `docs/experiments/appium-agent-behavior.md` §16 for the compared
+wheels, baseline SDK overprovisioning failure and exercised qualification limits. No real
+JDK/SDK installation, device readiness, Appium session or broader platform qualification is
+established by this synthetic run; #98 physical qualification remains separate.
+
+### Android-only Skill deduplication (#130)
+
+Android provisioning/readiness now lives in `android-setup.md`, main Skill routing points to
+that authority, and shared Appium service supervision/ownership lives in `amkernel-appium.md`.
+The existing rules, Apple-specific branches, pinned official inputs, core and test oracle are
+unchanged. Focused regressions passed 99 tests and self-check passed 16 checks; independent
+source review found no blocking findings. A repeated Pixel 6 session/query/quit smoke and
+owned-resource restoration passed. See `docs/experiments/appium-agent-behavior.md` §17 for
+exercised evidence and its ordinary-functional, non-qualification limits.
+The deduplicated installed-wheel native Agent smoke also passed all six unchanged scenarios,
+with user/client isolation unchanged.
+
 ## Acceptance criteria
 
 - [x] M3 and S3-001 through S3-060 are registered in GitHub Project #2 with exact dependencies and work-item contracts.

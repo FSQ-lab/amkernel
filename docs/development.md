@@ -212,6 +212,12 @@ Every change runs the smallest tests that fail for its plausible regressions. Co
 - JSON-looking and hostile stdout/stderr that cannot corrupt control frames;
 - explicit interpreter and working-directory diagnostics.
 
+Android Skill provisioning changes additionally run `tests/e2e/test_android_setup.py` and the
+focused `tests/e2e/android_setup.py --self-check` protocol/oracle smoke. Installed-wheel native
+Agent scenarios are documented in `docs/experiments/appium-agent-behavior.md`; their test-only
+host tool cannot execute real installers or device commands. Synthetic approval and readiness
+evidence does not qualify real JDK/SDK installation, Appium sessions or a new host platform.
+
 ### Gate 3: Actual stdio MCP end to end
 
 An MCP client must launch the packaged server over stdio and exercise the changed public path. Unit tests or direct calls into implementation classes do not satisfy this gate.
