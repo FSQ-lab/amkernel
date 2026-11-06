@@ -587,6 +587,23 @@ not an all-resources-cleaned claim. See experiment §19 and the
 [normalized evidence](../evidence/appium-skill/android-execution-20261105.json).
 No Android World rerun, score improvement or real-device/platform qualification is established.
 
+### iOS and native macOS outcome-first execution (#98)
+
+The CUA-informed Android execution principles now cover iOS/XCUITest and native macOS/Mac2
+through the shared `amkernel-appium.md` seam. Packaged routing requires the shared reference for
+Apple scenarios. It establishes current iOS app/context/view and macOS app/window/focus identity,
+invalidates stale element and coordinate assumptions after transitions, prefers semantic targets,
+and verifies the requested result instead of trusting a successful command return. Setup,
+Runtime, ownership and official-skill inputs are unchanged.
+
+The iOS and macOS short-flow prompts now provide the novice's requested final state and fixture
+location without prescribing capabilities, selectors, clicks, sessions or call partitioning. The
+oracle still requires the correct inferred driver route, one change action, observed pre-action
+and requested post-action state, bounded compact calls, truthful cleanup and no unnecessary
+screenshot. Focused observation and evaluator regressions passed 125 tests; independent review
+found no remaining actionable issue. This is synthetic behavior evidence only; no real Apple
+target or broader platform qualification is established.
+
 
 ### Shared control-first and visual-fallback execution (#98)
 

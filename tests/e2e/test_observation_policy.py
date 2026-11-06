@@ -53,6 +53,24 @@ def _failed(checks: dict[str, dict[str, Any]]) -> set[str]:
     return {check_id for check_id, item in checks.items() if not item["ok"]}
 
 
+@pytest.mark.parametrize("scenario", ("ios-short-flow", "mac2-calculator"))
+def test_apple_short_flow_prompt_is_outcome_first(scenario: str) -> None:
+    prompt = skill_behavior.scenario_prompt(scenario, None)
+    body = prompt.removeprefix(skill_behavior._PROMPT_COMMON)
+
+    assert "turn on the visible `Toggle`" in body
+    for technical_phrase in (
+        "XCUITest",
+        "Mac2",
+        "accessibility label",
+        "bundle id",
+        "click",
+        "session",
+        "python_exec",
+    ):
+        assert technical_phrase not in body
+
+
 # ---------------------------------------------------------------------------
 # Evaluator-only fixtures: the existing control-first flows stay screenshot-free.
 
@@ -94,6 +112,17 @@ def _short_flow_actions(scenario: str, *, screenshot: bool) -> list[dict[str, An
                 _action("find", at=_at(2), detail={"sessionId": session_id, "label": "Toggle"}),
             ]
         )
+        if scenario == "ios-short-flow":
+            actions.append(
+                _action(
+                    "source",
+                    at=_at(2.25),
+                    detail={
+                        "sessionId": session_id,
+                        "state": {"toggle": False, "beta": False},
+                    },
+                )
+            )
         if screenshot:
             actions.append(_action("screenshot", at=_at(2.5), detail={"sessionId": session_id}))
         actions.extend(

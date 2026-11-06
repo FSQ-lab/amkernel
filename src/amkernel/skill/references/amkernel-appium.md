@@ -67,15 +67,17 @@ A successful `/status` proves service reachability, not target readiness or a se
 request creates no session. Stop only the task-owned server; stopping it does not prove a remote
 session or external target state was cleaned.
 
-## Connect
+## Connect and establish the current Apple surface
 
 Use a reviewed loopback Appium URL without credentials. Populate target and app identifiers from observed state or the user's selection; never invent them.
 
 For Android, use the connection and native/Web execution guidance in `android-execution.md`.
 
-For iOS, use `XCUITestOptions`, `automationName: XCUITest`, and the observed simulator/device identifier. Follow the official XCUITest procedure for signing and real-device requirements.
+For iOS, use `XCUITestOptions`, `automationName: XCUITest`, and the observed simulator/device identifier. Follow the official XCUITest procedure for signing and real-device requirements. Before acting, confirm the requested app, current context and current view from bounded live evidence. Prefer the native context for native controls. A navigation, app switch, context change, modal alert, sheet, keyboard or relaunch can invalidate old element handles and page assumptions; observe again and re-find from current state instead of replaying a remembered sequence.
 
-For native macOS desktop, use `from appium.options.mac import Mac2Options`, `platformName: Mac`, and `appium:automationName: Mac2`. Observe the requested app's bundle identifier and pass it as `appium:bundleId`; do not invent an iOS UDID or XCUITest capabilities. Record the session's returned platform and automation name, and confirm the requested app with a small live query. If Mac2 cannot start, retain the exact blocker instead of falling back to another driver. The Calculator regression must retain returned Mac2 capability evidence; an app opening alone is not proof of the driver used.
+For native macOS desktop, use `from appium.options.mac import Mac2Options`, `platformName: Mac`, and `appium:automationName: Mac2`. Observe the requested app's bundle identifier and pass it as `appium:bundleId`; do not invent an iOS UDID or XCUITest capabilities. Record the session's returned platform and automation name, and confirm the requested app and window with a small live query. Treat focus, active window, sheets, popovers and dialogs as part of the current target surface. Window changes, relaunches and focus transfers invalidate old handles and row or coordinate assumptions; re-observe the requested app/window before continuing. If Mac2 cannot start, retain the exact blocker instead of falling back to another driver. The Calculator regression must retain returned Mac2 capability evidence; an app opening alone is not proof of the driver used.
+
+For either Apple route, work toward the user's requested final state rather than treating a supplied or inferred action sequence as authoritative. In each bounded workflow: observe the current surface, identify the next action from semantic state, act once, and verify the resulting state or business outcome. Stop when the requested state is already true. Prefer accessibility identifiers, labels, roles and changing state attributes over XPath, element order or coordinates. Use explicit waits only for an expected transition, and re-query after one; never use a successful command return as the sole proof that the requested result occurred.
 
 ## Observe and act: controls first, visual fallback
 

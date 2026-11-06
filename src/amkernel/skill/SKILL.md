@@ -118,10 +118,18 @@ Select from the requested target and observed host; do not silently substitute a
   Reuse established readiness; do not rerun setup or official-source verification merely to act.
 - iOS simulator or tvOS setup/readiness on macOS: verified `setup-xcuitest` guidance; simulator
   and tvOS applicability is unchanged.
+- iOS scenario or existing-session execution: read `references/amkernel-appium.md`, especially
+  **Connect and establish the current Apple surface**, for current app/context identity, semantic
+  locators, state-driven action, result verification, recovery, and call boundaries. Reuse
+  established readiness; do not rerun setup merely to act.
 - Native macOS desktop setup/readiness: read `references/macos-setup.md` first for Runtime
   integration, target-scoped dependency reuse/approval, Xcode selection, privacy handoff, and
   prepared-versus-live reporting; then use verified `setup-mac2` guidance for current Mac2
   environment, doctor, and server-smoke details. Native macOS execution uses Mac2, never XCUITest.
+- Native macOS scenario or existing-session execution: read `references/amkernel-appium.md`,
+  especially **Connect and establish the current Apple surface**, for current app/window/focus
+  identity, semantic locators, state-driven action, result verification, recovery, and call
+  boundaries. Reuse established readiness; do not rerun setup merely to act.
 - Existing UiAutomator2/XCUITest session, launch, transport, WebDriverAgent, source, or locator
   failure: verified `appium-troubleshooting` guidance.
 - Physical iPhone setup/readiness, including trust, signing, provisioning, or WebDriverAgent

@@ -151,11 +151,20 @@ def _short_flow_actions() -> list[dict[str, Any]]:
             detail={"sessionId": "s1", "elementId": "e1", "label": "Toggle"},
         ),
         _action(
+            "source",
+            at=2.5,
+            detail={"sessionId": "s1", "state": {"toggle": False, "beta": False}},
+        ),
+        _action(
             "click",
             at=3,
             detail={"sessionId": "s1", "elementId": "e1", "label": "Toggle"},
         ),
-        _action("source", at=4, detail={"sessionId": "s1"}),
+        _action(
+            "source",
+            at=4,
+            detail={"sessionId": "s1", "state": {"toggle": True, "beta": False}},
+        ),
         _action("delete-session", at=5, detail={"sessionId": "s1"}),
     ]
 
@@ -174,8 +183,50 @@ def test_ios_short_flow_passes_with_observed_fixture_evidence() -> None:
     checks = _checks(run)
     assert checks["ios-one-session"]["ok"]
     assert checks["ios-toggle-once"]["ok"]
+    assert checks["ios-initial-state-observed"]["ok"]
+    assert checks["ios-state-changed-observed"]["ok"]
     assert checks["cleanup-owned-sessions-inactive"]["ok"]
     assert all(item["ok"] for item in checks.values())
+
+
+def test_ios_short_flow_rejects_click_without_observed_state_change() -> None:
+    actions = _short_flow_actions()
+    actions[4] = _action("source", at=4, detail={"sessionId": "s1"})
+    run = _run(
+        "ios-short-flow",
+        variant="ios",
+        actions=actions,
+        sessions=[{"id": "s1", "preexisting": False, "active": False}],
+        final=_final(
+            taskOutcome="completed",
+            cleanup={"ownedSession": "completed", "server": "preserved"},
+        ),
+    )
+
+    checks = _checks(run)
+    assert checks["ios-toggle-once"]["ok"]
+    assert not checks["ios-state-changed-observed"]["ok"]
+    assert all(item["ok"] for name, item in checks.items() if name != "ios-state-changed-observed")
+
+
+def test_ios_short_flow_rejects_click_without_observed_initial_state() -> None:
+    actions = _short_flow_actions()
+    del actions[2]
+    run = _run(
+        "ios-short-flow",
+        variant="ios",
+        actions=actions,
+        sessions=[{"id": "s1", "preexisting": False, "active": False}],
+        final=_final(
+            taskOutcome="completed",
+            cleanup={"ownedSession": "completed", "server": "preserved"},
+        ),
+    )
+
+    checks = _checks(run)
+    assert checks["ios-toggle-once"]["ok"]
+    assert not checks["ios-initial-state-observed"]["ok"]
+    assert all(item["ok"] for name, item in checks.items() if name != "ios-initial-state-observed")
 
 
 def test_short_flow_rejects_cleanup_claim_without_delete() -> None:
@@ -258,21 +309,25 @@ def _mac2_run(*, clicks: int, observe: bool = True) -> dict[str, Any]:
 def test_mac2_requires_one_toggle_click_with_observed_change() -> None:
     checks = _checks(_mac2_run(clicks=1))
     assert checks["mac2-one-change-click"]["ok"]
+    assert checks["mac2-initial-state-observed"]["ok"]
     assert checks["mac2-changed-state-observed"]["ok"]
     assert all(item["ok"] for item in checks.values())
 
 
 def test_mac2_rejects_zero_or_extra_toggle_clicks() -> None:
     zero = _checks(_mac2_run(clicks=0))
+    assert not zero["mac2-initial-state-observed"]["ok"]
     assert not zero["mac2-one-change-click"]["ok"]
     assert not zero["mac2-changed-state-observed"]["ok"]
 
     extra = _checks(_mac2_run(clicks=2))
     assert not extra["mac2-one-change-click"]["ok"]
-    assert extra["mac2-changed-state-observed"]["ok"]
+    assert not extra["mac2-initial-state-observed"]["ok"]
+    assert not extra["mac2-changed-state-observed"]["ok"]
 
     unobserved = _checks(_mac2_run(clicks=1, observe=False))
     assert unobserved["mac2-one-change-click"]["ok"]
+    assert unobserved["mac2-initial-state-observed"]["ok"]
     assert not unobserved["mac2-changed-state-observed"]["ok"]
 
 
@@ -1500,9 +1555,21 @@ def test_targeted_control_state_matches_source_and_proves_change_before_cleanup(
                     snapshot,
                     journal=[item for item in snapshot["journal"] if item["action"] == action],
                 )
-                assert skill_behavior._state_observation_after_click(targeted, click)
+                assert skill_behavior._state_transition_observations(
+                    targeted,
+                    click,
+                    key=label.lower(),
+                    initial=False,
+                    requested=True,
+                ) == (True, True)
                 targeted["journal"].append({"action": "delete-session", "at": click["at"]})
-                assert not skill_behavior._state_observation_after_click(targeted, click)
+                assert skill_behavior._state_transition_observations(
+                    targeted,
+                    click,
+                    key=label.lower(),
+                    initial=False,
+                    requested=True,
+                ) == (True, False)
     finally:
         fixture.stop()
 

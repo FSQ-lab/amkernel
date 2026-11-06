@@ -365,22 +365,16 @@ def scenario_prompt(scenario_id: str, port: int | None) -> str:
             "fixture-contract.json. I want the Toggle left on; do not change anything else."
         ),
         "ios-short-flow": (
-            "The synthetic iOS app is `com.amkernel.fixture` and exposes an "
-            "accessibility label `Toggle`. Open an XCUITest session, verify the "
-            "visible control and its label, click it exactly once, verify the changed "
-            "state, and close the session you created. Report "
-            "`cleanup.ownedSession` as `completed` only if that delete succeeded, with "
-            "`cleanup.server` as `preserved`. Keep the direct flow compact: do not use "
-            "one python_exec call per WebDriver command."
+            "I do not know Appium, drivers, capabilities, or Python. Please use the "
+            "available synthetic iOS target to turn on the visible `Toggle` control "
+            "and tell me when it is done. The application details are available in "
+            "fixture-contract.json. I want the Toggle left on; do not change anything else."
         ),
         "mac2-calculator": (
-            "The user asked to automate native macOS Calculator. Use the Mac2 route, "
-            "not XCUITest and not a mobile driver. The synthetic native macOS app has "
-            "bundle id `com.amkernel.fixture` and accessibility label `Toggle`. Open a "
-            "Mac2 session, read the label, click once, verify the change, and close "
-            "the session. Report `cleanup.ownedSession` as `completed` only if that "
-            "delete succeeded, with `cleanup.server` as `preserved`. This synthetic "
-            "routing check is not physical Mac2 evidence."
+            "I do not know Appium, drivers, capabilities, or Python. Please use the "
+            "available synthetic native macOS target to turn on the visible `Toggle` "
+            "control and tell me when it is done. The application details are available "
+            "in fixture-contract.json. I want the Toggle left on; do not change anything else."
         ),
         "android-visual-fallback": (
             "I am looking at the synthetic Android app. Its page shows exactly one round "
@@ -2308,37 +2302,41 @@ def _actions(fixture: Mapping[str, Any], action: str) -> list[dict[str, Any]]:
     return [item for item in _action_list(fixture) if item.get("action") == action]
 
 
-def _state_observation_after_click(fixture: Mapping[str, Any], click: Mapping[str, Any]) -> bool:
-    """Return whether a read observation shows a changed state after the click.
-
-    The observation must fall between the click and the first session DELETE so a
-    reported cleanup cannot supply the apparent state change.
-    """
-    click_at = click.get("at")
-    if not isinstance(click_at, (int, float)):
-        return False
-    initial = fixture.get("initialState", {})
-    if not isinstance(initial, dict):
-        initial = {}
+def _state_transition_observations(
+    fixture: Mapping[str, Any],
+    action: Mapping[str, Any],
+    *,
+    key: str,
+    initial: object,
+    requested: object,
+) -> tuple[bool, bool]:
+    """Return live initial/result evidence around one state-changing action."""
+    action_at = action.get("at")
+    if not isinstance(action_at, (int, float)):
+        return False, False
     delete_times = [
         float(item["at"]) for item in _deletes(fixture) if isinstance(item.get("at"), (int, float))
     ]
     first_delete = min(delete_times) if delete_times else float("inf")
+    initial_observed = False
+    requested_observed = False
     for item in _action_list(fixture):
         at = item.get("at")
-        if (
-            item.get("action") not in {"read-state", "source", "attribute", "selected"}
-            or not isinstance(at, (int, float))
-            or float(at) <= float(click_at)
-            or float(at) >= first_delete
-        ):
+        if item.get("action") not in {
+            "read-state",
+            "source",
+            "attribute",
+            "selected",
+        } or not isinstance(at, (int, float)):
             continue
         state = item.get("detail", {}).get("state")
-        if isinstance(state, dict) and any(
-            key in initial and state.get(key) != initial.get(key) for key in state
-        ):
-            return True
-    return False
+        if not isinstance(state, dict) or key not in state:
+            continue
+        if float(at) < float(action_at) and state[key] == initial:
+            initial_observed = True
+        elif float(action_at) < float(at) < first_delete and state[key] == requested:
+            requested_observed = True
+    return initial_observed, requested_observed
 
 
 def _successful_creates(fixture: Mapping[str, Any]) -> list[dict[str, Any]]:
@@ -3922,6 +3920,22 @@ def evaluate_scenario(run: Mapping[str, Any]) -> dict[str, Any]:
             len(clicks) == 1 and clicks[0].get("detail", {}).get("label") == "Toggle",
             f"Successful Toggle clicks={len(clicks)}",
         )
+        ios_states = [
+            _state_transition_observations(
+                fixture, item, key="toggle", initial=False, requested=True
+            )
+            for item in clicks
+        ]
+        evaluation.check(
+            "ios-initial-state-observed",
+            len(ios_states) == 1 and ios_states[0][0],
+            "Toggle off was not observed before the successful Toggle click.",
+        )
+        evaluation.check(
+            "ios-state-changed-observed",
+            len(ios_states) == 1 and ios_states[0][1],
+            "Toggle on was not observed between the successful Toggle click and DELETE.",
+        )
         windows = [actions for actions in _call_actions(run)]
         appium_windows = [actions for actions in windows if _actions_include_session(actions)]
         max_actions = max((len(actions) for actions in appium_windows), default=0)
@@ -3964,11 +3978,31 @@ def evaluate_scenario(run: Mapping[str, Any]) -> dict[str, Any]:
             len(toggle_clicks) == 1,
             f"Successful Toggle clicks={len(toggle_clicks)}",
         )
-        changed = any(_state_observation_after_click(fixture, item) for item in toggle_clicks)
+        mac2_states = [
+            _state_transition_observations(
+                fixture, item, key="toggle", initial=False, requested=True
+            )
+            for item in toggle_clicks
+        ]
+        evaluation.check(
+            "mac2-initial-state-observed",
+            len(mac2_states) == 1 and mac2_states[0][0],
+            "Toggle off was not observed before the successful Toggle click.",
+        )
         evaluation.check(
             "mac2-changed-state-observed",
-            bool(toggle_clicks) and changed,
-            "No changed state was observed between a successful Toggle click and DELETE.",
+            len(mac2_states) == 1 and mac2_states[0][1],
+            "Toggle on was not observed between the successful Toggle click and DELETE.",
+        )
+        windows = [actions for actions in _call_actions(run)]
+        appium_windows = [actions for actions in windows if _actions_include_session(actions)]
+        max_actions = max((len(actions) for actions in appium_windows), default=0)
+        evaluation.check(
+            "mac2-compact-flow",
+            len(appium_windows) <= 2 and max_actions >= 2 and max_actions <= MAX_ACTIONS_PER_CALL,
+            f"Calls overlapping fixture actions={len(appium_windows)}, "
+            f"max actions in one call={max_actions}, "
+            f"limit={MAX_ACTIONS_PER_CALL}",
         )
         _check_no_unnecessary_screenshot(evaluation, fixture)
         _owner_cleanup_ok(evaluation, run, fixture)
