@@ -646,6 +646,7 @@ class DistributionManager:
             "references/android-setup.md",
             "references/android-execution.md",
             "references/ios-setup.md",
+            "references/macos-setup.md",
             "scripts/verify_official_skills.py",
         )
 

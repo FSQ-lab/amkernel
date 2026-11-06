@@ -118,7 +118,10 @@ Select from the requested target and observed host; do not silently substitute a
   Reuse established readiness; do not rerun setup or official-source verification merely to act.
 - iOS simulator or tvOS setup/readiness on macOS: verified `setup-xcuitest` guidance; simulator
   and tvOS applicability is unchanged.
-- Native macOS desktop: verified `setup-mac2` guidance and the Mac2 driver, never XCUITest.
+- Native macOS desktop setup/readiness: read `references/macos-setup.md` first for Runtime
+  integration, target-scoped dependency reuse/approval, Xcode selection, privacy handoff, and
+  prepared-versus-live reporting; then use verified `setup-mac2` guidance for current Mac2
+  environment, doctor, and server-smoke details. Native macOS execution uses Mac2, never XCUITest.
 - Existing UiAutomator2/XCUITest session, launch, transport, WebDriverAgent, source, or locator
   failure: verified `appium-troubleshooting` guidance.
 - Physical iPhone setup/readiness, including trust, signing, provisioning, or WebDriverAgent

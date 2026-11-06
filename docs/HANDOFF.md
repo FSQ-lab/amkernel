@@ -648,6 +648,26 @@ both non-pending cases. Independent read-only review found no actionable finding
 the earlier acceptance evidence, not the Runtime or any platform qualification.
 The final combined evaluator/process-boundary regression run passed 112 tests.
 
+### Target-scoped native macOS setup guidance (#140)
+
+The packaged Skill routes native macOS setup through an AMKernel-owned discovery, compatibility,
+approval and readiness reference before the verified pinned Mac2 procedure. It reuses the selected
+Runtime, Appium home and Xcode; evaluates current Node/npm/Appium/Mac2 plus Python Client/Selenium
+constraints without reducing them to majors; and keeps administrator, Xcode and privacy choices
+native and user-owned. Prepared setup remains distinct from live target control. Setup creates no
+session or target launch, and any approved task-owned server smoke must be stopped.
+
+The deterministic oracle covers nine ready, missing and incompatible dependency, Xcode and privacy
+profiles. Exact grants bind both technical changes and user-executed native handoffs. A completed
+outcome requires environment `summary.requiredOk`, required doctor success, server status/driver
+evidence, a successful bounded smoke result and later cleanup. Focused macOS/Android/iPhone setup,
+distribution and Skill regressions passed 199 tests; the nine-profile executable oracle, Ruff
+check/format and Mypy over 77 source/test files passed. Independent review found three oracle
+blockers and verified every correction with no blocking finding remaining. No live dependency
+install, Appium/Mac2 server or session, Xcode/privacy change, native Agent evaluation, platform
+qualification or release
+occurred. See experiment §21.
+
 ## Acceptance criteria
 
 - [x] M3 and S3-001 through S3-060 are registered in GitHub Project #2 with exact dependencies and work-item contracts.

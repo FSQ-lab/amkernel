@@ -1188,3 +1188,42 @@ The [bounded evidence record](../../evidence/appium-skill/observation-policy-202
 retains report/harness digests, prior failures, observations and limits. This proves native
 Agent → installed Skill → stdio MCP → official Appium Python Client → synthetic endpoint
 behavior, not real-device/driver qualification or an Android World score improvement.
+
+## 21. Target-scoped native macOS setup guidance (#140)
+
+The packaged Skill now reads `references/macos-setup.md` before the verified pinned
+`setup-mac2` route. The AMKernel-owned reference supplies the Runtime seam, existing
+Node/Appium/Appium-home and Xcode selection, exact compatibility and approval decisions,
+target identity, privacy handoff, and prepared-versus-live reporting. The official Skill retains
+current Mac2 environment, doctor and bounded server-smoke details. iOS/tvOS, Android, task
+execution, troubleshooting, core interfaces and pinned official inputs are unchanged.
+
+The guidance treats macOS privacy as process-identity-specific. Password, administrator,
+Xcode license/first launch, Accessibility, Automation and applicable Screen Recording choices
+remain native and user-owned. It prohibits TCC database edits/resets, silent global Xcode
+selection, `sudo npm`, duplicate Appium homes, setup-only sessions and static-check claims of live
+control. An approved task-owned server smoke may run but must be stopped; a compatible supplied
+server is preserved. Setup-only readiness does not launch the target app.
+
+`tests/e2e/macos_setup_fixture.py` and `macos_setup.py` are deterministic in-process models; they
+run no installer, Appium server, Mac2 driver, Xcode operation, privacy mutation, target app or
+session. Nine profiles cover ready-stack reuse, missing and incompatible Mac2 repair, exact
+Node/npm/Appium/Mac2 range evaluation, Runtime Python/Client/Selenium compatibility, missing Xcode
+native action, and privacy pending. Native Xcode/privacy completion must match the exact disclosed
+approval grant while remaining user-executed. The oracle rejects unapproved, drifted or reused
+grants; forbidden TCC/global-Xcode/security changes; readiness overclaims; session creation;
+shared/unapproved or leaked server smokes; and blanket Screen Recording requirements.
+
+A completed setup outcome now requires the official environment summary and required doctor
+checks plus exactly one approved task-owned server start, status/driver observation, successful
+bounded smoke result and later stop. Discovery, approval-required and blocked outcomes remain
+distinct and do not manufacture smoke evidence.
+
+Focused macOS/Android/iPhone setup, distribution and Skill regressions passed **199 tests**. The
+macOS protocol/oracle self-check passed all **9 profiles**; Ruff check/format and Mypy passed all
+**77 source/test files**. The first independent review found three oracle blockers in dependency
+ranges, bounded smoke completion and native-action approval binding; the final review verified all
+three corrections and reported no remaining blocking finding. This is source-level deterministic
+behavior evidence only. No native Agent evaluation, real dependency installation, Appium/Mac2
+server or session, Xcode/privacy change, live target control, platform qualification, release or
+Android World evaluation occurred.
