@@ -142,7 +142,7 @@ async def test_stdio_transport_close_bounds_stubborn_active_cleanup(tmp_path: Pa
                 assert await wait_pid_gone(pid)
 
 
-async def test_stdio_active_request_cancellation_stabilizes_same_kernel(
+async def test_stdio_cancellation_allows_cleanup_before_transport_close(
     tmp_path: Path,
 ) -> None:
     identity_file = tmp_path / "stdio-cancel.json"
@@ -169,6 +169,7 @@ async def test_stdio_active_request_cancellation_stabilizes_same_kernel(
                         "code": (
                             "import json, os, time\n"
                             "from pathlib import Path\n"
+                            "cleanup_state = {'ran': False}\n"
                             f"Path({str(identity_file)!r}).write_text(json.dumps({{"
                             "'runner': os.getpid(), 'group': os.getpgrp()}))\n"
                             "time.sleep(30)"
@@ -185,12 +186,15 @@ async def test_stdio_active_request_cancellation_stabilizes_same_kernel(
             with pytest.raises(asyncio.CancelledError):
                 await active
 
-            observed = await client.call_tool("python_exec", {"code": "'alive'"})
+            cleanup = await client.call_tool(
+                "python_exec",
+                {"code": "cleanup_state['ran'] = True\ncleanup_state"},
+            )
 
-            assert structured(observed)["status"] == "completed"
-            assert structured(observed)["kernelState"] == "alive"
-            assert structured(observed)["executionCount"] == 2
-            assert structured(observed)["result"] == "alive"
+            assert structured(cleanup)["status"] == "completed"
+            assert structured(cleanup)["kernelState"] == "alive"
+            assert structured(cleanup)["executionCount"] == 2
+            assert structured(cleanup)["result"] == {"ran": True}
 
         assert await wait_pid_gone(runner_pid)
         assert await wait_group_gone(runner_group)

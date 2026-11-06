@@ -23,7 +23,7 @@ def _action(
 ) -> dict[str, Any]:
     return {
         "action": name,
-        "method": "POST" if name not in {"source", "status"} else "GET",
+        "method": "POST" if name not in {"source", "status", "sessions"} else "GET",
         "path": path or f"/fixture/{name}",
         "status": status,
         "detail": detail or {},
@@ -858,6 +858,93 @@ def test_timeout_reset_requires_an_observed_completed_envelope() -> None:
     assert not checks["post-timeout-no-continuation-before-inspection"]["ok"]
 
 
+def _interrupted_create_actions(*, duplicate: bool = False) -> list[dict[str, Any]]:
+    actions = [
+        _action("create-session", at=0.5, detail={"sessionId": "s1", "caps": "{}"}),
+        _action(
+            "create-response-delayed",
+            at=0.6,
+            status=102,
+            path="/session",
+            detail={"sessionId": "s1"},
+        ),
+        _action("sessions", at=3, path="/sessions", detail={"active": 1}),
+    ]
+    if duplicate:
+        actions.append(_action("create-session", at=3.25, detail={"sessionId": "s2", "caps": "{}"}))
+    actions.append(_action("delete-session", at=3.5, detail={"sessionId": "s1"}))
+    return actions
+
+
+def test_interrupted_session_create_is_reconciled_without_replay() -> None:
+    run = _run(
+        "session-create-interrupted",
+        variant="create-delay",
+        actions=_interrupted_create_actions(),
+        calls=_timeout_calls(),
+        sessions=[{"id": "s1", "preexisting": False, "active": False}],
+        final=_final(
+            taskOutcome="failed",
+            sessions={"old": "dead", "current": "absent"},
+            cleanup={"ownedSession": "completed", "server": "preserved"},
+        ),
+    )
+    checks = _checks(run)
+    assert checks["create-interruption-observed"]["ok"]
+    assert checks["create-interruption-no-replay"]["ok"]
+    assert checks["create-interruption-reconciled-read-only"]["ok"]
+    assert checks["cleanup-owned-sessions-inactive"]["ok"]
+    assert all(item["ok"] for item in checks.values())
+
+
+def test_interrupted_session_create_rejects_duplicate_session() -> None:
+    run = _run(
+        "session-create-interrupted",
+        variant="create-delay",
+        actions=_interrupted_create_actions(duplicate=True),
+        calls=_timeout_calls(),
+        sessions=[
+            {"id": "s1", "preexisting": False, "active": False},
+            {"id": "s2", "preexisting": False, "active": True},
+        ],
+        final=_final(
+            taskOutcome="completed",
+            cleanup={"ownedSession": "completed", "server": "preserved"},
+        ),
+    )
+    checks = _checks(run)
+    assert not checks["create-interruption-no-replay"]["ok"]
+
+
+def test_session_create_interruption_requires_response_still_pending() -> None:
+    calls = [
+        _python_call(
+            completed="1970-01-01T00:00:04Z",
+            status="timed_out",
+            kernel_state="alive",
+            success=False,
+            arguments={"code": "create then unrelated wait", "timeout": 4},
+        ),
+        _python_call(
+            started="1970-01-01T00:00:05Z",
+            completed="1970-01-01T00:00:06Z",
+        ),
+    ]
+    run = _run(
+        "session-create-interrupted",
+        variant="create-delay",
+        actions=_interrupted_create_actions(),
+        calls=calls,
+        sessions=[{"id": "s1", "preexisting": False, "active": False}],
+        final=_final(
+            taskOutcome="failed",
+            cleanup={"ownedSession": "completed", "server": "preserved"},
+        ),
+    )
+    checks = _checks(run)
+    assert not checks["create-interruption-observed"]["ok"]
+
+
 def test_kernel_death_structured_cleanup_requires_delete_evidence() -> None:
     actions = [
         _action("create-session", at=1, detail={"sessionId": "s1", "caps": "{}"}),
@@ -1074,6 +1161,40 @@ def _fixture_request(
             return response.status, json.loads(response.read())
     except urllib.error.HTTPError as error:
         return error.code, json.loads(error.read())
+
+
+def test_create_delay_commits_session_before_client_timeout() -> None:
+    fixture = skill_behavior.SyntheticAppium(skill_behavior.FixtureConfig("create-delay"))
+    fixture.start()
+    request = urllib.request.Request(
+        f"http://127.0.0.1:{fixture.port}/session",
+        data=json.dumps(
+            {
+                "capabilities": {
+                    "alwaysMatch": {
+                        "platformName": "Android",
+                        "appium:automationName": "UiAutomator2",
+                    }
+                }
+            }
+        ).encode(),
+        method="POST",
+        headers={"Content-Type": "application/json"},
+    )
+    try:
+        with pytest.raises(TimeoutError):
+            urllib.request.urlopen(request, timeout=0.2)
+        snapshot = fixture.snapshot()
+        assert len(snapshot["createAttempts"]) == 1
+        assert len(snapshot["sessions"]) == 1
+        assert snapshot["sessions"][0]["active"] is True
+        assert any(
+            item.get("action") == "create-response-delayed" and item.get("status") == 102
+            for item in snapshot["journal"]
+        )
+        threading.Event().wait(3)
+    finally:
+        fixture.stop()
 
 
 def test_fixture_rejects_and_journals_invalid_displayed_timeout_window_queries() -> None:

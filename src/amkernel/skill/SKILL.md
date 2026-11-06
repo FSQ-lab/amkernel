@@ -233,6 +233,29 @@ After every call, inspect `status` and `kernelState`:
 - Kernel death loses the namespace; never describe its Python objects as resumable.
 - If an irreversible action may have succeeded, inspect external state before any retry.
 
+Treat three time limits as separate constraints:
+
+- The outer Agent deadline can end the whole workflow and may remove any chance to reconcile or
+  clean up. It says nothing about whether an in-flight Python unit or external request completed.
+- An MCP client or transport timeout means no trustworthy terminal response reached the caller.
+  The Python unit, Kernel, and external operation may be complete, interrupted, alive, dead, or
+  unknown; do not manufacture a `python_exec` result or replay the call.
+- `python_exec.timeout` is enforced inside AMKernel. Only a returned structured result proves its
+  terminal status and `kernelState`; `timed_out/alive` permits a bounded inspection, while
+  `kernel_killed/dead` does not preserve the old namespace.
+
+A cancelled request, lost transport, or outer deadline has no `PythonExecResult` to classify.
+Record the request as cancelled, transport-lost, or deadline-expired at the caller layer, and keep
+the call result and Kernel state unknown until a later observation proves them. In particular, if
+session creation was in flight, do not create another session merely because the response is
+missing. Reconcile through an available read-only endpoint or retained session identity first.
+
+For controlled shutdown, keep the MCP transport open: stop or cancel business execution, wait for
+AMKernel to stabilize that cancellation, run restoration and `driver.quit()` in an ordinary
+bounded `python_exec` cleanup call, inspect its structured result, and only then close the Runtime
+or transport. If the transport or Kernel is already gone, do not claim that Python `finally`,
+restoration, or `driver.quit()` ran.
+
 Use the scenario's observed contract, available read-only state query, and semantic locators;
 do not invent extra probes or poll a stable precondition already observed. Use explicit waits
 only for state that is actually expected to change, with one direct post-action state query when

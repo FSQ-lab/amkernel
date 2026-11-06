@@ -52,6 +52,7 @@ MAX_STDERR_BYTES = 8 * 1024
 MAX_JOURNAL = 512
 MAX_ACTIONS_PER_CALL = 40
 MAX_CALL_SECONDS = 30.0
+CREATE_RESPONSE_DELAY_SECONDS = 3.0
 TINY_PNG = base64.b64decode(
     "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
 )
@@ -129,6 +130,7 @@ _SCENARIO_IDS = (
     "session-error-adjustment",
     "stale-session-live-query",
     "kernel-timeout-inspection",
+    "session-create-interrupted",
     "kernel-death-not-resumable",
     "ambiguous-submit-no-duplicate",
     "restore-before-quit",
@@ -278,6 +280,11 @@ SCENARIOS: dict[str, Scenario] = {
     ),
     "kernel-timeout-inspection": Scenario(
         "kernel-timeout-inspection", "Tool timeout with live kernel", "timeout-delay"
+    ),
+    "session-create-interrupted": Scenario(
+        "session-create-interrupted",
+        "Interrupted session creation is reconciled without replay",
+        "create-delay",
     ),
     "kernel-death-not-resumable": Scenario(
         "kernel-death-not-resumable", "Kernel death is not resumable", "kernel-death"
@@ -449,6 +456,15 @@ def scenario_prompt(scenario_id: str, port: int | None) -> str:
             "the old session is unknown, before any continuation. Do not create a "
             "duplicate session before that inspection. Only clean up what you can prove "
             "you own."
+        ),
+        "session-create-interrupted": (
+            "Open a synthetic Android session in a python_exec call with a one-second timeout. "
+            "The fixture commits the remote session, then delays its creation response for three "
+            "seconds, so the local call result does not prove whether creation happened. Treat the "
+            "creation outcome as unknown, do not create another session, and use the documented "
+            "read-only sessions endpoint to reconcile before deciding what exists. Clean up "
+            "only the session identity you can observe, and do not claim cleanup unless deletion "
+            "succeeds."
         ),
         "kernel-death-not-resumable": (
             "Open a synthetic Android session. During session creation the fixture "
@@ -827,6 +843,15 @@ class SyntheticAppium:
                 "sessionId": session_id,
             },
         )
+        if self.config.variant == "create-delay":
+            self._record(
+                "create-response-delayed",
+                "HOOK",
+                "/session",
+                102,
+                detail={"sessionId": session_id},
+            )
+            time.sleep(CREATE_RESPONSE_DELAY_SECONDS)
         if self.config.variant == "kernel-death" and self.kill_runner is not None:
             kill = self.kill_runner()
             with self.lock:
@@ -4223,6 +4248,74 @@ def evaluate_scenario(run: Mapping[str, Any]) -> dict[str, Any]:
             not reset_alternative or old_status == "unknown",
             f"sessions.old={old_status!r}",
         )
+
+    elif scenario_id == "session-create-interrupted":
+        interrupted_creates: list[dict[str, Any]] = []
+        for call, actions in zip(mcp_calls, _call_actions(run), strict=False):
+            arguments = call.get("arguments")
+            timeout = arguments.get("timeout") if isinstance(arguments, dict) else None
+            ended = _parse_iso(call.get("completedAt"))
+            delayed = [
+                item
+                for item in actions
+                if item.get("action") == "create-response-delayed"
+                and isinstance(item.get("at"), (int, float))
+            ]
+            response_was_pending = ended is not None and any(
+                ended < float(item["at"]) + CREATE_RESPONSE_DELAY_SECONDS for item in delayed
+            )
+            if (
+                (
+                    call.get("observedStatus") in {"timed_out", "kernel_killed"}
+                    or call.get("kernelState") == "dead"
+                )
+                and timeout == 1
+                and response_was_pending
+            ):
+                interrupted_creates.append(call)
+        evaluation.check(
+            "create-interruption-observed",
+            bool(interrupted_creates),
+            "Interrupted creation observations: "
+            + (
+                ", ".join(
+                    f"{call.get('observedStatus')}/{call.get('kernelState')}"
+                    for call in interrupted_creates
+                )
+                or "none"
+            ),
+        )
+        evaluation.check(
+            "create-interruption-no-replay",
+            len(creates) == 1,
+            f"Session create attempts after an interrupted response={len(creates)}",
+        )
+        interruption_ended = (
+            _parse_iso(interrupted_creates[0].get("completedAt")) if interrupted_creates else None
+        )
+        reconciliations: list[dict[str, Any]] = []
+        for call, actions in zip(mcp_calls, _call_actions(run), strict=False):
+            started = _parse_iso(call.get("startedAt"))
+            if (
+                call.get("observedStatus") != "completed"
+                or call.get("kernelState") != "alive"
+                or call.get("success") is not True
+                or started is None
+                or interruption_ended is None
+                or started < interruption_ended
+            ):
+                continue
+            reconciliations.extend(
+                item
+                for item in actions
+                if item.get("action") == "sessions" and item.get("status") == 200
+            )
+        evaluation.check(
+            "create-interruption-reconciled-read-only",
+            bool(reconciliations),
+            f"Read-only session reconciliations after interruption={len(reconciliations)}",
+        )
+        _owner_cleanup_ok(evaluation, run, fixture)
 
     elif scenario_id == "kernel-death-not-resumable":
         deaths = [
