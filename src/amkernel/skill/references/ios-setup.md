@@ -1,19 +1,20 @@
 # iPhone setup and readiness through AMKernel
 
-This reference owns physical iPhone discovery, dependency ownership, scoped approval, signing
-route selection, WebDriverAgent reuse, and the human-interaction seam. Read it before the verified
-`setup-xcuitest` skill for a physical iPhone target. That skill still owns the shared Xcode, Node, Appium,
-driver, doctor, and server checks; the verified `xcuitest-real-device-config` skill still owns its
-trust, Developer Mode, signing, provisioning, and WDA procedure. This reference does not replace
-those steps or restate them as a second tutorial.
+This reference owns physical iPhone discovery, target applicability, signing route selection,
+WebDriverAgent reuse and the human-interaction seam. Read `readiness-contract.md`, then this
+adapter, before verified `setup-xcuitest` guidance for a physical iPhone target. That official
+Skill still owns shared Xcode, Node, Appium, driver, doctor and server checks; verified
+`xcuitest-real-device-config` guidance owns current trust, Developer Mode, signing, provisioning
+and WDA procedure. This adapter does not restate them as a second tutorial.
 
-A simulator or tvOS request keeps its existing route. This reference is iOS physical-device
-guidance only, and no iPhone task requires simulator inventory, a simulator runtime, or a booted
-simulator. Android setup remains in `android-setup.md`; nothing here requires Android SDK
-discovery.
+An iOS Simulator request uses `ios-simulator.md`. This reference is physical-iPhone guidance only,
+and no physical task requires simulator inventory, a simulator runtime or a booted simulator. tvOS
+is outside this adapter and has no AMKernel support claim. Android setup remains in
+`android-setup.md`; nothing here requires Android SDK discovery.
 
-The execution, evidence, service, and cleanup contract is in `amkernel-appium.md`. This reference
-adds no server, driver, signing helper, device wrapper, MCP tool, or AMKernel core surface.
+Setup/readiness/authorization uses `readiness-contract.md`; execution, service and live cleanup use
+`amkernel-appium.md`. This adapter adds no server, driver, signing helper, device wrapper, MCP tool
+or AMKernel core surface.
 
 ## Boundary
 
@@ -23,8 +24,8 @@ archive, manifest, or verifier content to make a route pass.
 
 Setup-only and status-only requests create no session and do not launch WDA. Discovery is
 read-only. Installation, Xcode first-launch or license changes, device trust, Developer Mode,
-signing, provisioning, device registration, WDA installation, tunnel or developer-service changes,
-and service startup require the scoped approval described below.
+signing, provisioning, device registration, WDA installation, tunnel, developer-service and
+service-start effects use the one authorization record in `readiness-contract.md`.
 
 ## Scope the request before acting
 
@@ -65,46 +66,11 @@ is permission to re-check, not evidence that the prerequisite passed. If the che
 name the observed remaining blocker and give only its next action; do not repeat the entire setup.
 For example, when the phone is currently locked: "请在 iPhone 上解锁，看到主屏幕后告诉我。密码只在手机输入，不要发给我；我会重新检查连接。"
 
-## One disclosure, one approval
+## Shared setup contract
 
-Before the first mutation, explain the decision in plain language: what is missing, why the
-observed existing tools cannot satisfy it, and what the Agent proposes to do. Follow with compact
-details covering every planned change below, then ask for approval. Keep exact versions, sources,
-locations, shared impact, and rollback visible; plain language must not hide material effects.
-If evidence is incomplete, report what is unknown and obtain the next relevant read-only
-observation instead of treating uncertainty as permission to install or re-sign. If that
-observation cannot be obtained, pause at that blocker rather than proposing a speculative repair.
-
-- **Component and exact target:** distribution or package name and the exact version resolved from
-  current metadata; never "latest" or a guessed version.
-- **Source and backend:** uv tool with its source and extras; npm/Appium extension source; Apple or
-  Xcode source for Xcode and signing assets; existing host tunnel or developer-service mechanism if
-  one is required.
-- **Install location and environment:** uv tool environment; npm prefix and `APPIUM_HOME`; selected
-  Xcode and task-scoped `DEVELOPER_DIR`; selected driver install path; temporary artifact
-  directories.
-- **Impact:** which other projects, shared Appium homes, drivers, sessions, devices, or running
-  services are affected; whether the Kernel connection must be replaced or reconnected; which
-  existing compatible components are preserved.
-- **State-changing effects:** Apple Account sign-in, Xcode license or first launch, device trust,
-  Developer Mode and restart, device registration, provisioning-profile or bundle-ID change,
-  WDA installation or replacement, keychain access confirmation, administrator authentication, and
-  whether the effect persists after the task.
-- **Rollback:** the exact prior version, source specification, install path, and task-scoped
-  environment recorded before the change; the command or action that removes only this task's
-  addition; what cannot be rolled back, such as an accepted license, a registered device, a
-  generated profile, or a changed trust setting.
-- **Secrets:** the user enters passwords, PINs, two-factor codes, and keychain confirmations only in
-  native interfaces. Never request, capture, print, or store them.
-
-One approval covers exactly the disclosed batch. Newly discovered scope, a different version,
-additional device registration, a persistent environment edit, or an additional privileged action
-requires a new disclosure. A broad "set up my iPhone" request does not authorize unrelated
-drivers, updates, simulator components, or device erasure.
-
-After approval, perform the disclosed technical work in this task and verify each layer. Do not
-hand installation commands or Xcode configuration back to the user. The user handles only actions
-that require their account, body, or local security confirmation.
+Read `readiness-contract.md` before this adapter. Use its one authorization record, physical-iPhone
+profile, canonical layer states, official-guidance ownership and cleanup rules. This reference adds
+only physical target discovery, Apple security handoffs, signing/provisioning and WDA reuse.
 
 ## Dependency ownership and required layers
 
@@ -122,63 +88,17 @@ A physical iPhone target does not require simulator tools, a simulator runtime, 
 simulator. A connected phone also does not make the host setup ready: report host dependency
 blockers and target readiness separately.
 
-## Runtime Python and client
+## Shared Runtime and official driver seam
 
-Prefer `python_exec` evidence:
+Use the actual managed Runtime identified by `python_exec` or verified AMKernel metadata; never
+substitute the project `.venv`. Runtime/client applicability and repair authorization use
+`readiness-contract.md`. Current Node, Appium, XCUITest, dependency, doctor and server-smoke
+procedure belongs to verified `setup-xcuitest`; real-device continuation belongs to verified
+`xcuitest-real-device-config`. Do not copy their version ranges or prerequisite checklists here.
 
-```python
-import importlib.metadata as md
-import sys
-from appium import webdriver
-from appium.options.ios import XCUITestOptions
-
-print(sys.executable, sys.version)
-for name in ("amkernel", "Appium-Python-Client", "selenium"):
-    print(name, md.version(name))
-print(md.metadata("Appium-Python-Client")["Requires-Python"])
-print(md.requires("Appium-Python-Client"))
-print(md.requires("selenium"))
-```
-
-If the Runtime is reachable only from the host, identify the uv-managed installation and preserve
-its environment:
-
-```text
-uv tool list --show-version-specifiers --show-with --show-extras --show-paths --show-python
-uv tool dir
-uv tool dir --bin
-```
-
-Use the listed `amkernel` tool environment, its interpreter, and its recorded extras. Do not use
-`python3` from `PATH`, the project `.venv`, or another project's environment.
-
-Evaluate and classify the dependency layer with `SKILL.md`'s exact labels:
-`satisfied-constraints`, `warning-only`, `unverified`, `observed-requirement-violation`, and
-`proven-incompatible`. A successful import proves client dependency presence, not device or
-session compatibility.
-
-Repair only when the actual Runtime lacks a required client or violates an applicable requirement.
-Record the current install specification and extras first, then recreate the same tool with
-`--force` only when recreation is needed:
-
-```bash
-uv tool list --show-version-specifiers --show-with --show-extras --show-paths --show-python
-# Resolve these values from the current tool before replacement, not from this example.
-uv tool install "$OBSERVED_AMKERNEL_SPEC" --force --python "$OBSERVED_PYTHON_SPEC" \
-  "${PRESERVED_UV_OPTIONS[@]}" --with "$RESOLVED_CLIENT_SPEC"
-```
-
-Reuse the observed package-index, local-path, or other source specification, its same AMKernel
-version and Python selection. `PRESERVED_UV_OPTIONS` contains the recorded index/source settings,
-package extras and other `--with` requirements; replace only the client requirement being repaired,
-not unrelated extras. `--force` does not authorize an AMKernel version change. Do not mutate the
-tool environment with `pip`. A shared Runtime replacement affects every activated project: disclose it, then
-reconnect or restart affected Kernels before use. If the requested constraint conflicts with the
-Runtime package's own requirements, report the conflict instead of forcing an incompatible
-environment.
-
-Offline index: verify the existing Runtime and report a missing distribution as an offline
-blocker; do not invent a version or substitute an unrelated interpreter.
+Bind official checks to the selected Xcode, physical target, signing/WDA route and task-scoped
+environment below. Preserve an existing working backend and `APPIUM_HOME`; changing global/local
+mode or home is a disclosed effect, not an automatic repair.
 
 ## Xcode and the selected toolchain
 
@@ -291,85 +211,17 @@ If a tunnel or image service fails, that is a connection/developer-service diagn
 that signing or the certificate is invalid. Do not replace the user's working mechanism with a new
 one without a disclosed reason.
 
-## Node, Appium, and the XCUITest driver
+## Bind official checks to the selected physical-iPhone environment
 
-Discover the existing installation before changing anything:
+After selecting Xcode and physical target evidence, verify and consume `setup-xcuitest`, followed by
+`xcuitest-real-device-config` only after shared prerequisites pass. Run their current
+Node/Appium/driver discovery, doctor and bounded smoke procedure with the same task-scoped
+`DEVELOPER_DIR`, backend mode and `APPIUM_HOME`. Preserve raw required fixes and warnings before
+applying this adapter's physical-target applicability rules.
 
-```bash
-node -v
-node -p "process.execPath"
-npm -v
-command -v appium
-appium -v
-appium driver list --installed --json
-```
-
-For generic Node discovery, version managers, official archive checksums, npm prefix rules, and
-exact engine/peer evaluation, reuse
-[`android-setup.md#node-npm-appium-and-the-selected-driver`](android-setup.md#node-npm-appium-and-the-selected-driver).
-Do not run Android SDK, JDK, ADB, emulator, or system-image discovery for an iPhone task.
-
-Resolve the XCUITest driver's exact version and constraints from current metadata; do not reduce
-compatibility to a "latest" install or a major-version floor:
-
-```bash
-npm view "appium-xcuitest-driver@$DRIVER_VERSION" engines peerDependencies --json
-appium driver list --installed --json
-```
-
-The installed-driver JSON reports the driver version, `installPath`, and peer Appium range. Inspect
-the driver package metadata, and compare the active Node/Appium versions with its `engines` and
-`peerDependencies`. Preserve an existing compatible driver; do not update other drivers to match a
-newer release.
-
-Use one `APPIUM_HOME` consistently for extension commands, doctor, and the server:
-
-```bash
-export APPIUM_HOME="${APPIUM_HOME:-$HOME/.appium}"
-appium driver doctor xcuitest
-```
-
-Run the doctor with the same task-scoped `APPIUM_HOME`, `DEVELOPER_DIR`, Node, and Appium entry
-point the server will use. Preserve its raw stdout/stderr and exit status. Classify each required
-fix and warning by applicability using the same three categories as Android setup:
-
-- **applicable-blocking:** the requested iPhone target needs this layer now; resolve and re-run.
-- **not-applicable-to-this-target:** simulator, tvOS, FFmpeg, or another component this physical
-  target does not need.
-- **optional-unrequested:** an explicitly optional capability the user did not request.
-
-Report the raw findings and the classification together. Never filter the official output or
-present a filtered subset as the raw result. Official helper summaries follow the same rule; a
-sandbox or Appium-home permission failure is evidence, not proof that a target or package is
-absent.
-
-The official `check-xcuitest-env.mjs` summary includes simulator inventory in its aggregate
-`requiredOk`. For a physical iPhone target, simulator inventory is
-`not-applicable-to-this-target`: do not install a simulator runtime, create a simulator, or report
-the physical setup as blocked solely because simulator inventory failed. Preserve the raw helper
-result, name the failing component and its applicability, and use the applicable Xcode, Node,
-Appium, driver-doctor, `/status`, and selected-driver gates for the phone. This applicability seam
-does not relax those applicable official checks.
-
-Only after approval, install the missing selected driver into the same Appium home:
-
-```bash
-appium driver install "xcuitest@$DRIVER_VERSION"
-appium driver list --installed --json
-```
-
-Do not install with a bare latest version when its peer range does not include the active Appium.
-If a shared Appium home has a real conflict, first check whether the task can safely use an
-isolated task-owned Appium home and port without colliding with existing sessions or devices;
-disclose any extra installation. Do not overwrite or remove a shared driver to make room. Record
-the previous state and roll back only this task's addition:
-
-```bash
-# Only when this task added it:
-appium driver uninstall xcuitest
-```
-
-An existing compatible Appium/driver pair is reused without upgrading merely to silence a warning.
+Do not independently require a version, reinstall a listed driver, switch global/local mode or
+create a second Appium home. A verified official warning is evidence, not permission to repair.
+Only an observed applicable incompatibility or failed required operation can block the layer.
 
 ## Signing, provisioning, and WDA reuse
 
@@ -652,31 +504,12 @@ is complete.
 
 ## Verification and reporting
 
-Lead with a short user-facing result in the user's language: ready for the requested scope,
-waiting for a user action/approval, or blocked by an observed problem. State what was reused or
-changed and, if unfinished, the single next user action (or the Agent's next check if none is
-needed). Distinguish "prepared, connection not tested" from "connection verified"; a user wait
-is not itself a technical failure. Follow with the compact technical evidence below rather than
-making the user interpret raw tool output to discover what to do next.
+After an authorized change, rerun only affected discovery and verified official checks. Confirm the
+selected Xcode, current physical target state, signing route and WDA route from live evidence; do
+not trust an installer's success message, a historical pairing or a reusable-candidate label.
 
-A completed approved step does not clear a different unresolved prerequisite. State separately
-what the Agent still needs to diagnose and which remaining installation, signing, or security
-changes still need the user's approval before they can happen. An outstanding consent requirement
-is not a request to approve an uncertain plan now: clarify conflicting evidence first, then
-disclose the exact proposed effects and ask for approval. Do not send the user to solve technical
-contradictions or describe the remaining changes as already authorized.
-
-For an approved setup-only request, report:
-
-- the exact components reused, installed, or repaired, with their observed versions and locations;
-- the raw XCUITest doctor required fixes and warnings with their target applicability;
-- Xcode/SDK and selected driver evidence, plus the current target layers
-  (discovered/connected/usable-for-development/ready-for-xcuitest);
-- the selected signing route and sanitized match/no-match evidence;
-- the selected WDA route and whether it is merely a reuse candidate or actually launch-verified;
-- that no session was created and what remains unverified.
-
-For an authorized validation, additionally report the actual Client session creation, the harmless
-live query, `driver.quit()` result, and cleanup limits. Never claim a live session from `/status`,
-an import, a driver listing, a signature check, or a manual WDA icon. Keep device outcome and
-cleanup truth separate.
+Return the canonical `readiness-contract.md` result with `target.platform=ios` and
+`target.profile=physical`. Include applicable doctor, target, signing and WDA blockers in their
+layers. Setup-only creates no session. Authorized live validation additionally requires an actual
+official-client session, a relevant query and truthful cleanup. `/status`, an import, driver list,
+signature check or manual WDA icon is not live proof.

@@ -2,7 +2,7 @@
 
 ## Task
 
-Resolve the separately scoped post-release core CI defects #114/#115, then continue the owner-authorized ordered real-platform acceptance, real Windows Android verification, and installed-wheel Codex/cross-OS Stage 4 evaluation without changing the public interface or support claims.
+Resolve the separately scoped post-release core CI defects #114/#115, then continue the owner-authorized Android, iOS and native macOS acceptance plus installed-wheel Codex/cross-OS Stage 4 evaluation without changing the public Runtime interface. Windows is explicitly outside AMKernel support.
 
 ## Context
 
@@ -143,16 +143,12 @@ discovery returned one connected development-enabled target, not XCUITest readin
 Existing task-local Java 17 and Android SDK/adb were found and execution-validated;
 no new dependency installation or shared ADB startup was performed in this attempt.
 
-Windows prerequisite discovery found no authorized reachable Windows/Android host
-or repository self-hosted runner. No actual Windows command or failure was
-observed. `published-011-windows-readiness-20261103.json` distinguishes those facts
-from static shipped-code POSIX requirements: Artifact Store startup, Supervisor
-spawning/control and Runner signal initialization lack native Windows support.
-Windows needs the separate accepted platform design required by #100/ADR-0005;
-do not remove guards or weaken file-identity/owned-cleanup contracts as a shortcut.
-A new authorized hosted Windows job can supply lifecycle-only evidence, not the
-required Android-device scenario. Missing existing jobs do not prove hosted
-execution impossible. Issue #100 records the investigated limits and dependencies.
+Historical Windows prerequisite discovery found no authorized reachable host and identified native
+Windows gaps in process and signal handling. That evidence remains retained, but the owner decision
+is now explicit: AMKernel does not support Windows hosts or targets, and Windows qualification is
+not a product prerequisite or roadmap item. Keep the existing guards; never route through Windows
+material retained in the pinned upstream Appium snapshot or weaken file-identity/owned-cleanup
+contracts to imply support.
 
 The unreleased #98 Skill revision now presents one novice-first interface: the user supplies a
 plain-language outcome while the Agent discovers safe facts, chooses one platform route, avoids
@@ -167,7 +163,7 @@ or completion of the outstanding actual-platform sequence.
 
 Issues #102, #103, #104, #106, #107 and #108 are closed against their completed,
 merged and independently reviewed defect contracts. #98 and #105 remain open for
-the outstanding actual-platform sequence; #100 still requires real Windows evidence.
+the outstanding supported-platform sequence. #100 is not an AMKernel support objective.
 The latest read-only Project #2 check has #81 Planning and #79/#82 Ready.
 Available credentials have `read:project`, not board-write scope; issue updates do not imply board changes.
 Complex Mac #109, dynamic-list #97 and Gmail privacy expansion #99 stay deferred.
@@ -333,7 +329,7 @@ Separate defects own the work: [#102](https://github.com/FSQ-lab/amkernel/issues
 then [#98](https://github.com/FSQ-lab/amkernel/issues/98) real Agent behavior. Environment discovery
 [#106](https://github.com/FSQ-lab/amkernel/issues/106) and owned-state/conversation behavior
 [#107](https://github.com/FSQ-lab/amkernel/issues/107) remain separate contracts. Gmail privacy
-expansion #99 remains post-v1; Windows Android #100 still requires real Windows evidence.
+expansion #99 remains post-v1; Windows Android #100 is outside AMKernel support.
 
 #102 now distinguishes constraints, tested coverage, observed failures, and proven incompatibility.
 `evidence/appium-skill/compatibility-20261102.json` retains bounded real Copilot CLI 1.0.105 /
@@ -604,6 +600,28 @@ screenshot. Focused observation and evaluator regressions passed 125 tests; inde
 found no remaining actionable issue. This is synthetic behavior evidence only; no real Apple
 target or broader platform qualification is established.
 
+### Unified readiness and authorization interface
+
+The installed Skill is now a 220-line router over `readiness-contract.md`. Android physical,
+Android emulator, iOS Simulator, physical iPhone and native macOS adapters use one canonical
+target/readiness/authorization/live-control/cleanup result. The authorization effect set survives
+first-party to official-Skill handoff, so an identical approved change is not confirmed twice;
+changed effects require a new disclosure. This remains behavioral guidance, not a security control.
+
+Version-sensitive Node/Appium/driver prerequisites and procedures were deleted from first-party
+platform references. Verified official Skills own those facts; first-party adapters retain target
+applicability, local selection, ownership and result normalization. Official distribution now has
+one `--json` verifier result while preserving the existing fail-closed manifest, receipt and exact
+tree checks internally. A focused iOS Simulator adapter separates runtime, configured target, boot
+and live control while marking physical trust/signing/WDA provisioning not applicable. Every
+Windows host or target is blocked without mutation or session fallback.
+
+Focused behavior regressions passed 139 tests; Skill/distribution checks passed 62 tests; Ruff and
+Python diagnostics passed. Independent review found and drove fixes for canonical required-layer
+coverage, zero execution calls on Windows, and explicit-decline state consistency. Re-review found
+no remaining actionable issue. The direct repository verifier invocation failed closed with the
+expected missing installed-project receipt; temporary installed-project tests covered both
+structured verified and failed results.
 
 ### Shared control-first and visual-fallback execution (#98)
 

@@ -1,6 +1,6 @@
 # Appium through AMKernel
 
-This reference owns the shared AMKernel/Appium seam. Android preparation belongs to `android-setup.md`; Android connection, platform state, locators, input, navigation and recovery decisions belong to `android-execution.md`. Read the execution reference for an Android scenario, even when setup is already complete. Physical-iPhone preparation belongs to `ios-setup.md`; other platform setup and diagnosis use the routed verified official skills. These platform references do not replace the shared lifecycle, evidence or ownership contract below.
+This reference owns the shared AMKernel/Appium execution seam. Setup, readiness, repair and authorization belong to `readiness-contract.md` plus exactly one platform adapter. Android execution details belong to `android-execution.md`. Read that reference for an Android scenario even when setup is complete. Platform adapters and verified official Skills do not replace the lifecycle, evidence or ownership contract below.
 
 ## Runtime contract
 
@@ -11,46 +11,12 @@ This reference owns the shared AMKernel/Appium seam. Android preparation belongs
 - A kernel reset or death makes external session state unknown. Reconcile it before replacement.
 - Importing the client proves dependency presence, not full compatibility. A ready `/status` or a driver listing is not a live-session proof. Setup-only and status-only requests create no session.
 
-## Task-scoped discovery evidence
+## Consume readiness; do not recreate it
 
-Use the requested target and observed host OS to choose relevant checks. Preserve
-existing working installations; discovery is not permission to repair them. Keep
-the following evidence bounded. When it determines Runtime behavior, use the actual AMKernel
-Runtime through `python_exec` or its verified managed interpreter, not an unrelated shell Python.
-
-- **Android dependencies/targets:** use `android-setup.md` for candidate discovery,
-  component selection, scoped installation approval, and target readiness.
-- **Apple tools/targets:** observe task `DEVELOPER_DIR` and active
-  `xcode-select -p`; execute the selected `xcodebuild -version` and `xcrun` tools.
-  If another installed Xcode is needed, validate it under a task-only
-  `DEVELOPER_DIR`, never `sudo xcode-select --switch`. Use that same selected
-  Xcode's `xcrun devicectl list devices --json-output <task-temporary-file>` for
-  physical Apple devices, and separately `xcrun simctl list devices --json` and
-  runtime inventory for simulators. A simulator entry is never a physical-device
-  discovery result. Inspect the selected tool's help/schema when interpreting its
-  version-specific fields; a listing alone proves neither live connection nor
-  development readiness.
-
-Report physical Apple targets in separate evidence layers: **discovered** (listed),
-**connected** (current transport/connection evidence), **usable-for-development**
-(observed pairing/trust, Developer Mode and required development services), and
-**ready-for-xcuitest** (the selected driver, signing/provisioning and WebDriverAgent
-path verified for that target). Preserve unknown/not-checked states and their
-reasons; never promote an earlier layer into a later one. For physical iPhone
-dependency ownership, signing/WDA reuse, and failure classification, apply
-`ios-setup.md`. Do not create a session
-for setup-only discovery, change signing, pair devices or dismiss permission
-prompts to manufacture readiness. Live XCUITest proof belongs to an explicitly
-requested validation/scenario. Keep platform, dependency and Runtime readiness
-separate, and explain multiple-candidate choices before asking only for a material
-target choice that the request and available evidence cannot resolve.
-
-Layer counts describe the listed target population, not host-wide platform
-qualification. After a successful empty inventory, zero usable/ready targets is
-valid; conservatively retaining unknown is also acceptable. A failed or unknown
-inventory, or a nonempty listing without target-specific evidence, must not be
-converted into known readiness counts.
-
+For execution, reuse the selected target/profile and established readiness result. Do not rerun
+setup, official-source verification, target inventory or dependency checks merely to act. If live
+evidence exposes a genuine prerequisite failure, retain the observed failure and route the smallest
+affected layer back through `readiness-contract.md` and its platform adapter.
 
 ## Run the service with the task environment
 

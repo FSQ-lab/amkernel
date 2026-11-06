@@ -27,16 +27,21 @@ def _write_json(path: Path, value: object) -> None:
     path.write_text(json.dumps(value), encoding="utf-8")
 
 
-def _run_verifier(project_root: Path, manifest_path: Path) -> subprocess.CompletedProcess[str]:
+def _run_verifier(
+    project_root: Path, manifest_path: Path, *, json_output: bool = False
+) -> subprocess.CompletedProcess[str]:
+    command = [
+        sys.executable,
+        str(VERIFIER),
+        "--manifest",
+        str(manifest_path),
+        "--project-root",
+        str(project_root),
+    ]
+    if json_output:
+        command.append("--json")
     return subprocess.run(
-        [
-            sys.executable,
-            str(VERIFIER),
-            "--manifest",
-            str(manifest_path),
-            "--project-root",
-            str(project_root),
-        ],
+        command,
         check=False,
         capture_output=True,
         text=True,
@@ -134,11 +139,19 @@ def test_verifier_accepts_receipt_and_rejects_source_or_runtime_tampering(
     accepted = _run_verifier(tmp_path, manifest_path)
     assert accepted.returncode == 0, accepted.stdout + accepted.stderr
     assert "verified" in accepted.stdout
+    structured = _run_verifier(tmp_path, manifest_path, json_output=True)
+    assert structured.returncode == 0
+    assert json.loads(structured.stdout) == {"status": "verified", "errors": []}
 
     (source / "source.md").write_text("tampered\n", encoding="utf-8")
     source_rejected = _run_verifier(tmp_path, manifest_path)
     assert source_rejected.returncode == 1
     assert "official source: sha256 mismatch" in source_rejected.stdout
+    structured_rejected = _run_verifier(tmp_path, manifest_path, json_output=True)
+    assert structured_rejected.returncode == 1
+    structured_result = json.loads(structured_rejected.stdout)
+    assert structured_result["status"] == "failed"
+    assert any("official source: sha256 mismatch" in item for item in structured_result["errors"])
     (source / "source.md").write_bytes(source_content)
 
     (runtime / "SKILL.md").write_text("tampered\n", encoding="utf-8")

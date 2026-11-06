@@ -344,15 +344,28 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
     parser.add_argument("--project-root", type=Path, default=Path.cwd())
+    parser.add_argument(
+        "--json",
+        action="store_true",
+        dest="json_output",
+        help="emit one stable status object instead of human-readable lines",
+    )
     arguments = parser.parse_args()
 
     errors = verify(arguments.manifest.resolve(), arguments.project_root.resolve())
-    if errors:
+    if arguments.json_output:
+        print(
+            json.dumps(
+                {"status": "failed" if errors else "verified", "errors": errors},
+                sort_keys=True,
+            )
+        )
+    elif errors:
         for error in errors:
             print(error)
-        return 1
-    print("Pinned Appium source and installed skill copies verified.")
-    return 0
+    else:
+        print("Pinned Appium source and installed skill copies verified.")
+    return 1 if errors else 0
 
 
 if __name__ == "__main__":

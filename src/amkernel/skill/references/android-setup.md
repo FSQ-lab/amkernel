@@ -15,154 +15,53 @@ reference is AMKernel-owned guidance, not pinned official content. The execution
 contract is in `amkernel-appium.md`; setup-only and status-only requests create no session.
 
 Discovery is read-only. Installation, license acceptance, persistence, emulator work, ADB
-start-up, and device authorization require the scoped approval described below.
+start-up and device authorization use the shared authorization record below.
 
 ## Route
 
-1. Establish the requested Android target and goal from the conversation and safe evidence:
-   physical device, emulator/AVD, or an application/build task that only needs SDK tooling.
-2. Identify the host; for Appium work, identify the actual AMKernel Runtime as well. Do not
-   substitute system Python, the project `.venv`, or another interpreter for that Runtime.
-3. Discover only relevant layers read-only. An Appium scenario needs Runtime client, Java,
-   Android tools, Node/npm/Appium/driver; an SDK/JDK-only install needs only its own prerequisites.
-   Preserve working installations; SDK-only requests never require Appium or an Agent Runtime.
-4. Resolve exact candidates from observed metadata. Classify what is genuinely missing for this
-   target; do not infer absence from one unset variable or one failed candidate.
-5. If changes are needed, present one disclosure and obtain one scoped approval. After approval,
-   perform the installation in this task and verify it. Do not hand the setup back to the user.
-6. For an Appium target, verify the selected official driver/server checks and classify their raw
-   output by applicability. For SDK/JDK-only work, verify the installed tools and stop there.
-7. Report target-scoped readiness and any remaining live-session proof separately. Stop without a
-   session when the request was setup-only or status-only.
+1. Establish the requested physical-device, emulator or SDK-only goal.
+2. Read `readiness-contract.md`; select exactly one Android profile and discover only its relevant
+   layers. Preserve working installations and the actual AMKernel Runtime identity.
+3. Use this adapter for Java, SDK, target and ADB applicability; use verified official guidance for
+   current Appium/driver prerequisites and procedure.
+4. Resolve exact missing effects, authorize them once through the shared record, execute them in
+   this task and rerun only affected checks.
+5. Return the canonical result. Setup/status stops without a session; live proof remains separate.
 
-## One disclosure, one approval
+## Shared setup contract
 
-Before any mutation, present one concise disclosure covering every planned change. Use these
-fields so the approval is exact and scoped:
+Read `readiness-contract.md` before this adapter. Use its one authorization record, canonical
+profile/layer states, official-guidance ownership and cleanup rules. This reference adds only
+Android target selection, Java/SDK applicability, ADB side effects and doctor-result interpretation.
 
-- **Component and exact target**: distribution/package name and the exact version or SDK package
-  identifier resolved from current metadata; never "latest" or an unverified guess.
-- **Source and backend**: uv tool with its package source and extras; npm registry package spec;
-  Google SDK repository package ID and archive checksum; official vendor JDK archive URL and
-  checksum; existing version manager if used.
-- **Install path and environment**: uv tool environment; npm prefix and `APPIUM_HOME`; Android SDK
-  root and component paths; JDK directory; whether the environment value is task-scoped or
-  persistent.
-- **Impact**: which other projects, global sessions, Appium homes, SDK roots, or running services
-  are affected; whether the current Kernel/MCP connection must be reloaded; whether existing
-  compatible versions are preserved.
-- **Rollback**: the exact previous version/spec/install path recorded before the change and the
-  command that restores or removes only this task's addition; state what cannot be rolled back,
-  such as an accepted Android SDK license.
-- **Licenses**: the license or agreement to be accepted, at which step, and that acceptance is a
-  separate disclosed effect of the install.
-- **Elevation**: whether any privileged step is required; prefer a user-level route and obtain a
-  separate approval if elevation is genuinely unavoidable.
-- **Persistence**: exactly which environment variable or profile change would persist beyond this
-  task and its removal line; prefer task-scoped values.
-
-One approval covers the disclosed batch. Apply only those changes and verify them in this task;
-do not hand the commands to the user. A newly discovered change, a different version, additional
-SDK components, a persistent environment edit, or a privileged action requires a new disclosure
-and approval.
 
 ## Target scope and required layers
 
 | Layer | Physical device | Emulator target |
 | --- | --- | --- |
-| AMKernel Runtime client (`appium`, `selenium`) | required | required |
-| Working JDK | required | required |
-| `platform-tools` / authorized ADB service | required | required |
-| `cmdline-tools` / `sdkmanager` | only for SDK management or install | only for SDK management or install |
-| SDK platform | only if the selected tool, build, or driver check requires it | only if the selected tool, build, or driver check requires it |
-| `build-tools` | when selected tools, driver APK handling/signing, or builds need them | when selected tools, driver APK handling/signing, or builds need them |
-| `emulator` package, system image, AVD | not required | required |
-| Device authorization / unlock | user action when observed | observe locks/prompts; never auto-dismiss or unlock |
-| Appium session | only for an explicitly requested scenario | only for an explicitly requested scenario |
+| Runtime Python/client | Required. Actual Runtime, not project `.venv`. | Required. Same. |
+| Java/JDK | Required. | Required. |
+| Android SDK | Platform tools plus target-relevant platform. | Platform tools plus target-relevant platform. |
+| Emulator package | Not applicable. | Required. |
+| System image | Not applicable. | Required for selected API/ABI. |
+| AVD | Not applicable. | Required. |
+| Target state | Connected and authorized. | Launched, boot-complete, responsive. |
+| Node/Appium/UiAutomator2 | Required through verified official guidance. | Required through verified official guidance. |
 
-A physical target must not be gated on emulator inventory, a system image, or an AVD. Do not
-install an emulator component just to satisfy a generic Android checklist. An emulator target
-must not be treated as usable merely because an AVD is configured.
+Do not install emulator components for a physical request, and do not treat a configured AVD as a
+booted target. Report these layers through the shared Android physical or emulator profile.
 
-## Runtime Python and client
+## Shared Runtime and official driver seam
 
-### Identify the actual Runtime
+Use the actual managed Runtime identified by `python_exec` or verified AMKernel metadata; never
+substitute the project `.venv`. Runtime/client applicability and repair authorization use
+`readiness-contract.md`. Current Node, Appium, UiAutomator2, dependency, doctor and server-smoke
+procedure belongs to the verified `setup-uiautomator2` Skill. Do not copy its version ranges or
+checklist here.
 
-Prefer `python_exec` evidence:
-
-```python
-import sys
-print(sys.executable, sys.version)
-```
-
-If the Runtime is reachable only from the host, identify the uv-managed installation and preserve
-its environment:
-
-```text
-uv tool list --show-with --show-paths --show-python
-uv tool list --show-version-specifiers --show-with --show-paths --show-python
-uv tool dir
-uv tool dir --bin
-```
-
-Use the listed `amkernel` tool environment, its interpreter, and its extra requirements. Do not
-use `python3` from `PATH`, the project `.venv`, or another project's environment.
-
-### Verify the dependency layer
-
-In the actual Runtime:
-
-```python
-import importlib.metadata as md
-import sys
-
-print(sys.executable, sys.version)
-for name in ("amkernel", "Appium-Python-Client", "selenium"):
-    print(name, md.version(name))
-print(md.metadata("Appium-Python-Client")["Requires-Python"])
-print(md.requires("Appium-Python-Client"))
-print(md.metadata("selenium")["Requires-Python"])
-print(md.requires("selenium"))
-```
-
-Exercise the actual imports and inspect the selected driver's declared ranges as support evidence.
-Evaluate and classify dependencies under `SKILL.md`'s relevant-readiness rules.
-
-### Repair
-
-Repair only if the actual Runtime lacks a required client or violates an applicable requirement.
-Record the current install spec and extras first:
-
-```text
-uv tool list --show-version-specifiers --show-with --show-paths --show-python
-```
-
-Then re-create the tool environment with the same package source spec and all previously recorded
-extras, adding the applicable client constraint. `uv tool install` of an already-present tool
-version may otherwise leave the existing environment in place; when repair must actually recreate
-it, add the documented `--force` flag. Preserve the installed AMKernel version rather than
-upgrading it as a side effect; for a package-index install:
-
-```text
-uv tool install "amkernel==$AMKERNEL_VERSION" --force --with 'Appium-Python-Client<resolved applicable constraint>'
-```
-
-If the observed Runtime was installed from a local path or another non-index source, reuse that
-same source spec and flag set instead of replacing it with the package-index name, adding
-`--force` only to recreate the existing environment. `--force` does not authorize a version
-change: keep the recorded AMKernel version/source spec. If the requested client constraint
-conflicts with the Runtime package's own requirements, report the conflict rather than forcing an
-incompatible environment. Do not mutate the tool environment with `pip`; the uv tool environment
-is managed by `uv`. If the actual interpreter is outside AMKernel's supported CPython range,
-disclose and select a supported interpreter through the same uv tool installation rather than
-changing system Python. Replacing a shared Runtime affects every activated project; disclose
-that scope and reconcile/reconnect affected Kernels before using the replacement.
-
-Never install the client into the project `.venv`.
-
-Offline index: verify the existing Runtime instead of installing. If a required distribution is
-absent, report the offline index/blocker and stop that dependency repair; do not invent a version
-or fall back to an unrelated interpreter.
+Bind official checks to the Java, SDK, target and task-scoped environment selected below. Preserve
+an existing working backend and `APPIUM_HOME`; changing global/local mode or home is a disclosed
+effect, not an automatic repair.
 
 ## Java
 
@@ -360,141 +259,16 @@ Offline SDK repository: use `--list_installed` and existing binaries. If a requi
 absent and the official repository is unreachable, report the blocker; do not claim an install or
 substitute an unknown archive.
 
-## Node, npm, Appium, and the selected driver
+## Bind official checks to the selected Android environment
 
-### Discover the existing installation
+After selecting Java, SDK and target evidence, verify and consume `setup-uiautomator2`. Run its
+current Node/Appium/driver discovery, doctor and bounded server smoke with the same task-scoped
+`JAVA_HOME`, Android SDK root, executable paths, backend mode and `APPIUM_HOME`. Preserve its raw
+required fixes and warnings before applying this adapter's target applicability rules.
 
-```bash
-node -v
-node -p "process.execPath"
-npm -v
-npm config get registry
-npm config get prefix
-npm root -g
-command -v fnm
-command -v asdf
-command -v volta
-```
-
-If `node` is absent from `PATH`, inspect existing version managers and their installed versions
-before concluding Node is absent. Reuse an existing manager (`nvm`, `fnm`, `asdf`, `volta`, or the
-platform's maintained equivalent) rather than adding a second one. Use that manager's documented
-install/use command for an LTS release that satisfies the selected package engines, for example
-`fnm install <version> && fnm use <version>` or `nvm install <version> && nvm use <version>`.
-
-If no version manager exists and Node must be installed, use the official Node.js distribution
-archive. Resolve the exact LTS release from `https://nodejs.org/dist/index.json` that satisfies the
-selected engines, verify it against `SHASUMS256.txt`, and install it into a user-owned directory:
-
-```bash
-curl -fsSLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-$NODE_PLATFORM.tar.xz"
-curl -fsSLO "https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt"
-grep " node-v$NODE_VERSION-$NODE_PLATFORM.tar.xz\$" "SHASUMS256.txt" | shasum -a 256 -c -
-mkdir -p "$HOME/.local/lib"
-tar -xJf "node-v$NODE_VERSION-$NODE_PLATFORM.tar.xz" -C "$HOME/.local/lib"
-export PATH="$HOME/.local/lib/node-v$NODE_VERSION-$NODE_PLATFORM/bin:$PATH"
-node -v
-npm -v
-```
-
-Do not use `sudo` or a system-wide prefix for a user-level route. Record the exact Node/npm
-versions and the resolved archive checksum. Inspect the active npm prefix and keep global installs
-user-owned; do not use a system-wide prefix without approval.
-
-### Evaluate exact engine and peer constraints
-
-Do not reduce compatibility to a major-version floor. Read the installed packages' actual
-metadata and compare the exact ranges with a semver-aware check available on the host. If no such
-check exists, report the raw ranges as `unverified` instead of assuming compatibility.
-
-```bash
-appium -v                                    # or: npx --no-install appium -v
-appium driver list --installed --json
-```
-
-For the selected driver, `driver list --installed --json` reports its version, `installPath`, and
-`appiumVersion` peer range. Read the driver package's `engines` and `peerDependencies`:
-
-```bash
-node -e 'const p=require(process.argv[1]); console.log(JSON.stringify({version:p.version,engines:p.engines,peerDependencies:p.peerDependencies},null,2))' "$DRIVER_INSTALL_PATH/package.json"
-```
-
-Read the active Appium package metadata the same way from `$(npm root -g)/appium/package.json`
-(global mode) or the project's installed Appium package (local mode). Verify:
-
-- the active `node` and `npm` versions satisfy the selected Appium and driver `engines`;
-- the selected driver's `peerDependencies.appium` range includes the active Appium version, or
-  `appiumVersion` from `driver list` does;
-- the selected Appium Python Client's requirements remain applicable in the Runtime;
-- the constraints have a non-empty intersection. A warning, one failed resolution, or a missing
-  package is not proof that no compatible combination exists.
-
-When a version must be chosen from the registry, query exact candidates rather than selecting
-latest for each package independently:
-
-```bash
-npm view "appium@$APPIUM_VERSION" engines peerDependencies --json
-npm view "appium-uiautomator2-driver@$DRIVER_VERSION" engines peerDependencies --json
-```
-
-Choose an exact compatible pair that also satisfies the host. Preserve an existing compatible
-pair; do not upgrade merely to match a newer release. Record the resolved versions and their
-sources.
-
-Offline registry: `npm ping` or `npm view` failure is an offline/blocker observation. Use the
-installed package metadata and existing driver list; do not upgrade or install a guessed version.
-If a required package is missing, report the exact blocker and stop that install path.
-
-### Install Appium and the driver after approval
-
-Default to the existing global mode unless the user explicitly requested local `npx` mode. Keep
-the mode consistent across install, doctor, server, and smoke checks. Export the selected
-`APPIUM_HOME` (default `$HOME/.appium`) for extension commands so they address the same extension
-tree the server will load:
-
-```bash
-export APPIUM_HOME="${APPIUM_HOME:-$HOME/.appium}"
-```
-
-Global mode, only for missing or genuinely incompatible pieces:
-
-```bash
-npm install -g "appium@$APPIUM_VERSION"
-appium -v
-appium driver install "uiautomator2@$DRIVER_VERSION"
-appium driver list --installed --json
-```
-
-Do not install the driver with bare latest when its peer range does not include the active
-Appium. If installing over an existing driver, uninstall it first only after preserving the
-previous exact version and obtaining approval; reinstall the exact compatible version.
-
-Local mode, only when explicitly requested and only when dependency-file changes are authorized:
-use the project's existing package manager and lockfile to install exact `appium` and
-`appium-uiautomator2-driver` versions, then invoke `npx --no-install appium`. Never run `npm -g`
-in local mode and never use the global `appium driver install` flow to satisfy a local request.
-Do not mix global and local extensions in one route.
-
-Use one `APPIUM_HOME` consistently. The default is `$HOME/.appium`; an explicit value must be the
-same for extension installation, doctor, and the server. Do not install into one Appium home and
-expect an already-running server with another home to load it.
-
-Record the previous exact versions and install paths before changing anything. Roll back only
-this task's changes, for example:
-
-```bash
-# Only when this task added them:
-appium driver uninstall uiautomator2
-npm uninstall -g appium
-
-# Only when this task replaced a pre-existing version:
-appium driver uninstall uiautomator2
-npm install -g "appium@$PREVIOUS_APPIUM_VERSION"
-appium driver install "uiautomator2@$PREVIOUS_DRIVER_VERSION"
-```
-
-Never remove a pre-existing shared package, and never restart a shared service. A removed
-extension or package does not undo accepted SDK licenses or other external state.
+Do not independently require a version, reinstall a listed driver, switch global/local mode or
+create a second Appium home. A verified official warning is evidence, not permission to repair.
+Only an observed applicable incompatibility or failed required operation can block the layer.
 
 ## Service environment
 
@@ -634,19 +408,11 @@ classification to their summaries.
 
 ## Verification and reporting
 
-After an approved installation, verify the exact result rather than the installer's message:
+After an authorized change, rerun only affected discovery and the verified official checks. Confirm
+the selected Java home, SDK root, target state and official required checks from live evidence; do
+not trust an installer's success message.
 
-- Runtime: the uv tool environment, exact interpreter, and actual imports/versions.
-- Java: selected `java.home`, `java -version`, `javac -version`, and origin.
-- SDK: selected root, component identifiers/revisions, and applicable tool execution; use
-  `sdkmanager --list_installed` when the selected management tools are available.
-- Node/Appium: `node -v`, `npm -v`, active executables, exact Appium version, installed driver
-  version, and the observed engine/peer relation.
-- Service: task-owned identity, same environment, `/status`, and selected driver evidence.
-
-For setup-only, report: the raw doctor required-fix findings and their target applicability; the
-readiness layers established; the target's actual state (physical connected/authorized, or
-emulator configured/launched/booted); and that no session was created. Do not describe a ready status,
-driver listing, configured AVD, or successful import as a live-session or full-compatibility
-proof. When live execution is requested, it must be a real official-client session with a live
-query under the scenario rules in `amkernel-appium.md`.
+Return the canonical `readiness-contract.md` result with `target.platform=android` and exactly one
+physical or emulator profile. Include raw applicable doctor blockers as layer blockers. Setup-only
+creates no session. Live control requires a real official-client session and query under
+`amkernel-appium.md`; `/status`, imports, driver lists and configured AVDs are not live proof.

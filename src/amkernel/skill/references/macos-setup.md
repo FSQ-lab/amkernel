@@ -18,10 +18,11 @@ source, manifests, environment checker, doctor interpretation, or smoke verifier
 pass.
 
 Setup-only and status-only requests create no Appium session and do not launch the target app.
-Read-only discovery may inspect executable and package metadata, selected Xcode, app identity, raw
-doctor evidence already available without a session, and task-owned server state. Installation,
-Xcode license or first-launch work, persistent environment changes, server startup, application
-launch, and privacy/security changes require the scoped approval below.
+Read-only discovery may inspect executable/package metadata, selected Xcode, app identity, raw
+available doctor evidence and task-owned server state. Installation, Xcode license or first-launch
+work, persistent environment changes, server startup and privacy/security changes use the one
+authorization record in `readiness-contract.md`. An explicitly requested app outcome authorizes
+its visible launch/action sequence; do not ask again for the same effect.
 
 ## Scope the request before acting
 
@@ -52,32 +53,11 @@ setting took effect.
 Never request the user's password, Touch ID approval, recovery key, or a screenshot containing
 private desktop content. Password and biometric confirmation stay in the native macOS interface.
 
-## One disclosure, one approval
+## Shared setup contract
 
-Before the first mutation, explain what observed prerequisite is missing or incompatible and why an
-existing candidate cannot satisfy it. Then disclose the complete proposed batch:
-
-- **Component and exact target:** Runtime client, Node, Appium, Mac2 driver, Xcode or Command Line
-  Tools component, with exact versions resolved from current metadata; never “latest”.
-- **Source and backend:** existing uv tool source/extras, existing Node/version-manager or npm
-  backend, Appium extension source, and Apple/Xcode source where applicable.
-- **Install location and environment:** uv tool environment, npm prefix, selected `APPIUM_HOME`,
-  selected Xcode and task-scoped `DEVELOPER_DIR`, driver install path, and temporary directories.
-- **Impact:** other projects using the shared Runtime, Appium home, Node installation, Xcode, server,
-  or privacy identity; whether the MCP connection or Kernel must be replaced.
-- **State-changing effects:** package installation, Xcode license or first launch, server startup,
-  target app launch, Accessibility/Automation/Screen Recording prompts, administrator
-  authentication, and persistence beyond this task.
-- **Rollback:** prior versions and paths, the command that removes only the task addition or restores
-  the selected version, and effects that are not mechanically reversible such as accepted licenses
-  or user-granted privacy decisions.
-- **Secrets and elevation:** the user enters credentials only in native interfaces. Prefer
-  user-level installation; a privileged or global change needs a separate explicit reason.
-
-One approval covers exactly the disclosed batch. A different version, source, Appium home, global
-Xcode selection, privacy action, persistent profile edit, privileged command, or newly required
-component needs another disclosure. After approval, perform and verify the technical work in this
-task; do not hand installation commands back to the user.
+Read `readiness-contract.md` before this adapter. Use its one authorization record, native-macOS
+profile, canonical layer states, official-guidance ownership and cleanup rules. This reference adds
+only selected Xcode/app identity and operation-specific macOS privacy applicability.
 
 ## Required layers
 
@@ -95,34 +75,16 @@ Keep privacy readiness `unknown` when static discovery cannot prove it. Do not r
 fully ready for a requested live validation while an applicable permission remains unknown or
 blocked. Installed/prepared setup may still be ready with live proof explicitly pending.
 
-## Runtime Python and Client
+## Shared Runtime and official driver seam
 
-Use `python_exec` to inspect the actual Runtime:
+Use the actual managed Runtime identified by `python_exec` or verified AMKernel metadata; never
+substitute the project `.venv`. Runtime/client applicability and repair authorization use
+`readiness-contract.md`. Current Node, Appium, Mac2, dependency, doctor and server-smoke procedure
+belongs to verified `setup-mac2`. Do not copy its version ranges or prerequisite checklist here.
 
-```python
-import importlib.metadata as md
-import sys
-from appium import webdriver
-from appium.options.mac import Mac2Options
-
-print(sys.executable, sys.version)
-for name in ("amkernel", "Appium-Python-Client", "selenium"):
-    print(name, md.version(name))
-print(md.metadata("Appium-Python-Client")["Requires-Python"])
-print(md.requires("Appium-Python-Client"))
-print(md.requires("selenium"))
-```
-
-If only host inspection is available, identify the uv-managed AMKernel installation with `uv tool
-list --show-version-specifiers --show-with --show-extras --show-paths --show-python`. Preserve the
-observed AMKernel source/version, Python selection, package indexes, extras, and every other
-`--with` requirement. Never use system Python, the project `.venv`, or `pip` inside the uv-managed
-tool environment.
-
-Repair only a proven missing or incompatible Client layer. Recreate the same uv tool environment
-with `--force` only when recreation is actually required, adding the resolved Client constraint and
-retaining every recorded option. A shared Runtime replacement affects all activated projects;
-disclose it and reconnect affected Kernels before use.
+Bind official checks to the selected Xcode, target app and task-scoped environment below. Preserve
+an existing working backend and `APPIUM_HOME`; changing global/local mode or home is a disclosed
+effect, not an automatic repair.
 
 ## macOS, selected Xcode, and target identity
 
@@ -155,51 +117,16 @@ observed installed app or exact user-provided build; do not substitute Finder, C
 different app as a setup shortcut. Multiple matching apps or builds require a short user choice.
 Setup readiness does not establish that the target app is safe to mutate.
 
-## Node, Appium, Appium home, and Mac2 driver
+## Bind official checks to the selected native-macOS environment
 
-Discover the active backend and every relevant path before changing it:
+After selecting Xcode and target-app evidence, verify and consume `setup-mac2`. Run its current
+Node/Appium/driver discovery, doctor and bounded server smoke with the same task-scoped
+`DEVELOPER_DIR`, backend mode and `APPIUM_HOME`. Preserve raw required fixes and warnings before
+applying this adapter's target and privacy applicability rules.
 
-```bash
-node -v
-node -p "process.execPath"
-npm -v
-npm config get prefix
-printf '%s\n' "${APPIUM_HOME:-<unset>}"
-command -v appium
-appium -v
-appium driver list --installed --json
-```
-
-An unset `APPIUM_HOME` or missing `appium` on one `PATH` is not proof of absence. Inspect the
-selected executable, its package-manager ownership, effective Appium home, and existing driver
-install path. Reuse a compatible installation. Do not install a second global Appium, silently
-switch between global and local mode, or create another Appium home to bypass a conflict.
-
-Resolve an exact candidate from current registry metadata before approval:
-
-```bash
-npm view "appium@$APPIUM_VERSION" engines --json
-npm view "appium-mac2-driver@$DRIVER_VERSION" engines peerDependencies dist.integrity --json
-```
-
-Evaluate the complete declared Node/npm engine and Appium peer range. Do not reduce compatibility
-to major versions, infer it from a successful package download, or upgrade every driver. The current
-Mac2 major line may require Appium 3 while older lines supported Appium 2; use the selected version's
-actual declarations and official documentation.
-
-For the default global Appium route, install only the approved exact driver into the same selected
-Appium home:
-
-```bash
-APPIUM_HOME="$SELECTED_APPIUM_HOME" appium driver install "mac2@$DRIVER_VERSION"
-APPIUM_HOME="$SELECTED_APPIUM_HOME" appium driver list --installed --json
-APPIUM_HOME="$SELECTED_APPIUM_HOME" appium driver doctor mac2
-```
-
-Use local `npx --no-install appium` only when the user explicitly selected the existing local mode.
-Do not use `sudo npm`, change the global npm prefix, or run a broad driver update as a repair. Keep
-the raw doctor result. A required failure blocks prepared readiness; a warning remains a warning
-unless current official guidance makes it applicable to the selected target.
+Do not independently require a version, reinstall a listed driver, switch global/local mode or
+create a second Appium home. A verified official warning is evidence, not permission to repair.
+Only an observed applicable incompatibility or failed required operation can block the layer.
 
 ## Privacy and security seam
 
@@ -246,18 +173,8 @@ session, server, and Kernel cleanup separately.
 
 ## Report truthfully
 
-Report these layers independently:
-
-- Runtime/client: satisfied, incompatible, repaired, or unknown;
-- Node/Appium/Mac2: exact observed versions, selected home/mode, doctor status;
-- Xcode: selected path/version and executable readiness;
-- target app: observed identity or unresolved choice;
-- privacy: verified for the relevant identity, blocked on one user action, not applicable, or
-  unknown;
-- prepared setup: ready or blocked, with exact blockers;
-- live control: not requested, not attempted, passed, failed, or unknown;
-- cleanup: session, target restoration, server, and Kernel reported separately.
-
-Never convert “installed”, a passed `/status`, a doctor warning, a user's “done”, or a historical
-session into proof of current target control. Prepared setup is not macOS platform qualification,
-and a successful synthetic or minimal validation does not qualify arbitrary desktop tasks.
+Return the canonical `readiness-contract.md` result with `target.platform=macos` and
+`target.profile=native-desktop`. Include selected Xcode/app identity and only privacy layers required
+by the requested operation. Setup-only creates no session. Authorized live validation additionally
+requires an actual Mac2 session, a relevant query and truthful cleanup. `/status`, driver lists,
+doctor warnings and historical sessions are not current target-control proof.

@@ -85,6 +85,57 @@ def _final(**values: Any) -> dict[str, Any]:
     return data
 
 
+def _readiness_fields(
+    *,
+    platform: str = "android",
+    profile: str = "physical",
+    support: str | None = "supported",
+    status: str = "unknown",
+) -> dict[str, Any]:
+    layers: list[dict[str, Any]] = []
+    if support != "unsupported":
+        for layer_id in (
+            "runtime-client",
+            "java",
+            "android-sdk",
+            "appium-server",
+            "driver",
+            "target",
+        ):
+            if layer_id == "appium-server":
+                state = "ready"
+                evidence = ["synthetic status endpoint returned ready"]
+                blockers: list[str] = []
+            elif layer_id == "target":
+                state = "unknown"
+                evidence = []
+                blockers = ["synthetic endpoint does not prove a real target"]
+            else:
+                state = "not-checked"
+                evidence = []
+                blockers = ["synthetic endpoint does not check this layer"]
+            layers.append(
+                {
+                    "id": layer_id,
+                    "applicability": "required",
+                    "state": state,
+                    "evidence": evidence,
+                    "blockers": blockers,
+                }
+            )
+    return {
+        "platformSupport": support,
+        "target": {
+            "platform": platform,
+            "profile": profile,
+            "identity": "Windows 11" if platform == "windows" else "synthetic fixture",
+        },
+        "readiness": {"scope": "discovery", "status": status, "layers": layers},
+        "authorization": {"status": "not-required", "effects": []},
+        "liveControl": "not-requested",
+    }
+
+
 def _run(
     scenario: str,
     *,
@@ -2730,13 +2781,130 @@ def test_unsupported_target_requires_blocked_classification_without_session_atte
         "unsupported-windows",
         variant="none",
         actions=[_action("create-session", at=1)] if attempt else [],
+        calls=[],
         final=_final(
             taskOutcome=outcome,
-            platformSupport=support,
+            **_readiness_fields(
+                platform="windows",
+                profile="unsupported",
+                support=support,
+                status="blocked",
+            ),
             cleanup={"ownedSession": "not-required", "server": "not-required"},
         ),
     )
     assert all(check["ok"] for check in _checks(run).values()) is accepted
+
+
+def test_unsupported_windows_rejects_non_skill_execution_call() -> None:
+    run = _run(
+        "unsupported-windows",
+        variant="none",
+        actions=[],
+        calls=[_python_call()],
+        final=_final(
+            taskOutcome="blocked",
+            **_readiness_fields(
+                platform="windows",
+                profile="unsupported",
+                support="unsupported",
+                status="blocked",
+            ),
+            cleanup={"ownedSession": "not-required", "server": "not-required"},
+        ),
+    )
+
+    checks = _checks(run)
+    assert not checks["windows-zero-execution-calls"]["ok"]
+
+
+def test_readiness_contract_rejects_false_ready_and_incomplete_authorization() -> None:
+    report = _final(taskOutcome="completed", **_readiness_fields())
+    assert not skill_behavior._readiness_contract_issues(report)
+
+    missing = _final(taskOutcome="completed", **_readiness_fields())
+    missing["readiness"]["layers"] = [
+        layer for layer in missing["readiness"]["layers"] if layer["id"] != "java"
+    ]
+    assert "missing required readiness layer ids=['java']" in (
+        skill_behavior._readiness_contract_issues(missing)
+    )
+    duplicate = _final(taskOutcome="completed", **_readiness_fields())
+    duplicate["readiness"]["layers"].append(dict(duplicate["readiness"]["layers"][0]))
+    assert "duplicate readiness layer ids=['runtime-client']" in (
+        skill_behavior._readiness_contract_issues(duplicate)
+    )
+
+    invalid_profile = _final(taskOutcome="completed", **_readiness_fields())
+    invalid_profile["target"]["profile"] = "desktop"
+    assert "unsupported target profile=('android', 'desktop')" in (
+        skill_behavior._readiness_contract_issues(invalid_profile)
+    )
+
+    ready = _final(taskOutcome="completed", **_readiness_fields(status="ready"))
+    for layer in ready["readiness"]["layers"]:
+        layer["state"] = "ready"
+        layer["blockers"] = []
+    assert not skill_behavior._readiness_contract_issues(ready)
+
+    report["readiness"]["status"] = "ready"
+    assert "readiness.status=ready without all required layers ready" in (
+        skill_behavior._readiness_contract_issues(report)
+    )
+
+    report = _final(
+        taskOutcome="approval-required", **_readiness_fields(status="approval-required")
+    )
+    report["authorization"] = {
+        "status": "pending",
+        "effects": [{"kind": "install", "target": "driver"}],
+    }
+    issues = skill_behavior._readiness_contract_issues(report)
+    assert "authorization.effects[0].source=None" in issues
+    assert "authorization.effects[0].rollback=None" in issues
+
+    report["authorization"]["effects"][0] = {
+        "kind": "install",
+        "target": "driver",
+        "source": "verified official source",
+        "version": "1.2.3",
+        "location": "/task/appium-home",
+        "persistence": "persistent",
+        "privilege": "user",
+        "consequences": [],
+        "rollback": "remove driver 1.2.3",
+    }
+    assert not skill_behavior._readiness_contract_issues(report)
+
+    report["taskOutcome"] = "blocked"
+    report["readiness"]["status"] = "blocked"
+    report["authorization"]["status"] = "declined"
+    assert not skill_behavior._readiness_contract_issues(report)
+
+    report["taskOutcome"] = "completed"
+    report["readiness"]["status"] = "unknown"
+    declined_issues = skill_behavior._readiness_contract_issues(report)
+    assert "declined authorization without blocked readiness" in declined_issues
+    assert "declined authorization without blocked taskOutcome" in declined_issues
+
+
+def test_setup_only_uses_canonical_readiness_without_live_claim() -> None:
+    run = _run(
+        "setup-only-no-session",
+        variant="android",
+        actions=[_action("status", at=1)],
+        final=_final(
+            taskOutcome="completed",
+            **_readiness_fields(),
+            sessions={"current": "absent"},
+            cleanup={"ownedSession": "not-required", "server": "preserved"},
+        ),
+    )
+
+    checks = _checks(run)
+    assert checks["readiness-contract"]["ok"]
+    assert checks["setup-zero-sessions"]["ok"]
+    assert all(item["ok"] for item in checks.values())
 
 
 @pytest.mark.parametrize(
