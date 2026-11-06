@@ -614,6 +614,28 @@ Full-frame synthetic images do not qualify cropped/scaled coordinate mappings, r
 platform readiness, production apps or Android World performance.
 
 
+### Cancellation, disconnect and cleanup truth (#98)
+
+The packaged Skill now distinguishes the outer Agent deadline, MCP client or transport timeout,
+and `python_exec.timeout`. A missing terminal MCP response leaves the call result and Kernel state
+unknown until later observation; it is not converted into a successful or timed-out
+`PythonExecResult`, and an in-flight session creation is not replayed. Controlled shutdown keeps
+the transport open through cancellation stabilization and an ordinary bounded cleanup call before
+closing the Runtime. Kernel or transport loss is not evidence that Python `finally`, restoration,
+or `driver.quit()` ran. Runtime, public MCP tools and Appium ownership are unchanged.
+
+The stdio regression now proves an active request can be cancelled, stabilized and followed by a
+successful cleanup unit in the same Kernel before transport close. A new synthetic delayed-create
+case commits one remote session before withholding its response; its evaluator requires the
+one-second timeout to occur while that response is still pending, a later read-only session
+reconciliation, and zero replayed creates. The retained transport-close regression continues to
+prove bounded managed-process cleanup without claiming external-session cleanup.
+
+Focused lifecycle, evaluator and Skill regressions passed 107 tests; Ruff and LSP diagnostics
+passed. Independent review found and then verified the correction of one evaluator false positive;
+no blocking findings remain. No Android World or native Agent evaluation was rerun, no platform
+qualification changed, and this work does not by itself require a release.
+
 ## Acceptance criteria
 
 - [x] M3 and S3-001 through S3-060 are registered in GitHub Project #2 with exact dependencies and work-item contracts.
