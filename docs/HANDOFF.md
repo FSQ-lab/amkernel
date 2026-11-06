@@ -636,6 +636,18 @@ passed. Independent review found and then verified the correction of one evaluat
 no blocking findings remain. No Android World or native Agent evaluation was rerun, no platform
 qualification changed, and this work does not by itself require a release.
 
+Follow-up acceptance repair: the interrupted-create evaluator now requires the created session's
+exact identity in a successful post-interruption `/sessions` observation before every DELETE
+attempt. A later empty query, an unrelated identity, or an equal-timestamp query cannot certify
+prior reconciliation. The pending-response regression keeps `timeout=1` in every case and covers
+completion just before, exactly at, and after the delayed response boundary, independently of
+the timeout-value guard. Focused evaluator verification passed 105 tests; targeted Ruff format,
+Ruff check and Mypy passed. Actual local HTTP fixture smoke accepted query-before-delete and
+rejected delete-before-query. An in-memory mutation removing the pending guard was caught by
+both non-pending cases. Independent read-only review found no actionable findings. This repairs
+the earlier acceptance evidence, not the Runtime or any platform qualification.
+The final combined evaluator/process-boundary regression run passed 112 tests.
+
 ## Acceptance criteria
 
 - [x] M3 and S3-001 through S3-060 are registered in GitHub Project #2 with exact dependencies and work-item contracts.

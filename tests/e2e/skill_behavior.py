@@ -4310,10 +4310,35 @@ def evaluate_scenario(run: Mapping[str, Any]) -> dict[str, Any]:
                 for item in actions
                 if item.get("action") == "sessions" and item.get("status") == 200
             )
+        created_ids = {
+            str(item.get("detail", {}).get("sessionId"))
+            for item in creates
+            if item.get("detail", {}).get("sessionId")
+        }
+        observed_ids = {
+            session_id
+            for item in reconciliations
+            for session_id in _detail_ids(item.get("detail", {}), "sessionIds")
+        }
+        unobserved_deletes = [
+            item
+            for item in _action_list(fixture)
+            if item.get("action") == "delete-session"
+            and not any(
+                item.get("detail", {}).get("sessionId") in created_ids
+                and item.get("detail", {}).get("sessionId")
+                in _detail_ids(query.get("detail", {}), "sessionIds")
+                and isinstance(item.get("at"), (int, float))
+                and float(query["at"]) < float(item["at"])
+                for query in reconciliations
+            )
+        ]
         evaluation.check(
             "create-interruption-reconciled-read-only",
-            bool(reconciliations),
-            f"Read-only session reconciliations after interruption={len(reconciliations)}",
+            bool(created_ids) and created_ids <= observed_ids and not unobserved_deletes,
+            f"Read-only session reconciliations after interruption={len(reconciliations)}, "
+            f"created identities observed={bool(created_ids) and created_ids <= observed_ids}, "
+            f"DELETE attempts without prior identity observation={len(unobserved_deletes)}",
         )
         _owner_cleanup_ok(evaluation, run, fixture)
 
