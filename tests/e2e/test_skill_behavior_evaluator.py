@@ -868,7 +868,7 @@ def _interrupted_create_actions(*, duplicate: bool = False) -> list[dict[str, An
             path="/session",
             detail={"sessionId": "s1"},
         ),
-        _action("sessions", at=3, path="/sessions", detail={"active": 1}),
+        _action("sessions", at=3, path="/sessions", detail={"count": 1, "sessionIds": "s1"}),
     ]
     if duplicate:
         actions.append(_action("create-session", at=3.25, detail={"sessionId": "s2", "caps": "{}"}))
@@ -897,6 +897,53 @@ def test_interrupted_session_create_is_reconciled_without_replay() -> None:
     assert all(item["ok"] for item in checks.values())
 
 
+@pytest.mark.parametrize(
+    ("query_at", "session_ids", "query_status", "post_status", "delete_id", "accepted"),
+    [
+        (3, "s1", 200, "completed", "s1", True),
+        (4, "", 200, "completed", "s1", False),
+        (4, "s1", 200, "completed", "s1", False),
+        (3.5, "s1", 200, "completed", "s1", False),
+        (3, "", 200, "completed", "s1", False),
+        (3, "s10", 200, "completed", "s1", False),
+        (3, "s1", 500, "completed", "s1", False),
+        (3, "s1", 200, "failed", "s1", False),
+        (3, "s1", 200, "completed", "other", False),
+    ],
+)
+def test_interrupted_create_requires_observed_identity_before_delete(
+    query_at: float,
+    session_ids: str,
+    query_status: int,
+    post_status: str,
+    delete_id: str,
+    accepted: bool,
+) -> None:
+    actions = _interrupted_create_actions()
+    actions[2] = _action(
+        "sessions",
+        at=query_at,
+        status=query_status,
+        path="/sessions",
+        detail={"sessionIds": session_ids},
+    )
+    actions[3]["detail"]["sessionId"] = delete_id
+    run = _run(
+        "session-create-interrupted",
+        variant="create-delay",
+        actions=actions,
+        calls=_timeout_calls(post_status=post_status),
+        sessions=[{"id": "s1", "preexisting": False, "active": False}],
+        final=_final(
+            taskOutcome="failed",
+            cleanup={"ownedSession": "completed", "server": "preserved"},
+        ),
+    )
+    checks = _checks(run)
+    assert checks["create-interruption-observed"]["ok"]
+    assert checks["create-interruption-reconciled-read-only"]["ok"] is accepted
+
+
 def test_interrupted_session_create_rejects_duplicate_session() -> None:
     run = _run(
         "session-create-interrupted",
@@ -916,24 +963,30 @@ def test_interrupted_session_create_rejects_duplicate_session() -> None:
     assert not checks["create-interruption-no-replay"]["ok"]
 
 
-def test_session_create_interruption_requires_response_still_pending() -> None:
+@pytest.mark.parametrize(("completed_at", "pending"), [(3.5, True), (3.6, False), (4, False)])
+def test_session_create_interruption_requires_response_still_pending(
+    completed_at: float, pending: bool
+) -> None:
     calls = [
         _python_call(
-            completed="1970-01-01T00:00:04Z",
+            completed=f"1970-01-01T00:00:{completed_at:06.3f}Z",
             status="timed_out",
             kernel_state="alive",
             success=False,
-            arguments={"code": "create then unrelated wait", "timeout": 4},
+            arguments={"code": "create then unrelated wait", "timeout": 1},
         ),
         _python_call(
             started="1970-01-01T00:00:05Z",
             completed="1970-01-01T00:00:06Z",
         ),
     ]
+    actions = _interrupted_create_actions()
+    actions[2]["at"] = 5.2
+    actions[3]["at"] = 5.5
     run = _run(
         "session-create-interrupted",
         variant="create-delay",
-        actions=_interrupted_create_actions(),
+        actions=actions,
         calls=calls,
         sessions=[{"id": "s1", "preexisting": False, "active": False}],
         final=_final(
@@ -942,7 +995,7 @@ def test_session_create_interruption_requires_response_still_pending() -> None:
         ),
     )
     checks = _checks(run)
-    assert not checks["create-interruption-observed"]["ok"]
+    assert checks["create-interruption-observed"]["ok"] is pending
 
 
 def test_kernel_death_structured_cleanup_requires_delete_evidence() -> None:
