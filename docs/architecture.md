@@ -402,6 +402,16 @@ The skill guides installation, readiness, diagnosis, and first successful automa
 
 A skill can guide the Agent through setup, external process lifecycle, library usage, waits, large-output reduction, debugging, and cleanup. A skill is procedural knowledge, not an executable capability or security mechanism.
 
+The installed Skill presents a narrow routing interface over one shared readiness and authorization
+contract. Platform references are adapters: they select applicable layers and add platform facts.
+Verified official Appium Skills own version-sensitive prerequisites, driver checks, capabilities
+and procedures; first-party guidance owns target selection, applicability, Runtime identity,
+authorization continuity, resource ownership, normalized results and cleanup truth. Approval
+remains procedural guidance, never enforcement.
+
+AMKernel does not support Windows hosts or Windows targets. Windows material retained inside a
+verified upstream snapshot is supply-chain provenance, not a supported route.
+
 Each experiment produces evidence about the kernel:
 
 - which live objects need persistence;

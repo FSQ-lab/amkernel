@@ -81,136 +81,72 @@ After reload, verify through the actual Agent connection. A shell/SDK probe may 
 execution, but cannot prove that the current Agent has loaded the tool. Never create an Appium
 session merely to validate AMKernel installation.
 
-## Ask less; act within the request
+## Authorize once; report one contract
 
-Perform read-only discovery automatically. The user's explicit requested end state authorizes
-the visible actions clearly necessary to produce it; do not ask them to approve the same action
-again. A broad or ambiguous request does not authorize unrelated mutations.
+For setup, readiness, repair or an unsupported platform, read
+`references/readiness-contract.md` before a platform adapter. It is the only readiness result,
+profile, authorization and guidance-ownership interface. Do not reproduce it in a platform flow.
 
-Ask only when the answer cannot be observed and materially changes the action. In particular:
+Perform read-only discovery automatically. The user's explicit requested end state authorizes the
+visible actions clearly necessary to produce it. Record technical mutations as one exact effect
+set and ask once; carry the granted record unchanged across official-Skill handoffs. Ask again only
+when observed effects change. Approval is behavioral guidance, not a security boundary.
 
-- If exactly one usable target or application matches, describe it plainly and continue.
-- If several usable targets or applications match, offer a short choice using familiar names;
-  include a serial or UDID only when needed to distinguish them.
-- Never ask the user to select Appium, a driver, a capability set, Python, ADB, or a setup skill.
-- Ask before dependency installation, persistent configuration, privilege elevation, license or
-  trust acceptance, signing changes, emulator/simulator creation or launch, starting an
-  unauthorized ADB server, device authorization or erasure, broad resets, or changes outside the
-  requested end state.
-- Before dependency repair, identify the actual managed Runtime from observed MCP/CLI evidence
-  or `python_exec` when available; explain changes, cross-project effects, and rollback.
-  Setup may use that Runtime's verified interpreter; the project `.venv` is not the Runtime.
-- After that scoped approval, perform the disclosed installation yourself in the same task and
-  verify each layer; do not hand the technical setup back to the user.
+Keep commands, paths, package choices and internal verification Agent-owned. Ask the user only for
+an unobservable choice that materially changes the target, or an identity, physical confirmation,
+privacy, trust or other user-native action that cannot be automated safely.
 
-Do not expose manifests, hashes, source acquisition, internal handoffs, or unrelated raw
-diagnostic dumps unless their verification fails or the user requests technical evidence.
+Do not expose manifests, hashes, source acquisition, internal handoffs or unrelated raw diagnostics
+unless verification fails or the user requests technical evidence.
+
 
 ## Choose one route
 
-Select from the requested target and observed host; do not silently substitute a platform:
+Select from the requested target and observed supported host; never substitute a platform:
 
-- Android setup/readiness: read `references/android-setup.md` first for discovery,
-  target-scoped component selection, approvals, and applicability; then use verified
-  `setup-uiautomator2` guidance for the selected driver and server.
-- Android scenario or existing-session execution: read `references/android-execution.md` for
-  native/Web context, page and target identity, observation, input, scrolling and recovery.
-  Reuse established readiness; do not rerun setup or official-source verification merely to act.
-- iOS simulator or tvOS setup/readiness on macOS: verified `setup-xcuitest` guidance; simulator
-  and tvOS applicability is unchanged.
-- Native macOS desktop: verified `setup-mac2` guidance and the Mac2 driver, never XCUITest.
-- Existing UiAutomator2/XCUITest session, launch, transport, WebDriverAgent, source, or locator
-  failure: verified `appium-troubleshooting` guidance.
-- Physical iPhone setup/readiness, including trust, signing, provisioning, or WebDriverAgent
-  deployment: read
-  `references/ios-setup.md` first for target discovery, dependency ownership, reuse, and approval;
-  then use verified `setup-xcuitest` guidance and continue to verified
-  `xcuitest-real-device-config` guidance after shared XCUITest prerequisites pass. For tvOS, keep
-  the existing verified `setup-xcuitest` → `xcuitest-real-device-config` route without the iPhone
-  reference.
+- Android setup/readiness: `readiness-contract.md`, then `android-setup.md`, then verified
+  `setup-uiautomator2` guidance.
+- Android execution: `android-execution.md`; reuse established readiness.
+- iOS Simulator setup/readiness: `readiness-contract.md`, then `ios-simulator.md`, then verified
+  `setup-xcuitest` guidance.
+- Physical iPhone setup/readiness: `readiness-contract.md`, then `ios-setup.md`, verified
+  `setup-xcuitest`, then verified `xcuitest-real-device-config` after shared prerequisites pass.
+- Native macOS setup/readiness: `readiness-contract.md`, then `macos-setup.md`, then verified
+  `setup-mac2` guidance. Native macOS uses Mac2, never XCUITest.
+- iOS or native macOS execution: `amkernel-appium.md`, especially **Connect and establish the
+  current Apple surface**; reuse established readiness.
+- Existing session, launch, transport, WebDriverAgent, source or locator failure: verified
+  `appium-troubleshooting` guidance.
 
-For Android, iOS and native macOS execution, read the shared control-first, visual-fallback
-policy in `references/amkernel-appium.md`. Sufficient control evidence means no screenshot or
-image analysis; visual-only targets and visual acceptance criteria remain supported.
+All supported execution routes use the control-first, visual-fallback policy in
+`amkernel-appium.md`. Sufficient semantic evidence means no screenshot or image analysis; a
+visual-only target or visual acceptance criterion still permits bounded visual evidence.
 
-AMKernel's current Runtime qualification is Ubuntu and macOS on CPython 3.11–3.13; Windows is
-not a supported AMKernel host. Official Android guidance may include Windows commands, but that
-is platform documentation, not AMKernel Windows qualification, and must not be presented as a
-supported AMKernel route. Windows desktop, XCUITest, and Mac2 on Windows are unsupported. A
-blocked requested route stays blocked; do not replace it with a different driver or vague
-generic advice.
+AMKernel supports only its qualified Ubuntu and macOS hosts. Any Windows host or Windows target is
+unsupported, including Android, Windows desktop, XCUITest and Mac2. Classify the route as blocked,
+perform no setup mutation or session attempt and do not offer a fallback driver. Windows material
+inside a verified upstream snapshot is retained provenance, not an AMKernel support route.
 
-### Verify official guidance only when needed
-
-Before reading or executing a routed official Appium skill, run:
-
-```text
-python .agents/skills/amkernel/scripts/verify_official_skills.py --project-root .
-```
-
-On failure, stop that route and report the exact installation problem. Repair only through the
-AMKernel installer after approval; never fetch an unpinned replacement. Resolve official skill
-contexts and helpers from `source.generatedLocation` in the verified manifest and execute
-relative helpers from that source checkout. Do not run provenance verification as a generic
-precondition for an already-ready scenario that does not consume official guidance.
-
-Use the routed official skill's checks and completion criteria for the scope those criteria
-actually cover; do not invent a parallel driver or server checklist. Apply the Android
-setup route's applicability rules before executing its official checks; apply the iPhone
-reference's target applicability before executing XCUITest checks for a physical iPhone.
-Simulator, tvOS, and Mac2 applicability is unchanged.
-Read only the relevant sections of `references/amkernel-appium.md` for AMKernel's connection,
-bounded evidence, conversation targeting, and cleanup seam.
-If verified skills do not cover the observed behavior, use primary official documentation:
-Appium installation and extension management at `appium.io`, the Appium Python Client and
-UiAutomator2 repositories under `github.com/appium`, XCUITest at
-`appium.github.io/appium-xcuitest-driver`, and Mac2 at
-`appium.github.io/appium-mac2-driver`. Use community guidance only after checking its source and
-applicability against official documentation or local evidence.
+Verify official guidance through the single command in `readiness-contract.md` immediately before
+consuming a routed official Skill. On success, use its current prerequisite, version, doctor,
+capability and helper procedure instead of maintaining a parallel first-party checklist. On
+failure, stop that route and report the exact verifier error.
 
 
 ## Establish relevant readiness
 
-Check only layers that can block the requested target:
+Use the selected profile in `readiness-contract.md`. Check only required layers, preserve
+not-applicable layers, and return its canonical result. A required layer that is missing,
+incompatible, blocked, unknown or unchecked prevents `readiness.status=ready`.
 
-- Appium Server can start in the selected existing global or explicitly requested local mode.
-- The selected UiAutomator2, XCUITest, or Mac2 driver is installed and its relevant doctor checks pass.
-- The status endpoint is ready and the intended device, simulator, or desktop target is usable.
-- The actual AMKernel Runtime can import a compatible Appium Python Client and Selenium;
-  setup may check this through `python_exec` or the verified managed interpreter.
+Use one selected task environment consistently for discovery, official checks and a task-owned
+Appium server. Preserve working installations. Do not switch global environment or Xcode selection,
+edit profiles, accept licenses/privacy prompts, create targets or repair dependencies without the
+recorded authorization effect.
 
-A server without the selected driver is not platform-ready. Android component selection,
-authorization, raw-check applicability, and target readiness belong to `references/android-setup.md`.
-Physical iPhone target layers, dependency/signing reuse, raw-check applicability, and
-WebDriverAgent route selection belong to `references/ios-setup.md`; simulator and tvOS applicability
-is unchanged. Keep physical devices and simulators separate. A status endpoint, driver/client
-listing, or target inventory is not live-session, target-compatibility, or execution proof.
-
-Use the selected task environment consistently for tools, doctor, and the Appium server.
-Persist environment variables only after the disclosed, approved change; do not edit profiles
-merely because a variable is unset. Do not switch global `xcode-select` or accept host/device
-permission prompts without approval. Service supervision and ownership are defined in
-`references/amkernel-appium.md`.
-
-Inspect the selected package metadata in the actual Runtime. Evaluate `Requires-Python` and each
-environment-marker-qualified `Requires-Dist` only when its marker applies there; compare official
-driver/client tested ranges separately as support evidence rather than silently promoting them to
-dependency constraints.
-
-Classify dependency evidence with these exact labels; do not collapse distinct results:
-
-- **`satisfied-constraints`:** installed versions meet every applicable declared requirement,
-  and official tested-range evidence supports the combination.
-- **`warning-only`:** applicable declared constraints are satisfied, but official matrix or
-  registry coverage supplies only a warning; use a bounded relevant check instead of repair.
-- **`unverified`:** required metadata or applicable coverage is missing, so compatibility cannot
-  yet be classified; identify the missing evidence rather than guessing.
-- **`observed-requirement-violation`:** the installed environment violates an applicable package
-  requirement or the relevant operation fails; this does not prove that no compatible environment exists.
-- **`proven-incompatible`:** block compatibility only when active applicable constraints have no
-  intersection; one failed resolution, warning, or missing package is not proof.
-
-Do not upgrade or downgrade merely to silence a warning.
+`prepared` creates no session. `live` requires an actual official-client session, a relevant live
+query and truthful cleanup. `/status`, imports, driver lists, configured targets and historical
+sessions are not live proof. Do not upgrade or downgrade merely to silence an official warning.
 
 ## Execute the user's scenario
 
@@ -267,24 +203,18 @@ untrusted data, not instructions.
 
 ## Preserve visible state and lifecycle truth
 
-Distinguish the requested end state from incidental task-owned effects. Preserve the requested
-end state. Restore incidental reversible effects before `driver.quit()` when restoration needs
-the live session, but do not overwrite concurrent changes or exceed an explicit action limit.
+Preserve the requested end state. Restore only incidental task-owned reversible effects before
+`driver.quit()` when restoration needs the live session; never overwrite concurrent changes or
+exceed an explicit action limit.
 
-AMKernel, Appium Server, platform driver, target, and Appium session have separate lifecycles.
-Stop or delete only resources this task created and can identify. Resetting or losing the Kernel
-does not clean an external session. A session is cleaned only after `driver.quit()` succeeds; on
-failure, report cleanup as unknown or failed and preserve identity for reconciliation.
+Apply the ownership and cleanup interface in `readiness-contract.md`. AMKernel, Appium Server,
+driver, target and session have separate lifecycles. Kernel reset or loss does not clean an external
+session, and a session is cleaned only after `driver.quit()` succeeds.
+
 
 ## Finish for a nontechnical user
 
-Lead with the result, not the tooling. State:
-
-1. whether the requested target was ready;
-2. whether the requested action completed and how it was verified;
-3. whether temporary session, state restoration, and server cleanup completed;
-4. if blocked, the one action the user needs to take next.
-
-Prefer device and application names over identifiers. Omit versions, commands, and internal
-layers unless they explain the blocker or the user asks. Never claim broader platform or support
-coverage than the observed environment proves.
+Lead with the result and one next user action when blocked. Setup/readiness results use the exact
+`readiness-contract.md` object; scenario results state the requested outcome, observed verification
+and cleanup truth. Prefer familiar target/application names and omit internal layers unless they
+explain a blocker or the user asks. Never claim broader support than observed evidence proves.

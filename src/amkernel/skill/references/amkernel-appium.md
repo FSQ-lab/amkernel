@@ -1,6 +1,6 @@
 # Appium through AMKernel
 
-This reference owns the shared AMKernel/Appium seam. Android preparation belongs to `android-setup.md`; Android connection, platform state, locators, input, navigation and recovery decisions belong to `android-execution.md`. Read the execution reference for an Android scenario, even when setup is already complete. Physical-iPhone preparation belongs to `ios-setup.md`; other platform setup and diagnosis use the routed verified official skills. These platform references do not replace the shared lifecycle, evidence or ownership contract below.
+This reference owns the shared AMKernel/Appium execution seam. Setup, readiness, repair and authorization belong to `readiness-contract.md` plus exactly one platform adapter. Android execution details belong to `android-execution.md`. Read that reference for an Android scenario even when setup is complete. Platform adapters and verified official Skills do not replace the lifecycle, evidence or ownership contract below.
 
 ## Runtime contract
 
@@ -11,46 +11,12 @@ This reference owns the shared AMKernel/Appium seam. Android preparation belongs
 - A kernel reset or death makes external session state unknown. Reconcile it before replacement.
 - Importing the client proves dependency presence, not full compatibility. A ready `/status` or a driver listing is not a live-session proof. Setup-only and status-only requests create no session.
 
-## Task-scoped discovery evidence
+## Consume readiness; do not recreate it
 
-Use the requested target and observed host OS to choose relevant checks. Preserve
-existing working installations; discovery is not permission to repair them. Keep
-the following evidence bounded. When it determines Runtime behavior, use the actual AMKernel
-Runtime through `python_exec` or its verified managed interpreter, not an unrelated shell Python.
-
-- **Android dependencies/targets:** use `android-setup.md` for candidate discovery,
-  component selection, scoped installation approval, and target readiness.
-- **Apple tools/targets:** observe task `DEVELOPER_DIR` and active
-  `xcode-select -p`; execute the selected `xcodebuild -version` and `xcrun` tools.
-  If another installed Xcode is needed, validate it under a task-only
-  `DEVELOPER_DIR`, never `sudo xcode-select --switch`. Use that same selected
-  Xcode's `xcrun devicectl list devices --json-output <task-temporary-file>` for
-  physical Apple devices, and separately `xcrun simctl list devices --json` and
-  runtime inventory for simulators. A simulator entry is never a physical-device
-  discovery result. Inspect the selected tool's help/schema when interpreting its
-  version-specific fields; a listing alone proves neither live connection nor
-  development readiness.
-
-Report physical Apple targets in separate evidence layers: **discovered** (listed),
-**connected** (current transport/connection evidence), **usable-for-development**
-(observed pairing/trust, Developer Mode and required development services), and
-**ready-for-xcuitest** (the selected driver, signing/provisioning and WebDriverAgent
-path verified for that target). Preserve unknown/not-checked states and their
-reasons; never promote an earlier layer into a later one. For physical iPhone
-dependency ownership, signing/WDA reuse, and failure classification, apply
-`ios-setup.md`. Do not create a session
-for setup-only discovery, change signing, pair devices or dismiss permission
-prompts to manufacture readiness. Live XCUITest proof belongs to an explicitly
-requested validation/scenario. Keep platform, dependency and Runtime readiness
-separate, and explain multiple-candidate choices before asking only for a material
-target choice that the request and available evidence cannot resolve.
-
-Layer counts describe the listed target population, not host-wide platform
-qualification. After a successful empty inventory, zero usable/ready targets is
-valid; conservatively retaining unknown is also acceptable. A failed or unknown
-inventory, or a nonempty listing without target-specific evidence, must not be
-converted into known readiness counts.
-
+For execution, reuse the selected target/profile and established readiness result. Do not rerun
+setup, official-source verification, target inventory or dependency checks merely to act. If live
+evidence exposes a genuine prerequisite failure, retain the observed failure and route the smallest
+affected layer back through `readiness-contract.md` and its platform adapter.
 
 ## Run the service with the task environment
 
@@ -67,15 +33,17 @@ A successful `/status` proves service reachability, not target readiness or a se
 request creates no session. Stop only the task-owned server; stopping it does not prove a remote
 session or external target state was cleaned.
 
-## Connect
+## Connect and establish the current Apple surface
 
 Use a reviewed loopback Appium URL without credentials. Populate target and app identifiers from observed state or the user's selection; never invent them.
 
 For Android, use the connection and native/Web execution guidance in `android-execution.md`.
 
-For iOS, use `XCUITestOptions`, `automationName: XCUITest`, and the observed simulator/device identifier. Follow the official XCUITest procedure for signing and real-device requirements.
+For iOS, use `XCUITestOptions`, `automationName: XCUITest`, and the observed simulator/device identifier. Follow the official XCUITest procedure for signing and real-device requirements. Before acting, confirm the requested app, current context and current view from bounded live evidence. Prefer the native context for native controls. A navigation, app switch, context change, modal alert, sheet, keyboard or relaunch can invalidate old element handles and page assumptions; observe again and re-find from current state instead of replaying a remembered sequence.
 
-For native macOS desktop, use `from appium.options.mac import Mac2Options`, `platformName: Mac`, and `appium:automationName: Mac2`. Observe the requested app's bundle identifier and pass it as `appium:bundleId`; do not invent an iOS UDID or XCUITest capabilities. Record the session's returned platform and automation name, and confirm the requested app with a small live query. If Mac2 cannot start, retain the exact blocker instead of falling back to another driver. The Calculator regression must retain returned Mac2 capability evidence; an app opening alone is not proof of the driver used.
+For native macOS desktop, use `from appium.options.mac import Mac2Options`, `platformName: Mac`, and `appium:automationName: Mac2`. Observe the requested app's bundle identifier and pass it as `appium:bundleId`; do not invent an iOS UDID or XCUITest capabilities. Record the session's returned platform and automation name, and confirm the requested app and window with a small live query. Treat focus, active window, sheets, popovers and dialogs as part of the current target surface. Window changes, relaunches and focus transfers invalidate old handles and row or coordinate assumptions; re-observe the requested app/window before continuing. If Mac2 cannot start, retain the exact blocker instead of falling back to another driver. The Calculator regression must retain returned Mac2 capability evidence; an app opening alone is not proof of the driver used.
+
+For either Apple route, work toward the user's requested final state rather than treating a supplied or inferred action sequence as authoritative. In each bounded workflow: observe the current surface, identify the next action from semantic state, act once, and verify the resulting state or business outcome. Stop when the requested state is already true. Prefer accessibility identifiers, labels, roles and changing state attributes over XPath, element order or coordinates. Use explicit waits only for an expected transition, and re-query after one; never use a successful command return as the sole proof that the requested result occurred.
 
 ## Observe and act: controls first, visual fallback
 

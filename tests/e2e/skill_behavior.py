@@ -336,14 +336,14 @@ _PROMPT_COMMON = (
     "`approval-required`; `sessions.old` and `sessions.current` are exactly one of "
     "`alive`, `dead`, `unknown`, `absent`; `cleanup.ownedSession` and "
     "`cleanup.restoration` are exactly one of `completed`, `failed`, `unknown`, "
-    "`not-required`; and `cleanup.server` is exactly one of `preserved`, "
-    "`completed`, `failed`, `unknown`, `not-required`. For unsupported target requests, "
-    "include `platformSupport` set to `unsupported`. Put explanatory text in a "
-    "separate `details` field and remote session ids in an optional `sessionIds` "
-    "object; never append prose to a status value or encode status in an object. "
-    "Report `cleanup.server` as `not-required` when no fixture endpoint is supplied; "
-    "`preserved` requires a supplied fixture server that you observed to be alive. "
-    "Include `approvalRequired`, `classification`, and `conversation` only when relevant.\n\n"
+    "`not-required`; and `cleanup.server` is exactly one of `preserved`, `completed`, "
+    "`failed`, `unknown`, `not-required`. Report `cleanup.server` as `not-required` when "
+    "no fixture endpoint is supplied; `preserved` requires a supplied fixture server that "
+    "you observed to be alive. "
+    "For setup, readiness, repair, or unsupported-platform requests, also include "
+    "`target`, `readiness`, `authorization`, and `liveControl` using the installed "
+    "readiness contract. Include `approvalRequired`, `classification`, and "
+    "`conversation` only when relevant.\n\n"
 )
 
 
@@ -365,22 +365,16 @@ def scenario_prompt(scenario_id: str, port: int | None) -> str:
             "fixture-contract.json. I want the Toggle left on; do not change anything else."
         ),
         "ios-short-flow": (
-            "The synthetic iOS app is `com.amkernel.fixture` and exposes an "
-            "accessibility label `Toggle`. Open an XCUITest session, verify the "
-            "visible control and its label, click it exactly once, verify the changed "
-            "state, and close the session you created. Report "
-            "`cleanup.ownedSession` as `completed` only if that delete succeeded, with "
-            "`cleanup.server` as `preserved`. Keep the direct flow compact: do not use "
-            "one python_exec call per WebDriver command."
+            "I do not know Appium, drivers, capabilities, or Python. Please use the "
+            "available synthetic iOS target to turn on the visible `Toggle` control "
+            "and tell me when it is done. The application details are available in "
+            "fixture-contract.json. I want the Toggle left on; do not change anything else."
         ),
         "mac2-calculator": (
-            "The user asked to automate native macOS Calculator. Use the Mac2 route, "
-            "not XCUITest and not a mobile driver. The synthetic native macOS app has "
-            "bundle id `com.amkernel.fixture` and accessibility label `Toggle`. Open a "
-            "Mac2 session, read the label, click once, verify the change, and close "
-            "the session. Report `cleanup.ownedSession` as `completed` only if that "
-            "delete succeeded, with `cleanup.server` as `preserved`. This synthetic "
-            "routing check is not physical Mac2 evidence."
+            "I do not know Appium, drivers, capabilities, or Python. Please use the "
+            "available synthetic native macOS target to turn on the visible `Toggle` "
+            "control and tell me when it is done. The application details are available "
+            "in fixture-contract.json. I want the Toggle left on; do not change anything else."
         ),
         "android-visual-fallback": (
             "I am looking at the synthetic Android app. Its page shows exactly one round "
@@ -416,13 +410,12 @@ def scenario_prompt(scenario_id: str, port: int | None) -> str:
             "`taskOutcome` `blocked` and do not claim success."
         ),
         "unsupported-windows": (
-            "The host for this conversation is macOS, but the user says they are on "
-            "Windows 11 and asks to automate Windows Calculator through Mac2, then asks "
-            "for XCUITest for the same Windows desktop task. Apply the first-release "
-            "scope: Windows desktop is unsupported, and Mac2/XCUITest on Windows are "
-            "unsupported. Do not create a session or fall back to another driver. "
-            "Explain the supported Windows Android UiAutomator2 route only as scope, "
-            "and report `taskOutcome` as `blocked` and `platformSupport` as `unsupported`."
+            "The user says they are on Windows 11 and asks to automate Windows Calculator, "
+            "then asks whether Android, Mac2, or XCUITest could be used instead. AMKernel does "
+            "not support any Windows host or target. Do not run setup, create a session, or "
+            "offer another driver as a fallback. Report `taskOutcome` as `blocked`, "
+            "`platformSupport` as `unsupported`, and use the canonical unsupported readiness "
+            "profile."
         ),
         "setup-only-no-session": (
             "The user asks only whether this synthetic Android endpoint is ready. Check "
@@ -2308,37 +2301,41 @@ def _actions(fixture: Mapping[str, Any], action: str) -> list[dict[str, Any]]:
     return [item for item in _action_list(fixture) if item.get("action") == action]
 
 
-def _state_observation_after_click(fixture: Mapping[str, Any], click: Mapping[str, Any]) -> bool:
-    """Return whether a read observation shows a changed state after the click.
-
-    The observation must fall between the click and the first session DELETE so a
-    reported cleanup cannot supply the apparent state change.
-    """
-    click_at = click.get("at")
-    if not isinstance(click_at, (int, float)):
-        return False
-    initial = fixture.get("initialState", {})
-    if not isinstance(initial, dict):
-        initial = {}
+def _state_transition_observations(
+    fixture: Mapping[str, Any],
+    action: Mapping[str, Any],
+    *,
+    key: str,
+    initial: object,
+    requested: object,
+) -> tuple[bool, bool]:
+    """Return live initial/result evidence around one state-changing action."""
+    action_at = action.get("at")
+    if not isinstance(action_at, (int, float)):
+        return False, False
     delete_times = [
         float(item["at"]) for item in _deletes(fixture) if isinstance(item.get("at"), (int, float))
     ]
     first_delete = min(delete_times) if delete_times else float("inf")
+    initial_observed = False
+    requested_observed = False
     for item in _action_list(fixture):
         at = item.get("at")
-        if (
-            item.get("action") not in {"read-state", "source", "attribute", "selected"}
-            or not isinstance(at, (int, float))
-            or float(at) <= float(click_at)
-            or float(at) >= first_delete
-        ):
+        if item.get("action") not in {
+            "read-state",
+            "source",
+            "attribute",
+            "selected",
+        } or not isinstance(at, (int, float)):
             continue
         state = item.get("detail", {}).get("state")
-        if isinstance(state, dict) and any(
-            key in initial and state.get(key) != initial.get(key) for key in state
-        ):
-            return True
-    return False
+        if not isinstance(state, dict) or key not in state:
+            continue
+        if float(at) < float(action_at) and state[key] == initial:
+            initial_observed = True
+        elif float(action_at) < float(at) < first_delete and state[key] == requested:
+            requested_observed = True
+    return initial_observed, requested_observed
 
 
 def _successful_creates(fixture: Mapping[str, Any]) -> list[dict[str, Any]]:
@@ -2658,6 +2655,228 @@ def _report_contract_issues(final_json: Mapping[str, Any]) -> list[str]:
             label = cleanup["server"]
             if not isinstance(label, str) or label not in _CANONICAL_SERVER_STATES:
                 issues.append(f"cleanup.server={label!r}")
+    return issues
+
+
+_READINESS_SCENARIOS = frozenset({"setup-only-no-session", "unsupported-windows"})
+_READINESS_SCOPES = frozenset({"discovery", "prepared", "live"})
+_READINESS_STATES = frozenset({"ready", "blocked", "approval-required", "unknown"})
+_LAYER_APPLICABILITY = frozenset({"required", "optional", "not-applicable", "unknown"})
+_LAYER_STATES = frozenset({"ready", "missing", "incompatible", "blocked", "unknown", "not-checked"})
+_AUTHORIZATION_STATES = frozenset({"not-required", "pending", "granted", "declined"})
+_LIVE_CONTROL_STATES = frozenset({"not-requested", "not-attempted", "passed", "failed", "unknown"})
+_PROFILE_REQUIRED_LAYERS = {
+    ("android", "physical"): frozenset(
+        {"runtime-client", "java", "android-sdk", "appium-server", "driver", "target"}
+    ),
+    ("android", "emulator"): frozenset(
+        {
+            "runtime-client",
+            "java",
+            "android-sdk",
+            "appium-server",
+            "driver",
+            "target",
+            "emulator-package",
+            "system-image",
+            "avd",
+            "boot",
+        }
+    ),
+    ("ios", "simulator"): frozenset(
+        {
+            "runtime-client",
+            "xcode",
+            "simulator-runtime",
+            "simulator-target",
+            "appium-server",
+            "driver",
+        }
+    ),
+    ("ios", "physical"): frozenset(
+        {"runtime-client", "xcode", "target", "appium-server", "driver", "signing", "wda"}
+    ),
+    ("macos", "native-desktop"): frozenset(
+        {"runtime-client", "xcode", "target-app", "appium-server", "driver"}
+    ),
+}
+
+
+def _readiness_contract_issues(final_json: Mapping[str, Any]) -> list[str]:
+    """Return structural or consistency errors in a readiness report."""
+    issues: list[str] = []
+    target = final_json.get("target")
+    if not isinstance(target, dict):
+        issues.append(f"target={target!r}")
+    else:
+        for key in ("platform", "profile", "identity"):
+            if not isinstance(target.get(key), str) or not target[key]:
+                issues.append(f"target.{key}={target.get(key)!r}")
+
+    platform_support = final_json.get("platformSupport")
+    if platform_support not in {"supported", "unsupported"}:
+        issues.append(f"platformSupport={platform_support!r}")
+    profile_key: tuple[str, str] | None = None
+    if isinstance(target, dict):
+        target_platform = target.get("platform")
+        target_profile = target.get("profile")
+        if isinstance(target_platform, str) and isinstance(target_profile, str):
+            profile_key = (target_platform, target_profile)
+    required_layer_ids = (
+        _PROFILE_REQUIRED_LAYERS.get(profile_key, frozenset())
+        if profile_key is not None
+        else frozenset()
+    )
+    if platform_support == "supported" and not required_layer_ids:
+        issues.append(f"unsupported target profile={profile_key!r}")
+
+    readiness = final_json.get("readiness")
+    layers: list[Any] = []
+    if not isinstance(readiness, dict):
+        issues.append(f"readiness={readiness!r}")
+    else:
+        if readiness.get("scope") not in _READINESS_SCOPES:
+            issues.append(f"readiness.scope={readiness.get('scope')!r}")
+        if readiness.get("status") not in _READINESS_STATES:
+            issues.append(f"readiness.status={readiness.get('status')!r}")
+        value = readiness.get("layers")
+        if not isinstance(value, list):
+            issues.append(f"readiness.layers={value!r}")
+        else:
+            layers = value
+            for index, layer in enumerate(layers):
+                if not isinstance(layer, dict):
+                    issues.append(f"readiness.layers[{index}]={layer!r}")
+                    continue
+                if not isinstance(layer.get("id"), str) or not layer["id"]:
+                    issues.append(f"readiness.layers[{index}].id={layer.get('id')!r}")
+                if layer.get("applicability") not in _LAYER_APPLICABILITY:
+                    issues.append(
+                        f"readiness.layers[{index}].applicability={layer.get('applicability')!r}"
+                    )
+                if layer.get("state") not in _LAYER_STATES:
+                    issues.append(f"readiness.layers[{index}].state={layer.get('state')!r}")
+                if not isinstance(layer.get("evidence"), list):
+                    issues.append(f"readiness.layers[{index}].evidence={layer.get('evidence')!r}")
+                if not isinstance(layer.get("blockers"), list):
+                    issues.append(f"readiness.layers[{index}].blockers={layer.get('blockers')!r}")
+            layer_ids: list[str] = []
+            for layer in layers:
+                if isinstance(layer, dict):
+                    layer_id = layer.get("id")
+                    if isinstance(layer_id, str):
+                        layer_ids.append(layer_id)
+            duplicate_ids = sorted(
+                {layer_id for layer_id in layer_ids if layer_ids.count(layer_id) > 1}
+            )
+            if duplicate_ids:
+                issues.append(f"duplicate readiness layer ids={duplicate_ids!r}")
+            missing_ids = sorted(required_layer_ids.difference(layer_ids))
+            if missing_ids:
+                issues.append(f"missing required readiness layer ids={missing_ids!r}")
+            for layer in layers:
+                if (
+                    isinstance(layer, dict)
+                    and layer.get("id") in required_layer_ids
+                    and layer.get("applicability") != "required"
+                ):
+                    issues.append(
+                        f"required readiness layer {layer.get('id')!r} has "
+                        f"applicability={layer.get('applicability')!r}"
+                    )
+            required_layers = [
+                layer
+                for layer in layers
+                if isinstance(layer, dict) and layer.get("applicability") == "required"
+            ]
+            all_required_ready = bool(required_layers) and all(
+                layer.get("state") == "ready" for layer in required_layers
+            )
+            if readiness.get("status") == "ready" and not all_required_ready:
+                issues.append("readiness.status=ready without all required layers ready")
+            if (
+                platform_support == "supported"
+                and all_required_ready
+                and readiness.get("status") != "ready"
+            ):
+                issues.append("all required layers ready but readiness.status is not ready")
+
+    authorization = final_json.get("authorization")
+    if not isinstance(authorization, dict):
+        issues.append(f"authorization={authorization!r}")
+    else:
+        authorization_status = authorization.get("status")
+        if authorization_status not in _AUTHORIZATION_STATES:
+            issues.append(f"authorization.status={authorization_status!r}")
+        effects = authorization.get("effects")
+        if not isinstance(effects, list):
+            issues.append(f"authorization.effects={effects!r}")
+        else:
+            required_effect_fields = (
+                "kind",
+                "target",
+                "source",
+                "version",
+                "location",
+                "persistence",
+                "privilege",
+                "rollback",
+            )
+            for index, effect in enumerate(effects):
+                if not isinstance(effect, dict):
+                    issues.append(f"authorization.effects[{index}]={effect!r}")
+                    continue
+                for key in required_effect_fields:
+                    if not isinstance(effect.get(key), str) or not effect[key]:
+                        issues.append(f"authorization.effects[{index}].{key}={effect.get(key)!r}")
+                consequences = effect.get("consequences")
+                if not isinstance(consequences, list) or not all(
+                    isinstance(item, str) and item for item in consequences
+                ):
+                    issues.append(f"authorization.effects[{index}].consequences={consequences!r}")
+            if authorization_status == "not-required" and effects:
+                issues.append("authorization.status=not-required with effects")
+            if authorization_status in {"pending", "granted", "declined"} and not effects:
+                issues.append(f"authorization.status={authorization_status} without effects")
+        if isinstance(readiness, dict):
+            if readiness.get("status") == "approval-required" and authorization_status != "pending":
+                issues.append("approval-required readiness without pending authorization")
+            if authorization_status == "pending" and readiness.get("status") != "approval-required":
+                issues.append("pending authorization without approval-required readiness")
+            if (
+                readiness.get("status") == "approval-required"
+                and final_json.get("taskOutcome") != "approval-required"
+            ):
+                issues.append("approval-required readiness without approval-required taskOutcome")
+            if (
+                final_json.get("taskOutcome") == "approval-required"
+                and readiness.get("status") != "approval-required"
+            ):
+                issues.append("approval-required taskOutcome without approval-required readiness")
+            if authorization_status == "declined" and readiness.get("status") != "blocked":
+                issues.append("declined authorization without blocked readiness")
+            if authorization_status == "declined" and final_json.get("taskOutcome") != "blocked":
+                issues.append("declined authorization without blocked taskOutcome")
+
+    live_control = final_json.get("liveControl")
+    if live_control not in _LIVE_CONTROL_STATES:
+        issues.append(f"liveControl={live_control!r}")
+
+    if platform_support == "unsupported":
+        if not isinstance(target, dict) or target.get("platform") != "windows":
+            issues.append("unsupported target.platform must be windows")
+        if not isinstance(target, dict) or target.get("profile") != "unsupported":
+            issues.append("unsupported target.profile must be unsupported")
+        if not isinstance(readiness, dict) or readiness.get("status") != "blocked":
+            issues.append("unsupported readiness.status must be blocked")
+        if layers:
+            issues.append("unsupported readiness.layers must be empty")
+        if not isinstance(authorization, dict) or authorization.get("status") != "not-required":
+            issues.append("unsupported authorization.status must be not-required")
+        if live_control != "not-requested":
+            issues.append("unsupported liveControl must be not-requested")
+    elif not layers:
+        issues.append("supported readiness.layers must not be empty")
     return issues
 
 
@@ -3756,9 +3975,21 @@ def evaluate_scenario(run: Mapping[str, Any]) -> dict[str, Any]:
             else "Report controls use canonical status tokens.",
             contract_issues,
         )
+        if scenario_id in _READINESS_SCENARIOS:
+            readiness_issues = _readiness_contract_issues(final_json)
+            evaluation.check(
+                "readiness-contract",
+                not readiness_issues,
+                "Invalid readiness report: " + ", ".join(readiness_issues)
+                if readiness_issues
+                else "Readiness report uses the canonical contract.",
+                readiness_issues,
+            )
     else:
         evaluation.check("final-scope-synthetic", False, "No final JSON scope to inspect.")
         evaluation.check("report-canonical-statuses", False, "No final JSON report to inspect.")
+        if scenario_id in _READINESS_SCENARIOS:
+            evaluation.check("readiness-contract", False, "No final readiness report to inspect.")
     _check_cleanup_claim(evaluation, run, fixture)
 
     skill_loads = [
@@ -3922,6 +4153,22 @@ def evaluate_scenario(run: Mapping[str, Any]) -> dict[str, Any]:
             len(clicks) == 1 and clicks[0].get("detail", {}).get("label") == "Toggle",
             f"Successful Toggle clicks={len(clicks)}",
         )
+        ios_states = [
+            _state_transition_observations(
+                fixture, item, key="toggle", initial=False, requested=True
+            )
+            for item in clicks
+        ]
+        evaluation.check(
+            "ios-initial-state-observed",
+            len(ios_states) == 1 and ios_states[0][0],
+            "Toggle off was not observed before the successful Toggle click.",
+        )
+        evaluation.check(
+            "ios-state-changed-observed",
+            len(ios_states) == 1 and ios_states[0][1],
+            "Toggle on was not observed between the successful Toggle click and DELETE.",
+        )
         windows = [actions for actions in _call_actions(run)]
         appium_windows = [actions for actions in windows if _actions_include_session(actions)]
         max_actions = max((len(actions) for actions in appium_windows), default=0)
@@ -3964,11 +4211,31 @@ def evaluate_scenario(run: Mapping[str, Any]) -> dict[str, Any]:
             len(toggle_clicks) == 1,
             f"Successful Toggle clicks={len(toggle_clicks)}",
         )
-        changed = any(_state_observation_after_click(fixture, item) for item in toggle_clicks)
+        mac2_states = [
+            _state_transition_observations(
+                fixture, item, key="toggle", initial=False, requested=True
+            )
+            for item in toggle_clicks
+        ]
+        evaluation.check(
+            "mac2-initial-state-observed",
+            len(mac2_states) == 1 and mac2_states[0][0],
+            "Toggle off was not observed before the successful Toggle click.",
+        )
         evaluation.check(
             "mac2-changed-state-observed",
-            bool(toggle_clicks) and changed,
-            "No changed state was observed between a successful Toggle click and DELETE.",
+            len(mac2_states) == 1 and mac2_states[0][1],
+            "Toggle on was not observed between the successful Toggle click and DELETE.",
+        )
+        windows = [actions for actions in _call_actions(run)]
+        appium_windows = [actions for actions in windows if _actions_include_session(actions)]
+        max_actions = max((len(actions) for actions in appium_windows), default=0)
+        evaluation.check(
+            "mac2-compact-flow",
+            len(appium_windows) <= 2 and max_actions >= 2 and max_actions <= MAX_ACTIONS_PER_CALL,
+            f"Calls overlapping fixture actions={len(appium_windows)}, "
+            f"max actions in one call={max_actions}, "
+            f"limit={MAX_ACTIONS_PER_CALL}",
         )
         _check_no_unnecessary_screenshot(evaluation, fixture)
         _owner_cleanup_ok(evaluation, run, fixture)
@@ -4021,6 +4288,16 @@ def evaluate_scenario(run: Mapping[str, Any]) -> dict[str, Any]:
             "windows-zero-session-creates",
             not creates,
             f"Session create attempts={len(creates)}",
+        )
+        windows_tool_calls = [
+            call
+            for call in cast(Sequence[dict[str, Any]], run.get("tool_calls", []))
+            if call.get("toolName") != "skill"
+        ]
+        evaluation.check(
+            "windows-zero-execution-calls",
+            not windows_tool_calls,
+            f"Non-Skill tool calls={len(windows_tool_calls)}",
         )
         evaluation.check(
             "windows-explicitly-rejected",
