@@ -45,7 +45,7 @@ def _source_members(evidence_dir: Path) -> list[tuple[str, Path, int, str]]:
     if not evidence_dir.is_dir() or evidence_dir.is_symlink():
         raise EvidenceArchiveError(f"evidence directory is missing or linked: {evidence_dir}")
     members: list[tuple[str, Path, int, str]] = []
-    for path in sorted(evidence_dir.rglob("*")):
+    for path in evidence_dir.rglob("*"):
         if path.is_symlink():
             raise EvidenceArchiveError(f"linked evidence path is forbidden: {path}")
         if path.is_dir():
@@ -56,6 +56,7 @@ def _source_members(evidence_dir: Path) -> list[tuple[str, Path, int, str]]:
         members.append((relative, path, path.stat().st_size, _sha256(path)))
     if not members:
         raise EvidenceArchiveError("evidence directory contains no files")
+    members.sort(key=lambda member: member[0])
     return members
 
 

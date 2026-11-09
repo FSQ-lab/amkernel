@@ -197,6 +197,7 @@ def test_evidence_archive_is_deterministic_and_safe(tmp_path: Path) -> None:
     source = tmp_path / "evidence"
     (source / "nested").mkdir(parents=True)
     (source / "nested" / "report.json").write_text('{"result":"pass"}\n')
+    (source / "nested-0.json").write_text('{"result":"root"}\n')
     outputs = []
     for name in ("first", "second"):
         output = tmp_path / name
@@ -226,7 +227,10 @@ def test_evidence_archive_is_deterministic_and_safe(tmp_path: Path) -> None:
     assert (outputs[0] / manifest_name).read_bytes() == (outputs[1] / manifest_name).read_bytes()
     with tarfile.open(outputs[0] / archive_name, "r:gz") as archive:
         members = archive.getmembers()
-    assert [member.name for member in members] == ["evidence/nested/report.json"]
+    assert [member.name for member in members] == [
+        "evidence/nested-0.json",
+        "evidence/nested/report.json",
+    ]
     assert members[0].isfile()
     assert members[0].mtime == 0
 

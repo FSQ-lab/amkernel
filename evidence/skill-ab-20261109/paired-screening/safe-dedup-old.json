@@ -1,0 +1,435 @@
+{
+  "schemaVersion": 1,
+  "kind": "bounded-normalized-paired-case-outcome",
+  "scope": "synthetic-development-paired-screening",
+  "historicalIdentity": {
+    "originalPath": "evidence/skill-ab-20261109/paired-screening/safe-dedup-old.json",
+    "originalSha256": "9e79adc0a9971f8da6d8ce6fff5da87cba9447eb51cdef60db7ac0275425ea5a",
+    "originalBytes": 264630,
+    "availability": "Local original omitted from the release candidate; digest identifies it. This projection is lossy and is not a release-archive member."
+  },
+  "normalization": {
+    "sourceParsedLocally": true,
+    "pairedResultsUnchanged": true,
+    "rescored": false,
+    "note": "Derived only from the recorded report. No task rerun, rescore, case tuning or changed acceptance was performed."
+  },
+  "case": "safe-dedup",
+  "arm": "old",
+  "model": "gpt-6.1-sol",
+  "timeoutSeconds": 240,
+  "goal": "Clean up my recipe notebook. Entries are exact duplicates only when their title, summary, and steps are all identical; keep exactly one copy of each identical group. Entries that share a title or summary but differ in any of title, summary, or steps are distinct recipes and must stay. Delete only exact duplicates. Put the number of entries you removed in the answer object with key `removed`.",
+  "goalSha256": "c6ea7ea47e7139a64c321c8e178fcf85b2193da11900d5157abfc91f3980dff2",
+  "initialStateSha256": "518dceb58051b6145c4c661c2adc5bb7d3e1fe8e913dfaa48fd91a01223d0412",
+  "controls": {
+    "skillAssets": {
+      "SKILL.md": "520bbbb380a95024d08e7e728ed0c5b92a484a0958fd098454a414ad9a7a0caa",
+      "references/amkernel-appium.md": "4a526440b8d3ef8e7584c3b439a21db718c6c6e5a9c484d9ca84e0898556be9d",
+      "references/android-execution.md": "bdb021d7a587f7f63c862c888988c64d908afa498282f2a71e4486b1148f8471"
+    },
+    "actionBudget": 20
+  },
+  "outcome": {
+    "businessPassed": true,
+    "protocolPassed": true,
+    "passed": true,
+    "reportedOutcome": "completed",
+    "answer": {
+      "removed": 1
+    }
+  },
+  "businessChecks": [
+    {
+      "id": "dedup.unique-content-retained",
+      "ok": true,
+      "detail": "all distinct original contents remain"
+    },
+    {
+      "id": "dedup.duplicates-removed",
+      "ok": true,
+      "detail": "no exact duplicate content remains"
+    },
+    {
+      "id": "dedup.no-unexpected-content",
+      "ok": true,
+      "detail": "every current entry matches an original content"
+    },
+    {
+      "id": "dedup.removed-count",
+      "ok": true,
+      "detail": "expected removed=1, actual removed=1, removed=1"
+    }
+  ],
+  "protocolChecks": [
+    {
+      "id": "skill-assets-unchanged",
+      "ok": true,
+      "detail": "Arm Skill hashes match the frozen treatment after the Agent exits"
+    },
+    {
+      "id": "agent-finished",
+      "ok": true,
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 87520,
+      "eventCount": 1295,
+      "malformedEventLines": 0,
+      "runnerCleanupObserved": true
+    },
+    {
+      "id": "main-skill-loaded",
+      "ok": true,
+      "detail": true
+    },
+    {
+      "id": "public-execution-route",
+      "ok": true,
+      "detail": "workspace amkernel/python_exec"
+    },
+    {
+      "id": "allowed-agent-tools",
+      "ok": true,
+      "detail": "Only view/skill/python_exec requested"
+    },
+    {
+      "id": "final-contract",
+      "ok": true,
+      "detail": "Declared JSON fields/types"
+    },
+    {
+      "id": "same-action-budget",
+      "ok": true,
+      "admitted": 10,
+      "budget": 20,
+      "rejected": 0
+    },
+    {
+      "id": "owned-session-cleaned",
+      "ok": true,
+      "sessionsCreated": 1,
+      "sessionsDeleted": 1,
+      "activeSession": false
+    },
+    {
+      "id": "cleanup-report-truthful",
+      "ok": true,
+      "detail": "Compared report with observed DELETE"
+    },
+    {
+      "id": "no-false-completion",
+      "ok": true,
+      "reportedComplete": true,
+      "businessPassed": true
+    }
+  ],
+  "businessState": {
+    "caseId": "safe-dedup",
+    "goal": "Clean up my recipe notebook. Entries are exact duplicates only when their title, summary, and steps are all identical; keep exactly one copy of each identical group. Entries that share a title or summary but differ in any of title, summary, or steps are distinct recipes and must stay. Delete only exact duplicates. Put the number of entries you removed in the answer object with key `removed`.",
+    "budget": 20,
+    "contentFields": [
+      "title",
+      "summary",
+      "body"
+    ],
+    "originalRecords": [
+      {
+        "id": "R-201",
+        "title": "Lemon Pasta",
+        "summary": "Bright quick weeknight pasta",
+        "body": "Boil 200g spaghetti. Whisk lemon zest, juice and olive oil. Toss with parmesan."
+      },
+      {
+        "id": "R-202",
+        "title": "Lemon Pasta",
+        "summary": "Bright quick weeknight pasta",
+        "body": "Boil 250g rigatoni. Blend basil, lemon and garlic. Fold through mascarpone."
+      },
+      {
+        "id": "R-203",
+        "title": "Tomato Soup",
+        "summary": "Roasted tomato soup",
+        "body": "Roast tomatoes for 25 minutes. Blend with stock. Simmer for 10 minutes."
+      },
+      {
+        "id": "R-204",
+        "title": "Tomato Soup",
+        "summary": "Roasted tomato soup",
+        "body": "Roast tomatoes for 25 minutes. Blend with stock. Simmer for 10 minutes."
+      },
+      {
+        "id": "R-205",
+        "title": "Overnight Oats",
+        "summary": "No-cook breakfast jar",
+        "body": "Mix oats, milk and chia. Chill overnight. Top with berries."
+      },
+      {
+        "id": "R-206",
+        "title": "Cucumber Salad",
+        "summary": "Crunchy five-minute side",
+        "body": "Slice cucumbers. Toss with vinegar, dill and salt."
+      },
+      {
+        "id": "R-207",
+        "title": "Lemon Pasta",
+        "summary": "Creamy baked lemon pasta",
+        "body": "Bake pasta with cream and lemon. Rest for five minutes before serving."
+      }
+    ],
+    "records": [
+      {
+        "id": "R-201",
+        "title": "Lemon Pasta",
+        "summary": "Bright quick weeknight pasta",
+        "body": "Boil 200g spaghetti. Whisk lemon zest, juice and olive oil. Toss with parmesan."
+      },
+      {
+        "id": "R-202",
+        "title": "Lemon Pasta",
+        "summary": "Bright quick weeknight pasta",
+        "body": "Boil 250g rigatoni. Blend basil, lemon and garlic. Fold through mascarpone."
+      },
+      {
+        "id": "R-203",
+        "title": "Tomato Soup",
+        "summary": "Roasted tomato soup",
+        "body": "Roast tomatoes for 25 minutes. Blend with stock. Simmer for 10 minutes."
+      },
+      {
+        "id": "R-205",
+        "title": "Overnight Oats",
+        "summary": "No-cook breakfast jar",
+        "body": "Mix oats, milk and chia. Chill overnight. Top with berries."
+      },
+      {
+        "id": "R-206",
+        "title": "Cucumber Salad",
+        "summary": "Crunchy five-minute side",
+        "body": "Slice cucumbers. Toss with vinegar, dill and salt."
+      },
+      {
+        "id": "R-207",
+        "title": "Lemon Pasta",
+        "summary": "Creamy baked lemon pasta",
+        "body": "Bake pasta with cream and lemon. Rest for five minutes before serving."
+      }
+    ],
+    "screen": "list",
+    "detailId": null,
+    "dialogEntryId": null
+  },
+  "cleanup": {
+    "sessionsCreated": 1,
+    "sessionsDeleted": 1,
+    "activeSession": false,
+    "nativeFinalStatus": {
+      "taskOutcome": "completed",
+      "sessionCleanup": "cleaned"
+    },
+    "reportSessionCleanup": "cleaned",
+    "runnerCleanupObserved": true
+  },
+  "telemetry": {
+    "pythonCalls": 6,
+    "failedPythonCalls": 0,
+    "timedOutPythonCalls": 0,
+    "actions": 10,
+    "durationMs": 87520
+  },
+  "observedBusinessFacts": {
+    "source": "fixture.state and selected fixture.journal actions in the omitted local original",
+    "sourceSha256": "9e79adc0a9971f8da6d8ce6fff5da87cba9447eb51cdef60db7ac0275425ea5a",
+    "facts": {
+      "originalIds": [
+        "R-201",
+        "R-202",
+        "R-203",
+        "R-204",
+        "R-205",
+        "R-206",
+        "R-207"
+      ],
+      "remainingIds": [
+        "R-201",
+        "R-202",
+        "R-203",
+        "R-205",
+        "R-206",
+        "R-207"
+      ],
+      "removedIds": [
+        "R-204"
+      ],
+      "removedCount": 1,
+      "exactDuplicateIdGroups": [
+        [
+          "R-203",
+          "R-204"
+        ]
+      ],
+      "remainingEntries": [
+        {
+          "id": "R-201",
+          "title": "Lemon Pasta",
+          "summary": "Bright quick weeknight pasta",
+          "body": "Boil 200g spaghetti. Whisk lemon zest, juice and olive oil. Toss with parmesan."
+        },
+        {
+          "id": "R-202",
+          "title": "Lemon Pasta",
+          "summary": "Bright quick weeknight pasta",
+          "body": "Boil 250g rigatoni. Blend basil, lemon and garlic. Fold through mascarpone."
+        },
+        {
+          "id": "R-203",
+          "title": "Tomato Soup",
+          "summary": "Roasted tomato soup",
+          "body": "Roast tomatoes for 25 minutes. Blend with stock. Simmer for 10 minutes."
+        },
+        {
+          "id": "R-205",
+          "title": "Overnight Oats",
+          "summary": "No-cook breakfast jar",
+          "body": "Mix oats, milk and chia. Chill overnight. Top with berries."
+        },
+        {
+          "id": "R-206",
+          "title": "Cucumber Salad",
+          "summary": "Crunchy five-minute side",
+          "body": "Slice cucumbers. Toss with vinegar, dill and salt."
+        },
+        {
+          "id": "R-207",
+          "title": "Lemon Pasta",
+          "summary": "Creamy baked lemon pasta",
+          "body": "Bake pasta with cream and lemon. Rest for five minutes before serving."
+        }
+      ],
+      "detailOpenClicks": 4,
+      "detailBackClicks": 4,
+      "deleteClicks": 1,
+      "confirmDeleteClicks": 1
+    }
+  },
+  "native": {
+    "process": {
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 87520,
+      "eventCount": 1295,
+      "malformedEventLines": 0
+    },
+    "mainSkillLoaded": true,
+    "finalReportSha256": "65d2a1e094c49a51705893bd321986085adeed26197bd2ce681e191ad2a0941a",
+    "limits": "Only allowlisted status, identity, timestamp, and digest evidence is retained. Absent event timestamps remain null; raw code, arguments, output, final prose, and stderr are withheld.",
+    "callSummary": {
+      "total": 10,
+      "byTool": {
+        "skill": 1,
+        "view": 3,
+        "amkernel-python_exec": 6
+      },
+      "failed": []
+    },
+    "pythonResults": {
+      "total": 6,
+      "completed": 6,
+      "failed": 0,
+      "timedOut": 0,
+      "kernelStates": [
+        "alive"
+      ],
+      "failedDetails": []
+    }
+  },
+  "fixtureJournal": {
+    "totalEvents": 37,
+    "actionCounts": {
+      "read": 1,
+      "source": 15,
+      "find": 10,
+      "click": 10,
+      "quit": 1
+    },
+    "httpStatusCounts": {
+      "200": 37
+    },
+    "non200OrErrorEvents": [],
+    "selectedMutationEvents": [
+      {
+        "seq": 5,
+        "action": "click",
+        "key": "recipe-R-201-open",
+        "status": 200
+      },
+      {
+        "seq": 9,
+        "action": "click",
+        "key": "detail-back",
+        "status": 200
+      },
+      {
+        "seq": 12,
+        "action": "click",
+        "key": "recipe-R-202-open",
+        "status": 200
+      },
+      {
+        "seq": 15,
+        "action": "click",
+        "key": "detail-back",
+        "status": 200
+      },
+      {
+        "seq": 18,
+        "action": "click",
+        "key": "recipe-R-203-open",
+        "status": 200
+      },
+      {
+        "seq": 21,
+        "action": "click",
+        "key": "detail-back",
+        "status": 200
+      },
+      {
+        "seq": 24,
+        "action": "click",
+        "key": "recipe-R-204-open",
+        "status": 200
+      },
+      {
+        "seq": 27,
+        "action": "click",
+        "key": "detail-back",
+        "status": 200
+      },
+      {
+        "seq": 31,
+        "action": "click",
+        "key": "recipe-R-204-delete",
+        "status": 200
+      },
+      {
+        "seq": 35,
+        "action": "click",
+        "key": "delete-confirm",
+        "status": 200
+      }
+    ]
+  },
+  "report": {
+    "taskOutcome": "completed",
+    "answer": {
+      "removed": 1
+    },
+    "sessionCleanup": "cleaned",
+    "evidence": "Removed R-204 after verifying its title, summary and steps matched R-203 exactly. Six entries remain, including both Lemon Pasta recipes with different steps. Owned session closed."
+  },
+  "omitted": [
+    "fixture.journal full per-request records, observed source node text/class/resource-id (XML-like) data, stateAfter snapshots and session/element raw paths outside selected summaries",
+    "native.calls call IDs, timestamps, argument/code/output digests, stdout/stderr bytes and per-call raw records",
+    "pythonResults traceback frames and raw result values",
+    "No raw logs, transcripts, XML, full scripts, session IDs, credentials or personal absolute paths are retained",
+    "fixture.state.visibleKeys UI key inventory omitted; current recipe records and original duplicate-content records retained"
+  ]
+}

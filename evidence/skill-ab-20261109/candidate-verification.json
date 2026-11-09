@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "kind": "Isolated 0.1.4 candidate verification; not authoritative CI distribution identity",
+  "baseCommit": "9f4279e84ffeb9acf43578c96bef6da283c498e2",
+  "sourceReview": {
+    "schemaVersion": 1,
+    "kind": "Independent isolated candidate source review",
+    "reviewer": "CandidateSourceReview (read-only reviewer agent)",
+    "disposition": "approved; no evidence-backed merge blocker",
+    "confidence": 0.9,
+    "reviewed": [
+      "Three integrated Skill documents",
+      "Seven unchanged screening source/test files",
+      "Current main readiness/authorization preservation",
+      "Historical query and paired review evidence",
+      "Candidate changelog, handoff and experiment additions"
+    ],
+    "observations": [
+      "Readiness, approval continuity, guidance ownership and cleanup preserved",
+      "Generic evidence-driven acceptance and budget stopping covered",
+      "Modern native queries session-gated/read-only; unknown scripts fail with bounded diagnostics",
+      "Observed patch excludes Runtime/Runner changes",
+      "Historical assets not qualified as integrated0.1.4 or physical-platform evidence"
+    ],
+    "checksRunByReviewer": []
+  },
+  "quality": {
+    "lockCheck": "passed",
+    "ruffFormat": "87 files already formatted",
+    "ruffCheck": "passed",
+    "mypy": "84 source files; no issues",
+    "pytest": {
+      "passed": 969,
+      "seconds": 110.78
+    },
+    "build": "sdist and wheel built from isolated candidate",
+    "dependencyPinsChanged": false
+  },
+  "officialClientSmoke": {
+    "version": "5.2.5",
+    "modernQueriesAccepted": true,
+    "legacyFallbackRequests": 0,
+    "queryStateUnchanged": true,
+    "unknownScriptRejected": true,
+    "scriptsAndArgumentsOmittedFromJournal": true,
+    "observedBusinessResult": "Profile saved",
+    "onlyRequestedFieldChanged": true,
+    "persistedSaveCount": 1,
+    "actions": 4,
+    "deletedOwnedSessions": 1,
+    "activeOwnedSession": false,
+    "scope": "Synthetic endpoint; no native Agent or real device qualification"
+  },
+  "installedWheelSmoke": {
+    "localWheelSha256": "6a26fa8469c28c8f125e19e4da15f94476375604da58cf1e89f7ee00ef2788de",
+    "installedVersion": "amkernel 0.1.4",
+    "runtimeVersion": "0.1.4",
+    "skillContentVerified": true,
+    "mcpConfigured": true,
+    "dependencyCheck": "",
+    "consumerEntryPointAndStdioScenario": "passed; tests/package_smoke.py exited 0",
+    "cleanupRefused": true,
+    "deathChildCleaned": true,
+    "freshProcessInvalidation": true,
+    "shutdownChildCleaned": true,
+    "transportClosed": true,
+    "expectedNegativePaths": "Tamper, kernel-death and cleanup-refusal diagnostics exercised by existing smoke; not claimed absent",
+    "omitted": "Raw scenario/tool output, images, local paths and transient identities"
+  },
+  "releaseArchiveRepair": {
+    "trigger": {
+      "pullRequest": 149,
+      "runId": 42638220678,
+      "jobId": 129231969990,
+      "runUrl": "https://github.com/FSQ-lab/amkernel/actions/runs/42638220678",
+      "phase": "Evidence archive construction after installed stdio smoke passed",
+      "error": "evidence manifest members are not sorted",
+      "rerun": false
+    },
+    "cause": "Path component ordering differs from lexical full POSIX relative-path ordering for nested directories and similarly prefixed sibling filenames",
+    "change": "Sort completed member records by canonical relative string; archive and manifest consume same list",
+    "unchanged": [
+      "Strict ordering validator",
+      "File safety and member digest/provenance checks",
+      "Historical archive index and retained evidence assertions",
+      "Runtime/Runner and public interfaces"
+    ],
+    "regression": "Existing deterministic archive test now includes nested-0.json and nested/report.json and asserts canonical member order",
+    "verification": {
+      "ruffFormat": "2 files already formatted",
+      "ruffCheck": "passed",
+      "releaseTests": {
+        "passed": 10,
+        "seconds": 1.91
+      },
+      "actualArchiveBuildAndValidation": "passed on complete isolated candidate evidence directory",
+      "smokeArchiveMemberCount": 105,
+      "smokeArchiveAuthority": "Local behavioral verification only; not authoritative CI distribution"
+    },
+    "supplementalStaticProbe": {
+      "command": "uv run mypy scripts/prepare_evidence_archive.py tests/test_release.py",
+      "status": "failed",
+      "error": "scripts/prepare_evidence_archive.py:176 IO[bytes] incompatible with BinaryIO",
+      "scope": "Pre-existing unchanged annotation outside configured mypy src tests gate; no unrelated fix or suppressed diagnostic",
+      "effect": "&& prevented tests/archive from starting in that command; those were subsequently run directly and passed"
+    },
+    "independentSourceReview": {
+      "reviewer": "CandidateSourceReview",
+      "disposition": "approved; no findings",
+      "confidence": 0.99,
+      "checksRun": []
+    },
+    "publicationBoundary": "Initial PR CI failure is retained, not rerun or relabeled. New commit must pass protected PR checks; exact main first-attempt successful complete CI remains mandatory."
+  },
+  "releaseAuthority": "Local build is verification only. Exact main first-attempt successful complete CI distribution must be downloaded and separately validated; final publication approval remains required."
+}

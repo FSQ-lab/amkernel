@@ -1,0 +1,75 @@
+{
+  "scope": "separate-one-shot-native-query-diagnostic-not-paired-ab",
+  "attempts": 1,
+  "model": "gpt-6.1-sol",
+  "wheelSha256": "fcfe980164c30a0f3a69fec97497bd3b9973fa6bcbfc9150c16aae3bc2417be7",
+  "installedVersions": {
+    "amkernel": "0.1.3",
+    "Appium-Python-Client": "6.1.5",
+    "selenium": "4.52.0"
+  },
+  "fixtureSha256": "d9248e6e9b4ab2b4b13acbe10e427290e0e3703248fcc3a272834c0588fe7842",
+  "preflight": {
+    "ok": true,
+    "checks": [
+      {
+        "id": "client-identity",
+        "ok": true,
+        "detail": "GitHub Copilot CLI 1.0.105.\nRun 'copilot update' to check for updates."
+      },
+      {
+        "id": "uvx-present",
+        "ok": true,
+        "detail": "uvx is required"
+      },
+      {
+        "id": "wheel-present",
+        "ok": true,
+        "detail": "/tmp/amkernel-skill-fixes-20261109-final-dist/amkernel-0.1.3-py3-none-any.whl"
+      },
+      {
+        "id": "token-present",
+        "ok": true,
+        "detail": "Copilot token is available in memory only."
+      },
+      {
+        "id": "not-development-project",
+        "ok": true,
+        "detail": "Temporary project is outside the AMKernel repository."
+      },
+      {
+        "id": "product-install",
+        "ok": true,
+        "detail": "Installer and post-install status are healthy."
+      },
+      {
+        "id": "installed-provenance-and-content",
+        "ok": true,
+        "detail": "Verified e907024c210fe024c956ed9c74146fc27b1dd013 and 5 official Skills."
+      }
+    ]
+  },
+  "businessPassed": true,
+  "protocolPassed": true,
+  "telemetry": {
+    "pythonCalls": 4,
+    "failedPythonCalls": 0,
+    "timedOutPythonCalls": 0,
+    "actions": 4,
+    "durationMs": 85475
+  },
+  "scripts": [
+    {
+      "seq": 2,
+      "script": "mobile: getCurrentPackage",
+      "status": 200
+    }
+  ],
+  "httpErrors": [],
+  "isolationUnchanged": true,
+  "limits": [
+    "Not a repetition or replacement of frozen paired results",
+    "One stochastic diagnostic task cannot identify the original withheld scripts or prove all five old errors fixed",
+    "No real device, physical qualification or official benchmark reward"
+  ]
+}

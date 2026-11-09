@@ -1,0 +1,145 @@
+{
+  "schemaVersion": 1,
+  "scope": "synthetic-development-paired-screening",
+  "model": "gpt-6.1-sol",
+  "client": "GitHub Copilot CLI 1.0.105.\nRun 'copilot update' to check for updates.",
+  "clientSha256": "5fd7d15ff02deb08a58593b1b488015bb52c1686014b80b5509e28263cb3ad70",
+  "wheelSha256": "fcfe980164c30a0f3a69fec97497bd3b9973fa6bcbfc9150c16aae3bc2417be7",
+  "timeoutSeconds": 240,
+  "attemptsPerArmPerCase": 1,
+  "oldAssets": {
+    "SKILL.md": "520bbbb380a95024d08e7e728ed0c5b92a484a0958fd098454a414ad9a7a0caa",
+    "references/amkernel-appium.md": "4a526440b8d3ef8e7584c3b439a21db718c6c6e5a9c484d9ca84e0898556be9d",
+    "references/android-execution.md": "bdb021d7a587f7f63c862c888988c64d908afa498282f2a71e4486b1148f8471"
+  },
+  "newAssets": {
+    "SKILL.md": "d48a984da1a5654b7448c91e013529195656873037e533705db54c323957a481",
+    "references/amkernel-appium.md": "2d9aa954cc744fb4c68fbe48d773cd8134d716e5a9479eb26e54b0db17cc67a3",
+    "references/android-execution.md": "8212ff43d78d0b5e06b23624a6479e9de7516e607658a3568c6d30f8c64f65a8"
+  },
+  "baselineProvenanceSha256": "79ac948c5e1de3e30062e35a0e672477d02059ca2c5d48059a9b248317fa0680",
+  "cases": [
+    {
+      "case": "focus-submit",
+      "goal": "Update the backup contact number in the contact preferences to 555-0134, then save the form. Keep the other contact details exactly as they are.",
+      "goalSha256": "5b4b6afd19f8dfafcca8c625e12135a6d448221d292ede98e40789c7b9c80c93",
+      "budget": 10,
+      "initialStateSha256": "c49b99f047fdd2902708e89d532dc0ed91401f23c4b683418c5c9160be6989e3",
+      "order": [
+        "old",
+        "new"
+      ]
+    },
+    {
+      "case": "exact-file",
+      "goal": "Create a text file named exactly `handoff` in the Notes folder, with no file extension. The file's contents must be the complete text of the note `Dispatch`, followed by exactly one extra newline character, followed by the complete text of the note `Closeout`. Keep both notes' existing trailing line breaks and all source notes unchanged. The saved file must appear in the file list and reopen with those exact contents.",
+      "goalSha256": "9dd26f164e859e3cce01caa1665735ef2c2787fe0ff933d38421a4539944bc63",
+      "budget": 18,
+      "initialStateSha256": "7a46e989cda9d491f6d6210faf11b8ae1ebb4aa812f59d38adb0adb2006bcfb1",
+      "order": [
+        "new",
+        "old"
+      ]
+    },
+    {
+      "case": "phased-progress",
+      "goal": "Observe the opening total and the displayed amount in each of the three receipt phases as you review them, then submit one final answer. The final total is the opening total plus every phase amount, counting repeated amounts once per phase. Also report how many phases you reviewed. Submit the numeric total and phase count exactly once; the final answer cannot be changed.",
+      "goalSha256": "94f2d9bc5de634ace30b863ea3366ea4d9372b72aa75bbf5917e10417bcd5d4a",
+      "budget": 12,
+      "initialStateSha256": "d653de0c745e842fb8dc0376fabe5f1416e28874cb018e02e46dc45f8270b2cb",
+      "order": [
+        "old",
+        "new"
+      ]
+    },
+    {
+      "case": "covered-count",
+      "goal": "In the Tasks app, count the work tasks that are still active (not done), due on or before 2026-11-15, and priority 2 or higher. Today is 2026-11-09. Each task has its own Task ID, so repeated titles are different tasks. The list is paginated; adjacent pages can repeat rows, and the last page shows an end-of-list marker. Inspect the whole relevant list through its end marker before answering; a count taken from only the first page or a partial traversal is not acceptable. If you use filters, inspect every row they show and do not hide a task that could match. Put the integer count in the answer object with key `count`.",
+      "goalSha256": "c3eb7a3b214864c769e4db6dcb49872754234e69d1940db3e635979857811540",
+      "budget": 12,
+      "initialStateSha256": "b1ecb2af2dd1df3b7ab132e3c5efe6baf08eef31bb5ad424ad7d9bd785652a18",
+      "order": [
+        "new",
+        "old"
+      ]
+    },
+    {
+      "case": "safe-dedup",
+      "goal": "Clean up my recipe notebook. Entries are exact duplicates only when their title, summary, and steps are all identical; keep exactly one copy of each identical group. Entries that share a title or summary but differ in any of title, summary, or steps are distinct recipes and must stay. Delete only exact duplicates. Put the number of entries you removed in the answer object with key `removed`.",
+      "goalSha256": "c6ea7ea47e7139a64c321c8e178fcf85b2193da11900d5157abfc91f3980dff2",
+      "budget": 20,
+      "initialStateSha256": "518dceb58051b6145c4c661c2adc5bb7d3e1fe8e913dfaa48fd91a01223d0412",
+      "order": [
+        "old",
+        "new"
+      ]
+    },
+    {
+      "case": "measured-aggregate",
+      "goal": "Build and submit one playlist order. Choose distinct tracks from the catalog; each track contributes its own listed duration in seconds, and the number of tracks is not a substitute for the duration total. The submitted total must be at least 600 and at most 660 seconds inclusive. Adding or removing tracks before submission is allowed; after you submit, the order is final. Put the confirmed total duration in the answer object with key `total`.",
+      "goalSha256": "4968da7f0407e40f22a304ff2bd9ea9a05c129b663db539736267d570ba346c5",
+      "budget": 16,
+      "initialStateSha256": "93c1a953d10f839a35414b05f7b100a9cb5f2748a3e405479580f92845531b74",
+      "order": [
+        "new",
+        "old"
+      ]
+    }
+  ],
+  "harnessSources": {
+    "tests/e2e/skill_ab.py": "c80fbb17186335376ec0e8a580aeec0f7155789281b30457c63c6ea5a9f3a2d0",
+    "tests/e2e/skill_ab_fixture.py": "438f27d30120e028e17b8eeeada3826cc974fb24f4cdc787b85a9d879ad7c295",
+    "tests/e2e/skill_ab_forms.py": "7cec43463937034862e655a8687f361194236ca6d6e2102b0582aadf94cdd7c4",
+    "tests/e2e/skill_ab_lists.py": "8bf7ecdc4a20275d4cd524c26c7e8c2ddc0dbd1443b3923eb1b295400082c021",
+    "tests/e2e/native_client.py": "728e9cb4b276c6a5c9676847a641cc0bfd1a096d6931babc21ea08bdc15bd9e3",
+    "tests/e2e/skill_behavior.py": "b1ddee00e6d6913fd4c900b8556b15e16b42e9fa93460a417f9954e3bc57b360"
+  },
+  "preflight": {
+    "ok": true,
+    "checks": [
+      {
+        "id": "client-identity",
+        "ok": true,
+        "detail": "GitHub Copilot CLI 1.0.105.\nRun 'copilot update' to check for updates."
+      },
+      {
+        "id": "uvx-present",
+        "ok": true,
+        "detail": "uvx is required"
+      },
+      {
+        "id": "wheel-present",
+        "ok": true,
+        "detail": "/private/tmp/amkernel-skill-fixes-20261109-final-dist/amkernel-0.1.3-py3-none-any.whl"
+      },
+      {
+        "id": "token-present",
+        "ok": true,
+        "detail": "Copilot token is available in memory only."
+      },
+      {
+        "id": "not-development-project",
+        "ok": true,
+        "detail": "Temporary project is outside the AMKernel repository."
+      },
+      {
+        "id": "product-install",
+        "ok": true,
+        "detail": "Installer and post-install status are healthy."
+      },
+      {
+        "id": "installed-provenance-and-content",
+        "ok": true,
+        "detail": "Verified e907024c210fe024c956ed9c74146fc27b1dd013 and 5 official Skills."
+      }
+    ]
+  },
+  "identity": "Verified installed current-wheel template; development old arm overlays only the three captured pre-fix Skill documents, without falsifying installer provenance or formal campaign identity",
+  "limits": [
+    "One sample per arm is screening, not causal/statistical improvement proof",
+    "Synthetic interfaces cannot qualify real Android focus, scrolling or persistence",
+    "Runtime is unrestricted same-user execution, not a sandbox",
+    "Only enumerated configuration paths are fingerprinted for isolation",
+    "No official task/reward/evaluator/campaign is used or modified"
+  ]
+}

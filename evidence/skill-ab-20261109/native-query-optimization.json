@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "scope": "Synthetic Skill screening transport only; no packaged Skill, Runtime, benchmark, or release publication change in this optimization",
+  "problem": {
+    "advertisedNativeQueries": "current_package/current_activity",
+    "missingWireForms": [
+      "mobile: getCurrentPackage",
+      "mobile: getCurrentActivity"
+    ],
+    "preFixSmoke": "Official Client5.2.5 sent both execute/sync commands then fell back to legacy GET routes",
+    "historicalLimit": "The five original new-arm failed scripts were withheld; their exact identities cannot be reconstructed or declared fixed"
+  },
+  "change": {
+    "readOnlyAliases": true,
+    "requiresActiveSession": true,
+    "noActionBudgetConsumption": true,
+    "unknownScriptsStillRejected": true,
+    "journal": "Bounded mobile command identifier only, otherwise <unrecognized-script>; no script arguments or arbitrary JavaScript retained"
+  },
+  "typingAndFormatting": {
+    "before": "Targeted strict Mypy found23errors across6new screening files; formatter found5newfiles not canonical",
+    "fix": "Local type annotations, observed-key rename, equivalent None-parent branch, package import instead of nonexistent standalone fallback, typed FocusSubmitScene helper construction; locked formatting on affected5newfiles",
+    "sceneGoalsBudgetsAndAcceptanceUnchanged": true
+  },
+  "verification": {
+    "focused": "87 passed,4subtests passed",
+    "typing": "Mypy noissues in all7new screening source/testfiles",
+    "lint": "Ruff check passed for all7newfiles",
+    "formatting": "Locked Ruff applied to5newfiles reported by formatcheck;2already formatted",
+    "officialClientSmoke": {
+      "version": "5.2.5",
+      "requests": 8,
+      "allHttp200": true,
+      "legacyFallbackRequests": 0,
+      "stateUnchanged": true,
+      "admittedActions": 0,
+      "sessionsDeleted": 1,
+      "activeSession": false
+    },
+    "nativeDiagnostic": "native-query-diagnostic/summary.json",
+    "nativeResult": {
+      "attempts": 1,
+      "model": "gpt-6.1-sol",
+      "client": "Appium-Python-Client6.1.5",
+      "selenium": "4.52.0",
+      "pythonCalls": 4,
+      "failedPythonCalls": 0,
+      "actions": 4,
+      "businessPassed": true,
+      "protocolPassed": true,
+      "observedScript": "mobile: getCurrentPackage",
+      "observedScriptStatus": 200,
+      "enumeratedIsolationUnchanged": true
+    }
+  },
+  "diagnosticSetup": "One metadata inspection failed before any Agent task began; recorded in native-query-diagnostic/setup-failure.json. Corrected the throwaway probe to preserve lexical venv interpreter identity; actual Agent task had one attempt.",
+  "sourceDigests": {
+    "tests/e2e/skill_ab.py": "c80fbb17186335376ec0e8a580aeec0f7155789281b30457c63c6ea5a9f3a2d0",
+    "tests/e2e/skill_ab_fixture.py": "2e3b269074a038de80d0c68902488ccc7fe8fa33138eabcda1fcdea5fd38af4b",
+    "tests/e2e/skill_ab_forms.py": "dfa901788d7c0d2a3a4f7df09c255345d7b1efa74d6cd363d7efb59ef4ceb8f9",
+    "tests/e2e/skill_ab_lists.py": "7ada1b3ad3011c2fb95c1325060fd555dff8566c822d9bf9bbe10f8e1f285a5d",
+    "tests/e2e/test_skill_ab_fixture.py": "8e39e70a1ba69eada2d399e45d3c46c63d84fbfc0f095eaccee48b1f622f7477",
+    "tests/e2e/test_skill_ab_forms.py": "95e6d9f9ea09199d43e95671983fbe7225a231a0f47797794b14672293b702ed",
+    "tests/e2e/test_skill_ab_lists.py": "fa2219e5ea58d510d68d2e12ef3e5750f1c6ec1070e5b5e89a6fcf887d74cc0c"
+  },
+  "nativeSourceScope": "The native diagnostic fixture digest precedes behavior-neutral type annotations/formatting. Final annotated fixture was exercised through official Client5.2.5 and focused regressions; no extra native task was replayed.",
+  "limits": [
+    "Original12run records untouched; this is not a new paired comparison or success-rate claim",
+    "No proof that all five original failed scripts were these aliases",
+    "No actual Android device or formal evaluator run",
+    "Only enumerated configuration paths fingerprinted; not a sandbox or proof of arbitrary host noninterference",
+    "Existing skill_behavior._installed_python resolves a venv symlink before preflight pip commands; possible base-interpreter side effects are a separate inherited helper risk, not repaired or comprehensively audited here"
+  ],
+  "independentReview": {
+    "agent": "NativeQueryReview",
+    "disposition": "Correct; no patch-introduced blocker, approval of implementation and bounded diagnostic evidence",
+    "notQualified": "Does not identify all5historicalscripts, replace paired results, qualify installed-runtime helper, or qualify future release commit",
+    "checksByReviewer": false
+  },
+  "temporaryScaffolding": "Owned throwaway scripts deleted and owned diagnostic roots cleaned; no user/external file cleanup"
+}

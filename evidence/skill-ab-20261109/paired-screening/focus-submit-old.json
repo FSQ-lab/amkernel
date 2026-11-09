@@ -1,0 +1,295 @@
+{
+  "schemaVersion": 1,
+  "kind": "bounded-normalized-paired-case-outcome",
+  "scope": "synthetic-development-paired-screening",
+  "historicalIdentity": {
+    "originalPath": "evidence/skill-ab-20261109/paired-screening/focus-submit-old.json",
+    "originalSha256": "9589e41fd902f9aba1db546db87c852868f05f70e5e2ddbcd84f44b80f4bd157",
+    "originalBytes": 40379,
+    "availability": "Local original omitted from the release candidate; digest identifies it. This projection is lossy and is not a release-archive member."
+  },
+  "normalization": {
+    "sourceParsedLocally": true,
+    "pairedResultsUnchanged": true,
+    "rescored": false,
+    "note": "Derived only from the recorded report. No task rerun, rescore, case tuning or changed acceptance was performed."
+  },
+  "case": "focus-submit",
+  "arm": "old",
+  "model": "gpt-6.1-sol",
+  "timeoutSeconds": 240,
+  "goal": "Update the backup contact number in the contact preferences to 555-0134, then save the form. Keep the other contact details exactly as they are.",
+  "goalSha256": "5b4b6afd19f8dfafcca8c625e12135a6d448221d292ede98e40789c7b9c80c93",
+  "initialStateSha256": "c49b99f047fdd2902708e89d532dc0ed91401f23c4b683418c5c9160be6989e3",
+  "controls": {
+    "skillAssets": {
+      "SKILL.md": "520bbbb380a95024d08e7e728ed0c5b92a484a0958fd098454a414ad9a7a0caa",
+      "references/amkernel-appium.md": "4a526440b8d3ef8e7584c3b439a21db718c6c6e5a9c484d9ca84e0898556be9d",
+      "references/android-execution.md": "bdb021d7a587f7f63c862c888988c64d908afa498282f2a71e4486b1148f8471"
+    },
+    "actionBudget": 10
+  },
+  "outcome": {
+    "businessPassed": true,
+    "protocolPassed": true,
+    "passed": true,
+    "reportedOutcome": "completed",
+    "answer": "Saved backup contact number as 555-0134, keeping other contact details unchanged."
+  },
+  "businessChecks": [
+    {
+      "id": "profile-saved-once",
+      "ok": true,
+      "detail": "saveCount=1, saved=True, accepted-save-clicks=1"
+    },
+    {
+      "id": "backup-phone-updated",
+      "ok": true,
+      "detail": "backup-phone='555-0134'"
+    },
+    {
+      "id": "other-fields-preserved",
+      "ok": true,
+      "detail": "only the backup phone may change"
+    },
+    {
+      "id": "source-unchanged",
+      "ok": true,
+      "detail": "immutable contact source must match the original values"
+    }
+  ],
+  "protocolChecks": [
+    {
+      "id": "skill-assets-unchanged",
+      "ok": true,
+      "detail": "Arm Skill hashes match the frozen treatment after the Agent exits"
+    },
+    {
+      "id": "agent-finished",
+      "ok": true,
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 62277,
+      "eventCount": 663,
+      "malformedEventLines": 0,
+      "runnerCleanupObserved": true
+    },
+    {
+      "id": "main-skill-loaded",
+      "ok": true,
+      "detail": true
+    },
+    {
+      "id": "public-execution-route",
+      "ok": true,
+      "detail": "workspace amkernel/python_exec"
+    },
+    {
+      "id": "allowed-agent-tools",
+      "ok": true,
+      "detail": "Only view/skill/python_exec requested"
+    },
+    {
+      "id": "final-contract",
+      "ok": true,
+      "detail": "Declared JSON fields/types"
+    },
+    {
+      "id": "same-action-budget",
+      "ok": true,
+      "admitted": 4,
+      "budget": 10,
+      "rejected": 0
+    },
+    {
+      "id": "owned-session-cleaned",
+      "ok": true,
+      "sessionsCreated": 1,
+      "sessionsDeleted": 1,
+      "activeSession": false
+    },
+    {
+      "id": "cleanup-report-truthful",
+      "ok": true,
+      "detail": "Compared report with observed DELETE"
+    },
+    {
+      "id": "no-false-completion",
+      "ok": true,
+      "reportedComplete": true,
+      "businessPassed": true
+    }
+  ],
+  "businessState": {
+    "id": "focus-submit",
+    "screen": "receipt",
+    "fields": {
+      "full-name": {
+        "label": "Full name",
+        "value": "Avery Quinn",
+        "focused": false,
+        "enabled": true,
+        "displayed": true
+      },
+      "email": {
+        "label": "Email",
+        "value": "avery.quinn@synthetic.test",
+        "focused": false,
+        "enabled": true,
+        "displayed": true
+      },
+      "backup-phone": {
+        "label": "Backup phone",
+        "value": "555-0134",
+        "focused": false,
+        "enabled": true,
+        "displayed": true
+      },
+      "office-extension": {
+        "label": "Office extension",
+        "value": "x204",
+        "focused": false,
+        "enabled": true,
+        "displayed": true
+      }
+    },
+    "source": {
+      "full-name": "Avery Quinn",
+      "email": "avery.quinn@synthetic.test",
+      "backup-phone": "555-0100",
+      "office-extension": "x204"
+    },
+    "saved": {
+      "full-name": "Avery Quinn",
+      "email": "avery.quinn@synthetic.test",
+      "backup-phone": "555-0134",
+      "office-extension": "x204"
+    },
+    "saveCount": 1,
+    "focusedKey": null,
+    "keyboardVisible": false,
+    "submitted": true
+  },
+  "cleanup": {
+    "sessionsCreated": 1,
+    "sessionsDeleted": 1,
+    "activeSession": false,
+    "nativeFinalStatus": {
+      "taskOutcome": "completed",
+      "sessionCleanup": "cleaned"
+    },
+    "reportSessionCleanup": "cleaned",
+    "runnerCleanupObserved": true
+  },
+  "telemetry": {
+    "pythonCalls": 4,
+    "failedPythonCalls": 0,
+    "timedOutPythonCalls": 0,
+    "actions": 4,
+    "durationMs": 62277
+  },
+  "observedBusinessFacts": {
+    "source": "fixture.state and selected fixture.journal actions in the omitted local original",
+    "sourceSha256": "9589e41fd902f9aba1db546db87c852868f05f70e5e2ddbcd84f44b80f4bd157",
+    "facts": {
+      "savedScreen": "receipt",
+      "sourceBackupPhone": "555-0100",
+      "savedBackupPhone": "555-0134",
+      "savedOtherFields": {
+        "full-name": "Avery Quinn",
+        "email": "avery.quinn@synthetic.test",
+        "office-extension": "x204"
+      },
+      "saveCount": 1,
+      "submitted": true,
+      "acceptedSaveClicks": 1,
+      "sourceObservationEvents": 4
+    }
+  },
+  "native": {
+    "process": {
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 62277,
+      "eventCount": 663,
+      "malformedEventLines": 0
+    },
+    "mainSkillLoaded": true,
+    "finalReportSha256": "82a09513509caa5fdb5828104d43a60eb7e6e163da4fb7130c1afb241760dec7",
+    "limits": "Only allowlisted status, identity, timestamp, and digest evidence is retained. Absent event timestamps remain null; raw code, arguments, output, final prose, and stderr are withheld.",
+    "callSummary": {
+      "total": 8,
+      "byTool": {
+        "skill": 1,
+        "view": 3,
+        "amkernel-python_exec": 4
+      },
+      "failed": []
+    },
+    "pythonResults": {
+      "total": 4,
+      "completed": 4,
+      "failed": 0,
+      "timedOut": 0,
+      "kernelStates": [
+        "alive"
+      ],
+      "failedDetails": []
+    }
+  },
+  "fixtureJournal": {
+    "totalEvents": 13,
+    "actionCounts": {
+      "read": 2,
+      "source": 4,
+      "find": 2,
+      "click": 2,
+      "clear": 1,
+      "type": 1,
+      "quit": 1
+    },
+    "httpStatusCounts": {
+      "200": 13
+    },
+    "non200OrErrorEvents": [],
+    "selectedMutationEvents": [
+      {
+        "seq": 5,
+        "action": "click",
+        "key": "backup-phone",
+        "status": 200
+      },
+      {
+        "seq": 7,
+        "action": "clear",
+        "key": "backup-phone",
+        "status": 200
+      },
+      {
+        "seq": 8,
+        "action": "type",
+        "key": "backup-phone",
+        "status": 200,
+        "value": "555-0134"
+      },
+      {
+        "seq": 11,
+        "action": "click",
+        "key": "save-profile",
+        "status": 200
+      }
+    ]
+  },
+  "report": {
+    "taskOutcome": "completed",
+    "answer": "Saved backup contact number as 555-0134, keeping other contact details unchanged.",
+    "sessionCleanup": "cleaned",
+    "evidence": "Verified all form values before saving; only backup phone changed. After Save, observed 'Profile saved'. Owned session quit succeeded."
+  },
+  "omitted": [
+    "fixture.journal full per-request records, observed source node text/class/resource-id (XML-like) data, stateAfter snapshots and session/element raw paths outside selected summaries",
+    "native.calls call IDs, timestamps, argument/code/output digests, stdout/stderr bytes and per-call raw records",
+    "pythonResults traceback frames and raw result values",
+    "No raw logs, transcripts, XML, full scripts, session IDs, credentials or personal absolute paths are retained"
+  ]
+}

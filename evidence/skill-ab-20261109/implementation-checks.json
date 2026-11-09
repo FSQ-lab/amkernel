@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "scope": "Independent six-scene synthetic Skill A/B screening; pre-matrix implementation checks",
+  "behavioralChecks": {
+    "command": "uv run pytest -q tests/e2e/test_skill_ab_forms.py tests/e2e/test_skill_ab_lists.py tests/e2e/test_skill_ab_fixture.py",
+    "result": "85 passed, 4 subtests passed in 2.27s"
+  },
+  "lint": {
+    "command": "uv run ruff check tests/e2e/skill_ab.py tests/e2e/skill_ab_fixture.py tests/e2e/skill_ab_forms.py tests/e2e/skill_ab_lists.py tests/e2e/test_skill_ab_forms.py tests/e2e/test_skill_ab_lists.py tests/e2e/test_skill_ab_fixture.py",
+    "result": "All checks passed"
+  },
+  "fullSuite": {
+    "command": "uv run pytest -q",
+    "result": "2 failed, 896 passed, 4 subtests passed in 106.31s",
+    "failures": [
+      {"test": "tests/test_release.py::test_post_release_evidence_matches_immutable_archive_index", "observed": "The git-tracked retained evidence intersection is empty, while the immutable release index expects 71 retained paths"},
+      {"test": "tests/test_release.py::test_raw_evidence_paths_are_ignored_without_hiding_retained_records", "observed": "git check-ignore reports evidence/archive-v0.1.2.json is ignored"}
+    ],
+    "disposition": "Recorded as integration failures; this experiment did not modify release tests, archive metadata, ignore rules or the Git index. No rerun or weakened assertion was used to claim a green suite."
+  },
+  "officialClientSmoke": {
+    "command": "env PYTHONPATH=. uv run python /tmp/amkernel-skill-ab-client-smoke.py",
+    "result": "All six reset scenes created real official-Appium-Client sessions, read package/context/source and an element, and deleted their owned session. focus-submit additionally used focus/click/clear/input/XPath Save and passed its independent saved-state oracle in four actions.",
+    "scope": "Before final observation-journal, selector and stale-handle corrections; final native matrix exercises the frozen corrected implementation",
+    "temporaryScriptRemoved": true,
+    "initialInvocation": "Without PYTHONPATH the script could not import tests.e2e; that invocation did not start a scene/session and is not reported as a pass"
+  },
+  "independentSourceReview": {
+    "transportReviewer": "ABTransportReview",
+    "sceneReviewer": "ABSceneReview",
+    "finalDisposition": "No remaining blocking findings in the reviewed implementation",
+    "correctedBeforeAnyAgentTask": [
+      "Reject partially understood UiSelector expressions rather than silently discarding predicates",
+      "Invalidate detached element handles permanently, including when a semantic key later reappears",
+      "Require actual full-population and end-marker observations under a valid matching filter state; guessed count/find handles alone cannot pass",
+      "Require real persisted target reload with exact contents, not save/editor consistency alone",
+      "Require actual opening and separately indexed phase observations, including repeated amounts",
+      "Treat all category/status filters as wildcards; six existing positive/boundary tests failed before this predicate fix and passed afterward"
+    ],
+    "limitations": "Read-only static review, not independent execution or empirical outcome approval"
+  },
+  "frozenRunRules": [
+    "One independent Agent and Kernel per arm/case; same native client, model, Runtime wheel, goal, initial state, action budget and outer deadline",
+    "Twelve predeclared runs with balanced alternating arm order; no retries, post-result tuning or successful-result cherry picking",
+    "Only three captured textual pre-fix Skill documents differ in the old arm; current installed template and official dependencies otherwise match",
+    "Only documented synthetic WebDriver interface is exposed; state oracles remain test-side",
+    "Report business correctness and protocol/cleanup separately",
+    "No physical device, official benchmark reward, formal qualification or statistically significant benefit claim"
+  ]
+}

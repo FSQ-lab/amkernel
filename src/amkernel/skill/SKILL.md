@@ -118,9 +118,11 @@ Select from the requested target and observed supported host; never substitute a
 - Existing session, launch, transport, WebDriverAgent, source or locator failure: verified
   `appium-troubleshooting` guidance.
 
-All supported execution routes use the control-first, visual-fallback policy in
-`amkernel-appium.md`. Sufficient semantic evidence means no screenshot or image analysis; a
-visual-only target or visual acceptance criterion still permits bounded visual evidence.
+All supported execution routes use `amkernel-appium.md` for the shared observation,
+evidence-driven batching and goal-derived acceptance policy. Apply its file, list, deletion and
+aggregate checks only when relevant to the requested task. Sufficient semantic evidence means no
+screenshot or image analysis; a visual-only target or visual acceptance criterion still permits
+bounded visual evidence.
 
 AMKernel supports only its qualified Ubuntu and macOS hosts. Any Windows host or Windows target is
 unsupported, including Android, Windows desktop, XCUITest and Mac2. Classify the route as blocked,
@@ -158,8 +160,17 @@ Keep a live client in a top-level `driver` when continuity helps. A short scenar
 session, action, verification, and cleanup have no expected wait or ambiguity belongs in one
 bounded call. Split only where the next decision genuinely depends on observing a separate
 failure: preparation, a long wait, an irreversible action, reconciliation, or cleanup with an
-independent recovery path. Do not put an entire long scenario plus cleanup in one unobservable
-call, and do not make one call per WebDriver command.
+independent recovery path. Reliable observations and conditional decisions can stay inside the
+same call; return to the model when the next decision needs interpretation of new evidence.
+Do not put an entire long scenario plus cleanup in one unobservable call, and do not make
+one call per WebDriver command.
+
+Before changing state, derive the relevant acceptance conditions from the user's request,
+not from the candidate result you plan to construct. Reserve the available action budget for
+submission and those checks as well as navigation and input; do not extend limits to finish.
+Use the shared reference to distinguish partial progress, input consistency, persistence and
+verified task completion. Follow an explicit output contract without confusing cleanup evidence
+with the business answer; preserve any unresolved contract ambiguity.
 
 After every call, inspect `status` and `kernelState`:
 

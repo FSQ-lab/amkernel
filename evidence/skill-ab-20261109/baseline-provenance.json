@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "kind": "pre-fix Skill content snapshot",
+  "source": "Captured read-tool snapshots from this task, before SharedGuidance, AndroidGuidance and parent edits; not repository HEAD or a different Runtime version",
+  "reconstruction": "Every numbered source line captured without gaps or conflicts; restored in source-line order with LF separators and a terminal LF. This pins textual content, not an independently retained original filesystem-byte digest.",
+  "assets": {
+    "SKILL.md": {"snapshot": "606D", "lines": 290, "sha256": "f029ca10d37b57f9f4334368fd13d4c175c31574b0b0498505ea0272a69525d21"},
+    "references/amkernel-appium.md": {"snapshot": "0E54", "lines": 211, "sha256": "d62cfdc5936e689dcaaef6a1a1e042cdb27d9e116b18e5f58f3a5a38d250d407"},
+    "references/android-execution.md": {"snapshot": "62B6", "lines": 238, "sha256": "d191c90ed13da26f1debb9cc8e141cd7ed0462567d9ecc6121a30870fc05ce6eb"}
+  },
+  "controls": "Both arms will use one identical installed current Runtime wheel and official Appium skill dependency tree. The old arm changes only these three guidance documents. Prior user edits already present in these captured snapshots are retained in the baseline.",
+  "scope": "Independent synthetic development experiment; not frozen AndroidWorld assets or formal campaign identity"
+}
