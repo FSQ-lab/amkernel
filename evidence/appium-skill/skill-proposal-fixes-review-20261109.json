@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-09",
+  "issue": 98,
+  "scope": "Packaged shared Appium and Android Skill guidance only; not Runtime, Harness, frozen campaigns, or empirical task-success qualification",
+  "sourceProposal": {
+    "path": "../FSQ_AndroidWorld_eval/evidence/amkernel-field-optimization-20261109/per-task-review/skill-optimization-proposal.md",
+    "sha256": "ed63e488e8363528612f3301866b1694311cb26fc3bd1b80c65f83c6f5add214"
+  },
+  "reviewedAssets": {
+    "src/amkernel/skill/SKILL.md": "d48a984da1a5654b7448c91e013529195656873037e533705db54c323957a481",
+    "src/amkernel/skill/references/amkernel-appium.md": "2d9aa954cc744fb4c68fbe48d773cd8134d716e5a9479eb26e54b0db17cc67a3",
+    "src/amkernel/skill/references/android-execution.md": "8212ff43d78d0b5e06b23624a6479e9de7516e607658a3568c6d30f8c64f65a8"
+  },
+  "coverage": [
+    {"proposal": "Batching, feedback and stop conditions", "implementation": "Shared: Batch predictable steps; checkpoint real progress", "behavior": "Programmatic branches remain in-cell; discriminating evidence, repeated-value ambiguity, late completion and partial locals stop blind replay"},
+    {"proposal": "Input prerequisites", "implementation": "Android: Enter text and verify progress", "behavior": "Positive intended-field focus, no redundant focus click, bounded focus wait, reacquire after layout change and inspect retained value before resend"},
+    {"proposal": "File operation and completion acceptance", "implementation": "Shared: Verify the requested outcome independently", "behavior": "Original-request acceptance; full name/location/extension; source whitespace/order/terminators; persisted readback is separate from candidate consistency"},
+    {"proposal": "Statistical scope and coverage", "implementation": "Shared: Prove scope, membership and coverage", "behavior": "Container/filter/business membership, full coverage, stable identity across overlapping windows, no title-only dedup or weakened failed postcondition"},
+    {"proposal": "Duplicate equivalence and survivor preservation", "implementation": "Shared: Remove duplicates only after content equivalence", "behavior": "Verify full relevant content before deletion, designate survivor, preserve distinct variants and scan occurrences, revalidate identity and stop on possible wrong deletion"},
+    {"proposal": "Aggregate interval targets", "implementation": "Shared: Prove scope, membership and coverage", "behavior": "Bind population/category/measure/units/boundaries; measure real aggregate and incremental effect; no count/average guess; only safe reversible trial feedback within budget"},
+    {"proposal": "Remaining 18 cases: identity, submit, membership and predicates", "implementation": "Android: Understand the current surface; Input, submit and verify the requested result; Keep native and Web contexts distinct. Shared: Prove scope, membership and coverage", "behavior": "Actual app/page identity; input vs confirmed recipient/date/save/send; actual business membership; exact date/priority predicates and trustworthy reference time; native modifier characters are not proof of shortcut success"},
+    {"proposal": "Remaining 18 cases: errors, budget, environment and output contracts", "implementation": "Shared: Distinguish outer completion from inner success; Report the business answer and control status separately. Android: Recover from the observed failure; Choose useful call boundaries", "behavior": "Nested error layers, failed admitted actions vs pre-action rejection, reserve commit/readback/correction, gate closure is not session loss, symptoms are not causal evidence, business answer is separate from output/cleanup contract"}
+  ],
+  "independentReview": {
+    "agent": "SkillReview",
+    "readOnly": true,
+    "initialDisposition": "No remaining actionable omissions or blocking contradictions found after action-budget integration correction",
+    "finalDisposition": "No remaining blocking findings after explicit aggregate-measure clarification",
+    "limitations": "Static guidance coverage only; reviewer did not execute tests, builds, device actions or Agent reruns"
+  },
+  "observedChecks": [
+    {"command": "uv run pytest -q tests/skills/test_amkernel_skill.py tests/test_skill_behavior.py", "result": "No tests ran: second path does not exist; corrected using glob, not reported as a pass"},
+    {"command": "uv run pytest -q tests/skills/test_amkernel_skill.py tests/e2e/test_skill_behavior_evaluator.py", "result": "111 passed in 12.28s", "scope": "Before final aggregate-measure wording clarification; no Python or test code changed"},
+    {"command": "uv build --wheel --out-dir /tmp/amkernel-skill-fixes-20261109-final-dist", "result": "Built amkernel-0.1.3-py3-none-any.whl", "sha256": "fcfe980164c30a0f3a69fec97497bd3b9973fa6bcbfc9150c16aae3bc2417be7"}
+  ],
+  "finalWheelNativeSmoke": {
+    "report": "evidence/appium-skill/skill-proposal-fixes-final-20261109.json",
+    "wheelSha256": "fcfe980164c30a0f3a69fec97497bd3b9973fa6bcbfc9150c16aae3bc2417be7",
+    "client": "GitHub Copilot CLI 1.0.105",
+    "model": "gpt-6.1-sol",
+    "summary": {"passed": 3, "failed": 0, "blocked": 0, "preflightOk": true, "isolationUnchanged": true},
+    "observed": ["Compact Android state change in two execution windows", "Stale recovery obtains fresh evidence and does not replay the stale handle", "Exactly one ambiguous submission with read-only post-timeout reconciliation", "Successful owned-session deletion with no active owned session in each scenario"],
+    "limits": "Synthetic endpoint regression only; does not qualify real focus, file/list/deletion/aggregate behavior, new per-case Agent benefits, or official AndroidWorld rewards",
+    "earlierReport": "evidence/appium-skill/skill-proposal-fixes-20261109.json",
+    "earlierReportDisposition": "Separate pre-clarification wheel passed the same three cases; preserved unchanged, not rescored"
+  },
+  "nativeEvidenceReview": {
+    "agent": "SkillReview",
+    "disposition": "Approved within synthetic scope after inspecting underlying fixture events, not just pass booleans",
+    "findings": ["Compact Android state changed after one Toggle click", "Stale element-1 was replaced by freshly found element-2 without replacement session", "Exactly one ambiguous submission returned timed_out/alive before submitted=true observations", "Each owned session ended inactive after successful DELETE; enumerated configuration hashes matched"],
+    "limits": ["Stale case proves accepted click, not changed business state; a later AssertionError is retained before final reconciliation/cleanup", "3/3 scenario pass does not mean all inner Python cells succeeded", "State and source are two views of one fixture, not independent persistence proof", "No case has a preexisting session; preservation of concurrently active sessions is not exercised", "Isolation covers enumerated configuration paths, not arbitrary host state", "Redacted Python hashes do not reconstruct every client-side assertion", "No real-app or improved-task-success qualification"]
+  },
+  "realDeviceQualificationBoundary": {
+    "formalPreparationGuard": "Sibling continuation.validate_inherited_runtime permits only harnessSourceSha256 to differ from frozen runtime; changed Skill assets cannot silently enter that formal path",
+    "currentRequirements": "Harness 15 forwarder README requires fresh qualification, full rehearsal and calibration; inspected records do not establish these gates for edited Skills",
+    "notDone": ["No guard bypass", "No frozen asset or evidence replacement", "No device/Appium/ADB operation", "No formal AndroidWorld replay", "No changed task/model/params/budget/retry/evaluator", "No new official score or improvement claim"]
+  }
+}

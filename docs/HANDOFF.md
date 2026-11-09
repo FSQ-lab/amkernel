@@ -100,6 +100,34 @@ The formal repository was intentionally created design-only. A sibling spike exi
 - Global OMP memory is disabled; this project uses local project-scoped memory.
 - The sibling `/Users/qunmi/Documents/FSQ_LAB/omp` remains untouched as historical discussion/prototype material.
 
+## Isolated 0.1.4 Skill candidate (2026-11-09)
+
+The candidate integrates generic field-proposal guidance and a six-scene synthetic screening
+harness under [#98](https://github.com/FSQ-lab/amkernel/issues/98), preserving the current
+readiness/authorization contract. Shared acceptance covers evidence-driven batches, file identity
+and persisted formatting, population/measure coverage and verified duplicate preservation;
+Android execution requires positive intended-field focus, current app/page evidence and bounded
+business-state reconciliation. Synthetic native package/activity queries remain read-only,
+session-gated and outside the action budget; unknown scripts still fail.
+
+Historical OLD/NEW runs passed all six business/protocol cases in both arms, with mixed resource
+costs and no demonstrated success-rate gain. The three-case smoke and later single diagnostic
+also concern historical development assets, not the integrated release wheel. Their normalized
+evidence and omitted-parts boundaries are retained under `evidence/skill-ab-20261109/` and
+`evidence/appium-skill/`; experiment sections 22–23 describe the recorded identities and limits.
+No physical platform qualification, new official reward, formal campaign or #98 closure is claimed.
+
+User-authorized preparation uses a separate worktree based on main
+`9f4279e84ffeb9acf43578c96bef6da283c498e2`. Original-worktree index/files, 71 staged retained-evidence
+removals and blanket ignore stay untouched. Those removals/ignore, prior unrelated guidance and
+the separate `InvalidElementStateException` Runner/test correction are excluded from the candidate;
+all required historical evidence and unchanged release gates are retained. The candidate updates
+only authorized Skills, screening implementation/tests, bounded evidence and release version/lock/
+documentation. Protected PR checks and independent review are mandatory; exact-main CI artifacts,
+not local rebuilds, feed release preparation. Final publication approval is still required: no
+Release dispatch, tag or upload is authorized at this stage. Harness r15's explicit migration,
+fresh qualification, full 116-task rehearsal and calibration remain evaluator prerequisites.
+
 ## Release 0.1.2 and evidence migration
 
 PR #121 merged as `8438198f97e0442a3869e9f32d4213adef3dc766`. Authoritative main CI run `41770720567` passed quality, package smoke, and all Ubuntu/macOS CPython 3.11–3.13 jobs. Release run `41771753135` published immutable [`v0.1.2`](https://github.com/FSQ-lab/amkernel/releases/tag/v0.1.2) and the same wheel to PyPI.

@@ -1,0 +1,366 @@
+{
+  "schemaVersion": 1,
+  "kind": "bounded-normalized-paired-case-outcome",
+  "scope": "synthetic-development-paired-screening",
+  "historicalIdentity": {
+    "originalPath": "evidence/skill-ab-20261109/paired-screening/phased-progress-old.json",
+    "originalSha256": "cff43f0c603d5db4157a24faa298742c793d09e0f7f48990c4220ece4b2fe8e1",
+    "originalBytes": 61213,
+    "availability": "Local original omitted from the release candidate; digest identifies it. This projection is lossy and is not a release-archive member."
+  },
+  "normalization": {
+    "sourceParsedLocally": true,
+    "pairedResultsUnchanged": true,
+    "rescored": false,
+    "note": "Derived only from the recorded report. No task rerun, rescore, case tuning or changed acceptance was performed."
+  },
+  "case": "phased-progress",
+  "arm": "old",
+  "model": "gpt-6.1-sol",
+  "timeoutSeconds": 240,
+  "goal": "Observe the opening total and the displayed amount in each of the three receipt phases as you review them, then submit one final answer. The final total is the opening total plus every phase amount, counting repeated amounts once per phase. Also report how many phases you reviewed. Submit the numeric total and phase count exactly once; the final answer cannot be changed.",
+  "goalSha256": "94f2d9bc5de634ace30b863ea3366ea4d9372b72aa75bbf5917e10417bcd5d4a",
+  "initialStateSha256": "d653de0c745e842fb8dc0376fabe5f1416e28874cb018e02e46dc45f8270b2cb",
+  "controls": {
+    "skillAssets": {
+      "SKILL.md": "520bbbb380a95024d08e7e728ed0c5b92a484a0958fd098454a414ad9a7a0caa",
+      "references/amkernel-appium.md": "4a526440b8d3ef8e7584c3b439a21db718c6c6e5a9c484d9ca84e0898556be9d",
+      "references/android-execution.md": "bdb021d7a587f7f63c862c888988c64d908afa498282f2a71e4486b1148f8471"
+    },
+    "actionBudget": 12
+  },
+  "outcome": {
+    "businessPassed": true,
+    "protocolPassed": true,
+    "passed": true,
+    "reportedOutcome": "completed",
+    "answer": "Total: 41; phases reviewed: 3."
+  },
+  "businessChecks": [
+    {
+      "id": "final-answer-submitted-once",
+      "ok": true,
+      "detail": "submissionCount=1, accepted-submit-clicks=1"
+    },
+    {
+      "id": "total-includes-opening-and-repeats",
+      "ok": true,
+      "detail": "submitted-total=41"
+    },
+    {
+      "id": "phase-count-reported",
+      "ok": true,
+      "detail": "submitted-phase-count=3"
+    },
+    {
+      "id": "opening-total-observed",
+      "ok": true,
+      "detail": "requires actual displayed opening-total text"
+    },
+    {
+      "id": "phase-1-observed",
+      "ok": true,
+      "detail": "requires actual displayed phase-1-amount text"
+    },
+    {
+      "id": "phase-2-observed",
+      "ok": true,
+      "detail": "requires actual displayed phase-2-amount text"
+    },
+    {
+      "id": "phase-3-observed",
+      "ok": true,
+      "detail": "requires actual displayed phase-3-amount text"
+    }
+  ],
+  "protocolChecks": [
+    {
+      "id": "skill-assets-unchanged",
+      "ok": true,
+      "detail": "Arm Skill hashes match the frozen treatment after the Agent exits"
+    },
+    {
+      "id": "agent-finished",
+      "ok": true,
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 82184,
+      "eventCount": 1051,
+      "malformedEventLines": 0,
+      "runnerCleanupObserved": true
+    },
+    {
+      "id": "main-skill-loaded",
+      "ok": true,
+      "detail": true
+    },
+    {
+      "id": "public-execution-route",
+      "ok": true,
+      "detail": "workspace amkernel/python_exec"
+    },
+    {
+      "id": "allowed-agent-tools",
+      "ok": true,
+      "detail": "Only view/skill/python_exec requested"
+    },
+    {
+      "id": "final-contract",
+      "ok": true,
+      "detail": "Declared JSON fields/types"
+    },
+    {
+      "id": "same-action-budget",
+      "ok": true,
+      "admitted": 9,
+      "budget": 12,
+      "rejected": 0
+    },
+    {
+      "id": "owned-session-cleaned",
+      "ok": true,
+      "sessionsCreated": 1,
+      "sessionsDeleted": 1,
+      "activeSession": false
+    },
+    {
+      "id": "cleanup-report-truthful",
+      "ok": true,
+      "detail": "Compared report with observed DELETE"
+    },
+    {
+      "id": "no-false-completion",
+      "ok": true,
+      "reportedComplete": true,
+      "businessPassed": true
+    }
+  ],
+  "businessState": {
+    "id": "phased-progress",
+    "screen": "receipt",
+    "phaseIndex": 2,
+    "phaseCount": 3,
+    "openingTotal": 10,
+    "phases": [
+      {
+        "index": 1,
+        "amount": 12
+      },
+      {
+        "index": 2,
+        "amount": 12
+      },
+      {
+        "index": 3,
+        "amount": 7
+      }
+    ],
+    "visitedPhases": [
+      1,
+      2,
+      3
+    ],
+    "answers": {
+      "answer-total": "41",
+      "answer-phases": "3"
+    },
+    "submitted": {
+      "total": 41,
+      "phaseCount": 3
+    },
+    "submissionCount": 1,
+    "focusedKey": null,
+    "keyboardVisible": false
+  },
+  "cleanup": {
+    "sessionsCreated": 1,
+    "sessionsDeleted": 1,
+    "activeSession": false,
+    "nativeFinalStatus": {
+      "taskOutcome": "completed",
+      "sessionCleanup": "cleaned"
+    },
+    "reportSessionCleanup": "cleaned",
+    "runnerCleanupObserved": true
+  },
+  "telemetry": {
+    "pythonCalls": 10,
+    "failedPythonCalls": 1,
+    "timedOutPythonCalls": 0,
+    "actions": 9,
+    "durationMs": 82184
+  },
+  "observedBusinessFacts": {
+    "source": "fixture.state and selected fixture.journal actions in the omitted local original",
+    "sourceSha256": "cff43f0c603d5db4157a24faa298742c793d09e0f7f48990c4220ece4b2fe8e1",
+    "facts": {
+      "openingTotal": 10,
+      "phases": [
+        {
+          "index": 1,
+          "amount": 12
+        },
+        {
+          "index": 2,
+          "amount": 12
+        },
+        {
+          "index": 3,
+          "amount": 7
+        }
+      ],
+      "visitedPhases": [
+        1,
+        2,
+        3
+      ],
+      "submitted": {
+        "total": 41,
+        "phaseCount": 3
+      },
+      "submissionCount": 1,
+      "answers": {
+        "answer-total": "41",
+        "answer-phases": "3"
+      },
+      "computedTotal": 41,
+      "acceptedSubmitClicks": 1,
+      "backActions": 1
+    }
+  },
+  "native": {
+    "process": {
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 82184,
+      "eventCount": 1051,
+      "malformedEventLines": 0
+    },
+    "mainSkillLoaded": true,
+    "finalReportSha256": "b3e9a72a3cf5e6738f3de7378963e07415131fa0d50aedbe0a397d0e7126b480",
+    "limits": "Only allowlisted status, identity, timestamp, and digest evidence is retained. Absent event timestamps remain null; raw code, arguments, output, final prose, and stderr are withheld.",
+    "callSummary": {
+      "total": 14,
+      "byTool": {
+        "skill": 1,
+        "view": 3,
+        "amkernel-python_exec": 10
+      },
+      "failed": []
+    },
+    "pythonResults": {
+      "total": 10,
+      "completed": 9,
+      "failed": 1,
+      "timedOut": 0,
+      "kernelStates": [
+        "alive"
+      ],
+      "failedDetails": [
+        {
+          "executionCount": 6,
+          "status": "failed",
+          "errorType": "selenium.common.exceptions.NoSuchElementException",
+          "errorMessage": "No element matches on the current page"
+        }
+      ]
+    }
+  },
+  "fixtureJournal": {
+    "totalEvents": 28,
+    "actionCounts": {
+      "read": 1,
+      "source": 8,
+      "find": 9,
+      "click": 6,
+      "type": 2,
+      "back": 1,
+      "quit": 1
+    },
+    "httpStatusCounts": {
+      "200": 27,
+      "404": 1
+    },
+    "non200OrErrorEvents": [
+      {
+        "seq": 20,
+        "method": "POST",
+        "path": "/session/owned-session/element",
+        "action": "find",
+        "key": "",
+        "status": 404,
+        "error": "no such element"
+      }
+    ],
+    "selectedMutationEvents": [
+      {
+        "seq": 4,
+        "action": "click",
+        "key": "next-phase",
+        "status": 200
+      },
+      {
+        "seq": 7,
+        "action": "click",
+        "key": "next-phase",
+        "status": 200
+      },
+      {
+        "seq": 10,
+        "action": "click",
+        "key": "next-phase",
+        "status": 200
+      },
+      {
+        "seq": 13,
+        "action": "type",
+        "key": "answer-total",
+        "status": 200,
+        "value": "41"
+      },
+      {
+        "seq": 15,
+        "action": "click",
+        "key": "answer-phases",
+        "status": 200
+      },
+      {
+        "seq": 17,
+        "action": "type",
+        "key": "answer-phases",
+        "status": 200,
+        "value": "3"
+      },
+      {
+        "seq": 19,
+        "action": "back",
+        "key": "",
+        "status": 200
+      },
+      {
+        "seq": 23,
+        "action": "click",
+        "key": "next-phase",
+        "status": 200
+      },
+      {
+        "seq": 26,
+        "action": "click",
+        "key": "submit-answer",
+        "status": 200
+      }
+    ]
+  },
+  "report": {
+    "taskOutcome": "completed",
+    "answer": "Total: 41; phases reviewed: 3.",
+    "sessionCleanup": "cleaned",
+    "evidence": "Observed opening total 10 and phase amounts 12, 12, and 7. Submitted once; app displayed 'Final answer recorded.' Owned session quit succeeded."
+  },
+  "omitted": [
+    "fixture.journal full per-request records, observed source node text/class/resource-id (XML-like) data, stateAfter snapshots and session/element raw paths outside selected summaries",
+    "native.calls call IDs, timestamps, argument/code/output digests, stdout/stderr bytes and per-call raw records",
+    "pythonResults traceback frames and raw result values",
+    "No raw logs, transcripts, XML, full scripts, session IDs, credentials or personal absolute paths are retained"
+  ]
+}

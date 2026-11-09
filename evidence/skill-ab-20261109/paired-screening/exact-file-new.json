@@ -1,0 +1,356 @@
+{
+  "schemaVersion": 1,
+  "kind": "bounded-normalized-paired-case-outcome",
+  "scope": "synthetic-development-paired-screening",
+  "historicalIdentity": {
+    "originalPath": "evidence/skill-ab-20261109/paired-screening/exact-file-new.json",
+    "originalSha256": "dd172ce89a58d23b3e7d6186e414944fc4626b52591aae12743fb958469f39a5",
+    "originalBytes": 100770,
+    "availability": "Local original omitted from the release candidate; digest identifies it. This projection is lossy and is not a release-archive member."
+  },
+  "normalization": {
+    "sourceParsedLocally": true,
+    "pairedResultsUnchanged": true,
+    "rescored": false,
+    "note": "Derived only from the recorded report. No task rerun, rescore, case tuning or changed acceptance was performed."
+  },
+  "case": "exact-file",
+  "arm": "new",
+  "model": "gpt-6.1-sol",
+  "timeoutSeconds": 240,
+  "goal": "Create a text file named exactly `handoff` in the Notes folder, with no file extension. The file's contents must be the complete text of the note `Dispatch`, followed by exactly one extra newline character, followed by the complete text of the note `Closeout`. Keep both notes' existing trailing line breaks and all source notes unchanged. The saved file must appear in the file list and reopen with those exact contents.",
+  "goalSha256": "9dd26f164e859e3cce01caa1665735ef2c2787fe0ff933d38421a4539944bc63",
+  "initialStateSha256": "7a46e989cda9d491f6d6210faf11b8ae1ebb4aa812f59d38adb0adb2006bcfb1",
+  "controls": {
+    "skillAssets": {
+      "SKILL.md": "d48a984da1a5654b7448c91e013529195656873037e533705db54c323957a481",
+      "references/amkernel-appium.md": "2d9aa954cc744fb4c68fbe48d773cd8134d716e5a9479eb26e54b0db17cc67a3",
+      "references/android-execution.md": "8212ff43d78d0b5e06b23624a6479e9de7516e607658a3568c6d30f8c64f65a8"
+    },
+    "actionBudget": 18
+  },
+  "outcome": {
+    "businessPassed": true,
+    "protocolPassed": true,
+    "passed": true,
+    "reportedOutcome": "completed",
+    "answer": "Created Notes/handoff with no extension and the exact requested contents."
+  },
+  "businessChecks": [
+    {
+      "id": "exact-extensionless-target",
+      "ok": true,
+      "detail": "files=['handoff']"
+    },
+    {
+      "id": "contents-exact",
+      "ok": true,
+      "detail": "complete source texts plus exactly one separator newline"
+    },
+    {
+      "id": "saved-and-listed",
+      "ok": true,
+      "detail": "saveCount=1, fileOrder=['handoff']"
+    },
+    {
+      "id": "target-reload-observed",
+      "ok": true,
+      "detail": "loaded='handoff', revision=1"
+    },
+    {
+      "id": "sources-unchanged",
+      "ok": true,
+      "detail": "immutable source notes must match the originals"
+    }
+  ],
+  "protocolChecks": [
+    {
+      "id": "skill-assets-unchanged",
+      "ok": true,
+      "detail": "Arm Skill hashes match the frozen treatment after the Agent exits"
+    },
+    {
+      "id": "agent-finished",
+      "ok": true,
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 131444,
+      "eventCount": 1061,
+      "malformedEventLines": 0,
+      "runnerCleanupObserved": true
+    },
+    {
+      "id": "main-skill-loaded",
+      "ok": true,
+      "detail": true
+    },
+    {
+      "id": "public-execution-route",
+      "ok": true,
+      "detail": "workspace amkernel/python_exec"
+    },
+    {
+      "id": "allowed-agent-tools",
+      "ok": true,
+      "detail": "Only view/skill/python_exec requested"
+    },
+    {
+      "id": "final-contract",
+      "ok": true,
+      "detail": "Declared JSON fields/types"
+    },
+    {
+      "id": "same-action-budget",
+      "ok": true,
+      "admitted": 11,
+      "budget": 18,
+      "rejected": 0
+    },
+    {
+      "id": "owned-session-cleaned",
+      "ok": true,
+      "sessionsCreated": 1,
+      "sessionsDeleted": 1,
+      "activeSession": false
+    },
+    {
+      "id": "cleanup-report-truthful",
+      "ok": true,
+      "detail": "Compared report with observed DELETE"
+    },
+    {
+      "id": "no-false-completion",
+      "ok": true,
+      "reportedComplete": true,
+      "businessPassed": true
+    }
+  ],
+  "businessState": {
+    "id": "exact-file",
+    "screen": "files",
+    "sources": {
+      "dispatch": "Dispatch checklist\nVerify seals\n",
+      "closeout": "Closeout\nNotify dock\n\n"
+    },
+    "files": {
+      "handoff": {
+        "name": "handoff",
+        "extension": "",
+        "text": "Dispatch checklist\nVerify seals\n\nCloseout\nNotify dock\n\n",
+        "revision": 1
+      }
+    },
+    "fileOrder": [
+      "handoff"
+    ],
+    "openFile": "handoff",
+    "reloads": [
+      {
+        "name": "handoff",
+        "extension": "",
+        "display": "handoff",
+        "text": "Dispatch checklist\nVerify seals\n\nCloseout\nNotify dock\n\n",
+        "revision": 1
+      }
+    ],
+    "editor": null,
+    "saveCount": 1,
+    "focusedKey": null,
+    "keyboardVisible": false
+  },
+  "cleanup": {
+    "sessionsCreated": 1,
+    "sessionsDeleted": 1,
+    "activeSession": false,
+    "nativeFinalStatus": {
+      "taskOutcome": "completed",
+      "sessionCleanup": "cleaned"
+    },
+    "reportSessionCleanup": "cleaned",
+    "runnerCleanupObserved": true
+  },
+  "telemetry": {
+    "pythonCalls": 7,
+    "failedPythonCalls": 1,
+    "timedOutPythonCalls": 0,
+    "actions": 11,
+    "durationMs": 131444
+  },
+  "observedBusinessFacts": {
+    "source": "fixture.state and selected fixture.journal actions in the omitted local original",
+    "sourceSha256": "dd172ce89a58d23b3e7d6186e414944fc4626b52591aae12743fb958469f39a5",
+    "facts": {
+      "fileName": "handoff",
+      "fileExtension": "",
+      "fileText": "Dispatch checklist\nVerify seals\n\nCloseout\nNotify dock\n\n",
+      "fileRevision": 1,
+      "fileOrder": [
+        "handoff"
+      ],
+      "openFile": "handoff",
+      "reloads": [
+        {
+          "name": "handoff",
+          "extension": "",
+          "display": "handoff",
+          "text": "Dispatch checklist\nVerify seals\n\nCloseout\nNotify dock\n\n",
+          "revision": 1
+        }
+      ],
+      "sourceNotes": {
+        "dispatch": "Dispatch checklist\nVerify seals\n",
+        "closeout": "Closeout\nNotify dock\n\n"
+      },
+      "saveCount": 1,
+      "acceptedSaveClicks": 1,
+      "sourceObservationEvents": 20
+    }
+  },
+  "native": {
+    "process": {
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 131444,
+      "eventCount": 1061,
+      "malformedEventLines": 0
+    },
+    "mainSkillLoaded": true,
+    "finalReportSha256": "26e29d623063801c55e28f19fbe9a233024d2bfa587074959bdd6ea3dea7c036",
+    "limits": "Only allowlisted status, identity, timestamp, and digest evidence is retained. Absent event timestamps remain null; raw code, arguments, output, final prose, and stderr are withheld.",
+    "callSummary": {
+      "total": 13,
+      "byTool": {
+        "skill": 1,
+        "view": 5,
+        "amkernel-python_exec": 7
+      },
+      "failed": []
+    },
+    "pythonResults": {
+      "total": 7,
+      "completed": 6,
+      "failed": 1,
+      "timedOut": 0,
+      "kernelStates": [
+        "alive"
+      ],
+      "failedDetails": [
+        {
+          "executionCount": 1,
+          "status": "failed",
+          "errorType": "selenium.common.exceptions.UnknownMethodException",
+          "errorMessage": "This synthetic endpoint does not implement that WebDriver command"
+        }
+      ]
+    }
+  },
+  "fixtureJournal": {
+    "totalEvents": 45,
+    "actionCounts": {
+      "read": 2,
+      "source": 20,
+      "find": 11,
+      "click": 8,
+      "type": 2,
+      "clear": 1,
+      "quit": 1
+    },
+    "httpStatusCounts": {
+      "200": 44,
+      "404": 1
+    },
+    "non200OrErrorEvents": [
+      {
+        "seq": 2,
+        "method": "POST",
+        "path": "/session/owned-session/execute/sync",
+        "action": "read",
+        "key": "",
+        "status": 404,
+        "error": "unknown command"
+      }
+    ],
+    "selectedMutationEvents": [
+      {
+        "seq": 6,
+        "action": "click",
+        "key": "new-file",
+        "status": 200
+      },
+      {
+        "seq": 10,
+        "action": "type",
+        "key": "file-name",
+        "status": 200,
+        "value": "handoff"
+      },
+      {
+        "seq": 13,
+        "action": "click",
+        "key": "file-extension",
+        "status": 200
+      },
+      {
+        "seq": 16,
+        "action": "clear",
+        "key": "file-extension",
+        "status": 200
+      },
+      {
+        "seq": 19,
+        "action": "click",
+        "key": "create-file",
+        "status": 200
+      },
+      {
+        "seq": 23,
+        "action": "type",
+        "key": "file-body",
+        "status": 200,
+        "value": "Dispatch checklist\nVerify seals\n\nCloseout\nNotify dock\n\n"
+      },
+      {
+        "seq": 26,
+        "action": "click",
+        "key": "save-file",
+        "status": 200
+      },
+      {
+        "seq": 30,
+        "action": "click",
+        "key": "file-handoff",
+        "status": 200
+      },
+      {
+        "seq": 35,
+        "action": "click",
+        "key": "discard-file",
+        "status": 200
+      },
+      {
+        "seq": 38,
+        "action": "click",
+        "key": "back-to-notes",
+        "status": 200
+      },
+      {
+        "seq": 43,
+        "action": "click",
+        "key": "files-view",
+        "status": 200
+      }
+    ]
+  },
+  "report": {
+    "taskOutcome": "completed",
+    "answer": "Created Notes/handoff with no extension and the exact requested contents.",
+    "sessionCleanup": "cleaned",
+    "evidence": "File appeared as handoff and reopened with Dispatch + exactly one extra newline + Closeout, preserving existing trailing line breaks. Both source notes remained unchanged."
+  },
+  "omitted": [
+    "fixture.journal full per-request records, observed source node text/class/resource-id (XML-like) data, stateAfter snapshots and session/element raw paths outside selected summaries",
+    "native.calls call IDs, timestamps, argument/code/output digests, stdout/stderr bytes and per-call raw records",
+    "pythonResults traceback frames and raw result values",
+    "No raw logs, transcripts, XML, full scripts, session IDs, credentials or personal absolute paths are retained"
+  ]
+}

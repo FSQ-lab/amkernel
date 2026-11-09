@@ -1,0 +1,10 @@
+{
+  "scope": "Separate post-fix diagnostic setup, not frozen A/B",
+  "agentTasksStarted": 0,
+  "step": "Inspecting installed package versions after successful install/preflight",
+  "error": "importlib.metadata.PackageNotFoundError: amkernel",
+  "cause": "The helper's resolved interpreter path bypassed the isolated uv tool virtual environment",
+  "correction": "Use the lexical Python path in the configured MCP console script shebang and pass the isolated environment",
+  "temporaryRootCleanup": "finally removed only this diagnostic's owned temporary root",
+  "frozenResultsChanged": false
+}

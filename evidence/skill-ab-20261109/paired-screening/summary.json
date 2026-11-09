@@ -1,0 +1,205 @@
+{
+  "schemaVersion": 1,
+  "scope": "synthetic-development-paired-screening",
+  "model": "gpt-6.1-sol",
+  "completedRuns": 12,
+  "expectedRuns": 12,
+  "isolationUnchanged": true,
+  "isolationBefore": {
+    "copilotConfig": "14c648f7d34cdeb934a4cc3997766ddb6c230824147f5d28da35028444af30cd",
+    "copilotMcpConfig": null,
+    "copilotSettings": null,
+    "userAgentsSkills": null
+  },
+  "isolationAfter": {
+    "copilotConfig": "14c648f7d34cdeb934a4cc3997766ddb6c230824147f5d28da35028444af30cd",
+    "copilotMcpConfig": null,
+    "copilotSettings": null,
+    "userAgentsSkills": null
+  },
+  "pairs": [
+    {
+      "case": "focus-submit",
+      "old": {
+        "businessPassed": true,
+        "protocolPassed": true,
+        "passed": true,
+        "telemetry": {
+          "pythonCalls": 4,
+          "failedPythonCalls": 0,
+          "timedOutPythonCalls": 0,
+          "actions": 4,
+          "durationMs": 62277
+        },
+        "reportedOutcome": "completed"
+      },
+      "new": {
+        "businessPassed": true,
+        "protocolPassed": true,
+        "passed": true,
+        "telemetry": {
+          "pythonCalls": 4,
+          "failedPythonCalls": 1,
+          "timedOutPythonCalls": 0,
+          "actions": 4,
+          "durationMs": 84438
+        },
+        "reportedOutcome": "completed"
+      }
+    },
+    {
+      "case": "exact-file",
+      "new": {
+        "businessPassed": true,
+        "protocolPassed": true,
+        "passed": true,
+        "telemetry": {
+          "pythonCalls": 7,
+          "failedPythonCalls": 1,
+          "timedOutPythonCalls": 0,
+          "actions": 11,
+          "durationMs": 131444
+        },
+        "reportedOutcome": "completed"
+      },
+      "old": {
+        "businessPassed": true,
+        "protocolPassed": true,
+        "passed": true,
+        "telemetry": {
+          "pythonCalls": 8,
+          "failedPythonCalls": 1,
+          "timedOutPythonCalls": 0,
+          "actions": 9,
+          "durationMs": 108378
+        },
+        "reportedOutcome": "completed"
+      }
+    },
+    {
+      "case": "phased-progress",
+      "old": {
+        "businessPassed": true,
+        "protocolPassed": true,
+        "passed": true,
+        "telemetry": {
+          "pythonCalls": 10,
+          "failedPythonCalls": 1,
+          "timedOutPythonCalls": 0,
+          "actions": 9,
+          "durationMs": 82184
+        },
+        "reportedOutcome": "completed"
+      },
+      "new": {
+        "businessPassed": true,
+        "protocolPassed": true,
+        "passed": true,
+        "telemetry": {
+          "pythonCalls": 6,
+          "failedPythonCalls": 1,
+          "timedOutPythonCalls": 0,
+          "actions": 7,
+          "durationMs": 68743
+        },
+        "reportedOutcome": "completed"
+      }
+    },
+    {
+      "case": "covered-count",
+      "new": {
+        "businessPassed": true,
+        "protocolPassed": true,
+        "passed": true,
+        "telemetry": {
+          "pythonCalls": 3,
+          "failedPythonCalls": 0,
+          "timedOutPythonCalls": 0,
+          "actions": 3,
+          "durationMs": 71826
+        },
+        "reportedOutcome": "completed"
+      },
+      "old": {
+        "businessPassed": true,
+        "protocolPassed": true,
+        "passed": true,
+        "telemetry": {
+          "pythonCalls": 5,
+          "failedPythonCalls": 0,
+          "timedOutPythonCalls": 0,
+          "actions": 6,
+          "durationMs": 54256
+        },
+        "reportedOutcome": "completed"
+      }
+    },
+    {
+      "case": "safe-dedup",
+      "old": {
+        "businessPassed": true,
+        "protocolPassed": true,
+        "passed": true,
+        "telemetry": {
+          "pythonCalls": 6,
+          "failedPythonCalls": 0,
+          "timedOutPythonCalls": 0,
+          "actions": 10,
+          "durationMs": 87520
+        },
+        "reportedOutcome": "completed"
+      },
+      "new": {
+        "businessPassed": true,
+        "protocolPassed": true,
+        "passed": true,
+        "telemetry": {
+          "pythonCalls": 7,
+          "failedPythonCalls": 1,
+          "timedOutPythonCalls": 0,
+          "actions": 20,
+          "durationMs": 86698
+        },
+        "reportedOutcome": "completed"
+      }
+    },
+    {
+      "case": "measured-aggregate",
+      "new": {
+        "businessPassed": true,
+        "protocolPassed": true,
+        "passed": true,
+        "telemetry": {
+          "pythonCalls": 5,
+          "failedPythonCalls": 1,
+          "timedOutPythonCalls": 0,
+          "actions": 5,
+          "durationMs": 79598
+        },
+        "reportedOutcome": "completed"
+      },
+      "old": {
+        "businessPassed": true,
+        "protocolPassed": true,
+        "passed": true,
+        "telemetry": {
+          "pythonCalls": 4,
+          "failedPythonCalls": 0,
+          "timedOutPythonCalls": 0,
+          "actions": 5,
+          "durationMs": 57035
+        },
+        "reportedOutcome": "completed"
+      }
+    }
+  ],
+  "pairControlsMatch": true,
+  "harnessSourcesUnchanged": true,
+  "limits": [
+    "One sample per arm is screening, not causal/statistical improvement proof",
+    "Synthetic interfaces cannot qualify real Android focus, scrolling or persistence",
+    "Runtime is unrestricted same-user execution, not a sandbox",
+    "Only enumerated configuration paths are fingerprinted for isolation",
+    "No official task/reward/evaluator/campaign is used or modified"
+  ]
+}

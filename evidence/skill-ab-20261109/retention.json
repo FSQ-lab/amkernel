@@ -1,0 +1,548 @@
+{
+  "schemaVersion": 1,
+  "kind": "evidence-retention-inventory",
+  "scope": "0.1.4 release candidate bounded evidence. Synthetic development screening only; no formal score improvement or platform qualification is claimed.",
+  "policy": {
+    "retained": "Small unchanged normalized final records and bounded lossy projections of larger local reports.",
+    "notRetained": "Full journals, observed XML-like node trees, tool transcripts, full scripts, credentials, session IDs and raw stdout/stderr.",
+    "archiveClaim": "No omitted local original is claimed as a release-archive member. Digests identify local originals only.",
+    "privacy": "Personal absolute paths, credentials, session IDs, transcripts and XML are not published. Historical temp paths inside unchanged records were left unchanged."
+  },
+  "baselineIdentity": {
+    "actualBaselineBytes": {
+      "identifiedBy": "paired-screening/manifest.json oldAssets",
+      "assets": {
+        "SKILL.md": {
+          "sha256": "520bbbb380a95024d08e7e728ed0c5b92a484a0958fd098454a414ad9a7a0caa",
+          "bytes": 18768,
+          "matchesManifestOldAssets": true
+        },
+        "references/amkernel-appium.md": {
+          "sha256": "4a526440b8d3ef8e7584c3b439a21db718c6c6e5a9c484d9ca84e0898556be9d",
+          "bytes": 15623,
+          "matchesManifestOldAssets": true
+        },
+        "references/android-execution.md": {
+          "sha256": "bdb021d7a587f7f63c862c888988c64d908afa498282f2a71e4486b1148f8471",
+          "bytes": 15835,
+          "matchesManifestOldAssets": true
+        }
+      },
+      "note": "The copied baseline documents are the actual old-arm input bytes used by the paired screening."
+    },
+    "textualSnapshotProvenance": {
+      "record": "evidence/skill-ab-20261109/baseline-provenance.json",
+      "recordSha256": "79ac948c5e1de3e30062e35a0e672477d02059ca2c5d48059a9b248317fa0680",
+      "matchesManifestBaselineProvenanceSha256": true,
+      "assets": {
+        "SKILL.md": {
+          "snapshot": "606D",
+          "lines": 290,
+          "sha256": "f029ca10d37b57f9f4334368fd13d4c175c31574b0b0498505ea0272a69525d21"
+        },
+        "references/amkernel-appium.md": {
+          "snapshot": "0E54",
+          "lines": 211,
+          "sha256": "d62cfdc5936e689dcaaef6a1a1e042cdb27d9e116b18e5f58f3a5a38d250d407"
+        },
+        "references/android-execution.md": {
+          "snapshot": "62B6",
+          "lines": 238,
+          "sha256": "d191c90ed13da26f1debb9cc8e141cd7ed0462567d9ecc6121a30870fc05ce6eb"
+        }
+      },
+      "note": "Historical textual reconstructions. Their sha256 values differ from the retained baseline byte hashes. Both are preserved; manifest.oldAssets identifies actual baseline bytes. No original record was silently edited or reconciled."
+    },
+    "resolution": "Copies at baseline/SKILL.md and baseline/references/*.md are actual baseline inputs for the documented --baseline command. baseline-provenance.json remains a separate historical snapshot record and is not relabeled as byte provenance."
+  },
+  "retained": [
+    {
+      "path": "evidence/skill-ab-20261109/paired-screening/covered-count-new.json",
+      "kind": "bounded-normalized-paired-case-outcome",
+      "sourcePath": "evidence/skill-ab-20261109/paired-screening/covered-count-new.json",
+      "sourceSha256": "c545dccdd0297fb01881b88c45cccdf53868745afbd1b22bf0666f1bd94ac47b",
+      "sourceBytes": 128715,
+      "retainedSha256": "fac23816adaf539ed166dbd4987b2472ff1ed8691785ecc07a752a6c01e7523f",
+      "retainedBytes": 10666,
+      "note": "Projection; original local report omitted and identified by digest. Paired outcome/checks unchanged."
+    },
+    {
+      "path": "evidence/skill-ab-20261109/paired-screening/covered-count-old.json",
+      "kind": "bounded-normalized-paired-case-outcome",
+      "sourcePath": "evidence/skill-ab-20261109/paired-screening/covered-count-old.json",
+      "sourceSha256": "d5a453d6c59823a43646a0b3e2d79d51c11d56a80ce4d264161583e186c0ea98",
+      "sourceBytes": 162855,
+      "retainedSha256": "ef7697335d17d63001df7886334e55124a646c357252bead141c88a0eeb00cec",
+      "retainedBytes": 11012,
+      "note": "Projection; original local report omitted and identified by digest. Paired outcome/checks unchanged."
+    },
+    {
+      "path": "evidence/skill-ab-20261109/paired-screening/exact-file-new.json",
+      "kind": "bounded-normalized-paired-case-outcome",
+      "sourcePath": "evidence/skill-ab-20261109/paired-screening/exact-file-new.json",
+      "sourceSha256": "dd172ce89a58d23b3e7d6186e414944fc4626b52591aae12743fb958469f39a5",
+      "sourceBytes": 100770,
+      "retainedSha256": "79ca4470d5eef66fa0949570f42378a648eda5cd1fc4de06168fcf4f0793f6c8",
+      "retainedBytes": 10133,
+      "note": "Projection; original local report omitted and identified by digest. Paired outcome/checks unchanged."
+    },
+    {
+      "path": "evidence/skill-ab-20261109/paired-screening/exact-file-old.json",
+      "kind": "bounded-normalized-paired-case-outcome",
+      "sourcePath": "evidence/skill-ab-20261109/paired-screening/exact-file-old.json",
+      "sourceSha256": "7d8b78dbf6b7fb420e3dc096550d6ac337fbd1f7f63ca503ff1ef85423881d0c",
+      "sourceBytes": 59707,
+      "retainedSha256": "b8e7fa5a385421ac2e4e14be15005bff8bba4dcea9f44297dc631057912f2172",
+      "retainedBytes": 10161,
+      "note": "Projection; original local report omitted and identified by digest. Paired outcome/checks unchanged."
+    },
+    {
+      "path": "evidence/skill-ab-20261109/paired-screening/focus-submit-new.json",
+      "kind": "bounded-normalized-paired-case-outcome",
+      "sourcePath": "evidence/skill-ab-20261109/paired-screening/focus-submit-new.json",
+      "sourceSha256": "f95377e3fb05ca503b382cff2c52a780316e1bff02b2296e8e0328ea1fcd0845",
+      "sourceBytes": 45628,
+      "retainedSha256": "cb3e316383c374443cae0cb05921c5cbcbbe69f52a58823730ffc52b71a29b29",
+      "retainedBytes": 8979,
+      "note": "Projection; original local report omitted and identified by digest. Paired outcome/checks unchanged."
+    },
+    {
+      "path": "evidence/skill-ab-20261109/paired-screening/focus-submit-old.json",
+      "kind": "bounded-normalized-paired-case-outcome",
+      "sourcePath": "evidence/skill-ab-20261109/paired-screening/focus-submit-old.json",
+      "sourceSha256": "9589e41fd902f9aba1db546db87c852868f05f70e5e2ddbcd84f44b80f4bd157",
+      "sourceBytes": 40379,
+      "retainedSha256": "deea08d53b41fb8abb89cc6eb04553c66ff9e8a6be396bcca3b257bb9c37523b",
+      "retainedBytes": 8439,
+      "note": "Projection; original local report omitted and identified by digest. Paired outcome/checks unchanged."
+    },
+    {
+      "path": "evidence/skill-ab-20261109/paired-screening/measured-aggregate-new.json",
+      "kind": "bounded-normalized-paired-case-outcome",
+      "sourcePath": "evidence/skill-ab-20261109/paired-screening/measured-aggregate-new.json",
+      "sourceSha256": "fe1980528b6442f48b4b6cc07e7dde24ccb96ff31965549435854bea10ab3ef6",
+      "sourceBytes": 115696,
+      "retainedSha256": "cedfda11619cb3e35359220e105b8ab8d967caf5e1be76cb306df209fac5d641",
+      "retainedBytes": 10901,
+      "note": "Projection; original local report omitted and identified by digest. Paired outcome/checks unchanged."
+    },
+    {
+      "path": "evidence/skill-ab-20261109/paired-screening/measured-aggregate-old.json",
+      "kind": "bounded-normalized-paired-case-outcome",
+      "sourcePath": "evidence/skill-ab-20261109/paired-screening/measured-aggregate-old.json",
+      "sourceSha256": "68f63ea0b9d1ffb0dfc2dfb234f04151fddcd0f6847cc7883f0b80277e806fd8",
+      "sourceBytes": 60981,
+      "retainedSha256": "953eff8fb86f07c47319f5ef5bfde83979faece1b854a1c50b90faf60b400124",
+      "retainedBytes": 10390,
+      "note": "Projection; original local report omitted and identified by digest. Paired outcome/checks unchanged."
+    },
+    {
+      "path": "evidence/skill-ab-20261109/paired-screening/phased-progress-new.json",
+      "kind": "bounded-normalized-paired-case-outcome",
+      "sourcePath": "evidence/skill-ab-20261109/paired-screening/phased-progress-new.json",
+      "sourceSha256": "11a3362d6ab5600a94c0ca50ca38cded5fa8eb9b3cd6d2011898f208051c583e",
+      "sourceBytes": 48951,
+      "retainedSha256": "013a4ef5cb4e9eed3e08e0742c6d3d329f5a29d570881d3823ac4d1a8e27a6d5",
+      "retainedBytes": 9442,
+      "note": "Projection; original local report omitted and identified by digest. Paired outcome/checks unchanged."
+    },
+    {
+      "path": "evidence/skill-ab-20261109/paired-screening/phased-progress-old.json",
+      "kind": "bounded-normalized-paired-case-outcome",
+      "sourcePath": "evidence/skill-ab-20261109/paired-screening/phased-progress-old.json",
+      "sourceSha256": "cff43f0c603d5db4157a24faa298742c793d09e0f7f48990c4220ece4b2fe8e1",
+      "sourceBytes": 61213,
+      "retainedSha256": "a729cbfd9e4f21b1f7884a008e27db66f191797df5f9f5e0500e2ee95d128177",
+      "retainedBytes": 9617,
+      "note": "Projection; original local report omitted and identified by digest. Paired outcome/checks unchanged."
+    },
+    {
+      "path": "evidence/skill-ab-20261109/paired-screening/safe-dedup-new.json",
+      "kind": "bounded-normalized-paired-case-outcome",
+      "sourcePath": "evidence/skill-ab-20261109/paired-screening/safe-dedup-new.json",
+      "sourceSha256": "ead3c44286259cc736e9a3c8ae0a52a8d0743ecc8ad5d31106c8595b4ad6a2d9",
+      "sourceBytes": 427270,
+      "retainedSha256": "534decf387bc56278296853b89bfcef4e38856b9508aa6e08f8a5dec6082a015",
+      "retainedBytes": 14806,
+      "note": "Projection; original local report omitted and identified by digest. Paired outcome/checks unchanged."
+    },
+    {
+      "path": "evidence/skill-ab-20261109/paired-screening/safe-dedup-old.json",
+      "kind": "bounded-normalized-paired-case-outcome",
+      "sourcePath": "evidence/skill-ab-20261109/paired-screening/safe-dedup-old.json",
+      "sourceSha256": "9e79adc0a9971f8da6d8ce6fff5da87cba9447eb51cdef60db7ac0275425ea5a",
+      "sourceBytes": 264630,
+      "retainedSha256": "25fe9c272f26c712f868b905ba1aff0cfb2f2806b29a6def09ba3cc34c2f86d2",
+      "retainedBytes": 13121,
+      "note": "Projection; original local report omitted and identified by digest. Paired outcome/checks unchanged."
+    },
+    {
+      "path": "evidence/skill-ab-20261109/paired-screening/manifest.json",
+      "kind": "unchanged-copy",
+      "sourcePath": "evidence/skill-ab-20261109/paired-screening/manifest.json",
+      "sourceSha256": "365b375e8164f05d35dc31e94acdf0ac7b47124bab41dc3fb7bbeae8810f9b06",
+      "sourceBytes": 7830,
+      "retainedSha256": "365b375e8164f05d35dc31e94acdf0ac7b47124bab41dc3fb7bbeae8810f9b06",
+      "retainedBytes": 7830,
+      "note": "Unchanged paired control/acceptance record. manifest.oldAssets identifies actual baseline bytes."
+    },
+    {
+      "path": "evidence/skill-ab-20261109/paired-screening/summary.json",
+      "kind": "unchanged-copy",
+      "sourcePath": "evidence/skill-ab-20261109/paired-screening/summary.json",
+      "sourceSha256": "2be21ac4cb11b08b13c42d6bf44f00f95c7d3ca49f1a950e9ffb44e1800091be",
+      "sourceBytes": 5375,
+      "retainedSha256": "2be21ac4cb11b08b13c42d6bf44f00f95c7d3ca49f1a950e9ffb44e1800091be",
+      "retainedBytes": 5375,
+      "note": "Unchanged paired control/acceptance record. manifest.oldAssets identifies actual baseline bytes."
+    },
+    {
+      "path": "evidence/skill-ab-20261109/analysis.json",
+      "kind": "unchanged-copy",
+      "sourcePath": "evidence/skill-ab-20261109/analysis.json",
+      "sourceSha256": "7ced8a89da4219c9fb8dbafc36092304db2167259c2a39589a9f25f7f7029a0d",
+      "sourceBytes": 9361,
+      "retainedSha256": "7ced8a89da4219c9fb8dbafc36092304db2167259c2a39589a9f25f7f7029a0d",
+      "retainedBytes": 9361,
+      "note": "Unchanged analysis record. Its sourceEvidenceSha256 values identify the omitted local raw case reports, not the normalized projection bytes now at the same paths."
+    },
+    {
+      "path": "evidence/skill-ab-20261109/implementation-checks.json",
+      "kind": "unchanged-copy",
+      "sourcePath": "evidence/skill-ab-20261109/implementation-checks.json",
+      "sourceSha256": "7fbdba437ec9748f2d6d730093c523561aa8e0e0bd57258004d68a14851b649c",
+      "sourceBytes": 3993,
+      "retainedSha256": "7fbdba437ec9748f2d6d730093c523561aa8e0e0bd57258004d68a14851b649c",
+      "retainedBytes": 3993,
+      "note": "Unchanged bounded record."
+    },
+    {
+      "path": "evidence/skill-ab-20261109/independent-review.json",
+      "kind": "unchanged-copy",
+      "sourcePath": "evidence/skill-ab-20261109/independent-review.json",
+      "sourceSha256": "4509bac487f56d9fd83c5521c0e03b8167e5e89df0b83dd15e188f72b2ba04f5",
+      "sourceBytes": 3816,
+      "retainedSha256": "4509bac487f56d9fd83c5521c0e03b8167e5e89df0b83dd15e188f72b2ba04f5",
+      "retainedBytes": 3816,
+      "note": "Unchanged bounded record."
+    },
+    {
+      "path": "evidence/skill-ab-20261109/native-query-optimization.json",
+      "kind": "unchanged-copy",
+      "sourcePath": "evidence/skill-ab-20261109/native-query-optimization.json",
+      "sourceSha256": "962f323e545a97cc1f61c29ba959cea6d2b2c77c07b66ffac7ed9b3491b7bc62",
+      "sourceBytes": 4721,
+      "retainedSha256": "962f323e545a97cc1f61c29ba959cea6d2b2c77c07b66ffac7ed9b3491b7bc62",
+      "retainedBytes": 4721,
+      "note": "Unchanged bounded record."
+    },
+    {
+      "path": "evidence/skill-ab-20261109/baseline-provenance.json",
+      "kind": "unchanged-copy",
+      "sourcePath": "evidence/skill-ab-20261109/baseline-provenance.json",
+      "sourceSha256": "79ac948c5e1de3e30062e35a0e672477d02059ca2c5d48059a9b248317fa0680",
+      "sourceBytes": 1327,
+      "retainedSha256": "79ac948c5e1de3e30062e35a0e672477d02059ca2c5d48059a9b248317fa0680",
+      "retainedBytes": 1327,
+      "note": "Unchanged bounded record."
+    },
+    {
+      "path": "evidence/skill-ab-20261109/native-query-diagnostic/summary.json",
+      "kind": "unchanged-copy",
+      "sourcePath": "evidence/skill-ab-20261109/native-query-diagnostic/summary.json",
+      "sourceSha256": "4330f2c235f3b80c4453bc2a09c741aad3edb25e6d84327b4d6b26085fd045d8",
+      "sourceBytes": 2129,
+      "retainedSha256": "4330f2c235f3b80c4453bc2a09c741aad3edb25e6d84327b4d6b26085fd045d8",
+      "retainedBytes": 2129,
+      "note": "Unchanged bounded record."
+    },
+    {
+      "path": "evidence/skill-ab-20261109/native-query-diagnostic/setup-failure.json",
+      "kind": "unchanged-copy",
+      "sourcePath": "evidence/skill-ab-20261109/native-query-diagnostic/setup-failure.json",
+      "sourceSha256": "c5f30d6ebf44caca42ce068fcc7d94fa625423a815c2fbd227c36a2ffbe79467",
+      "sourceBytes": 595,
+      "retainedSha256": "c5f30d6ebf44caca42ce068fcc7d94fa625423a815c2fbd227c36a2ffbe79467",
+      "retainedBytes": 595,
+      "note": "Unchanged bounded record."
+    },
+    {
+      "path": "evidence/appium-skill/skill-proposal-fixes-review-20261109.json",
+      "kind": "unchanged-copy",
+      "sourcePath": "evidence/appium-skill/skill-proposal-fixes-review-20261109.json",
+      "sourceSha256": "78a6415033ffc1bc04ec0795790b187bafab1708ce030991250cef60d9fb7d5c",
+      "sourceBytes": 7757,
+      "retainedSha256": "78a6415033ffc1bc04ec0795790b187bafab1708ce030991250cef60d9fb7d5c",
+      "retainedBytes": 7757,
+      "note": "Unchanged bounded record."
+    },
+    {
+      "path": "evidence/skill-ab-20261109/baseline/SKILL.md",
+      "kind": "unchanged-baseline-input",
+      "sourcePath": "evidence/skill-ab-20261109/baseline/SKILL.md",
+      "sourceSha256": "520bbbb380a95024d08e7e728ed0c5b92a484a0958fd098454a414ad9a7a0caa",
+      "sourceBytes": 18768,
+      "retainedSha256": "520bbbb380a95024d08e7e728ed0c5b92a484a0958fd098454a414ad9a7a0caa",
+      "retainedBytes": 18768,
+      "note": "Actual old-arm baseline bytes; matches manifest.oldAssets, not the baseline-provenance textual snapshot hashes."
+    },
+    {
+      "path": "evidence/skill-ab-20261109/baseline/references/amkernel-appium.md",
+      "kind": "unchanged-baseline-input",
+      "sourcePath": "evidence/skill-ab-20261109/baseline/references/amkernel-appium.md",
+      "sourceSha256": "4a526440b8d3ef8e7584c3b439a21db718c6c6e5a9c484d9ca84e0898556be9d",
+      "sourceBytes": 15623,
+      "retainedSha256": "4a526440b8d3ef8e7584c3b439a21db718c6c6e5a9c484d9ca84e0898556be9d",
+      "retainedBytes": 15623,
+      "note": "Actual old-arm baseline bytes; matches manifest.oldAssets, not the baseline-provenance textual snapshot hashes."
+    },
+    {
+      "path": "evidence/skill-ab-20261109/baseline/references/android-execution.md",
+      "kind": "unchanged-baseline-input",
+      "sourcePath": "evidence/skill-ab-20261109/baseline/references/android-execution.md",
+      "sourceSha256": "bdb021d7a587f7f63c862c888988c64d908afa498282f2a71e4486b1148f8471",
+      "sourceBytes": 15835,
+      "retainedSha256": "bdb021d7a587f7f63c862c888988c64d908afa498282f2a71e4486b1148f8471",
+      "retainedBytes": 15835,
+      "note": "Actual old-arm baseline bytes; matches manifest.oldAssets, not the baseline-provenance textual snapshot hashes."
+    },
+    {
+      "path": "evidence/skill-ab-20261109/native-query-diagnostic/focus-submit-new.json",
+      "kind": "bounded-normalized-native-query-diagnostic-outcome",
+      "sourcePath": "evidence/skill-ab-20261109/native-query-diagnostic/focus-submit-new.json",
+      "sourceSha256": "31a8a3ce1d83c8e92db388e3bf0c91070b8fed7ab5fd10f94b0a23cb5bc28a7d",
+      "sourceBytes": 45192,
+      "retainedSha256": "f99e5211e31c0ed0a6a8df6799acf227a82d4068b5f17d1f4f7c29c6f9bcb59c",
+      "retainedBytes": 9242,
+      "note": "Projection; original local diagnostic report omitted and identified by digest."
+    },
+    {
+      "path": "evidence/appium-skill/skill-proposal-fixes-20261109.json",
+      "kind": "bounded-normalized-three-case-smoke-report",
+      "sourcePath": "evidence/appium-skill/skill-proposal-fixes-20261109.json",
+      "sourceSha256": "5da94f9d1dc182b5ff88e4b8c78bcf2f668ea30dd37e14050ae2a91b3fba858f",
+      "sourceBytes": 46096,
+      "retainedSha256": "86a2cfa91958ba699787426f7bd6af5aec21d5b918994be0836c4227237c4d06",
+      "retainedBytes": 26866,
+      "note": "Projection; original local smoke report omitted and identified by digest. Failed self-reports/cells preserved."
+    },
+    {
+      "path": "evidence/appium-skill/skill-proposal-fixes-final-20261109.json",
+      "kind": "bounded-normalized-three-case-smoke-report",
+      "sourcePath": "evidence/appium-skill/skill-proposal-fixes-final-20261109.json",
+      "sourceSha256": "4e7adf95ffa163c92193c9ac1cab07a2874935391002ef732d08d02671a27a28",
+      "sourceBytes": 47875,
+      "retainedSha256": "d946b19bb589a49d38a82cc5bb68f04a3e37974cf843cece81a308ba44574f31",
+      "retainedBytes": 26587,
+      "note": "Projection; original local smoke report omitted and identified by digest. Failed self-reports/cells preserved."
+    },
+    {
+      "path": "evidence/skill-ab-20261109/candidate-verification.json",
+      "kind": "generated-candidate-verification",
+      "sourcePath": null,
+      "sourceSha256": null,
+      "sourceBytes": null,
+      "retainedSha256": "f91e6da8bae5843e9d67004b50660067e0f61dbe6e0be325e3b7d02eddca9bc5",
+      "retainedBytes": 3009,
+      "note": "Generated candidate quality/installed-wheel verification. Local wheel digest is expressly non-authoritative; exact first-attempt successful main CI distribution remains required."
+    }
+  ],
+  "inventory": {
+    "path": "evidence/skill-ab-20261109/retention.json",
+    "kind": "this inventory",
+    "notListedInRetained": "The inventory does not hash itself; all other retained files above are hashed."
+  },
+  "omittedOriginalPaths": [
+    {
+      "path": "evidence/skill-ab-20261109/paired-screening/covered-count-new.json",
+      "sourceSha256": "c545dccdd0297fb01881b88c45cccdf53868745afbd1b22bf0666f1bd94ac47b",
+      "sourceBytes": 128715,
+      "availability": "OMITTED LOCAL ORIGINAL; not present in candidate and not a release-archive member",
+      "reason": "Full report/journal/observed-node/transcript payload replaced by bounded normalized projection."
+    },
+    {
+      "path": "evidence/skill-ab-20261109/paired-screening/covered-count-old.json",
+      "sourceSha256": "d5a453d6c59823a43646a0b3e2d79d51c11d56a80ce4d264161583e186c0ea98",
+      "sourceBytes": 162855,
+      "availability": "OMITTED LOCAL ORIGINAL; not present in candidate and not a release-archive member",
+      "reason": "Full report/journal/observed-node/transcript payload replaced by bounded normalized projection."
+    },
+    {
+      "path": "evidence/skill-ab-20261109/paired-screening/exact-file-new.json",
+      "sourceSha256": "dd172ce89a58d23b3e7d6186e414944fc4626b52591aae12743fb958469f39a5",
+      "sourceBytes": 100770,
+      "availability": "OMITTED LOCAL ORIGINAL; not present in candidate and not a release-archive member",
+      "reason": "Full report/journal/observed-node/transcript payload replaced by bounded normalized projection."
+    },
+    {
+      "path": "evidence/skill-ab-20261109/paired-screening/exact-file-old.json",
+      "sourceSha256": "7d8b78dbf6b7fb420e3dc096550d6ac337fbd1f7f63ca503ff1ef85423881d0c",
+      "sourceBytes": 59707,
+      "availability": "OMITTED LOCAL ORIGINAL; not present in candidate and not a release-archive member",
+      "reason": "Full report/journal/observed-node/transcript payload replaced by bounded normalized projection."
+    },
+    {
+      "path": "evidence/skill-ab-20261109/paired-screening/focus-submit-new.json",
+      "sourceSha256": "f95377e3fb05ca503b382cff2c52a780316e1bff02b2296e8e0328ea1fcd0845",
+      "sourceBytes": 45628,
+      "availability": "OMITTED LOCAL ORIGINAL; not present in candidate and not a release-archive member",
+      "reason": "Full report/journal/observed-node/transcript payload replaced by bounded normalized projection."
+    },
+    {
+      "path": "evidence/skill-ab-20261109/paired-screening/focus-submit-old.json",
+      "sourceSha256": "9589e41fd902f9aba1db546db87c852868f05f70e5e2ddbcd84f44b80f4bd157",
+      "sourceBytes": 40379,
+      "availability": "OMITTED LOCAL ORIGINAL; not present in candidate and not a release-archive member",
+      "reason": "Full report/journal/observed-node/transcript payload replaced by bounded normalized projection."
+    },
+    {
+      "path": "evidence/skill-ab-20261109/paired-screening/measured-aggregate-new.json",
+      "sourceSha256": "fe1980528b6442f48b4b6cc07e7dde24ccb96ff31965549435854bea10ab3ef6",
+      "sourceBytes": 115696,
+      "availability": "OMITTED LOCAL ORIGINAL; not present in candidate and not a release-archive member",
+      "reason": "Full report/journal/observed-node/transcript payload replaced by bounded normalized projection."
+    },
+    {
+      "path": "evidence/skill-ab-20261109/paired-screening/measured-aggregate-old.json",
+      "sourceSha256": "68f63ea0b9d1ffb0dfc2dfb234f04151fddcd0f6847cc7883f0b80277e806fd8",
+      "sourceBytes": 60981,
+      "availability": "OMITTED LOCAL ORIGINAL; not present in candidate and not a release-archive member",
+      "reason": "Full report/journal/observed-node/transcript payload replaced by bounded normalized projection."
+    },
+    {
+      "path": "evidence/skill-ab-20261109/paired-screening/phased-progress-new.json",
+      "sourceSha256": "11a3362d6ab5600a94c0ca50ca38cded5fa8eb9b3cd6d2011898f208051c583e",
+      "sourceBytes": 48951,
+      "availability": "OMITTED LOCAL ORIGINAL; not present in candidate and not a release-archive member",
+      "reason": "Full report/journal/observed-node/transcript payload replaced by bounded normalized projection."
+    },
+    {
+      "path": "evidence/skill-ab-20261109/paired-screening/phased-progress-old.json",
+      "sourceSha256": "cff43f0c603d5db4157a24faa298742c793d09e0f7f48990c4220ece4b2fe8e1",
+      "sourceBytes": 61213,
+      "availability": "OMITTED LOCAL ORIGINAL; not present in candidate and not a release-archive member",
+      "reason": "Full report/journal/observed-node/transcript payload replaced by bounded normalized projection."
+    },
+    {
+      "path": "evidence/skill-ab-20261109/paired-screening/safe-dedup-new.json",
+      "sourceSha256": "ead3c44286259cc736e9a3c8ae0a52a8d0743ecc8ad5d31106c8595b4ad6a2d9",
+      "sourceBytes": 427270,
+      "availability": "OMITTED LOCAL ORIGINAL; not present in candidate and not a release-archive member",
+      "reason": "Full report/journal/observed-node/transcript payload replaced by bounded normalized projection."
+    },
+    {
+      "path": "evidence/skill-ab-20261109/paired-screening/safe-dedup-old.json",
+      "sourceSha256": "9e79adc0a9971f8da6d8ce6fff5da87cba9447eb51cdef60db7ac0275425ea5a",
+      "sourceBytes": 264630,
+      "availability": "OMITTED LOCAL ORIGINAL; not present in candidate and not a release-archive member",
+      "reason": "Full report/journal/observed-node/transcript payload replaced by bounded normalized projection."
+    },
+    {
+      "path": "evidence/appium-skill/skill-proposal-fixes-20261109.json",
+      "sourceSha256": "5da94f9d1dc182b5ff88e4b8c78bcf2f668ea30dd37e14050ae2a91b3fba858f",
+      "sourceBytes": 46096,
+      "availability": "OMITTED LOCAL ORIGINAL; not present in candidate and not a release-archive member",
+      "reason": "Full smoke report/transcript replaced by bounded normalized projection."
+    },
+    {
+      "path": "evidence/appium-skill/skill-proposal-fixes-final-20261109.json",
+      "sourceSha256": "4e7adf95ffa163c92193c9ac1cab07a2874935391002ef732d08d02671a27a28",
+      "sourceBytes": 47875,
+      "availability": "OMITTED LOCAL ORIGINAL; not present in candidate and not a release-archive member",
+      "reason": "Full smoke report/transcript replaced by bounded normalized projection."
+    },
+    {
+      "path": "evidence/skill-ab-20261109/native-query-diagnostic/focus-submit-new.json",
+      "sourceSha256": "31a8a3ce1d83c8e92db388e3bf0c91070b8fed7ab5fd10f94b0a23cb5bc28a7d",
+      "sourceBytes": 45192,
+      "availability": "OMITTED LOCAL ORIGINAL; not present in candidate and not a release-archive member",
+      "reason": "Full diagnostic report/journal replaced by bounded normalized projection."
+    },
+    {
+      "path": "evidence/release-preparation-20261109.json",
+      "sourceSha256": "05f21c05dbdcf06747cab65c6488821fdcec03f6afbe620651d72b2e1bad2c4c",
+      "sourceBytes": 17001,
+      "availability": "OMITTED LOCAL ORIGINAL; not copied and not a release-archive member",
+      "reason": "Preparation/authorization record from an earlier release attempt; not current release evidence and not copied."
+    },
+    {
+      "path": "standalone raw logs/transcripts/XML",
+      "availability": "NOT RETAINED",
+      "reason": "No standalone raw logs, transcripts, tool outputs or XML are retained. Any such bytes existed only inside the omitted original JSON reports."
+    }
+  ],
+  "omittedWithinRetainedProjections": {
+    "paired-case-projections": [
+      "fixture.journal full events, observed source text/class/resource-id XML-like data, per-event stateAfter/visibleKeys and raw session/element paths outside selected summaries",
+      "native.calls call IDs, timestamps, argument/code/output digests and bytes",
+      "pythonResults tracebacks and raw values"
+    ],
+    "smoke-projections": [
+      "fixture.journal full records including raw session IDs, observed nodes and state snapshots",
+      "toolCalls arguments/code bodies and raw outputs",
+      "scenario finalResponse prose and stderr",
+      "command argv paths and preflight details containing local paths",
+      "verifier execution interpreter path"
+    ],
+    "diagnostic-projection": [
+      "fixture.journal full events, visibleKeys, observed nodes and stateAfter",
+      "native.calls call IDs/timestamps/digests/bytes",
+      "pythonResults raw values and timings beyond counts"
+    ],
+    "unchanged-copies": "Retained as recorded; not sanitized or renormalized."
+  },
+  "verification": {
+    "pairedCaseOutcomesUnchanged": true,
+    "pairedCasesChecked": 12,
+    "smokeResultsUnchanged": true,
+    "smokeReportsChecked": 2,
+    "diagnosticOutcomeUnchanged": true,
+    "newRunPerformed": false,
+    "rescored": false,
+    "rerun": false,
+    "smokeComparisonBasis": "summary, scenario statuses, check ids/oks, and finalJson after removing only sessionIds; check detail strings were path/session sanitized.",
+    "pairedComparisonBasis": "businessPassed/protocolPassed/passed/reportedOutcome/answer/businessChecks and compacted protocol check ids/oks compared; no rescoring.",
+    "projectionDifferences": [
+      "Session IDs removed from smoke finalJson.",
+      "Paired journals, observed nodes, call identifiers and tracebacks replaced by summaries.",
+      "Diagnostic and paired protocol details compacted without changing pass/fail."
+    ],
+    "generatedCandidateEvidence": "candidate-verification.json included; local wheel hash not treated as authoritative CI identity"
+  },
+  "documentationReferences": {
+    "linksToChange": [],
+    "pairedCasePaths": "Unchanged path names now resolve to bounded-normalized-paired-case-outcome records.",
+    "smokeReportPaths": "Unchanged path names now resolve to bounded-normalized-three-case-smoke-report records.",
+    "diagnosticPath": "Unchanged path name now resolves to bounded-normalized-native-query-diagnostic-outcome.",
+    "newInventoryPath": "evidence/skill-ab-20261109/retention.json",
+    "recommendedWording": "Call these paths bounded normalized projections, not raw JSON reports or release-archive members.",
+    "requiredWordingChanges": [
+      {
+        "line": 1267,
+        "current": "The [final-wheel native report](../../evidence/appium-skill/skill-proposal-fixes-final-20261109.json)",
+        "changeTo": "The [bounded normalized projection of the final-wheel native report](../../evidence/appium-skill/skill-proposal-fixes-final-20261109.json)"
+      },
+      {
+        "line": 1273,
+        "current": "its separate skill-proposal-fixes-20261109.json report remains unchanged rather than being rescored",
+        "changeTo": "its separate skill-proposal-fixes-20261109.json is retained as a bounded normalized projection of the unchanged historical result; it was not rescored"
+      },
+      {
+        "line": 1316,
+        "current": "canonical LF serialization and hashes are documented in evidence/skill-ab-20261109/baseline-provenance.json",
+        "changeTo": "the retained baseline files are the actual old-arm bytes matching manifest.oldAssets, while baseline-provenance.json preserves separate textual snapshot hashes that differ; see retention.json baselineIdentity"
+      },
+      {
+        "line": 1407,
+        "current": "Evidence: ... and its twelve case files, analysis.json, and independent-review.json",
+        "changeTo": "Evidence: `evidence/skill-ab-20261109/paired-screening/{manifest,summary}.json`, bounded normalized projections of its twelve case files, `analysis.json` (whose sourceEvidenceSha256 identifies omitted local originals, not projection bytes), and `independent-review.json`."
+      }
+    ]
+  },
+  "digestScope": {
+    "analysisSourceEvidenceSha256": "analysis.json sourceEvidenceSha256 values identify the OMITTED LOCAL ORIGINAL case reports. They do not match, and must not be compared with, the normalized projection bytes now present at the same paths. Projection digests are in retained[].retainedSha256.",
+    "pairedManifestOldAssets": "manifest.oldAssets hashes identify the actual retained baseline .md bytes. They differ from baseline-provenance textual snapshot hashes; both records are preserved as recorded.",
+    "baselineProvenanceSha256": "manifest.baselineProvenanceSha256 matches the retained baseline-provenance.json bytes; this verifies the provenance record, not the baseline .md byte hashes.",
+    "smokeHistoricalPaths": "Review and native-query records name historical report paths that now hold bounded projections. Those names identify the same historical event, not current projection bytes; see retained[].retainedSha256."
+  }
+}

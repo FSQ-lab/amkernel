@@ -1,0 +1,257 @@
+{
+  "schemaVersion": 1,
+  "scope": "synthetic-development-paired-screening",
+  "sourceSummary": "paired-screening/summary.json",
+  "model": "gpt-6.1-sol",
+  "completedRuns": 12,
+  "controls": {
+    "pairControlsMatch": true,
+    "harnessSourcesUnchanged": true,
+    "isolationUnchanged": true
+  },
+  "aggregates": {
+    "old": {
+      "businessPassed": 6,
+      "protocolPassed": 6,
+      "pythonCalls": 37,
+      "failedPythonCalls": 2,
+      "timedOutPythonCalls": 0,
+      "actions": 43,
+      "durationMs": 451650
+    },
+    "new": {
+      "businessPassed": 6,
+      "protocolPassed": 6,
+      "pythonCalls": 32,
+      "failedPythonCalls": 5,
+      "timedOutPythonCalls": 0,
+      "actions": 50,
+      "durationMs": 522747
+    }
+  },
+  "pairedOutcomes": [
+    {
+      "case": "focus-submit",
+      "old": {
+        "businessPassed": true,
+        "protocolPassed": true,
+        "passed": true,
+        "telemetry": {
+          "pythonCalls": 4,
+          "failedPythonCalls": 0,
+          "timedOutPythonCalls": 0,
+          "actions": 4,
+          "durationMs": 62277
+        },
+        "reportedOutcome": "completed"
+      },
+      "new": {
+        "businessPassed": true,
+        "protocolPassed": true,
+        "passed": true,
+        "telemetry": {
+          "pythonCalls": 4,
+          "failedPythonCalls": 1,
+          "timedOutPythonCalls": 0,
+          "actions": 4,
+          "durationMs": 84438
+        },
+        "reportedOutcome": "completed"
+      }
+    },
+    {
+      "case": "exact-file",
+      "new": {
+        "businessPassed": true,
+        "protocolPassed": true,
+        "passed": true,
+        "telemetry": {
+          "pythonCalls": 7,
+          "failedPythonCalls": 1,
+          "timedOutPythonCalls": 0,
+          "actions": 11,
+          "durationMs": 131444
+        },
+        "reportedOutcome": "completed"
+      },
+      "old": {
+        "businessPassed": true,
+        "protocolPassed": true,
+        "passed": true,
+        "telemetry": {
+          "pythonCalls": 8,
+          "failedPythonCalls": 1,
+          "timedOutPythonCalls": 0,
+          "actions": 9,
+          "durationMs": 108378
+        },
+        "reportedOutcome": "completed"
+      }
+    },
+    {
+      "case": "phased-progress",
+      "old": {
+        "businessPassed": true,
+        "protocolPassed": true,
+        "passed": true,
+        "telemetry": {
+          "pythonCalls": 10,
+          "failedPythonCalls": 1,
+          "timedOutPythonCalls": 0,
+          "actions": 9,
+          "durationMs": 82184
+        },
+        "reportedOutcome": "completed"
+      },
+      "new": {
+        "businessPassed": true,
+        "protocolPassed": true,
+        "passed": true,
+        "telemetry": {
+          "pythonCalls": 6,
+          "failedPythonCalls": 1,
+          "timedOutPythonCalls": 0,
+          "actions": 7,
+          "durationMs": 68743
+        },
+        "reportedOutcome": "completed"
+      }
+    },
+    {
+      "case": "covered-count",
+      "new": {
+        "businessPassed": true,
+        "protocolPassed": true,
+        "passed": true,
+        "telemetry": {
+          "pythonCalls": 3,
+          "failedPythonCalls": 0,
+          "timedOutPythonCalls": 0,
+          "actions": 3,
+          "durationMs": 71826
+        },
+        "reportedOutcome": "completed"
+      },
+      "old": {
+        "businessPassed": true,
+        "protocolPassed": true,
+        "passed": true,
+        "telemetry": {
+          "pythonCalls": 5,
+          "failedPythonCalls": 0,
+          "timedOutPythonCalls": 0,
+          "actions": 6,
+          "durationMs": 54256
+        },
+        "reportedOutcome": "completed"
+      }
+    },
+    {
+      "case": "safe-dedup",
+      "old": {
+        "businessPassed": true,
+        "protocolPassed": true,
+        "passed": true,
+        "telemetry": {
+          "pythonCalls": 6,
+          "failedPythonCalls": 0,
+          "timedOutPythonCalls": 0,
+          "actions": 10,
+          "durationMs": 87520
+        },
+        "reportedOutcome": "completed"
+      },
+      "new": {
+        "businessPassed": true,
+        "protocolPassed": true,
+        "passed": true,
+        "telemetry": {
+          "pythonCalls": 7,
+          "failedPythonCalls": 1,
+          "timedOutPythonCalls": 0,
+          "actions": 20,
+          "durationMs": 86698
+        },
+        "reportedOutcome": "completed"
+      }
+    },
+    {
+      "case": "measured-aggregate",
+      "new": {
+        "businessPassed": true,
+        "protocolPassed": true,
+        "passed": true,
+        "telemetry": {
+          "pythonCalls": 5,
+          "failedPythonCalls": 1,
+          "timedOutPythonCalls": 0,
+          "actions": 5,
+          "durationMs": 79598
+        },
+        "reportedOutcome": "completed"
+      },
+      "old": {
+        "businessPassed": true,
+        "protocolPassed": true,
+        "passed": true,
+        "telemetry": {
+          "pythonCalls": 4,
+          "failedPythonCalls": 0,
+          "timedOutPythonCalls": 0,
+          "actions": 5,
+          "durationMs": 57035
+        },
+        "reportedOutcome": "completed"
+      }
+    }
+  ],
+  "pythonEnvelopeOutcomes": [
+    {
+      "status": "completed",
+      "kernelState": "alive",
+      "count": 62
+    },
+    {
+      "status": "failed",
+      "kernelState": "alive",
+      "count": 7
+    }
+  ],
+  "interpretation": [
+    "Both old and new arms passed all six business and protocol checks; no success-rate improvement demonstrated.",
+    "New used fewer python_exec calls in aggregate, but more UI actions, more failed cells and longer observed native-client duration; call count is not an outcome metric.",
+    "New phased-progress removed an observed back/re-entry path; new covered-count avoided three reverse-page actions. Each is one paired sample, not a causal or repeatability claim.",
+    "New exact-file used three post-reload navigation actions while avoiding the old arm unfocused extension clear failure; net two additional admitted actions.",
+    "New safe-dedup opened all seven details, then re-opened the duplicate pair before deletion: twenty actions versus ten in old. It retained every unique record and removed exactly one duplicate, but had no remaining mutation headroom.",
+    "Both aggregate arms selected the same four distinct tracks and committed once. No better business result in new.",
+    "All five new-arm failed cells correspond to unsupported execute/sync commands in this synthetic transport. The exact script was not journaled; do not identify the API or claim a real-Appium regression.",
+    "The old errors were one unfocused extension clear and one missing-element lookup. All sixty-nine execution envelopes reported kernel alive; there were no timed-out envelopes."
+  ],
+  "limits": [
+    "One sample per arm is screening, not causal/statistical improvement proof",
+    "Synthetic interfaces cannot qualify real Android focus, scrolling or persistence",
+    "Runtime is unrestricted same-user execution, not a sandbox",
+    "Only enumerated configuration paths are fingerprinted for isolation",
+    "No official task/reward/evaluator/campaign is used or modified",
+    "Goals explicitly state semantic requirements and interface limitations, which can make both arms succeed; this screen does not recreate real Android ambiguity, keyboard timing, filesystem behavior or long scrolls.",
+    "Native Python code and non-main view paths are hashed rather than retained; cannot reconstruct every assertion or prove which subordinate references were consumed.",
+    "Reduced Python-call count alone is not evidence of increased efficiency, especially with larger UI and wall-time cost.",
+    "One stochastic sample per arm per case cannot establish causation, significance or generalization.",
+    "Full pytest is not green: 896 passed plus four subtests, two release retention/ignore failures recorded separately; no affected release metadata or Git state was changed."
+  ],
+  "sourceEvidenceSha256": {
+    "paired-screening/focus-submit-old.json": "9589e41fd902f9aba1db546db87c852868f05f70e5e2ddbcd84f44b80f4bd157",
+    "paired-screening/focus-submit-new.json": "f95377e3fb05ca503b382cff2c52a780316e1bff02b2296e8e0328ea1fcd0845",
+    "paired-screening/exact-file-old.json": "7d8b78dbf6b7fb420e3dc096550d6ac337fbd1f7f63ca503ff1ef85423881d0c",
+    "paired-screening/exact-file-new.json": "dd172ce89a58d23b3e7d6186e414944fc4626b52591aae12743fb958469f39a5",
+    "paired-screening/phased-progress-old.json": "cff43f0c603d5db4157a24faa298742c793d09e0f7f48990c4220ece4b2fe8e1",
+    "paired-screening/phased-progress-new.json": "11a3362d6ab5600a94c0ca50ca38cded5fa8eb9b3cd6d2011898f208051c583e",
+    "paired-screening/covered-count-old.json": "d5a453d6c59823a43646a0b3e2d79d51c11d56a80ce4d264161583e186c0ea98",
+    "paired-screening/covered-count-new.json": "c545dccdd0297fb01881b88c45cccdf53868745afbd1b22bf0666f1bd94ac47b",
+    "paired-screening/safe-dedup-old.json": "9e79adc0a9971f8da6d8ce6fff5da87cba9447eb51cdef60db7ac0275425ea5a",
+    "paired-screening/safe-dedup-new.json": "ead3c44286259cc736e9a3c8ae0a52a8d0743ecc8ad5d31106c8595b4ad6a2d9",
+    "paired-screening/measured-aggregate-old.json": "68f63ea0b9d1ffb0dfc2dfb234f04151fddcd0f6847cc7883f0b80277e806fd8",
+    "paired-screening/measured-aggregate-new.json": "fe1980528b6442f48b4b6cc07e7dde24ccb96ff31965549435854bea10ab3ef6"
+  },
+  "preMatrixChecks": "implementation-checks.json"
+}

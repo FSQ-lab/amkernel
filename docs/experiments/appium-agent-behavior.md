@@ -1227,3 +1227,249 @@ three corrections and reported no remaining blocking finding. This is source-lev
 behavior evidence only. No native Agent evaluation, real dependency installation, Appium/Mac2
 server or session, Xcode/privacy change, live target control, platform qualification, release or
 Android World evaluation occurred.
+
+## 22. Field proposal integration: task acceptance and evidence-driven batches (#98, 2026-11-09)
+
+The local source proposal is
+`../FSQ_AndroidWorld_eval/evidence/amkernel-field-optimization-20261109/per-task-review/skill-optimization-proposal.md`
+(SHA-256 `ed63e488e8363528612f3301866b1694311cb26fc3bd1b80c65f83c6f5add214`).
+Its generic candidates are integrated into the existing shared Appium and Android references;
+the main Skill routes execution to that single shared acceptance policy.
+
+Coverage includes discriminating business progress, repeated-value ambiguity, phase branches,
+late actions and retained partial locals; positive intended-field focus; goal-derived file
+identity, source whitespace and persisted read-back; list scope, business membership and full
+coverage; exact date/priority predicates; complete duplicate-content equivalence, designated
+survivors and destructive-action reconciliation; actual aggregates bound to population,
+category, measure, units and interval boundaries; input versus commit; layered errors; and
+business answers separate from control/cleanup fields. Reliable observations, conditional actions
+and verification stay in one call. New model interpretation or uncertain identity stops dependent
+actions, not all batching. No wrappers, automatic retries, benchmark answers, hidden evaluator/DB
+access, extra action budget or Runtime/Harness behavior were introduced.
+
+Independent static review found no remaining blocking findings after two integration corrections:
+failed admitted actions can consume budget, unlike pre-action rejection; aggregate acceptance
+must name the requested measure rather than substitute a related field. The bounded
+[coverage and review record](../../evidence/appium-skill/skill-proposal-fixes-review-20261109.json)
+maps each proposal group to its packaged section and preserves reviewed asset hashes.
+
+### Exercised verification
+
+- `uv run pytest -q tests/skills/test_amkernel_skill.py tests/e2e/test_skill_behavior_evaluator.py`:
+  111 passed in 12.28 seconds. This preceded the final aggregate-measure wording clarification;
+  no Python or test code changed. An earlier invocation named a nonexistent second test path,
+  ran no tests and is not reported as a pass.
+- Built a final wheel with SHA-256
+  `fcfe980164c30a0f3a69fec97497bd3b9973fa6bcbfc9150c16aae3bc2417be7`.
+  GitHub Copilot CLI 1.0.105, model `gpt-6.1-sol`, loaded the installed Skill in an isolated
+  external project and executed the real stdio MCP/official Appium Python Client path against
+  synthetic endpoints. Installation/provenance checks passed; client isolation was unchanged.
+- The [bounded normalized final-wheel native projection](../../evidence/appium-skill/skill-proposal-fixes-final-20261109.json)
+  passed 3/3 cases: compact Android state change in two execution windows; stale-element
+  recovery with fresh live observations and no stale-handle replay; and one ambiguous submission
+  followed by read-only reconciliation without duplicate submission. Each scenario observed
+  successful owned-session deletion and no remaining active owned session. Fixture servers were
+  preserved. The earlier, pre-clarification wheel also passed these three cases; its separate
+  `skill-proposal-fixes-20261109.json` result is retained as a normalized projection, not rescored.
+
+Independent review of the underlying fixture events approved those bounded claims. The stale
+case proves handle reacquisition and an accepted click, not a business-state change: its business
+state remains unchanged and one later cell returns `AssertionError` before final reconciliation
+and cleanup. Passing the scenario does not mean every inner cell succeeded. State/source are
+surfaces of one fixture, not independent durable storage; these cases contain no preexisting
+session, and isolation hashes cover only the enumerated configuration paths, not all host state.
+
+### Qualification boundary
+
+These are synthetic regression checks, not tests of actual keyboard focus, file persistence,
+full-list traversal, deletion preservation, aggregate targeting or improved task success. No
+per-case empirical benefit, official reward, physical platform qualification or #98 closure is
+claimed. The source proposal's real-Agent representative failures and original-success sample
+acceptance remains unperformed, not replaced by these three regression cases.
+
+The sibling Harness 15 reference-clock cutover requires fresh qualification, full no-Agent
+rehearsal and calibration before a new formal run (`forwarder/README.md:15-21`). Its existing
+`continuation.validate_inherited_runtime` permits only Harness source identity to differ from
+the frozen inherited Runtime; changing installed Skill assets cannot silently enter that path.
+An isolated changed-Skill experiment identity and matching gates are prerequisites for empirical
+AndroidWorld qualification. This task did not bypass the guard, modify sibling Harness source,
+replace frozen assets/results, initialize tasks, query devices or launch a formal campaign.
+
+## 23. Small paired Skill screening protocol (#98)
+
+`tests/e2e/skill_ab.py` is an independent development experiment, not an AndroidWorld
+campaign or a substitute for its qualification gates. It drives native GitHub Copilot, the
+installed AMKernel stdio MCP service and the official Appium Python Client against six resettable
+loopback scenes. Forms cover focused input plus submission, exact file identity/format/persisted
+reload, and repeated amounts across explicit phases. Lists cover full-population counting,
+duplicate-content preservation, and measured aggregate submission. All data is fictional and
+the entire app is accessible; no device, screenshot, real filesystem mutation or shared service
+is needed.
+
+### Paired controls and acceptance
+
+Each case has one old-arm and one new-arm task, each with a fresh project, Agent, Kernel and
+scene. The same native executable, model (`gpt-6.1-sol`), Runtime wheel, dependencies, task,
+initial state, action budget and outer deadline are held constant. Arm order alternates by case.
+Only the three captured pre-fix Skill documents differ: main `SKILL.md`, shared Appium reference
+and Android execution reference. Retained baseline input bytes match `manifest.json.oldAssets`.
+`baseline-provenance.json` preserves separate textual read-snapshot hashes that differ from those
+input-byte hashes; `retention.json.baselineIdentity` records both without silently reconciling
+them. Neither record pins repository HEAD or an independently retained pre-edit filesystem digest.
+The installed template is
+verified first; old-arm overlays are explicitly recorded as development assets, not disguised
+as installer-verified or formal-campaign identity.
+
+Business judges inspect actual saved/submitted state and preservation of original records.
+Where the goal requires inspection, they also require returned page-source/text observations:
+locator handles, guessed answers and immutable fixture constants are not observation evidence.
+Count acceptance includes the relevant full population and end marker under compatible filters;
+file acceptance includes a persisted target reload; phase acceptance distinguishes repeated
+amounts by index. Protocol, budget, truthful reporting, owned-session deletion and post-run Skill
+hashes are reported separately from business success. Every admitted mutation counts even if
+the action fails. Reads and owned-session deletion are free; session replacement cannot reset
+the gate. The loopback server rejects unsupported selector semantics rather than approximating
+them, and detached element handles remain stale if a semantic key later reappears.
+
+The test-side oracles/source are not put in the Agent project. This is not a security sandbox:
+AMKernel remains unrestricted same-user execution. Isolation fingerprints cover enumerated
+configuration paths, not all host state; the experiment does not establish resistance to a
+malicious Agent inspecting the host. Arbitrary host behavior is not inferred absent from an
+empty fixture journal.
+
+### Running and interpreting the screening
+
+Use a wheel matching the current source Skill and an actual native GitHub Copilot executable:
+
+```bash
+uv run python tests/e2e/skill_ab.py \
+  --wheel "$WHEEL" --copilot "$COPILOT" \
+  --baseline evidence/skill-ab-20261109/baseline \
+  --output /tmp/amkernel-skill-ab-new-run --timeout 240
+```
+
+The output directory must not exist. The runner writes its source/asset/goal/state hashes and
+declared order before launching tasks, retains each arm's evidence as it finishes, then writes
+paired controls, telemetry and isolation results. There are no retries or rescores. Do not edit
+the harness or tune cases during a frozen run. Existing failures are data, not permission to
+increase limits or repeat until success. A preflight failure is not an Agent task failure.
+
+Pre-matrix evidence is in `evidence/skill-ab-20261109/implementation-checks.json`: 85 behavioral
+checks plus four subtests passed; Ruff passed; an official-client probe exercised six sessions
+and focused input/Save. Independent source review corrected selector approximation, detached
+handle resurrection and three observation/persistence false positives before task launch.
+
+One sample per arm is screening only. Report business correctness, preservation, protocol and
+resource use, including unchanged or worse results. A paired difference is a candidate for
+independent repetitions, not a statistically established benefit. Synthetic focus, persistence,
+pagination and timing cannot qualify actual Android behavior; native-device representative
+failures and original-success regressions remain separate acceptance work.
+
+### Completed screening: mixed cost, no success-rate gain
+
+All twelve scheduled runs completed, without task retries or post-outcome case tuning.
+Both treatments passed business and protocol acceptance in all six cases. The controls
+matched within each pair; recorded harness hashes and enumerated configuration fingerprints
+were unchanged. Client 1.0.105, model `gpt-6.1-sol`, the same Runtime wheel, goal, initial state,
+mutation limit and 240-second per-task deadline were held fixed. This is not a formal campaign.
+
+| Case | Python calls OLD → NEW | Admitted UI actions OLD → NEW | Failed cells OLD → NEW | Native-client elapsed seconds OLD → NEW |
+| --- | ---: | ---: | ---: | ---: |
+| Focus and Save | 4 → 4 | 4 → 4 | 0 → 1 | 62.277 → 84.438 |
+| Exact extensionless file | 8 → 7 | 9 → 11 | 1 → 1 | 108.378 → 131.444 |
+| Indexed phase progress | 10 → 6 | 9 → 7 | 1 → 1 | 82.184 → 68.743 |
+| Full-population count | 5 → 3 | 6 → 3 | 0 → 0 | 54.256 → 71.826 |
+| Content-equivalent deduplication | 6 → 7 | 10 → 20 | 0 → 1 | 87.520 → 86.698 |
+| Measured aggregate | 4 → 5 | 5 → 5 | 0 → 1 | 57.035 → 79.598 |
+| Total | 37 → 32 | 43 → 50 | 2 → 5 | 451.650 → 522.747 |
+
+Elapsed time is observed native-client duration, not a pure Kernel or Skill execution cost.
+Independent review of the saved states and returned observations found no defect invalidating
+these outcomes: both saved only the intended contact field; persisted the exact extensionless
+file and actually read its reopened body; observed every indexed phase, including repeated
+amounts; covered all distinct list records and its end; removed only the fully equivalent
+duplicate while preserving unique variants; and committed the measured-duration selection once.
+The exact-file oracle requires a persisted reload, not separately a returned body read; these
+particular journals supply that stronger body-read evidence. Storage and immutable source notes
+are simulated, not filesystem durability evidence.
+
+The cost differences are not uniformly favorable. NEW avoided OLD's phase back/re-entry detour
+and reverse-page restoration after counting. Its file run instead added post-readback navigation.
+Its dedup run opened every detail, then reopened the duplicate pair before deletion, consuming
+the entire mutation budget without rejection. There was no mutation headroom, although final
+readback and owned-session deletion succeeded. Aggregate mutation work was identical.
+
+All NEW failed cells correspond to unsupported `/execute/sync` commands in this fixture, with
+no fixture-state change. Request bodies were not retained, so the exact script/API cannot be
+identified and this does not demonstrate a real-Appium regression. OLD retained an unfocused
+extension-clear error and a missing-element lookup. Every execution envelope reported the
+Kernel alive; no Python call timed out. Protocol pass does not mean every operation succeeded.
+
+Evidence: `evidence/skill-ab-20261109/paired-screening/{manifest,summary}.json`, twelve bounded
+normalized case projections, `analysis.json` and `independent-review.json`. The two independent
+outcome reviewers inspected the original scene transitions and actual journals without rerunning
+tasks. `analysis.json.sourceEvidenceSha256` identifies omitted local original reports, not the
+projection bytes now retained at those paths. `retention.json` pins the separate identities.
+Raw Python and non-main view paths are omitted: do not infer every assertion, exact arithmetic
+strategy, consumption of all references or absence of arbitrary host behavior. Explicit goals
+and small, accessible fixtures can make both treatments succeed. One sample per arm establishes
+neither causal improvement nor statistical significance; fewer Python calls did not mean less
+total work here. No real-device or official reward claim follows.
+
+The historical original-worktree integration check `uv run pytest -q` returned 896 passed plus
+four subtests and two release retention/ignore failures, detailed in `implementation-checks.json`.
+That suite was not green; metadata, ignore rules and the original index were not altered to hide
+the failures. The isolated candidate retains the history rather than applying those deletions or
+the blanket ignore; its separate [verification](../../evidence/skill-ab-20261109/candidate-verification.json)
+records 969 passing tests and installed-wheel/official-client smoke, not a rescore of the old run.
+
+### Follow-up: native query coverage, not replacement A/B outcomes
+
+The synthetic transport advertised `current_package` and `current_activity` but accepted only
+their legacy GET routes. Official Client 5.2.5 exercised both modern `mobile:` commands first,
+then fell back after rejection. It now accepts `mobile: getCurrentPackage` and
+`mobile: getCurrentActivity` as read-only aliases behind the existing live-session gate.
+They neither mutate state nor consume the action budget. Unknown scripts still fail; the
+journal retains only a bounded mobile command identifier or placeholder, never arguments or
+arbitrary JavaScript. No Skill, Runtime, formal evaluator or frozen A/B result was changed.
+
+A separate one-shot native focus diagnostic used the actual managed Runtime's Appium Client
+6.1.5 and Selenium 4.52.0. All 21 journaled HTTP requests returned 200, including the modern
+package query; four Python calls completed, with no failed cells, correct saved business state
+and owned-session deletion. This does not identify the withheld scripts in the original five
+failed calls or prove that every original failure is fixed. The native fixture hash identifies
+its pre-annotation snapshot, not the later behavior-neutral type-cleaned source.
+
+Targeted strict typing subsequently found 23 errors in six new screening files. Local type
+annotations, a lexical variable rename, package import cleanup and canonical formatting fixed
+those without changing scene data, goals, budgets or acceptance semantics. Seven-file Mypy and
+Ruff lint passed; focused checks passed 87 tests plus four subtests. The final annotated fixture
+was exercised through Client 5.2.5: eight HTTP requests all succeeded, no legacy fallback or
+state mutation occurred, and the owned session was deleted. Independent review approved the
+implementation and bounded diagnostic evidence. See
+`evidence/skill-ab-20261109/native-query-optimization.json` and `native-query-diagnostic/`.
+
+The diagnostic's first setup failed while inspecting metadata, before any Agent task began.
+The inherited experiment helper resolves virtual-environment interpreter symlinks to base Python;
+the throwaway probe instead preserved the launcher's lexical shebang interpreter. This inherited
+helper can misidentify installed-runtime metadata and may direct preflight pip commands at the
+base interpreter. It was not changed here. Enumerated configuration fingerprints do not prove
+whole-host isolation, and this result does not qualify that helper as an installed-package verifier.
+
+### Isolated 0.1.4 candidate boundary
+
+The release candidate integrates this round's guidance onto current `main`, including the
+separately merged readiness refactor. Historical 0.1.3 development-wheel and OLD/NEW records
+remain evidence for their recorded assets only; they do not qualify the integrated 0.1.4 wheel.
+Only bounded normalized outcomes, reviews, manifests and baseline inputs are retained here;
+omitted raw reports are identified by source digests and are not claimed as release-archive
+members. See `evidence/skill-ab-20261109/retention.json` for the boundary.
+
+The candidate preserves all ADR-0008 retained history and the existing release assertions.
+Original-worktree evidence deletions, blanket ignore, prior unrelated guidance and the separate
+Runner `InvalidElementStateException` correction are excluded. Core interfaces, dependency
+baseline and support claims are unchanged. Candidate verification and independent review precede
+the protected PR merge. Only that exact main commit's first-attempt successful complete CI and
+its retained distribution may feed `scripts/prepare_release.py`. Publication requires a separate
+final authorization; no Release dispatch, tag or upload is part of candidate preparation.
+

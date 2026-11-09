@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "kind": "Isolated 0.1.4 candidate verification; not authoritative CI distribution identity",
+  "baseCommit": "9f4279e84ffeb9acf43578c96bef6da283c498e2",
+  "sourceReview": {
+    "schemaVersion": 1,
+    "kind": "Independent isolated candidate source review",
+    "reviewer": "CandidateSourceReview (read-only reviewer agent)",
+    "disposition": "approved; no evidence-backed merge blocker",
+    "confidence": 0.9,
+    "reviewed": [
+      "Three integrated Skill documents",
+      "Seven unchanged screening source/test files",
+      "Current main readiness/authorization preservation",
+      "Historical query and paired review evidence",
+      "Candidate changelog, handoff and experiment additions"
+    ],
+    "observations": [
+      "Readiness, approval continuity, guidance ownership and cleanup preserved",
+      "Generic evidence-driven acceptance and budget stopping covered",
+      "Modern native queries session-gated/read-only; unknown scripts fail with bounded diagnostics",
+      "Observed patch excludes Runtime/Runner changes",
+      "Historical assets not qualified as integrated0.1.4 or physical-platform evidence"
+    ],
+    "checksRunByReviewer": []
+  },
+  "quality": {
+    "lockCheck": "passed",
+    "ruffFormat": "87 files already formatted",
+    "ruffCheck": "passed",
+    "mypy": "84 source files; no issues",
+    "pytest": {
+      "passed": 969,
+      "seconds": 110.78
+    },
+    "build": "sdist and wheel built from isolated candidate",
+    "dependencyPinsChanged": false
+  },
+  "officialClientSmoke": {
+    "version": "5.2.5",
+    "modernQueriesAccepted": true,
+    "legacyFallbackRequests": 0,
+    "queryStateUnchanged": true,
+    "unknownScriptRejected": true,
+    "scriptsAndArgumentsOmittedFromJournal": true,
+    "observedBusinessResult": "Profile saved",
+    "onlyRequestedFieldChanged": true,
+    "persistedSaveCount": 1,
+    "actions": 4,
+    "deletedOwnedSessions": 1,
+    "activeOwnedSession": false,
+    "scope": "Synthetic endpoint; no native Agent or real device qualification"
+  },
+  "installedWheelSmoke": {
+    "localWheelSha256": "6a26fa8469c28c8f125e19e4da15f94476375604da58cf1e89f7ee00ef2788de",
+    "installedVersion": "amkernel 0.1.4",
+    "runtimeVersion": "0.1.4",
+    "skillContentVerified": true,
+    "mcpConfigured": true,
+    "dependencyCheck": "",
+    "consumerEntryPointAndStdioScenario": "passed; tests/package_smoke.py exited 0",
+    "cleanupRefused": true,
+    "deathChildCleaned": true,
+    "freshProcessInvalidation": true,
+    "shutdownChildCleaned": true,
+    "transportClosed": true,
+    "expectedNegativePaths": "Tamper, kernel-death and cleanup-refusal diagnostics exercised by existing smoke; not claimed absent",
+    "omitted": "Raw scenario/tool output, images, local paths and transient identities"
+  },
+  "releaseAuthority": "Local build is verification only. Exact main first-attempt successful complete CI distribution must be downloaded and separately validated; final publication approval remains required."
+}

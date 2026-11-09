@@ -1,0 +1,376 @@
+{
+  "schemaVersion": 1,
+  "kind": "bounded-normalized-paired-case-outcome",
+  "scope": "synthetic-development-paired-screening",
+  "historicalIdentity": {
+    "originalPath": "evidence/skill-ab-20261109/paired-screening/covered-count-old.json",
+    "originalSha256": "d5a453d6c59823a43646a0b3e2d79d51c11d56a80ce4d264161583e186c0ea98",
+    "originalBytes": 162855,
+    "availability": "Local original omitted from the release candidate; digest identifies it. This projection is lossy and is not a release-archive member."
+  },
+  "normalization": {
+    "sourceParsedLocally": true,
+    "pairedResultsUnchanged": true,
+    "rescored": false,
+    "note": "Derived only from the recorded report. No task rerun, rescore, case tuning or changed acceptance was performed."
+  },
+  "case": "covered-count",
+  "arm": "old",
+  "model": "gpt-6.1-sol",
+  "timeoutSeconds": 240,
+  "goal": "In the Tasks app, count the work tasks that are still active (not done), due on or before 2026-11-15, and priority 2 or higher. Today is 2026-11-09. Each task has its own Task ID, so repeated titles are different tasks. The list is paginated; adjacent pages can repeat rows, and the last page shows an end-of-list marker. Inspect the whole relevant list through its end marker before answering; a count taken from only the first page or a partial traversal is not acceptable. If you use filters, inspect every row they show and do not hide a task that could match. Put the integer count in the answer object with key `count`.",
+  "goalSha256": "c3eb7a3b214864c769e4db6dcb49872754234e69d1940db3e635979857811540",
+  "initialStateSha256": "b1ecb2af2dd1df3b7ab132e3c5efe6baf08eef31bb5ad424ad7d9bd785652a18",
+  "controls": {
+    "skillAssets": {
+      "SKILL.md": "520bbbb380a95024d08e7e728ed0c5b92a484a0958fd098454a414ad9a7a0caa",
+      "references/amkernel-appium.md": "4a526440b8d3ef8e7584c3b439a21db718c6c6e5a9c484d9ca84e0898556be9d",
+      "references/android-execution.md": "bdb021d7a587f7f63c862c888988c64d908afa498282f2a71e4486b1148f8471"
+    },
+    "actionBudget": 12
+  },
+  "outcome": {
+    "businessPassed": true,
+    "protocolPassed": true,
+    "passed": true,
+    "reportedOutcome": "completed",
+    "answer": {
+      "count": 4
+    }
+  },
+  "businessChecks": [
+    {
+      "id": "covered.count",
+      "ok": true,
+      "detail": "expected 4 matching tasks; count=4"
+    },
+    {
+      "id": "covered.coverage",
+      "ok": true,
+      "detail": "observed the full all/all population (10 rows) and the end marker"
+    }
+  ],
+  "protocolChecks": [
+    {
+      "id": "skill-assets-unchanged",
+      "ok": true,
+      "detail": "Arm Skill hashes match the frozen treatment after the Agent exits"
+    },
+    {
+      "id": "agent-finished",
+      "ok": true,
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 54256,
+      "eventCount": 993,
+      "malformedEventLines": 0,
+      "runnerCleanupObserved": true
+    },
+    {
+      "id": "main-skill-loaded",
+      "ok": true,
+      "detail": true
+    },
+    {
+      "id": "public-execution-route",
+      "ok": true,
+      "detail": "workspace amkernel/python_exec"
+    },
+    {
+      "id": "allowed-agent-tools",
+      "ok": true,
+      "detail": "Only view/skill/python_exec requested"
+    },
+    {
+      "id": "final-contract",
+      "ok": true,
+      "detail": "Declared JSON fields/types"
+    },
+    {
+      "id": "same-action-budget",
+      "ok": true,
+      "admitted": 6,
+      "budget": 12,
+      "rejected": 0
+    },
+    {
+      "id": "owned-session-cleaned",
+      "ok": true,
+      "sessionsCreated": 1,
+      "sessionsDeleted": 1,
+      "activeSession": false
+    },
+    {
+      "id": "cleanup-report-truthful",
+      "ok": true,
+      "detail": "Compared report with observed DELETE"
+    },
+    {
+      "id": "no-false-completion",
+      "ok": true,
+      "reportedComplete": true,
+      "businessPassed": true
+    }
+  ],
+  "businessState": {
+    "caseId": "covered-count",
+    "goal": "In the Tasks app, count the work tasks that are still active (not done), due on or before 2026-11-15, and priority 2 or higher. Today is 2026-11-09. Each task has its own Task ID, so repeated titles are different tasks. The list is paginated; adjacent pages can repeat rows, and the last page shows an end-of-list marker. Inspect the whole relevant list through its end marker before answering; a count taken from only the first page or a partial traversal is not acceptable. If you use filters, inspect every row they show and do not hide a task that could match. Put the integer count in the answer object with key `count`.",
+    "budget": 12,
+    "referenceDate": "2026-11-09",
+    "criteria": {
+      "category": "work",
+      "status": "active",
+      "dueOnOrBefore": "2026-11-15",
+      "priorityAtLeast": 2
+    },
+    "records": [
+      {
+        "id": "T-1001",
+        "title": "Finalize quarterly budget",
+        "category": "work",
+        "status": "active",
+        "due": "2026-11-12",
+        "priority": 3
+      },
+      {
+        "id": "T-1002",
+        "title": "Prepare weekly report",
+        "category": "work",
+        "status": "active",
+        "due": "2026-11-14",
+        "priority": 2
+      },
+      {
+        "id": "T-1003",
+        "title": "Prepare weekly report",
+        "category": "work",
+        "status": "active",
+        "due": "2026-11-15",
+        "priority": 3
+      },
+      {
+        "id": "T-1004",
+        "title": "Archive old notes",
+        "category": "work",
+        "status": "active",
+        "due": "2026-11-16",
+        "priority": 4
+      },
+      {
+        "id": "T-1005",
+        "title": "Renew parking permit",
+        "category": "home",
+        "status": "active",
+        "due": "2026-11-13",
+        "priority": 3
+      },
+      {
+        "id": "T-1006",
+        "title": "Book dentist",
+        "category": "work",
+        "status": "done",
+        "due": "2026-11-10",
+        "priority": 3
+      },
+      {
+        "id": "T-1007",
+        "title": "Draft travel plan",
+        "category": "work",
+        "status": "active",
+        "due": "2026-11-09",
+        "priority": 1
+      },
+      {
+        "id": "T-1008",
+        "title": "Submit expense claim",
+        "category": "work",
+        "status": "active",
+        "due": "2026-11-09",
+        "priority": 2
+      },
+      {
+        "id": "T-1009",
+        "title": "Clean garage",
+        "category": "home",
+        "status": "active",
+        "due": "2026-11-08",
+        "priority": 2
+      },
+      {
+        "id": "T-1010",
+        "title": "Prepare weekly report",
+        "category": "work",
+        "status": "done",
+        "due": "2026-11-15",
+        "priority": 3
+      }
+    ],
+    "view": {
+      "category": "all",
+      "status": "all",
+      "page": 0,
+      "pageCount": 4,
+      "visibleTaskKeys": [
+        "task-T-1001",
+        "task-T-1002",
+        "task-T-1003",
+        "task-T-1004"
+      ],
+      "endOfList": false
+    },
+    "pageSize": 4,
+    "overlap": 2
+  },
+  "cleanup": {
+    "sessionsCreated": 1,
+    "sessionsDeleted": 1,
+    "activeSession": false,
+    "nativeFinalStatus": {
+      "taskOutcome": "completed",
+      "sessionCleanup": "cleaned"
+    },
+    "reportSessionCleanup": "cleaned",
+    "runnerCleanupObserved": true
+  },
+  "telemetry": {
+    "pythonCalls": 5,
+    "failedPythonCalls": 0,
+    "timedOutPythonCalls": 0,
+    "actions": 6,
+    "durationMs": 54256
+  },
+  "observedBusinessFacts": {
+    "source": "fixture.state and selected fixture.journal actions in the omitted local original",
+    "sourceSha256": "d5a453d6c59823a43646a0b3e2d79d51c11d56a80ce4d264161583e186c0ea98",
+    "facts": {
+      "referenceDate": "2026-11-09",
+      "criteria": {
+        "category": "work",
+        "status": "active",
+        "dueOnOrBefore": "2026-11-15",
+        "priorityAtLeast": 2
+      },
+      "fullPopulationRecordCount": 10,
+      "matchingTaskIds": [
+        "T-1001",
+        "T-1002",
+        "T-1003",
+        "T-1008"
+      ],
+      "view": {
+        "category": "all",
+        "status": "all",
+        "page": 0,
+        "pageCount": 4,
+        "visibleTaskKeys": [
+          "task-T-1001",
+          "task-T-1002",
+          "task-T-1003",
+          "task-T-1004"
+        ],
+        "endOfList": false
+      },
+      "endOfListMarkerObserved": false,
+      "pageNextClicks": 3,
+      "pagePreviousClicks": 3,
+      "sourceObservationEvents": 6
+    }
+  },
+  "native": {
+    "process": {
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 54256,
+      "eventCount": 993,
+      "malformedEventLines": 0
+    },
+    "mainSkillLoaded": true,
+    "finalReportSha256": "d856b1bf21dfc197eb9e01f0dd93d3dc396ac48f9bb9ac243732a4b3d9bd1971",
+    "limits": "Only allowlisted status, identity, timestamp, and digest evidence is retained. Absent event timestamps remain null; raw code, arguments, output, final prose, and stderr are withheld.",
+    "callSummary": {
+      "total": 9,
+      "byTool": {
+        "skill": 1,
+        "view": 3,
+        "amkernel-python_exec": 5
+      },
+      "failed": []
+    },
+    "pythonResults": {
+      "total": 5,
+      "completed": 5,
+      "failed": 0,
+      "timedOut": 0,
+      "kernelStates": [
+        "alive"
+      ],
+      "failedDetails": []
+    }
+  },
+  "fixtureJournal": {
+    "totalEvents": 20,
+    "actionCounts": {
+      "read": 1,
+      "source": 6,
+      "find": 6,
+      "click": 6,
+      "quit": 1
+    },
+    "httpStatusCounts": {
+      "200": 20
+    },
+    "non200OrErrorEvents": [],
+    "selectedMutationEvents": [
+      {
+        "seq": 5,
+        "action": "click",
+        "key": "page-next",
+        "status": 200
+      },
+      {
+        "seq": 8,
+        "action": "click",
+        "key": "page-next",
+        "status": 200
+      },
+      {
+        "seq": 11,
+        "action": "click",
+        "key": "page-next",
+        "status": 200
+      },
+      {
+        "seq": 14,
+        "action": "click",
+        "key": "page-prev",
+        "status": 200
+      },
+      {
+        "seq": 16,
+        "action": "click",
+        "key": "page-prev",
+        "status": 200
+      },
+      {
+        "seq": 18,
+        "action": "click",
+        "key": "page-prev",
+        "status": 200
+      }
+    ]
+  },
+  "report": {
+    "taskOutcome": "completed",
+    "answer": {
+      "count": 4
+    },
+    "sessionCleanup": "cleaned",
+    "evidence": "Inspected all four pages through the End of list marker; deduplicated 10 tasks by Task ID. T-1001, T-1002, T-1003 and T-1008 matched. Restored the original view and closed the owned session."
+  },
+  "omitted": [
+    "fixture.journal full per-request records, observed source node text/class/resource-id (XML-like) data, stateAfter snapshots and session/element raw paths outside selected summaries",
+    "native.calls call IDs, timestamps, argument/code/output digests, stdout/stderr bytes and per-call raw records",
+    "pythonResults traceback frames and raw result values",
+    "No raw logs, transcripts, XML, full scripts, session IDs, credentials or personal absolute paths are retained"
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "scope": "Independent read-only review of the twelve frozen synthetic task outcomes",
+  "evidence": "paired-screening/",
+  "analysis": "analysis.json",
+  "formsReviewer": {
+    "agent": "ABFormEvidence",
+    "disposition": "Retained states and journals support both arms' success in focus-submit, exact-file and phased-progress; no contradictory business-evidence defect found",
+    "approved": [
+      "One accepted profile Save per arm, only intended backup phone changed, unrelated saved values preserved, actual Profile saved observation",
+      "Exactly named extensionless target saved once with exact source whitespace and separator semantics; actual persisted revision reloaded and body returned in both journals; source notes preserved",
+      "Actual opening total and all three separately indexed phase values observed, including repeated amounts; exactly one accepted submission with correct total and phase count",
+      "Recorded goal/state/asset/model/budget/order controls match manifest; native processes exit without timeout and owned sessions are deleted"
+    ],
+    "costInterpretation": "New avoids old's unfocused extension clear but adds navigation after file readback; new avoids the old phase back/re-entry detour. Focus cost does not improve. These are sample-level observations, not causal proof."
+  },
+  "listsReviewer": {
+    "agent": "ABListEvidence",
+    "disposition": "Retained states and journals support both arms' success in covered-count, safe-dedup and measured-aggregate; no evidence-backed defect invalidates these paired outcomes",
+    "approved": [
+      "All ten distinct tasks observed over overlapping pages plus end marker, no excluding filters, same-title distinct IDs counted separately, correct answer four",
+      "Both duplicate bodies observed; only confirmed R-204 deleted, all unique original variants/content retained, actual six-entry result observed, no reconstruction shown in journal or supported scene paths",
+      "Both arms actually submit the same four distinct tracks totaling 660 seconds within the inclusive interval; one commit per arm and actual confirmation observed",
+      "Recorded controls match the manifest; summary retains unchanged harness and enumerated configuration fingerprints"
+    ],
+    "costInterpretation": "Count saves three reverse-page navigation actions, not correctness. New dedup inspects all seven details then reinspects the duplicate pair, using all twenty actions versus ten. Aggregate mutation cost is unchanged."
+  },
+  "sharedLimits": [
+    "Both arms pass all cases; no demonstrated success-rate gain or statistically established benefit",
+    "Scenario-level protocol pass does not mean every Python/WebDriver operation succeeded; all five new-arm failed cells are retained",
+    "Unsupported execute/sync request bodies and raw Python are not retained, so exact attempted API/script cannot be identified",
+    "Raw non-main view paths are omitted; do not claim every subordinate Skill reference was consumed",
+    "Reviewers inspected recorded hashes and controls, not independently recomputed all digests",
+    "The exact-file oracle requires a persisted reload, not separately a returned post-reload body; these actual journals supply the stronger body-read evidence",
+    "Scenes implement in-memory persistence and immutable source notes, not actual filesystem durability or a full native driver",
+    "The journal cannot prove absence of arbitrary host behavior; Runtime remains unrestricted same-user execution",
+    "Configuration isolation fingerprints cover only enumerated paths",
+    "One sample per arm is screening, not real-device qualification, official reward or statistical causality"
+  ],
+  "checksExecutedByReviewers": false,
+  "editsOrTaskRerunsByReviewers": false
+}

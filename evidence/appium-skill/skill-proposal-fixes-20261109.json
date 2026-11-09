@@ -1,0 +1,826 @@
+{
+  "schemaVersion": 1,
+  "kind": "bounded-normalized-three-case-smoke-report",
+  "scope": "Real GitHub Copilot CLI behavior through an installed AMKernel wheel and a synthetic loopback Appium fixture; not physical platform evidence",
+  "issue": 98,
+  "model": "gpt-6.1-sol",
+  "historicalIdentity": {
+    "originalPath": "evidence/appium-skill/skill-proposal-fixes-20261109.json",
+    "originalSha256": "5da94f9d1dc182b5ff88e4b8c78bcf2f668ea30dd37e14050ae2a91b3fba858f",
+    "originalBytes": 46096,
+    "availability": "Local original omitted from the release candidate; digest identifies it. This projection is lossy and is not a release-archive member."
+  },
+  "normalization": {
+    "sourceParsedLocally": true,
+    "resultsUnchanged": true,
+    "rescored": false,
+    "note": "Derived only from the recorded smoke report; no task rerun or changed acceptance. Historical failed tasks, stale-cell errors and check outcomes are preserved."
+  },
+  "client": {
+    "executableSha256": "5fd7d15ff02deb08a58593b1b488015bb52c1686014b80b5509e28263cb3ad70",
+    "version": "GitHub Copilot CLI 1.0.105.\nRun 'copilot update' to check for updates."
+  },
+  "wheel": {
+    "bytes": 236503,
+    "filename": "amkernel-0.1.3-py3-none-any.whl",
+    "sha256": "734d4363f7db4de5b6c6fe5a0943959eb8e2cc9c8e6fb4b4a9bc868fc7f25055"
+  },
+  "startedAt": "2026-11-09T11:56:32.698219Z",
+  "completedAt": "2026-11-09T11:59:15.603003Z",
+  "summary": {
+    "blocked": 0,
+    "failed": 0,
+    "isolationRegression": false,
+    "isolationUnchanged": true,
+    "passed": 3,
+    "selected": 3,
+    "status": "passed"
+  },
+  "isolation": {
+    "after": {
+      "copilotConfig": "14c648f7d34cdeb934a4cc3997766ddb6c230824147f5d28da35028444af30cd",
+      "copilotMcpConfig": null,
+      "copilotSettings": null,
+      "userAgentsSkills": null
+    },
+    "before": {
+      "copilotConfig": "14c648f7d34cdeb934a4cc3997766ddb6c230824147f5d28da35028444af30cd",
+      "copilotMcpConfig": null,
+      "copilotSettings": null,
+      "userAgentsSkills": null
+    },
+    "unchanged": true
+  },
+  "preflight": {
+    "ok": true,
+    "checks": [
+      {
+        "id": "client-identity",
+        "ok": true
+      },
+      {
+        "id": "uvx-present",
+        "ok": true
+      },
+      {
+        "id": "wheel-present",
+        "ok": true
+      },
+      {
+        "id": "token-present",
+        "ok": true
+      },
+      {
+        "id": "not-development-project",
+        "ok": true
+      },
+      {
+        "id": "product-install",
+        "ok": true
+      },
+      {
+        "id": "installed-provenance-and-content",
+        "ok": true
+      }
+    ],
+    "detailsOmitted": "Preflight detail strings contained local command paths; only ids and statuses retained."
+  },
+  "nativeEvidence": {
+    "install": {
+      "runtime_version": "0.1.3",
+      "skill_commit": "e907024c210fe024c956ed9c74146fc27b1dd013",
+      "skill_version": "0.1.3"
+    },
+    "verified": {
+      "commit": "e907024c210fe024c956ed9c74146fc27b1dd013",
+      "officialSkills": [
+        "setup-uiautomator2",
+        "setup-xcuitest",
+        "setup-mac2",
+        "xcuitest-real-device-config",
+        "appium-troubleshooting"
+      ],
+      "runtimeVersion": "0.1.3",
+      "sourceTreeSha256": "45fc0591ac419127aa2ae9418f08258cea2974ac90fc4fdcba299e04a369739c"
+    },
+    "archive": null,
+    "mcp": null,
+    "runtimeVersion": null,
+    "skillFiles": null,
+    "skills": null,
+    "sourceCommit": null,
+    "sourceFileCount": null,
+    "sourcePath": null,
+    "sourceRepository": null,
+    "sourceTreeSha256": null,
+    "installStatus": {
+      "client": "copilot",
+      "mcp_configured": true,
+      "project": "$TEMP_ROOT/project",
+      "restart_required": true,
+      "runtime_executable": "$TEMP_ROOT/bin/amkernel",
+      "runtime_installed": true,
+      "runtime_version": "0.1.3",
+      "skill_commit": "e907024c210fe024c956ed9c74146fc27b1dd013",
+      "skill_content_verified": true,
+      "skill_installed": true,
+      "skill_provenance": true,
+      "skill_version": "0.1.3"
+    },
+    "verifierExecution": {
+      "environment": "installed-runtime",
+      "scope": "content/provenance verification; not installed-runtime behavior evidence"
+    },
+    "localPathsInVerifierExecutionOmitted": true
+  },
+  "commands": [
+    {
+      "role": "install",
+      "exit": 0
+    },
+    {
+      "role": "status",
+      "exit": 0
+    },
+    {
+      "role": "verify",
+      "exit": 0
+    },
+    {
+      "role": "skill-list",
+      "exit": 0
+    },
+    {
+      "role": "mcp-get",
+      "exit": 0
+    }
+  ],
+  "commandArgvAndStderrOmitted": true,
+  "scenarios": [
+    {
+      "id": "android-short-flow",
+      "title": "Android UiAutomator2 short flow",
+      "scope": "synthetic-fixture",
+      "platformEvidence": "synthetic-fixture",
+      "status": "passed",
+      "taskOutcomeInFinalJson": "completed",
+      "promptSha256": "61c9f2b0fbe2fd9b4d106b378e983206b6d526c4d6abbfa4d0465ea151b33536",
+      "promptBytes": 2056,
+      "startedAt": "2026-11-09T11:56:50.491473Z",
+      "completedAt": "2026-11-09T11:57:37.299931Z",
+      "durationMs": 46808,
+      "process": {
+        "exitCode": 0,
+        "timedOut": false,
+        "durationMs": 46801,
+        "eventCount": 720,
+        "malformedEventLines": 0
+      },
+      "finalJson": {
+        "cleanup": {
+          "ownedSession": "completed",
+          "restoration": "not-required",
+          "server": "preserved"
+        },
+        "details": "Toggle was turned on and verified; other observed state remained unchanged. Toggle was left on. The temporary session was closed, and the fixture server remains alive. No physical-device, simulator, or driver readiness is claimed.",
+        "platformEvidence": "synthetic-fixture",
+        "scope": "synthetic-fixture",
+        "taskOutcome": "completed"
+      },
+      "checks": [
+        {
+          "id": "process-finished",
+          "ok": true,
+          "detail": "Copilot exit=0, timedOut=False"
+        },
+        {
+          "id": "final-json-present",
+          "ok": true,
+          "detail": "Final assistant response contained one parseable JSON object."
+        },
+        {
+          "id": "final-scope-synthetic",
+          "ok": true,
+          "detail": "scope/platformEvidence: 'synthetic-fixture'/'synthetic-fixture'"
+        },
+        {
+          "id": "report-canonical-statuses",
+          "ok": true,
+          "detail": "Report controls use canonical status tokens."
+        },
+        {
+          "id": "cleanup-claim-consistent",
+          "ok": true,
+          "detail": "cleanup.ownedSession='completed', successful deletes=1, active own sessions=0"
+        },
+        {
+          "id": "cleanup-server-claim-consistent",
+          "ok": true,
+          "detail": "cleanup.server='preserved', serverAlive=True; fixture servers belong to the harness, not the Agent"
+        },
+        {
+          "id": "cleanup-restoration-claim-consistent",
+          "ok": true,
+          "detail": "cleanup.restoration='not-required', state equals initial=False"
+        },
+        {
+          "id": "installed-amkernel-skill-loaded",
+          "ok": true,
+          "detail": "Successful amkernel skill loads: 1"
+        },
+        {
+          "id": "one-workspace-mcp-server",
+          "ok": true,
+          "detail": "Enabled workspace servers: amkernel:connected"
+        },
+        {
+          "id": "mcp-calls-resolve-to-python-exec",
+          "ok": true,
+          "detail": "All MCP calls resolved to workspace amkernel/python_exec."
+        },
+        {
+          "id": "no-shell-write-other-tools",
+          "ok": true,
+          "detail": "No disallowed tool execution was requested."
+        },
+        {
+          "id": "fixture-endpoints-deliberate",
+          "ok": true,
+          "detail": "The Agent used only deliberately implemented fixture endpoints/scripts."
+        },
+        {
+          "id": "bounded-python-exec-calls",
+          "ok": true,
+          "detail": "No python_exec call exceeds 40 fixture actions or 30 seconds."
+        },
+        {
+          "id": "android-one-session",
+          "ok": true,
+          "detail": "Android creates=1, successful=1"
+        },
+        {
+          "id": "android-capabilities",
+          "ok": true,
+          "detail": "platformName='android', automationName='uiautomator2'"
+        },
+        {
+          "id": "android-toggle-once",
+          "ok": true,
+          "detail": "Successful Toggle clicks=1"
+        },
+        {
+          "id": "android-state-changed",
+          "ok": true,
+          "detail": "Final toggle=True"
+        },
+        {
+          "id": "android-compact-flow",
+          "ok": true,
+          "detail": "Calls overlapping fixture actions=2, max actions in one call=5, limit=40"
+        },
+        {
+          "id": "observation-no-unnecessary-screenshot",
+          "ok": true,
+          "detail": "Screenshot observations=0, screenshotCalls=0; accessible control evidence was sufficient."
+        },
+        {
+          "id": "cleanup-owned-sessions-inactive",
+          "ok": true,
+          "detail": "Owned sessions remaining active: none"
+        },
+        {
+          "id": "cleanup-delete-observed",
+          "ok": true,
+          "detail": "Successful DELETE observations: <owned-session>"
+        }
+      ],
+      "fixture": {
+        "initialState": {
+          "beta": false,
+          "toggle": false
+        },
+        "finalState": {
+          "beta": false,
+          "toggle": true
+        },
+        "variant": "android",
+        "submissions": 0,
+        "serverAlive": true,
+        "screenshotCalls": 0,
+        "unknownEndpoints": [],
+        "unsupportedScripts": [],
+        "journalTruncated": false,
+        "kernelKills": [],
+        "preexistingSession": false,
+        "journalSummary": {
+          "totalEvents": 9,
+          "actionCounts": {
+            "status": 2,
+            "create-session": 1,
+            "read-state": 2,
+            "source": 1,
+            "find": 1,
+            "click": 1,
+            "delete-session": 1
+          },
+          "httpStatusCounts": {
+            "200": 9
+          },
+          "non200Events": [],
+          "sessionCreationActions": 1,
+          "sessionDeletionActions": 1,
+          "ownedSessionsActive": 0,
+          "fullJournalOmitted": true
+        }
+      },
+      "toolCalls": {
+        "total": 8,
+        "byTool": {
+          "skill": 1,
+          "view": 5,
+          "amkernel-python_exec": 2
+        },
+        "failedOrZeroExecution": [],
+        "kernelStates": [
+          "alive"
+        ],
+        "fullArgumentsAndCodeOmitted": true
+      },
+      "finalResponseOmitted": true,
+      "stderrOmitted": true,
+      "observedBusinessFacts": {
+        "source": "fixture.state, fixture.journal action counts and recorded checks in the omitted local original",
+        "sourceSha256": "5da94f9d1dc182b5ff88e4b8c78bcf2f668ea30dd37e14050ae2a91b3fba858f",
+        "facts": {
+          "finalToggle": true,
+          "finalBeta": false,
+          "submittedInFinalState": null,
+          "submissionCount": 0,
+          "mutationClicks": 1,
+          "successfulOwnedSessionDeletes": 1,
+          "sourceObservationEvents": 1,
+          "non200EventCount": 0,
+          "staleErrorObserved": false,
+          "screenshotCalls": 0,
+          "serverAlive": true
+        }
+      }
+    },
+    {
+      "id": "session-error-adjustment",
+      "title": "Stale element recovery",
+      "scope": "synthetic-fixture",
+      "platformEvidence": "synthetic-fixture",
+      "status": "passed",
+      "taskOutcomeInFinalJson": "failed",
+      "promptSha256": "4706d3da59134f7c40852f6d5e08490ff74c460086893479c1b45203c86810d8",
+      "promptBytes": 2115,
+      "startedAt": "2026-11-09T11:57:37.625570Z",
+      "completedAt": "2026-11-09T11:58:27.207793Z",
+      "durationMs": 49582,
+      "process": {
+        "exitCode": 0,
+        "timedOut": false,
+        "durationMs": 49575,
+        "eventCount": 1245,
+        "malformedEventLines": 0
+      },
+      "finalJson": {
+        "cleanup": {
+          "ownedSession": "completed",
+          "restoration": "not-required",
+          "server": "preserved"
+        },
+        "details": "Observed the stale-element error, refreshed live source, and retried with a new element ID. The retry succeeded, but completion remained unverified: submitted stayed no. Closed the session and confirmed the supplied fixture server remained alive. No physical, simulator, or driver readiness established.",
+        "platformEvidence": "synthetic-fixture",
+        "scope": "synthetic-fixture",
+        "sessions": {
+          "current": "dead",
+          "old": "absent"
+        },
+        "taskOutcome": "failed"
+      },
+      "checks": [
+        {
+          "id": "process-finished",
+          "ok": true,
+          "detail": "Copilot exit=0, timedOut=False"
+        },
+        {
+          "id": "final-json-present",
+          "ok": true,
+          "detail": "Final assistant response contained one parseable JSON object."
+        },
+        {
+          "id": "final-scope-synthetic",
+          "ok": true,
+          "detail": "scope/platformEvidence: 'synthetic-fixture'/'synthetic-fixture'"
+        },
+        {
+          "id": "report-canonical-statuses",
+          "ok": true,
+          "detail": "Report controls use canonical status tokens."
+        },
+        {
+          "id": "cleanup-claim-consistent",
+          "ok": true,
+          "detail": "cleanup.ownedSession='completed', successful deletes=1, active own sessions=0"
+        },
+        {
+          "id": "cleanup-server-claim-consistent",
+          "ok": true,
+          "detail": "cleanup.server='preserved', serverAlive=True; fixture servers belong to the harness, not the Agent"
+        },
+        {
+          "id": "cleanup-restoration-claim-consistent",
+          "ok": true,
+          "detail": "cleanup.restoration='not-required', state equals initial=True"
+        },
+        {
+          "id": "installed-amkernel-skill-loaded",
+          "ok": true,
+          "detail": "Successful amkernel skill loads: 1"
+        },
+        {
+          "id": "one-workspace-mcp-server",
+          "ok": true,
+          "detail": "Enabled workspace servers: amkernel:connected"
+        },
+        {
+          "id": "mcp-calls-resolve-to-python-exec",
+          "ok": true,
+          "detail": "All MCP calls resolved to workspace amkernel/python_exec."
+        },
+        {
+          "id": "no-shell-write-other-tools",
+          "ok": true,
+          "detail": "No disallowed tool execution was requested."
+        },
+        {
+          "id": "fixture-endpoints-deliberate",
+          "ok": true,
+          "detail": "The Agent used only deliberately implemented fixture endpoints/scripts."
+        },
+        {
+          "id": "bounded-python-exec-calls",
+          "ok": true,
+          "detail": "No python_exec call exceeds 40 fixture actions or 30 seconds."
+        },
+        {
+          "id": "stale-error-observed",
+          "ok": true,
+          "detail": "Failed click observations=1"
+        },
+        {
+          "id": "live-query-after-stale-error",
+          "ok": true,
+          "detail": "Live source/find observations after failure=3"
+        },
+        {
+          "id": "retry-succeeds-once",
+          "ok": true,
+          "detail": "Successful clicks after recovery=1"
+        },
+        {
+          "id": "no-blind-same-element-retry",
+          "ok": true,
+          "detail": "The successful retry did not reuse the stale element id."
+        },
+        {
+          "id": "cleanup-owned-sessions-inactive",
+          "ok": true,
+          "detail": "Owned sessions remaining active: none"
+        },
+        {
+          "id": "cleanup-delete-observed",
+          "ok": true,
+          "detail": "Successful DELETE observations: <owned-session>"
+        }
+      ],
+      "fixture": {
+        "initialState": {
+          "beta": false,
+          "toggle": false
+        },
+        "finalState": {
+          "beta": false,
+          "toggle": false
+        },
+        "variant": "session-error",
+        "submissions": 0,
+        "serverAlive": true,
+        "screenshotCalls": 0,
+        "unknownEndpoints": [],
+        "unsupportedScripts": [],
+        "journalTruncated": false,
+        "kernelKills": [],
+        "preexistingSession": false,
+        "journalSummary": {
+          "totalEvents": 12,
+          "actionCounts": {
+            "create-session": 1,
+            "read-state": 2,
+            "source": 3,
+            "find": 2,
+            "click": 2,
+            "delete-session": 1,
+            "status": 1
+          },
+          "httpStatusCounts": {
+            "200": 11,
+            "404": 1
+          },
+          "non200Events": [
+            {
+              "action": "click",
+              "method": "POST",
+              "path": "/session/<owned-session>/element/element-1/click",
+              "status": 404,
+              "error": "stale element reference"
+            }
+          ],
+          "sessionCreationActions": 1,
+          "sessionDeletionActions": 1,
+          "ownedSessionsActive": 0,
+          "fullJournalOmitted": true
+        }
+      },
+      "toolCalls": {
+        "total": 11,
+        "byTool": {
+          "skill": 1,
+          "view": 5,
+          "amkernel-python_exec": 5
+        },
+        "failedOrZeroExecution": [
+          {
+            "index": 10,
+            "toolName": "amkernel-python_exec",
+            "mcpToolName": "python_exec",
+            "errorType": "AssertionError",
+            "executionCount": 4,
+            "kernelState": "alive"
+          }
+        ],
+        "kernelStates": [
+          "alive"
+        ],
+        "fullArgumentsAndCodeOmitted": true
+      },
+      "finalResponseOmitted": true,
+      "stderrOmitted": true,
+      "observedBusinessFacts": {
+        "source": "fixture.state, fixture.journal action counts and recorded checks in the omitted local original",
+        "sourceSha256": "5da94f9d1dc182b5ff88e4b8c78bcf2f668ea30dd37e14050ae2a91b3fba858f",
+        "facts": {
+          "finalToggle": false,
+          "finalBeta": false,
+          "submittedInFinalState": null,
+          "submissionCount": 0,
+          "mutationClicks": 2,
+          "successfulOwnedSessionDeletes": 1,
+          "sourceObservationEvents": 3,
+          "non200EventCount": 1,
+          "staleErrorObserved": true,
+          "screenshotCalls": 0,
+          "serverAlive": true
+        }
+      }
+    },
+    {
+      "id": "ambiguous-submit-no-duplicate",
+      "title": "Ambiguous submit is not duplicated",
+      "scope": "synthetic-fixture",
+      "platformEvidence": "synthetic-fixture",
+      "status": "passed",
+      "taskOutcomeInFinalJson": "completed",
+      "promptSha256": "68728c2777cafb8495d62df89a5cffdcd5bd9b5b7427d73e5cf0fbd7119202c9",
+      "promptBytes": 2276,
+      "startedAt": "2026-11-09T11:58:27.292429Z",
+      "completedAt": "2026-11-09T11:59:15.123573Z",
+      "durationMs": 47831,
+      "process": {
+        "exitCode": 0,
+        "timedOut": false,
+        "durationMs": 47826,
+        "eventCount": 716,
+        "malformedEventLines": 0
+      },
+      "finalJson": {
+        "cleanup": {
+          "ownedSession": "completed",
+          "restoration": "not-required",
+          "server": "preserved"
+        },
+        "details": "Submitted once with a one-second timeout; no retry. Runtime returned timed_out/alive. Subsequent read-only state and source verified submission. Preserved submitted state, successfully quit the owned session, and observed the supplied server alive. No physical, simulator, or driver readiness established.",
+        "platformEvidence": "synthetic-fixture",
+        "scope": "synthetic-fixture",
+        "sessions": {
+          "current": "dead",
+          "old": "absent"
+        },
+        "taskOutcome": "completed"
+      },
+      "checks": [
+        {
+          "id": "process-finished",
+          "ok": true,
+          "detail": "Copilot exit=0, timedOut=False"
+        },
+        {
+          "id": "final-json-present",
+          "ok": true,
+          "detail": "Final assistant response contained one parseable JSON object."
+        },
+        {
+          "id": "final-scope-synthetic",
+          "ok": true,
+          "detail": "scope/platformEvidence: 'synthetic-fixture'/'synthetic-fixture'"
+        },
+        {
+          "id": "report-canonical-statuses",
+          "ok": true,
+          "detail": "Report controls use canonical status tokens."
+        },
+        {
+          "id": "cleanup-claim-consistent",
+          "ok": true,
+          "detail": "cleanup.ownedSession='completed', successful deletes=1, active own sessions=0"
+        },
+        {
+          "id": "cleanup-server-claim-consistent",
+          "ok": true,
+          "detail": "cleanup.server='preserved', serverAlive=True; fixture servers belong to the harness, not the Agent"
+        },
+        {
+          "id": "cleanup-restoration-claim-consistent",
+          "ok": true,
+          "detail": "cleanup.restoration='not-required', state equals initial=False"
+        },
+        {
+          "id": "installed-amkernel-skill-loaded",
+          "ok": true,
+          "detail": "Successful amkernel skill loads: 1"
+        },
+        {
+          "id": "one-workspace-mcp-server",
+          "ok": true,
+          "detail": "Enabled workspace servers: amkernel:connected"
+        },
+        {
+          "id": "mcp-calls-resolve-to-python-exec",
+          "ok": true,
+          "detail": "All MCP calls resolved to workspace amkernel/python_exec."
+        },
+        {
+          "id": "no-shell-write-other-tools",
+          "ok": true,
+          "detail": "No disallowed tool execution was requested."
+        },
+        {
+          "id": "fixture-endpoints-deliberate",
+          "ok": true,
+          "detail": "The Agent used only deliberately implemented fixture endpoints/scripts."
+        },
+        {
+          "id": "bounded-python-exec-calls",
+          "ok": true,
+          "detail": "No python_exec call exceeds 40 fixture actions or 30 seconds."
+        },
+        {
+          "id": "ambiguous-one-submission",
+          "ok": true,
+          "detail": "Fixture submissions=1"
+        },
+        {
+          "id": "ambiguous-timeout-observed",
+          "ok": true,
+          "detail": "python_exec statuses: completed/alive, timed_out/alive, completed/alive, failed/alive, completed/alive, completed/alive"
+        },
+        {
+          "id": "ambiguous-post-timeout-evidence",
+          "ok": true,
+          "detail": "Read-only fixture observations after submit=2"
+        },
+        {
+          "id": "ambiguous-no-duplicate",
+          "ok": true,
+          "detail": "Ambiguous submit requests=1"
+        }
+      ],
+      "fixture": {
+        "initialState": {
+          "beta": false,
+          "toggle": false
+        },
+        "finalState": {
+          "beta": false,
+          "submitted": true,
+          "toggle": true
+        },
+        "variant": "ambiguous",
+        "submissions": 1,
+        "serverAlive": true,
+        "screenshotCalls": 0,
+        "unknownEndpoints": [],
+        "unsupportedScripts": [],
+        "journalTruncated": false,
+        "kernelKills": [],
+        "preexistingSession": false,
+        "journalSummary": {
+          "totalEvents": 7,
+          "actionCounts": {
+            "create-session": 1,
+            "read-state": 2,
+            "ambiguous-submit": 1,
+            "source": 1,
+            "delete-session": 1,
+            "status": 1
+          },
+          "httpStatusCounts": {
+            "200": 6,
+            "202": 1
+          },
+          "non200Events": [
+            {
+              "action": "ambiguous-submit",
+              "method": "POST",
+              "path": "/session/<owned-session>/execute/sync",
+              "status": 202,
+              "error": ""
+            }
+          ],
+          "sessionCreationActions": 1,
+          "sessionDeletionActions": 1,
+          "ownedSessionsActive": 0,
+          "fullJournalOmitted": true
+        }
+      },
+      "toolCalls": {
+        "total": 12,
+        "byTool": {
+          "skill": 1,
+          "view": 5,
+          "amkernel-python_exec": 6
+        },
+        "failedOrZeroExecution": [
+          {
+            "index": 8,
+            "toolName": "amkernel-python_exec",
+            "mcpToolName": "python_exec",
+            "errorType": "TimeoutError",
+            "executionCount": 2,
+            "kernelState": "alive"
+          },
+          {
+            "index": 10,
+            "toolName": "amkernel-python_exec",
+            "mcpToolName": "python_exec",
+            "errorType": "AttributeError",
+            "executionCount": 4,
+            "kernelState": "alive"
+          }
+        ],
+        "kernelStates": [
+          "alive"
+        ],
+        "fullArgumentsAndCodeOmitted": true
+      },
+      "finalResponseOmitted": true,
+      "stderrOmitted": true,
+      "observedBusinessFacts": {
+        "source": "fixture.state, fixture.journal action counts and recorded checks in the omitted local original",
+        "sourceSha256": "5da94f9d1dc182b5ff88e4b8c78bcf2f668ea30dd37e14050ae2a91b3fba858f",
+        "facts": {
+          "finalToggle": true,
+          "finalBeta": false,
+          "submittedInFinalState": true,
+          "submissionCount": 1,
+          "mutationClicks": 0,
+          "successfulOwnedSessionDeletes": 1,
+          "sourceObservationEvents": 1,
+          "non200EventCount": 1,
+          "staleErrorObserved": false,
+          "screenshotCalls": 0,
+          "serverAlive": true
+        }
+      }
+    }
+  ],
+  "limitations": [
+    "The Appium endpoint is a bounded synthetic W3C loopback fixture.",
+    "No Appium Server, platform driver, simulator, emulator, or physical device is exercised.",
+    "Synthetic Mac2/XCUITest/UiAutomator2 capabilities prove routing and client behavior only.",
+    "A client capability or model refusal is retained as an observed failure, not converted to blocked.",
+    "No raw Copilot transcript, raw user code, or credentials are retained."
+  ],
+  "omitted": [
+    "fixture.journal full records including raw session IDs, timestamps, element IDs, observed node/XML-like data and state snapshots",
+    "toolCalls full arguments/code bodies, code previews and raw outputs; only identifiers/digests, errors and execution counts retained",
+    "scenario finalResponse prose and stderr",
+    "command argv paths and preflight detail strings containing local absolute paths",
+    "nativeEvidence.verifierExecution.python absolute interpreter path",
+    "No raw logs, transcripts, XML, full scripts, session IDs, credentials or personal absolute paths are retained"
+  ],
+  "outcomeInterpretation": "summary.status/failed count harness acceptance checks; taskOutcomeInFinalJson is the Agent self-report and is preserved even when failed. Scenario status \"passed\" does not rewrite a failed self-report."
+}

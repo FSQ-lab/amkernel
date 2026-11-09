@@ -4,6 +4,49 @@ All notable changes to AMKernel are recorded here. Public releases use semantic 
 
 ## [Unreleased]
 
+## [0.1.4] - 2026-11-09
+
+Backward-compatible Skill and synthetic-screening corrections under
+[#98](https://github.com/FSQ-lab/amkernel/issues/98), governed by the
+[release procedure](docs/development.md#6-pre-10-release-procedure) and
+[ADR-0008](docs/decisions/0008-release-evidence-retention.md). No breaking changes, public MCP,
+Runtime, dependency-baseline or qualified support changes. CPython 3.11–3.13 on Ubuntu/macOS
+remains the qualified range; mobile remains experimental, and Windows is unsupported.
+
+### Added
+
+- An independent six-scene, old/new Skill screening harness using real native Copilot,
+  stdio MCP and the official Appium Python Client over resettable synthetic endpoints.
+  Paired runs freeze task, Runtime, model and limits; judges inspect actual business state,
+  preservation, full-list observations, persisted reloads and indexed phase evidence.
+  This is development evidence, not AndroidWorld reward or physical-device qualification.
+
+### Changed
+
+- Add target-scoped native macOS setup guidance before the verified Mac2 route: reuse the actual Runtime/Appium home/Xcode selection, resolve exact Node/Appium/driver compatibility, keep privacy and administrator choices native and user-owned, and distinguish prepared prerequisites from live target control. Add a deterministic synthetic approval/readiness oracle without changing core interfaces or platform qualification ([#140](https://github.com/FSQ-lab/amkernel/issues/140)).
+- Keep reliable progress checks and phase branches inside batched Appium calls; preserve partial
+  evidence after failure and require positive target-field focus before Android input. Repeated
+  values, late actions and successful HTTP responses are not assumed to prove progress.
+- Derive task acceptance from the original request: verify full file identity, source formatting
+  and persisted content; prove list membership and coverage; preserve exact date/priority
+  predicates; compare complete duplicate content and retain survivors; measure the requested
+  aggregate rather than guessing from item counts. Stop uncertain destructive chains.
+- Distinguish Android app identity, input, confirmation and submission; separate nested errors,
+  business answers and cleanup contracts. Budget for commit, read-back and correction, including
+  admitted failed actions. These are Skill corrections under [#98](https://github.com/FSQ-lab/amkernel/issues/98),
+  not Runtime/Harness retries or a claim of improved benchmark scores.
+- Extend the CUA-informed outcome-first execution contract to iOS/XCUITest and native macOS/Mac2. Short-flow prompts now state the requested final UI state instead of prescribing driver code; shared guidance requires current app/context/window evidence, fresh semantic targets and observed results. Synthetic evaluators now reject an unobserved iOS state change and unnecessarily fragmented Mac2 execution without changing Runtime, setup, ownership or platform-qualification boundaries ([#98](https://github.com/FSQ-lab/amkernel/issues/98)).
+- Replace duplicated platform readiness prose with one structured readiness/authorization contract and shallow platform adapters. Shrink the main Skill to routing and execution invariants; delete copied version-sensitive Node/Appium/driver procedures from Android, physical-iPhone and native-macOS guidance; add a focused iOS Simulator adapter; carry one exact authorization effect set across official-Skill handoffs; expose one structured fail-closed official-guidance verifier result; and reject every Windows host or target without mutation or fallback. Approval remains procedural guidance, not a security boundary ([#98](https://github.com/FSQ-lab/amkernel/issues/98)).
+
+### Fixed
+
+- Synthetic Skill screening accepts the official client's modern native package/activity queries
+  without legacy-route failures. Queries remain read-only and session-gated; unsupported scripts
+  still fail, with bounded command-name diagnostics rather than raw scripts or arguments.
+  Corrected strict typing and formatting in the new screening files without changing scene goals,
+  budgets, acceptance semantics or the original paired results under
+  [#98](https://github.com/FSQ-lab/amkernel/issues/98).
+
 ## [0.1.3] - 2026-11-05
 
 Backward-compatible Skill, installation, safe-error and verification corrections under
@@ -22,13 +65,10 @@ experimental; Windows support is not claimed.
 - Deduplicate Android Skill setup/readiness guidance: keep Android procedures in `android-setup.md`, retain routing in the main Skill, and centralize shared Appium service ownership in the execution seam. Preserve the existing rules and tests without changing Apple branches, pinned official source or core behavior ([#130](https://github.com/FSQ-lab/amkernel/issues/130)).
 - Correct strict typing in the Android setup experiment's JSON narrowing, version evidence and regression annotations without changing approval/readiness decisions. The full production-and-test Mypy gate now passes alongside the existing protocol/oracle smoke ([#133](https://github.com/FSQ-lab/amkernel/issues/133)).
 - Add target-scoped physical-iPhone setup to the packaged `amkernel` Skill: reuse applicable Runtime/Xcode/Appium/WDA assets, disclose dependency and security changes, guide native account/passcode/keychain actions, and distinguish profile/runner identity repair from connection failures. Preserve official Appium guidance, setup-only no-launch/no-session, shared-resource ownership and required prepared artifacts. Extend managed-reference integrity coverage; core interfaces and platform qualification remain unchanged ([#131](https://github.com/FSQ-lab/amkernel/issues/131)).
-- Add target-scoped native macOS setup guidance before the verified Mac2 route: reuse the actual Runtime/Appium home/Xcode selection, resolve exact Node/Appium/driver compatibility, keep privacy and administrator choices native and user-owned, and distinguish prepared prerequisites from live target control. Add a deterministic synthetic approval/readiness oracle without changing core interfaces or platform qualification ([#140](https://github.com/FSQ-lab/amkernel/issues/140)).
 - Deduplicate physical-iPhone Skill service, connection, and lifecycle guidance by requiring the existing shared Appium execution contract. Retain WDA launch approval, native security prompts, selected-route capabilities, ownership reconciliation, and prepared-artifact preservation; official skills, core behavior, and test infrastructure are unchanged ([#131](https://github.com/FSQ-lab/amkernel/issues/131)).
 - Scope the immutable release-evidence audit to the original archive corpus so later normalized verification records remain admissible. Preserve every retained member's byte-size/digest checks and reject reintroduced release-only paths without changing the published index ([#131](https://github.com/FSQ-lab/amkernel/issues/131)).
 - Concentrate Android execution guidance in a managed `android-execution.md` reference: distinguish app/page/context/target evidence, refresh element assumptions, bound scrolling and waits, separate input from persistence, and preserve requested final state. Adapt outcome-first and minimal-observation principles from the OpenAI CUA sample without changing Runtime, setup or official inputs. Restore two missing native behavior prompts and accept successful pre-action state evidence rather than requiring XML for restoration; strict baseline boundary regressions preserve the behavioral contract ([#98](https://github.com/FSQ-lab/amkernel/issues/98)).
 - Unify Android, iOS and native macOS observation guidance: use controls for sufficient location/action/result evidence, with explicit-image requests and genuinely visual questions taking the screenshot path. Require rendered image observations before image-dependent actions, current coordinate geometry and observed results; retain privacy, approval and lifecycle boundaries. Add three-platform synthetic visual fixtures and image-identity/ordering regressions without changing Runtime, setup or pinned official inputs ([#98](https://github.com/FSQ-lab/amkernel/issues/98)).
-- Extend the CUA-informed outcome-first execution contract to iOS/XCUITest and native macOS/Mac2. Short-flow prompts now state the requested final UI state instead of prescribing driver code; shared guidance requires current app/context/window evidence, fresh semantic targets and observed results. Synthetic evaluators now reject an unobserved iOS state change and unnecessarily fragmented Mac2 execution without changing Runtime, setup, ownership or platform-qualification boundaries ([#98](https://github.com/FSQ-lab/amkernel/issues/98)).
-- Replace duplicated platform readiness prose with one structured readiness/authorization contract and shallow platform adapters. Shrink the main Skill to routing and execution invariants; delete copied version-sensitive Node/Appium/driver procedures from Android, physical-iPhone and native-macOS guidance; add a focused iOS Simulator adapter; carry one exact authorization effect set across official-Skill handoffs; expose one structured fail-closed official-guidance verifier result; and reject every Windows host or target without mutation or fallback. Approval remains procedural guidance, not a security boundary ([#98](https://github.com/FSQ-lab/amkernel/issues/98)).
 
 ## [0.1.2] - 2026-11-04
 
