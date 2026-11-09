@@ -123,7 +123,13 @@ removals and blanket ignore stay untouched. Those removals/ignore, prior unrelat
 the separate `InvalidElementStateException` Runner/test correction are excluded from the candidate;
 all required historical evidence and unchanged release gates are retained. The candidate updates
 only authorized Skills, screening implementation/tests, bounded evidence and release version/lock/
-documentation. Protected PR checks and independent review are mandatory; exact-main CI artifacts,
+documentation, plus the minimal release archive/test correction exposed by PR #149: member records
+now use canonical POSIX path-string order to satisfy the unchanged strict validator. The original
+PR package job failed after its installed stdio smoke passed; 10 focused release tests and an
+actual complete-evidence archive build/validation pass after the correction. A supplemental
+Mypy probe on the helper found an unchanged annotation issue outside the configured `src tests`
+gate; it is recorded separately, not hidden or fixed opportunistically. Protected PR checks and
+independent review are mandatory; exact-main CI artifacts,
 not local rebuilds, feed release preparation. Final publication approval is still required: no
 Release dispatch, tag or upload is authorized at this stage. Harness r15's explicit migration,
 fresh qualification, full 116-task rehearsal and calibration remain evaluator prerequisites.

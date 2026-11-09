@@ -342,8 +342,8 @@
       "sourcePath": null,
       "sourceSha256": null,
       "sourceBytes": null,
-      "retainedSha256": "f91e6da8bae5843e9d67004b50660067e0f61dbe6e0be325e3b7d02eddca9bc5",
-      "retainedBytes": 3009,
+      "retainedSha256": "b4c526b91757b6bde992f4324e8a60f6cf055a4af183badeca7a18cc16a9f640",
+      "retainedBytes": 5350,
       "note": "Generated candidate quality/installed-wheel verification. Local wheel digest is expressly non-authoritative; exact first-attempt successful main CI distribution remains required."
     }
   ],

@@ -46,6 +46,9 @@ remains the qualified range; mobile remains experimental, and Windows is unsuppo
   Corrected strict typing and formatting in the new screening files without changing scene goals,
   budgets, acceptance semantics or the original paired results under
   [#98](https://github.com/FSQ-lab/amkernel/issues/98).
+- Sort evidence members by their canonical POSIX relative path before archive and manifest
+  emission. Nested paths and similarly prefixed sibling filenames now satisfy the unchanged
+  strict ordering validator; deterministic-archive regression covers this release-blocking case.
 
 ## [0.1.3] - 2026-11-05
 

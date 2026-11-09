@@ -67,5 +67,50 @@
     "expectedNegativePaths": "Tamper, kernel-death and cleanup-refusal diagnostics exercised by existing smoke; not claimed absent",
     "omitted": "Raw scenario/tool output, images, local paths and transient identities"
   },
+  "releaseArchiveRepair": {
+    "trigger": {
+      "pullRequest": 149,
+      "runId": 42638220678,
+      "jobId": 129231969990,
+      "runUrl": "https://github.com/FSQ-lab/amkernel/actions/runs/42638220678",
+      "phase": "Evidence archive construction after installed stdio smoke passed",
+      "error": "evidence manifest members are not sorted",
+      "rerun": false
+    },
+    "cause": "Path component ordering differs from lexical full POSIX relative-path ordering for nested directories and similarly prefixed sibling filenames",
+    "change": "Sort completed member records by canonical relative string; archive and manifest consume same list",
+    "unchanged": [
+      "Strict ordering validator",
+      "File safety and member digest/provenance checks",
+      "Historical archive index and retained evidence assertions",
+      "Runtime/Runner and public interfaces"
+    ],
+    "regression": "Existing deterministic archive test now includes nested-0.json and nested/report.json and asserts canonical member order",
+    "verification": {
+      "ruffFormat": "2 files already formatted",
+      "ruffCheck": "passed",
+      "releaseTests": {
+        "passed": 10,
+        "seconds": 1.91
+      },
+      "actualArchiveBuildAndValidation": "passed on complete isolated candidate evidence directory",
+      "smokeArchiveMemberCount": 105,
+      "smokeArchiveAuthority": "Local behavioral verification only; not authoritative CI distribution"
+    },
+    "supplementalStaticProbe": {
+      "command": "uv run mypy scripts/prepare_evidence_archive.py tests/test_release.py",
+      "status": "failed",
+      "error": "scripts/prepare_evidence_archive.py:176 IO[bytes] incompatible with BinaryIO",
+      "scope": "Pre-existing unchanged annotation outside configured mypy src tests gate; no unrelated fix or suppressed diagnostic",
+      "effect": "&& prevented tests/archive from starting in that command; those were subsequently run directly and passed"
+    },
+    "independentSourceReview": {
+      "reviewer": "CandidateSourceReview",
+      "disposition": "approved; no findings",
+      "confidence": 0.99,
+      "checksRun": []
+    },
+    "publicationBoundary": "Initial PR CI failure is retained, not rerun or relabeled. New commit must pass protected PR checks; exact main first-attempt successful complete CI remains mandatory."
+  },
   "releaseAuthority": "Local build is verification only. Exact main first-attempt successful complete CI distribution must be downloaded and separately validated; final publication approval remains required."
 }
