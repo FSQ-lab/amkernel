@@ -4,6 +4,19 @@ All notable changes to AMKernel are recorded here. Public releases use semantic 
 
 ## [Unreleased]
 
+## [0.1.5] - 2026-11-12
+
+User-facing documentation and dependency-source configuration update. No public MCP, Runtime,
+dependency-baseline or qualified platform-support changes.
+
+### Changed
+
+- Rework the README around nontechnical users: lead with installation, natural-language request
+  templates, practical scenarios, observable completion criteria, privacy boundaries, and routine
+  update or removal commands. Mobile and native macOS automation remain experimental.
+- Configure uv to use the Tsinghua package mirror as the project default so dependency resolution
+  works on networks that cannot access PyPI directly.
+
 ## [0.1.4] - 2026-11-09
 
 Backward-compatible Skill and synthetic-screening corrections under

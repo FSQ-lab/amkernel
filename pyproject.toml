@@ -1,6 +1,6 @@
 [project]
 name = "amkernel"
-version = "0.1.4"
+version = "0.1.5"
 description = "Persistent Python execution for agentic automation."
 readme = "README.md"
 requires-python = ">=3.11,<3.14"
@@ -39,6 +39,11 @@ build-backend = "uv_build"
 
 [tool.uv]
 required-version = ">=0.12.5,<0.13"
+
+[[tool.uv.index]]
+name = "company-mirror"
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+default = true
 
 [tool.ruff]
 target-version = "py311"

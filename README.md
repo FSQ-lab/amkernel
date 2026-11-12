@@ -1,172 +1,191 @@
 # AMKernel
 
-**AMKernel — Automation MCP Kernel**
+**让 Coding Agent 连续完成真实操作，而不是每一步都重新开始。**
 
-> Persistent Python execution for agentic automation.
->
-> 面向 Agent 自动化的持久 Python Execution MCP。
+AMKernel 帮助 Coding Agent 在一个任务中持续保留上下文和操作状态。你只需要说明想要的结果、不能做的事，
+以及怎样才算完成；Agent 负责选择操作步骤、检查环境，并在结束前确认结果。
 
-AMKernel is a persistent Python execution MCP for agentic automation. Mobile automation through Appium is its first experimental vertical.
+> **0.1.5 是技术预览版。** 核心目前只在项目的 GitHub 托管 Ubuntu/macOS 环境和 Python 3.11–3.13
+> 上完成验证。手机及原生 macOS 自动化仍是实验能力，不代表已经完成所有真实设备和应用的兼容认证。
 
-AMKernel 是一个面向 Agent 自动化的持久 Python Execution MCP。基于 Appium 的移动自动化是它的第一个实验方向。
+[最新版本](https://github.com/FSQ-lab/amkernel/releases/latest) · [PyPI](https://pypi.org/project/amkernel/) · [问题反馈](https://github.com/FSQ-lab/amkernel/issues/new/choose)
 
-**AMKernel 0.1.3 is a technical preview.** It tests whether Coding Agents can use one persistent local Python Runtime and existing automation libraries to complete continuous, multi-step work in real applications and devices.
+## 它能做什么？
 
-**AMKernel 0.1.3 是技术预览版。** 它正在验证 Coding Agent 能否通过一个持久的本地 Python Runtime，直接使用现有自动化库，在真实应用和设备中完成连续、多步骤任务。
+AMKernel 适合需要 Agent 连续观察、处理和验证的任务，例如：
 
-This is not yet a finished Mobile Use or Computer Use product. We invite developers and early users to try it, tell us what works and what fails, and help identify the scenarios that should be evaluated next. Those experiments and evaluations will inform future Mobile Use and Computer Use tools.
+- 在多个页面之间收集信息，最后汇总成一份结果；
+- 读取项目中的表格或文件，持续分析并生成报告；
+- 在 Android 或 iPhone 应用中查找信息、填写内容或完成多步骤操作；
+- 操作原生 macOS 应用并确认最终界面状态；
+- 在任务中保留已经打开的应用、已经读取的数据和中间结果，减少重复工作。
 
-它目前还不是一个已经完成的 Mobile Use 或 Computer Use 产品。我们希望开发者和早期用户实际试用，反馈哪些场景有效、哪些场景失败，以及下一步应该测评什么。后续的实验和系统化测评将为真正的 Mobile Use 与 Computer Use 工具提供依据。
+你不需要写自动化脚本，也不需要告诉 Agent 每一步点哪里。通常只需要说清楚：
 
-Latest release: [`0.1.3`](https://github.com/FSQ-lab/amkernel/releases/tag/v0.1.3) · [PyPI](https://pypi.org/project/amkernel/0.1.3/) · [Changelog](https://github.com/FSQ-lab/amkernel/blob/main/CHANGELOG.md)
+1. **目标**：最终希望得到什么；
+2. **范围**：在哪个设备、应用、文件或项目中操作；
+3. **限制**：哪些内容不能修改、发送或删除；
+4. **完成标准**：你希望 Agent 最后确认什么。
 
-## Technical preview demos / 技术预览演示
+## 安装
 
-These demos show experimental capabilities, not finished product or platform-support claims.
+### 第一步：准备环境
 
-这些视频用于展示技术实验，不代表已经完成的产品或正式的平台支持承诺。
+你需要：
 
-### Android: summarize a Gmail conversation / Android：在 Gmail 中查找并总结邮件
+- macOS 或 Ubuntu；
+- [uv](https://docs.astral.sh/uv/getting-started/installation/)；
+- OMP、Pi、Codex 或 GitHub Copilot 中的一个 Coding Agent 客户端；
+- 一个准备启用 AMKernel 的项目目录。
 
-A Coding Agent uses AMKernel, Python, and Appium to search Gmail, open the correct conversation, read multiple messages, and summarize the thread as one continuous task.
+Windows 当前不受支持。第一次安装 AMKernel 不需要连接手机；只有使用手机场景时，才需要准备对应设备和工具。
 
-Coding Agent 通过 AMKernel、Python 和 Appium 操作真实 Android Gmail，完成搜索、定位会话、读取多封邮件和总结内容的连续任务。
+### 第二步：运行安装命令
 
-https://github.com/user-attachments/assets/ddd80181-c7c1-4474-8943-89693c5358b7
-
-### iPhone: analyze stock information / iPhone：读取股票信息并进行技术分析
-
-A Coding Agent uses the same AMKernel Runtime to operate a connected iPhone, collect market data and technical indicators for MSFT, GOOG, and AMZN across multiple pages, and produce one analysis from persistent Python state.
-
-Coding Agent 使用同一个 AMKernel Runtime 操作已连接的 iPhone，跨多个页面采集 MSFT、GOOG 和 AMZN 的行情与技术指标，并通过持久 Python 状态生成统一分析。
-
-https://github.com/user-attachments/assets/43b9ca46-b83a-40ab-a5a0-541443c2cb00
-
-## What we are testing / 我们正在验证什么
-
-- **Persistent state** — imports, variables, functions, and live automation objects remain available across tool calls.
-- **Direct library use** — the Agent uses official Python libraries instead of a growing catalog of AMKernel-specific action tools.
-- **Multi-step work** — the Agent can observe a result, keep useful state, and decide the next operation.
-- **Local computation** — Python can filter, transform, compare, and summarize large external state before returning bounded output.
-- **Agent-quality output** — structured values, images, progress, stdout/stderr, and large artifacts are first-class results.
-- **Truthful recovery** — timeouts, ordinary errors, kernel death, reset, and managed cleanup remain distinguishable.
-
-The first completed experiment uses Appium with Android and iOS. Future experiments may explore Playwright, Selenium, pywinauto, PyAutoGUI, macOS Accessibility, and other automation ecosystems. These experiments validate the underlying technique; they do not make those platforms part of the AMKernel core.
-
-首个已完成实验使用 Appium 操作 Android 和 iOS。未来可能继续测试浏览器、Windows 和 macOS 自动化生态。实验的目标是验证底层技术，而不是把所有平台操作封装进 AMKernel 核心。
-
-## Try AMKernel 0.1.3 / 开始试用
-
-AMKernel uses one user-level `uv`-managed Runtime and project-scoped Coding Agent activation. From the project directory, run:
+在 Coding Agent 正在使用的项目目录中打开终端，复制并运行：
 
 ```bash
 uvx --from amkernel amkernel install
 ```
 
-The interactive installer detects OMP, Pi, Codex, and GitHub Copilot project clients. One detected client is selected automatically; multiple or missing candidates open a single-choice prompt.
+安装器会：
 
-For non-interactive installation, specify the complete contract:
+1. 检测当前可用的 Coding Agent；
+2. 如果检测到多个客户端，请你选择一个；
+3. 展示即将进行的更改并请求确认；
+4. 只为当前项目启用 AMKernel；
+5. 告诉你是否需要重新加载 Coding Agent。
+
+如果安装器提示重新加载，请先完成重新加载，再开始使用。
+
+### 第三步：直接告诉 Agent 你的目标
+
+无需学习命令或接口。可以使用下面的模板：
+
+> 请在【设备、应用或项目】中完成【目标】。
+>
+> 不要【禁止的操作】。
+>
+> 完成后请确认【可以观察到的最终结果】。
+>
+> 如果需要安装工具、修改系统配置或处理敏感数据，请先说明影响并征得我的确认。
+
+## 可以直接尝试的场景
+
+### 场景一：分析项目中的数据
+
+> 请读取当前项目中的 `sales.csv`，找出销售额最高的三个产品，并总结最近一个月的变化趋势。
+> 不要修改原文件。把结果写成一份新的 Markdown 报告，并在完成后告诉我报告路径和关键结论。
+
+这个场景不需要手机，适合安装后第一次体验。
+
+### 场景二：查看 Android 手机信息
+
+> 请在我已连接的 Android 手机上打开“设置”，找到“电池”页面，并告诉我当前电量和可见的电池状态。
+> 不要修改任何设置。完成后请确认手机仍停留在电池页面。
+
+### 场景三：总结测试邮箱中的非敏感会话
+
+> 请在用于测试的 Gmail 账号中，搜索主题包含【测试关键词】的非敏感会话，打开正确的会话，
+> 阅读其中的测试邮件并总结主要结论。不要发送、删除、归档或标记任何邮件。
+> 完成后告诉我你阅读了哪一个会话以及总结依据。
+
+邮件正文会提供给你当前配置的 Coding Agent 进行总结。不要对个人邮箱、工作邮箱或包含私人信息的会话使用这个场景。
+
+### 场景四：比较股票信息
+
+> 请在 iPhone 的股票应用中查看【股票 A】和【股票 B】，收集当前价格、当日涨跌和页面上可见的关键信息，
+> 最后用表格比较。不要修改自选列表。
+
+### 场景五：查看 Mac 存储空间
+
+> 请打开 Mac 的系统设置，找到存储空间页面，告诉我当前可用空间和占用最多的类别。
+> 不要删除文件或修改任何设置。完成后请确认仍停留在存储空间页面。
+
+手机和原生 macOS 场景是实验能力。Agent 可能需要先检查设备、权限和相关工具；如果需要安装软件或修改系统，
+应先解释影响并请求你的确认。
+
+## 演示
+
+### Android：总结测试账号中的合成 Gmail 会话
+
+Agent 在测试账号中搜索、找到包含合成内容的正确会话、阅读多封测试邮件，并在一个连续任务中给出总结。
+
+https://github.com/user-attachments/assets/ddd80181-c7c1-4474-8943-89693c5358b7
+
+### iPhone：收集并分析股票信息
+
+Agent 在多个页面之间收集市场信息，并在最后给出一份统一分析。
+
+https://github.com/user-attachments/assets/43b9ca46-b83a-40ab-a5a0-541443c2cb00
+
+## 使用时会发生什么？
+
+收到任务后，Agent 应当：
+
+1. 确认目标、设备或应用是否明确；
+2. 检查当前环境是否已经具备所需条件；
+3. 在安装工具、修改系统或执行敏感操作前说明影响并请求确认；
+4. 连续执行任务，并在页面变化或操作失败后重新观察，而不是盲目重复；
+5. 检查最终结果是否真的满足你的完成标准；
+6. 分别说明任务结果、仍在运行的连接以及清理情况。
+
+如果环境不支持、权限不足或结果无法确认，Agent 应明确说明实际停在哪里，而不是声称已经完成。
+
+## 当前支持范围
+
+| 项目 | 0.1.5 状态 |
+| --- | --- |
+| 已验证环境 | GitHub 托管的 Ubuntu 和 macOS，Python 3.11–3.13 |
+| Coding Agent | OMP、Pi、Codex、GitHub Copilot |
+| 普通项目与数据任务 | 技术预览 |
+| Android、iPhone 自动化 | 实验能力，需要兼容的设备和环境 |
+| 原生 macOS 自动化 | 实验能力 |
+| Windows | 不支持 |
+| 安全边界 | 在你的本机账户权限下运行，不是安全沙箱 |
+
+AMKernel 能执行与当前本机用户相同权限范围内的操作。不要把密码、密钥、私人应用内容、个人设备标识或未经筛选的
+完整日志发送给 Agent。对删除、发送、购买、发布、修改系统等高影响操作，应给出明确限制并要求执行前确认。
+
+## 检查、更新或卸载
+
+在项目目录中运行：
 
 ```bash
-uvx --from amkernel amkernel install --client codex --scope project --yes --json
+amkernel status      # 查看当前项目是否已启用
+amkernel doctor      # 检查安装和项目配置
+amkernel update      # 更新 AMKernel
+amkernel uninstall   # 从当前项目移除 AMKernel
 ```
 
-The installer manages one shared user Runtime plus the selected project's AMKernel Skill, pinned official Appium Skills source, and native MCP configuration. Each activated project still starts an independent Server, Runner, Python namespace, and artifact lifecycle.
+如果命令失败，可以把终端中的错误信息交给 Coding Agent，并告诉它：
 
-Useful lifecycle commands:
+> 请帮我检查当前项目的 AMKernel 安装问题。先运行诊断并解释原因；需要修改配置或重新安装前先征得我的确认。
+
+全局卸载会影响所有已经启用 AMKernel 的项目，因此必须显式执行：
 
 ```bash
-amkernel status
-amkernel doctor
-amkernel update
-amkernel uninstall
+amkernel uninstall --global
 ```
 
-`amkernel uninstall --global` is explicit because it affects every activated project. AMKernel does not itself install or supervise Appium Server, platform drivers, SDKs, devices, simulators, or WebDriverAgent; the installed Skill guides the Agent through the relevant prerequisites when a mobile experiment needs them.
+AMKernel 不会默认关闭或删除原本已经存在的手机、模拟器、自动化服务或开发工具。
 
-For Android, the [packaged setup procedure](src/amkernel/skill/references/android-setup.md) first reuses verified JDK/SDK installations, then selects only target-relevant components. The Agent discloses installation methods, versions, locations and impact, executes approved changes through host tools, and verifies them. Physical-device readiness does not require emulator/AVD inventory; configured AVDs and successful doctor/status checks do not prove a live session. Setup does not expand AMKernel's platform support.
+## 反馈问题
 
-For a physical iPhone, the [packaged setup procedure](src/amkernel/skill/references/ios-setup.md) reuses the selected Xcode, Runtime client, Appium/driver and applicable WDA/signing assets before proposing changes. The Agent discloses installation and security effects, performs approved technical work, and guides account, passcode and keychain confirmations in native interfaces without collecting credentials. Setup-only does not launch WDA or create a session; explicitly requested validation uses the official Python Client through `python_exec`. Prepared WDA artifacts are retained when the selected route needs them. Official Appium Skills remain the platform guidance source; iPhone setup does not expand platform qualification.
+如果体验成功或失败，都可以通过 [GitHub Issue](https://github.com/FSQ-lab/amkernel/issues/new/choose) 告诉我们。建议包括：
 
-Agent setup and MCP repair may use shell, PowerShell, native host tools, or focused diagnostic
-probes; they do not require an already-working `python_exec` connection. Appium session and
-device/application interaction code runs through the official Python Client in `python_exec`.
-For a missing or incorrect project MCP entry, diagnose the launcher and active configuration,
-apply the authorized correction through the same installer with the complete non-interactive
-flags, then reload the Coding Agent if required. A successful CLI or SDK probe proves only its
-own check; verify the actual Agent connection after reload before calling it ready for execution.
+- 使用的 Coding Agent 和操作系统；
+- 操作的应用、设备或文件；
+- 你给出的完整目标和限制；
+- 最后一个确认成功的步骤；
+- 实际错误或不符合预期的结果；
+- 任务结束后应用、设备和连接是否仍可使用。
 
-## Share feedback / 提交反馈
+提交前请删除密码、密钥、私人内容、个人设备标识和其他敏感信息。
 
-AMKernel needs real usage evidence, including unsuccessful experiments. Open a [GitHub Issue](https://github.com/FSQ-lab/amkernel/issues/new/choose) and describe:
+## 更多信息
 
-- the Coding Agent and version;
-- the host operating system and Python version;
-- the automation library, application, and target device or environment;
-- the task you asked the Agent to complete;
-- what completed successfully;
-- the exact step where the experiment stopped or behaved unexpectedly;
-- whether the Python kernel and external automation session remained usable;
-- which scenario you want the project to evaluate next.
-
-Please do not attach credentials, private application content, personal device identifiers, or unrestricted raw logs.
-
-我们同样需要失败场景。请告诉我们你原本希望完成什么、实际完成到哪一步、在哪一步停止，以及你希望后续测评哪些真实任务。
-
-## From technical preview to future tools / 从技术预览到未来工具
-
-1. **Now — technical preview:** publish a reliable persistent Python execution kernel and exercise it in real automation tasks.
-2. **Next — systematic evaluation:** compare different Coding Agents, devices, operating systems, applications, task types, failure modes, and recovery behavior.
-3. **Future — product integration:** use the measured results to design and integrate dedicated Mobile Use and Computer Use tools.
-
-This is a direction, not a claim that the current package already provides those finished products. Live priority, blockers, and evaluation status remain in [GitHub Project #2](https://github.com/orgs/FSQ-lab/projects/2).
-
-## How it works / 工作方式
-
-```text
-Coding Agent
-  → MCP
-  → persistent local Python kernel
-  → official automation library
-  → external system
-```
-
-For the first mobile experiment:
-
-```text
-Coding Agent
-  → AMKernel
-  → Appium Python Client
-  → Appium Server
-  → XCUITest / UiAutomator2
-  → mobile device
-```
-
-The primary model-facing interface is Python execution, not predefined mobile, browser, or desktop actions. This lets the Agent retain live objects, write loops and explicit waits, transform data locally, call project helpers, and reuse the official automation ecosystem directly.
-
-## Current scope and support / 当前范围与支持
-
-- The packaged core supports CPython 3.11, 3.12, and 3.13.
-- The qualified operating-system claim is limited to current GitHub-hosted Ubuntu and macOS environments exercised by the native lifecycle and installed-wheel official-client matrices.
-- CPython 3.14, Windows, and other operating systems remain unsupported.
-- The Android/iOS Appium reference experiment and failure matrix are complete, but Mobile/Appium remains experimental and unsupported as a product platform.
-- AMKernel is unrestricted local same-user Python execution, not a sandbox.
-- Artifact resource URIs are ephemeral. Read and verify every manifest part before another large-output call or server shutdown.
-
-## Why the name
-
-- **Automation** — Appium, Playwright, Windows, macOS, and other automation environments. / Appium、Playwright、Windows、macOS 等自动化场景。
-- **MCP** — the standard interface that attaches AMKernel to different Coding Agents. / 挂载到不同 Coding Agent 的标准接口。
-- **Kernel** — a persistent Python namespace with object reuse, incremental execution, and interrupt recovery. / 持久 Python namespace、对象复用、增量执行和中断恢复。
-
-## Project documents
-
-- [`docs/architecture.md`](https://github.com/FSQ-lab/amkernel/blob/main/docs/architecture.md) — generic AMKernel core architecture.
-- [`docs/development.md`](https://github.com/FSQ-lab/amkernel/blob/main/docs/development.md) — development workflow, quality gates, and release procedure.
-- [`docs/experiments/mobile-appium.md`](https://github.com/FSQ-lab/amkernel/blob/main/docs/experiments/mobile-appium.md) — completed Mobile/Appium experiment and retained support boundary.
-- [`docs/stage-1-implementation-plan.md`](https://github.com/FSQ-lab/amkernel/blob/main/docs/stage-1-implementation-plan.md) — persistent execution and lifecycle contracts.
-- [`docs/stage-2-implementation-plan.md`](https://github.com/FSQ-lab/amkernel/blob/main/docs/stage-2-implementation-plan.md) — output, artifact, recovery, and support contracts.
-- [`docs/stage-3-implementation-plan.md`](https://github.com/FSQ-lab/amkernel/blob/main/docs/stage-3-implementation-plan.md) — Mobile/Appium experiment contract and graduation criteria.
-- [`docs/stage-4-implementation-plan.md`](https://github.com/FSQ-lab/amkernel/blob/main/docs/stage-4-implementation-plan.md) — active cross-client evidence contract.
-- [`docs/decisions/`](https://github.com/FSQ-lab/amkernel/tree/main/docs/decisions) — accepted architecture and implementation decisions.
-- [GitHub Project](https://github.com/orgs/FSQ-lab/projects/2) and [GitHub Issues](https://github.com/FSQ-lab/amkernel/issues) — live priorities, work items, blockers, and evidence.
+- [架构与安全模型](https://github.com/FSQ-lab/amkernel/blob/main/docs/architecture.md)
+- [开发与发布流程](https://github.com/FSQ-lab/amkernel/blob/main/docs/development.md)
+- [手机自动化实验说明](https://github.com/FSQ-lab/amkernel/blob/main/docs/experiments/mobile-appium.md)
+- [当前项目计划](https://github.com/orgs/FSQ-lab/projects/2)
