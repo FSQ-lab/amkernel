@@ -4,6 +4,17 @@ All notable changes to AMKernel are recorded here. Public releases use semantic 
 
 ## [Unreleased]
 
+## [0.1.5] - 2026-11-12
+
+User-facing documentation update. No public MCP, Runtime, dependency-baseline or qualified
+platform-support changes.
+
+### Changed
+
+- Rework the README around nontechnical users: lead with installation, natural-language request
+  templates, practical scenarios, observable completion criteria, privacy boundaries, and routine
+  update or removal commands. Mobile and native macOS automation remain experimental.
+
 ## [0.1.4] - 2026-11-09
 
 Backward-compatible Skill and synthetic-screening corrections under
